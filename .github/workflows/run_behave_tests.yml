@@ -18,7 +18,7 @@ jobs:
       - uses: cryptic-wizard/run-behave-tests@v0.4.0
         with:
           test-path: src/automation-test
-          test-output-name: results.txt
+          test-output-name: results.json
   
   notify:
     needs: [ integration_test ]
@@ -39,4 +39,11 @@ jobs:
           footer: 'Linked to Repo <{repo_url}|{repo}>'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      #- name: Submit results to Xray
+      #  env:
+      #    JIRA_SERVER_URL: ${{ secrets.JIRA_SERVER_URL }}
+      #    JIRA_USERNAME: ${{ secrets.JIRA_USERNAME }}
+      #    JIRA_PASSWORD: ${{ secrets.JIRA_PASSWORD }}
+      #  run: 'curl -H "Content-Type: multipart/form-data" -u $JIRA_USERNAME:$JIRA_PASSWORD -F "info=@info.json result=@results.json" "$JIRA_SERVER_URL/rest/raven/1.0/import/execution/behave/multipart?projectKey=PQ"'
+
     
