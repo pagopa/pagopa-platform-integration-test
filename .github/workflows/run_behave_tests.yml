@@ -1,0 +1,20 @@
+name: Run Behave Tests
+
+on:
+  schedule:
+    - cron: '0 9 * * *'  # Esegue ogni giorno alle 9:00 UTC
+  workflow_dispatch:  # Permette di eseguire manualmente il workflow
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.10.5
+      - uses: cryptic-wizard/run-behave-tests@v0.4.0
+        with:
+          test-path: automation-test
+          test-output-name: results.txt
