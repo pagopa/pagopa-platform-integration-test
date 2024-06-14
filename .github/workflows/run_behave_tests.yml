@@ -33,6 +33,7 @@ jobs:
           status: ${{ needs.integration_test.result }}
           #token: ${{ secrets.GITHUB_TOKEN }}
           #notify_when: 'failure'
+          icon_success: "white_check_mark"
           notification_title: '{workflow} has {status_message}'
           message_format: '{emoji} <{workflow_url}|{workflow}> {status_message} in <{repo_url}|{repo}>'
           footer: 'Linked to Repo <{repo_url}|{repo}>'
