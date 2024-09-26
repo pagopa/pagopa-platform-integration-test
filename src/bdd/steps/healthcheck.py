@@ -2,6 +2,7 @@ import logging
 
 from behave import given
 
+from src.conf.configuration import secrets
 from src.utility import constants, utils
 
 
@@ -13,7 +14,7 @@ def system_up(context):
         if "healthcheck" in value:
             url = value.get("url") + value.get("healthcheck")
             logging.debug(f"[Health check] calling: {key} -> {url}")
-            subscription_key = value.get("subscription_key")
+            subscription_key = secrets.get(value.get("subscription_key"))
             headers = {'Content-Type': 'application/json'}
             if subscription_key is not None:
                 headers[constants.OCP_APIM_SUBSCRIPTION_KEY] = subscription_key
