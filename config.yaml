@@ -3,25 +3,27 @@ TARGET_ENV: "uat"
 services:
   nodo_per_pa:
     url: "https://api.uat.platform.pagopa.it/nodo-auth/nodo-per-pa/v1"
-    subscription_key: "INTEGRATION_TEST_FORWARDER_SUBSCRIPTION_KEY"
+    subscription_key: "FORWARDER_SUBSCRIPTION_KEY"
   node_for_psp:
     url: "https://api.uat.platform.pagopa.it/nodo/node-for-psp/v1"
-    subscription_key: "INTEGRATION_TEST_NODO_SUBSCRIPTION_KEY"
+    subscription_key: "NODO_SUBSCRIPTION_KEY"
   nodo_per_pm_v1:
     url: "https://api.uat.platform.pagopa.it/nodo/nodo-per-pm/v1"
-    subscription_key: "INTEGRATION_TEST_NODO_SUBSCRIPTION_KEY"
+    subscription_key: "NODO_SUBSCRIPTION_KEY"
   nodo_per_pm_v2:
     url: "https://api.uat.platform.pagopa.it/nodo/nodo-per-pm/v2"
-    subscription_key: "INTEGRATION_TEST_NODO_SUBSCRIPTION_KEY"
+    subscription_key: "TEST_NODO_SUBSCRIPTION_KEY"
   gpd_core:
     url: "https://api.uat.platform.pagopa.it/gpd/api/v2"
-    subscription_key: "INTEGRATION_TEST_GPD_SUBSCRIPTION_KEY"
+    subscription_key: "GPD_SUBSCRIPTION_KEY"
+    healthcheck: "/info"
   wisp_converter:
     url: "https://uat.wisp2.pagopa.it/wisp-converter/redirect/api/v1"
     healthcheck: "/info"
   technical_support:
     url: "https://api.uat.platform.pagopa.it/technical-support/wisp-converter/api/v1"
-    subscription_key: "INTEGRATION_TEST_TECHNICALSUPPORT_SUBSCRIPTION_KEY"
+    subscription_key: "TECHNICAL_SUPPORT_SUBSCRIPTION_KEY"
+    healthcheck: "/info"
 
 global_configuration:
   psp_wisp: "AGID_01"
