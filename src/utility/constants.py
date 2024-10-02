@@ -178,7 +178,7 @@ ACTIVATE_PAYMENT_NOTICE = """<soapenv:Envelope xmlns:soapenv="http://schemas.xml
 """
 
 SESSION_DATA = "session_data"
-SESSION_DATA_TEST_DATA = "test_data"
+SESSION_DATA_TEST_DATA = "test_data" #commondata.yaml
 SKIP_TESTS = "skip_tests"
 
 SESSION_DATA_REQ_BODY = "flow_data.action.request.body"
@@ -213,3 +213,34 @@ class ResponseType(Enum):
     XML = 1
     JSON = 2
     HTML = 3
+
+empty_flow_data = {
+    "action": {
+        "request": {
+            "body": {}
+        },
+        "response": {
+            "body": {},
+            "status_code": {},
+            "content_type": {}
+        },
+        "trigger_primitive": {
+            "name": {}
+        }
+    },
+    "common": {
+        "session_id": {},
+        "iuvs": {},
+        "cart": {
+            "id": {},
+            "is_multibeneficiary": {},
+            "iuv_for_multibeneficiary": {}
+        },
+        "payment_notices": {},
+        "debt_positions": {},
+        "rpts": [],
+        "re": {
+            "last_analyzed_event": {}
+        }
+    }
+}
