@@ -23,3 +23,15 @@ try:
 except AttributeError as e:
     logging.warning(e)
     exit()
+
+
+commondata = Dynaconf(
+    settings_files=['commondata.yaml'],
+)
+
+try:
+    if commondata is not None:
+        print("commondata is populated")
+except AttributeError as e:
+    logging.warning(e)
+    exit()
