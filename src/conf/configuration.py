@@ -2,9 +2,12 @@
 """
 import logging
 
+import urllib3
 from dynaconf import Dynaconf
 
 ENV_VAR_PREFIX = 'WISP_DISMANTLING'
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # `envvar_prefix` = export envvars with ENV_VAR_PREFIX as prefix.
 # `settings_files` = Load settings files in the order.
@@ -28,6 +31,8 @@ except AttributeError as e:
 commondata = Dynaconf(
     settings_files=['commondata.yaml'],
 )
+
+commondata = commondata.to_dict()
 
 try:
     if commondata is not None:
