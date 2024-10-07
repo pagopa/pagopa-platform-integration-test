@@ -31,7 +31,7 @@ commondata = Dynaconf(
 
 try:
     if commondata is not None:
-        print("commondata is populated")
+        print('commondata is populated')
 except AttributeError as e:
     logging.warning(e)
     exit()
