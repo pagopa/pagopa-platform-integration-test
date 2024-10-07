@@ -1,4 +1,5 @@
-import constants as const
+import src.utility.constants as constants
+from enum import Enum
 from src.conf.configuration import secrets
 
 
@@ -7,30 +8,25 @@ def get_primitive_url(context, primitive):
     services = context.config.userdata.get("h")
     match primitive.lower():
         case "nodoinviarpt":
-            service_data = services.get("nodo-per-pa")
-            return service_data['url'], service_data['subscription_key'], const.ResponseType.XML
+            return context.settings.services.nodo_per_pa.url, context.secrets.NUOVA_CONNETTIVITA_SUBSCRIPTION_KEY, constants.ResponseType.XML
         case "nodoinviacarrellorpt":
-            service_data = services.get("nodo-per-pa")
-            return service_data['url'], service_data['subscription_key'], const.ResponseType.XML
+            return context.settings.services.nodo_per_pa.url, context.secrets.NUOVA_CONNETTIVITA_SUBSCRIPTION_KEY, constants.ResponseType.XML
         case "checkposition":
-            service_data = services.get("nodo-per-pm-v1")
-            url = service_data['url'] + "/checkPosition"
-            return url, service_data['subscription_key'], const.ResponseType.JSON
+            url = context.settings.services.nodo_per_pm_v1.url + "/checkPosition"
+            return url, context.secrets.NODO_SUBSCRIPTION_KEY, constants.ResponseType.JSON
         case "activatepaymentnoticev2":
-            service_data = services.get("node-for-psp")
-            return service_data['url'], service_data['subscription_key'], const.ResponseType.XML
+            return context.settings.services.node_for_psp.url, context.secrets.NODO_SUBSCRIPTION_KEY, constants.ResponseType.XML
         case "closepaymentv2":
-            service_data = services.get("nodo-per-pm-v2")
-            url = service_data['url'] + "/closepayment"
-            return url, service_data['subscription_key'], const.ResponseType.JSON
+            url = context.settings.services.nodo_per_pm_v2.url + "/closepayment"
+            return url, context.secrets.TEST_NODO_SUBSCRIPTION_KEY, constants.ResponseType.JSON
         case "sendpaymentoutcomev2":
             service_data = services.get("node-for-psp")
-            return service_data['url'], service_data['subscription_key'], const.ResponseType.XML
+            return service_data['url'], context.secrets.TECHNICAL_SUPPORT_SUBSCRIPTION_KEY, constants.ResponseType.XML
 
 
 # The method permits to retrieve the REST URL starting from action
 def get_rest_url(context, action):
-    services = context.config.userdata.get("services")
+    # services = context.config.userdata.get("services")
     match action.lower():
 
         case "redirect":
@@ -56,6 +52,7 @@ def get_rest_url(context, action):
         case "create_paymentposition_and_publish":
             # service_data = services.get("gpd-core")
             service_data = context.settings.services.gpd_core
+
             # url = service_data['url'] + "/organizations/{creditor_institution}/debtpositions?toPublish=true"
             url = service_data.url + "/organizations/{creditor_institution}/debtpositions?toPublish=true"
             return url, context.secrets.GPD_SUBSCRIPTION_KEY
@@ -67,3 +64,9 @@ def get_rest_url(context, action):
             # url = service_data['url'] + "/organizations/{creditor_institution}/debtpositions?toPublish=false"
             url = service_data.url + "/organizations/{creditor_institution}/debtpositions?toPublish=false"
             return url, context.secrets.GPD_SUBSCRIPTION_KEY
+
+
+# class ResponseType(Enum):
+#     XML = 1
+#     JSON = 2
+#     HTML = 3

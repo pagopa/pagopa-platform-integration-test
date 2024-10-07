@@ -30,6 +30,10 @@ def execute_request(url, method, headers, payload=None, type=constants.ResponseT
 
         if type == constants.ResponseType.XML:
             formatted_response = remove_namespace(response.text)
+
+            print(f"FORMATTED_RESPONSE = {formatted_response}")
+
+            # assert False
             attach(obfuscate_secrets("URL: " + url + "\nResponse:\n" + formatted_response),
                    name=f'{description} - Received response', attachment_type=attachment_type.TEXT)
             if formatted_response is not None:
@@ -121,3 +125,16 @@ def assert_show_message(assertion_value, message):
     except AssertionError as e:
         logging.error(f"[Assert Error] {e}")
         raise
+
+def get_nested_field(object, field_name):
+    try:
+        nested_fields = field_name.split('.')
+        analyzed_object = object
+        for field in nested_fields:
+            if field in analyzed_object:
+                analyzed_object = analyzed_object[field]
+            else:
+                return None
+        return analyzed_object
+    except Exception as e:
+        return None

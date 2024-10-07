@@ -9,7 +9,7 @@ import session as session
 
 # ==============================================
 
-def generate_nodoinviarpt(test_data, rpt):
+def generate_nodoinviarpt(test_data, rpt, station_password = "placeholder"):
 
     payer_from_rpt = rpt['payer']
     payee_from_rpt = rpt['payee_institution']
@@ -68,7 +68,7 @@ def generate_nodoinviarpt(test_data, rpt):
         psp_broker=test_data['psp_broker_wisp'],
         psp=test_data['psp_wisp'],
         channel=test_data['channel_wisp'],
-        password=test_data['station_password'],
+        password=station_password,
         iuv=payment['iuv'],
         ccp=payment['ccp'],
         rpt=base64.b64encode(rpt_content.encode('utf-8')).decode('utf-8')

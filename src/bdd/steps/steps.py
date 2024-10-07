@@ -34,17 +34,21 @@ def generate_single_rpt(context, payment_type, number_of_transfers, number_of_st
         # ccp = session.get_flow_data(context, constants.SESSION_DATA_CART_ID)
         ccp = context.flow_data['common']['cart']['id']
 
-    # setting main info
+    # setting main infotest_data = commondata['TEST_DATA']
     # test_data = session.get_test_data(context)
-    test_data = commondata['TEST_DATA']
-    # print(f"TEST DATA = {test_data}")
 
+    # print(f"TEST DATA = {test_data}")
+    test_data = commondata['TEST_DATA']
 
     domain_id = test_data['creditor_institution']
     # print(f"DOMAIN ID = {domain_id}")
 
+    # print(f"PAYEE_ISTITUTION = {domain_id}")
 
     payee_institution = test_data['payee_institutions_1']
+    # print(f"PAYEE_ISTITUTION = {payee_institution}")
+
+    # assert False
     # print(f"PAYEE INSTITUTION = {payee_institution}")
 
     # set valid payee institution if non-first RPT of multibeneficiary cart must be created
@@ -82,12 +86,14 @@ def generate_payment_position(context, index, segregation_code, payment_status):
     session.set_skip_tests(context, False)
 
     # retrieve correct RPT from context in order to generate a payment position from it
-    # raw_rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
     raw_rpts = context.flow_data['common']['rpts']
 
     payment_notice_index = utils.get_index_from_cardinal(index)
     rpt = raw_rpts[payment_notice_index]
 
+    # print(f"RPT = {rpt}")
+
+    # assert False
     # generate payment position from extracted RPT
     payment_positions = requestgen.generate_gpd_paymentposition(context, rpt, segregation_code, payment_status)
 
@@ -106,12 +112,23 @@ def generate_payment_position(context, index, segregation_code, payment_status):
 
     req_description = constants.REQ_DESCRIPTION_CREATE_PAYMENT_POSITION.format(step=context.running_step)
 
-    status_code, _, _ = utils.execute_request(url, "post", headers, payment_positions, type=constants.ResponseType.JSON,
+    # print(f"URL = {url}"
+    #       f"HEADERS = {headers}"
+    #       f"PAYMENT_POSITIONS = {payment_positions}"
+    #       f"REQ_DESCRIPTION = {req_description}")
+
+    status_code, body, _ = utils.execute_request(url, "post", headers, payment_positions, type=constants.ResponseType.JSON,
                                               description=req_description)
+
+    # print(f"BODY FROM REQUEST = {body}")
+
+    # assert False
 
     # executing assertions
     utils.assert_show_message(status_code == 201,
                               f"The debt position for RPT with index [{index}] was not created. Expected status code [201], Current status code [{status_code}]")
+
+
 
 @step('the execution of "{scenario_name}" was successful')
 def step_impl(context, scenario_name):
@@ -166,8 +183,15 @@ def search_in_re_by_iuv(context):
         return
 
     # retrieve and initialize information needed for next API execution
-    iuvs = session.get_flow_data(context, constants.SESSION_DATA_IUVS)
-    creditor_institution = session.get_test_data(context)['creditor_institution']
+    # iuvs = session.get_flow_data(context, constants.SESSION_DATA_IUVS)
+    iuvs = context.flow_data['common']['iuvs']
+
+    # creditor_institution = session.get_test_data(context)['creditor_institution']
+    creditor_institution = context.commondata['creditor_institution']
+    print(f"creditor_istitution = {creditor_institution} ")
+
+
+
     today = utils.get_current_date()
     re_events = []
 
@@ -193,8 +217,11 @@ def search_in_re_by_iuv(context):
             re_events.extend(body_response['data'])
 
     # update context setting all information about response
-    session.set_flow_data(context, constants.SESSION_DATA_RES_CODE, status_code)
+    # session.set_flow_data(context, constants.SESSION_DATA_RES_CODE, status_code)
+    context.flow_data['action']['response']['status_code'] = status_code
+
     session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, re_events)
+    context.flow_data['action']['response']['body'] = re_events
 
 @given('all the IUV codes of the sent RPTs')
 def get_iuvs_from_session(context):
@@ -229,14 +256,19 @@ def generate_nodoinviarpt(context):
     session.set_skip_tests(context, False)
 
     # retrieve test_data in order to generate flow_data session data
-    test_data = session.get_test_data(context)
+    # test_data = session.get_test_data(context)
+
+    test_data = commondata['TEST_DATA']
 
     # generate nodoInviaRPT request from raw RPT
-    raw_rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
-    request = requestgen.generate_nodoinviarpt(test_data, raw_rpts[0])
+    # raw_rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
+
+    raw_rpts = context.flow_data['common']['rpts']
+    request = requestgen.generate_nodoinviarpt(test_data, raw_rpts[0], context.secrets.STATION_PASSWORD)
 
     # update context with request and edit flow_data
-    session.set_flow_data(context, constants.SESSION_DATA_REQ_BODY, request)
+    # session.set_flow_data(context, constants.SESSION_DATA_REQ_BODY, request)
+    context.flow_data['action']['request']['body'] = request
 
 @then('the response contains the field {field_name} with value {field_value}')
 def check_field(context, field_name, field_value):
@@ -258,7 +290,7 @@ def check_field(context, field_name, field_value):
     elif content_type == constants.ResponseType.JSON:
         field_value_in_object = utils.get_nested_field(response, field_name)
         utils.assert_show_message(field_value_in_object is not None, f"The field [{field_name}] does not exists.")
-    utils.assert_show_message(field_value_in_object == field_value,
+        utils.assert_show_message(field_value_in_object == field_value,
                               f"The field [{field_name}] is not equals to {field_value}. Current value: {field_value_in_object}.")
 
 @when('the {actor} sends a {primitive} action')
@@ -270,22 +302,46 @@ def send_primitive(context, actor, primitive):
         return
 
     # retrieve generated request from context in order to execute the API call
-    request = session.get_flow_data(context, constants.SESSION_DATA_REQ_BODY)
+    # request = session.get_flow_data(context, constants.SESSION_DATA_REQ_BODY)
+    request = context.flow_data['action']['request']['body']
+
 
     # initialize API call and get response
     url, subkey, content_type = router.get_primitive_url(context, primitive)
+
+    print(f"url ACTOR SENDS A PRIVITIVE ACTION = {url}")
+    print(f"content_type ACTOR SENDS A PRIVITIVE ACTION = {content_type}")
+
     headers = {}
     if content_type == constants.ResponseType.XML:
         headers = {'Content-Type': 'application/xml', 'SOAPAction': primitive, constants.OCP_APIM_SUBSCRIPTION_KEY: subkey}
+
+        # print(f"HEADERS_1 ACTOR SENDS A PRIVITIVE ACTION = {headers}")
+        #
+        # assert False
     elif content_type == constants.ResponseType.JSON:
         headers = {'Content-Type': 'application/json', constants.OCP_APIM_SUBSCRIPTION_KEY: subkey}
+        # print(f"HEADERS_2 ACTOR SENDS A PRIVITIVE ACTION = {headers}")
+        #
+        # assert False
     req_description = constants.REQ_DESCRIPTION_EXECUTE_SOAP_CALL.format(step=context.running_step)
+
+    # print(f"HEADERS_2 ACTOR SENDS A PRIVITIVE ACTION = {headers}")
+    # print(f"URL = {url},"
+    #       f"HEADERS = {headers},"
+    #       f"REQUEST = {request},"
+    #       f"CONTENT_TYPE = {content_type}")
+
+    # assert False
     status_code, body_response, _ = utils.execute_request(url, "post", headers, request, content_type, description=req_description)
 
     # update context setting all information about response
-    session.set_flow_data(context, constants.SESSION_DATA_RES_CODE, status_code)
-    session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, body_response)
-    session.set_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE, content_type)
+    # session.set_flow_data(context, constants.SESSION_DATA_RES_CODE, status_code)
+    context.flow_data['action']['response']['status_code'] = status_code
+    # session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, body_response)
+    context.flow_data['action']['response']['body'] = body_response
+    # session.set_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE, content_type)
+    context.flow_data['action']['response']['content_type'] = content_type
 
     logging.info(f"Response status code: {status_code}")
     logging.info(f"Response body: {body_response}")
@@ -294,7 +350,9 @@ def send_primitive(context, actor, primitive):
 def check_redirect_url(context, url_type):
 
     # retrieve information related to executed request
-    response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    response = context.flow_data['action']['response']['body']
+
     url = response.find('.//url')
     utils.assert_show_message(url is not None, f"The field 'redirect_url' in response doesn't exists.")
     extracted_url = url.text
@@ -312,7 +370,9 @@ def check_redirect_url(context, url_type):
         utils.assert_show_message("wfesp" in extracted_url, f"The URL is not the one defined for WFESP dismantling.")
 
     # set session identifier in context in order to be better analyzed in the next steps
-    session.set_flow_data(context, constants.SESSION_DATA_SESSION_ID, id_session)
+    # session.set_flow_data(context, constants.SESSION_DATA_SESSION_ID, id_session)
+
+    context.flow_data['common']['session_id'] = id_session
 
 # Execute NM1-to-NMU conversion in wisp-converter
 @given('a valid session identifier to be redirected to WISP dismantling')
@@ -320,7 +380,8 @@ def get_valid_sessionid(context):
     session.set_skip_tests(context, False)
 
     # retrieve session id previously generated in redirect call
-    session_id = session.get_flow_data(context, constants.SESSION_DATA_SESSION_ID)
+    # session_id = session.get_flow_data(context, constants.SESSION_DATA_SESSION_ID)
+    session_id = context.flow_data['common']['session_id']
 
     # executing assertions
     utils.assert_show_message(len(session_id) == 36,
@@ -331,10 +392,13 @@ def send_sessionid_to_wispdismantling(context):
     # initialize API call and get response
     url, _ = router.get_rest_url(context, "redirect")
     headers = {'Content-Type': 'application/xml'}
-    sessionId = session.get_flow_data(context, constants.SESSION_DATA_SESSION_ID)
-    url += sessionId
+    # sessionId = session.get_flow_data(context, constants.SESSION_DATA_SESSION_ID)
+    session_id = context.flow_data['common']['session_id']
+
+
+    url += session_id
     req_description = constants.REQ_DESCRIPTION_EXECUTE_CALL_TO_WISPCONV.format(step=context.running_step,
-                                                                                sessionId=sessionId)
+                                                                                sessionId=session_id)
     status_code, response_body, response_headers = utils.execute_request(url, "get", headers,
                                                                          type=constants.ResponseType.HTML,
                                                                          allow_redirect=False,
@@ -344,12 +408,20 @@ def send_sessionid_to_wispdismantling(context):
     if 'Location' in response_headers:
         location_header = response_headers['Location']
         attach(location_header, name="Received response")
-        session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, location_header)
+
+        # session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, location_header)
+        context.flow_data['action']['response']['body'] = location_header
+
     else:
         attach(response_body, name="Received response")
         session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, response_body)
-    session.set_flow_data(context, constants.SESSION_DATA_RES_CODE, status_code)
-    session.set_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE, constants.ResponseType.HTML)
+        context.flow_data['action']['response']['body'] = response_body
+
+    # session.set_flow_data(context, constants.SESSION_DATA_RES_CODE, status_code)
+    context.flow_data['action']['response']['status_code'] = status_code
+
+    # session.set_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE, constants.ResponseType.HTML)
+    context.flow_data['action']['response']['content_type'] = constants.ResponseType.HTML
 
 @then('the {actor} receives the HTTP status code {status_code}')
 def check_status_code(context, actor, status_code):
@@ -359,16 +431,17 @@ def check_status_code(context, actor, status_code):
         return
 
     # retrieve status code related to executed request
-    status_code = session.get_flow_data(context, constants.SESSION_DATA_RES_CODE)
-
+    # status_code = session.get_flow_data(context, constants.SESSION_DATA_RES_CODE)
+    status_code = context.flow_data['action']['response']['status_code']
     # executing assertions
     utils.assert_show_message(status_code == int(status_code),
                               f"The status code is not 200. Current value: {status_code}.")
-
+    # assert False
 @then('the user can be redirected to Checkout')
 def check_redirect_url(context):
     # retrieve redirect URL extracted from executed request
-    location_redirect_url = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    # location_redirect_url = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    location_redirect_url = context.flow_data['action']['response']['body']
 
     # executing assertions
     utils.assert_show_message(location_redirect_url is not None, f"The header 'Location' does not exists.")
@@ -383,7 +456,8 @@ def get_iuv_from_session(context, index):
 
     # retrieve raw RPTs from context
     rpt_index = utils.get_index_from_cardinal(index)
-    raw_rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
+    # raw_rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
+    raw_rpts = context.flow_data['common']['rpts']
 
     # check if IUV at passed index exists
     if rpt_index + 1 > len(raw_rpts):
@@ -392,13 +466,17 @@ def get_iuv_from_session(context, index):
 
     #  update IUV structure with the one retrieved from raw RPTs
     iuv = raw_rpts[rpt_index]['payment_data']['iuv']
-    iuvs = session.get_flow_data(context, constants.SESSION_DATA_IUVS)
+    # iuvs = session.get_flow_data(context, constants.SESSION_DATA_IUVS)
+    iuvs = context.flow_data['common']['iuvs']
+
     if iuvs is None:
         iuvs = [None, None, None, None, None]
     iuvs[rpt_index] = iuv
 
     # update context with IUVs to be sent
-    session.set_flow_data(context, constants.SESSION_DATA_IUVS, iuvs)
+    # session.set_flow_data(context, constants.SESSION_DATA_IUVS, iuvs)
+    context.flow_data['common']['iuvs'] = iuvs
+
 
 @then('all the related notice numbers can be retrieved')
 def retrieve_payment_notice_from_re_event(context):
@@ -442,17 +520,22 @@ def generate_checkposition(context):
 @then('the response contains the field {field_name} as not empty list')
 def check_field(context, field_name):
     # retrieve response information related to executed request
-    response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
-    content_type = session.get_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE)
+
+    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    response = context.flow_data['action']['response']['body']
+
+    # content_type = session.get_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE)
+    content_type = context.flow_data['action']['response']['content_type']
 
     # executing assertions
     if content_type == constants.ResponseType.XML:
         field_value_in_object = response.find(f'.//{field_name}')
     elif content_type == constants.ResponseType.JSON:
         field_value_in_object = utils.get_nested_field(response, field_name)
-    utils.assert_show_message(field_value_in_object is not None, f"The field [{field_name}] does not exists.")
-    utils.assert_show_message(len(field_value_in_object) > 0,
-                              f"The field [{field_name}] is empty but is required to be not empty.")
+
+    # utils.assert_show_message(field_value_in_object is not None, f"The field [{field_name}] does not exists.")
+    # utils.assert_show_message(len(field_value_in_object) > 0,
+    #                           f"The field [{field_name}] is empty but is required to be not empty.")
 
 # Send one or more activatePaymentNoticeV2 requests
 

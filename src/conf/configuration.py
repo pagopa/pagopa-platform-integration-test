@@ -32,7 +32,7 @@ commondata = Dynaconf(
     settings_files=['commondata.yaml'],
 )
 
-commondata = commondata.to_dict()
+commondata = commondata['TEST_DATA'].to_dict()
 
 try:
     if commondata is not None:
