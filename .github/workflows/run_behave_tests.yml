@@ -24,7 +24,7 @@ jobs:
         run: |
           echo "$SECRETS" >> ./config/.secrets.yaml
         env:
-          SECRETS: ${{ secrets.SECRETS }}
+          SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS }}
         id: load_secrets
       - name: 'Run tests with Behave'
         run: |
