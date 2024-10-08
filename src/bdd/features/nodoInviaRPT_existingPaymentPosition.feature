@@ -10,7 +10,7 @@ Feature: User pays a single payment from existing payment position via nodoInvia
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
     When the execution of "Send a nodoInviaRPT request" was successful
     Then the execution of "Execute redirect and complete payment from NodoInviaRPT" was successful
-#    And the execution of "Check if existing debt position was used" was successful
+    And the execution of "Check if existing debt position was used" was successful
 
 #COMMON
   Scenario: Send a nodoInviaRPT request
@@ -26,9 +26,9 @@ Feature: User pays a single payment from existing payment position via nodoInvia
     And the execution of "Send a checkPosition request" was successful
     And the execution of "Send one or more activatePaymentNoticeV2 requests" was successful
     And the execution of "Check if WISP session timers were created" was successful
-#    And the execution of "Send a closePaymentV2 request" was successful
-#    And the execution of "Check if WISP session timers were deleted and all RTs were sent" was successful
-#    And the execution of "Check the paid payment positions" was successful
+    And the execution of "Send a closePaymentV2 request" was successful
+    And the execution of "Check if WISP session timers were deleted and all RTs were sent" was successful
+    And the execution of "Check the paid payment positions" was successful
 
   Scenario: Check if existing debt position was used
     Given a waiting time of 2 seconds to wait for Nodo to write RE events
@@ -47,10 +47,10 @@ Feature: User pays a single payment from existing payment position via nodoInvia
   Scenario: Check if WISP session timers were created
     Given a waiting time of 5 seconds to wait for Nodo to write RE events
     And all the IUV codes of the sent RPTs
-#    When the user searches for flow steps by IUVs
-#    Then the user receives the HTTP status code 200
-#    And there is a timer-set event with field operationStatus with value Success
-#    And these events are related to each payment token
+    When the user searches for flow steps by IUVs
+    Then the user receives the HTTP status code 200
+    And there is a timer-set event with field operationStatus with value Success
+    And these events are related to each payment token
 
   Scenario: Send a closePaymentV2 request
     Given a valid closePaymentV2 request with outcome OK

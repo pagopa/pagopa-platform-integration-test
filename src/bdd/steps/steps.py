@@ -140,11 +140,14 @@ def step_impl(context, scenario_name):
 
 
 # COMMON
-@then('these events are related to each payment token')
+@then('these events are related to each payment token')#MODIFIED
 def check_event_token_relation(context):
     # retrieve events and payment notices related to executed request
-    needed_events = session.get_flow_data(context, constants.SESSION_DATA_LAST_ANALYZED_RE_EVENT)
-    payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
+    # needed_events = session.get_flow_data(context, constants.SESSION_DATA_LAST_ANALYZED_RE_EVENT)
+    needed_events = context.flow_data['common']['re']['last_analyzed_event']
+
+    # payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
+    payment_notices = context.flow_data['common']['payment_notices']
 
     # executing assertions
     payment_tokens = [payment_notice['payment_token'] for payment_notice in payment_notices]
@@ -152,7 +155,7 @@ def check_event_token_relation(context):
         utils.assert_show_message(any(event['paymentToken'] == payment_token for event in needed_events),
                                   f"The payment token {payment_token} is not correctly handled by the previous event.")
 
-@then('there is a {business_process} event with field {field_name} with value {field_value}')
+@then('there is a {business_process} event with field {field_name} with value {field_value}')#MODIFIED
 def check_event(context, business_process, field_name, field_value):
     # skipping this step if its execution is not required
     if session.skip_tests(context):
@@ -160,7 +163,8 @@ def check_event(context, business_process, field_name, field_value):
         return
 
     # retrieve response information related to executed request
-    re_events = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    # re_events = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    re_events = context.flow_data['action']['response']['body']
 
     # executing assertions
     needed_process_events = [re_event for re_event in re_events if
@@ -173,9 +177,10 @@ def check_event(context, business_process, field_name, field_value):
                               f"There are not events with business process {business_process} and field {field_name} with value [{field_value}].")
 
     # set needed events in context in order to be better analyzed in the next steps
-    session.set_flow_data(context, constants.SESSION_DATA_LAST_ANALYZED_RE_EVENT, needed_events)
+    # session.set_flow_data(context, constants.SESSION_DATA_LAST_ANALYZED_RE_EVENT, needed_events)
+    context.flow_data['common']['re']['last_analyzed_event'] = needed_events
 
-@when('the user searches for flow steps by IUVs')
+@when('the user searches for flow steps by IUVs') #MODIFIED
 def search_in_re_by_iuv(context):
     # skipping this step if its execution is not required
     if session.skip_tests(context):
@@ -420,7 +425,7 @@ def send_sessionid_to_wispdismantling(context):
     # session.set_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE, constants.ResponseType.HTML)
     context.flow_data['action']['response']['content_type'] = constants.ResponseType.HTML
 
-@then('the {actor} receives the HTTP status code {status_code}')
+@then('the {actor} receives the HTTP status code {status_code}') #MODIFIED
 def check_status_code(context, actor, status_code):
     # skipping this step if its execution is not required
     if session.skip_tests(context):
@@ -447,7 +452,7 @@ def check_redirect_url(context):
 
 # Retrieve all related notice numbers from executed redirect
 
-@given('the {index} IUV code of the sent RPTs')
+@given('the {index} IUV code of the sent RPTs')#MODIFIED
 def get_iuv_from_session(context, index):
     session.set_skip_tests(context, False)
 
@@ -521,7 +526,7 @@ def generate_checkposition(context):
     context.flow_data['action']['request']['body'] = request
 
 
-@then('the response contains the field {field_name} as not empty list') #MODIFICATO
+@then('the response contains the field {field_name} as not empty list') #MODIFIED
 def check_field(context, field_name):
     # retrieve response information related to executed request
 
@@ -537,9 +542,9 @@ def check_field(context, field_name):
     elif content_type == constants.ResponseType.JSON:
         field_value_in_object = utils.get_nested_field(response, field_name)
 
-    # utils.assert_show_message(field_value_in_object is not None, f"The field [{field_name}] does not exists.")
-    # utils.assert_show_message(len(field_value_in_object) > 0,
-    #                           f"The field [{field_name}] is empty but is required to be not empty.")
+    utils.assert_show_message(field_value_in_object is not None, f"The field [{field_name}] does not exists.")
+    utils.assert_show_message(len(field_value_in_object) > 0,
+                              f"The field [{field_name}] is empty but is required to be not empty.")
 
 # Send one or more activatePaymentNoticeV2 requests
 
@@ -630,29 +635,36 @@ def retrieve_payment_token_from_activatepaymentnotice(context, index):
 
 # Send a closePaymentV2 request
 
-@given('a valid closePaymentV2 request with outcome {outcome}')
+@given('a valid closePaymentV2 request with outcome {outcome}') #MODIFIED
 def generate_closepayment(context, outcome):
     session.set_skip_tests(context, False)
 
     # retrieve test_data in order to generate flow_data session data
-    test_data = session.get_test_data(context)
+    test_data = context.commondata
 
     # generate request
-    payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
+    # payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
+    payment_notices = context.flow_data['common']['payment_notices']
 
     # generate closePaymentV2 request from retrieved raw RPTs and payment notices
-    rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
+    # rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
+    rpts = context.flow_data['common']['rpts']
+
     request = requestgen.generate_closepayment(test_data, payment_notices, rpts, outcome)
 
     # update context with request to be sent
-    session.set_flow_data(context, constants.SESSION_DATA_REQ_BODY, request)
+    # session.set_flow_data(context, constants.SESSION_DATA_REQ_BODY, request)
+    context.flow_data['action']['request']['body'] = request
 
-@then('these events are related to each notice number')
+@then('these events are related to each notice number')#MODIFIED
 def check_event_token_relation(context):
 
     # retrieve events and payment notices related to executed request
-    needed_events = session.get_flow_data(context, constants.SESSION_DATA_LAST_ANALYZED_RE_EVENT)
-    payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
+    # needed_events = session.get_flow_data(context, constants.SESSION_DATA_LAST_ANALYZED_RE_EVENT)
+    needed_events = context.flow_data['common']['re']['last_analyzed_event']
+
+    # payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
+    payment_notices = context.flow_data['common']['payment_notices']
 
     # executing assertions
     notice_numbers = [payment_notice['notice_number'] for payment_notice in payment_notices]
@@ -663,11 +675,13 @@ def check_event_token_relation(context):
 
 # Check the paid payment positions
 
-@when('the user searches for payment position in GPD by {index} IUV')
+@when('the user searches for payment position in GPD by {index} IUV')#MODIFIED
 def search_paymentposition_by_iuv(context, index):
     # retrieve payment notice from context in order to execute the API call
     rpt_index = utils.get_index_from_cardinal(index)
-    payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
+    # payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
+    payment_notices = context.flow_data['common']['payment_notices']
+
 
     # skipping this step if its execution is not required
     if rpt_index + 1 > len(payment_notices):
@@ -687,12 +701,16 @@ def search_paymentposition_by_iuv(context, index):
                                                           description=req_description)
 
     # update context setting all information about response
-    session.set_flow_data(context, constants.SESSION_DATA_RES_CODE, status_code)
-    session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, body_response)
-    session.set_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE, constants.ResponseType.JSON)
+    # session.set_flow_data(context, constants.SESSION_DATA_RES_CODE, status_code)
+    context.flow_data['action']['response'][status_code] = status_code
 
+    # session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, body_response)
+    context.flow_data['action']['response']['body'] = body_response
 
-@then('the response contains a single payment option')
+    # session.set_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE, constants.ResponseType.JSON)
+    context.flow_data['action']['response']['content_type'] = constants.ResponseType.JSON
+
+@then('the response contains a single payment option')#MODIFIED
 def check_single_paymentoption(context):
     # skipping this step if its execution is not required
     if session.skip_tests(context):
@@ -700,7 +718,8 @@ def check_single_paymentoption(context):
         return
 
     # retrieve information related to executed request
-    response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    response = context.flow_data['action']['response']['body']
 
     # executing assertions
     utils.assert_show_message('paymentOption' in response,
@@ -714,9 +733,11 @@ def check_single_paymentoption(context):
     transfers = sorted(transfers, key=lambda transfer: transfer['idTransfer'])
     payment_options[0]['transfer'] = transfers
     response['paymentOption'] = payment_options
-    session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, response)
 
-@then('the response contains the payment option correctly generated from {index} RPT')
+    # session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, response)
+    context.flow_data['action']['response']['body'] = response
+
+@then('the response contains the payment option correctly generated from {index} RPT')#MODIFIED
 def check_paymentoption_amounts(context, index):
 
     # skipping this step if its execution is not required
@@ -725,15 +746,21 @@ def check_paymentoption_amounts(context, index):
         return
 
     # retrieve response information related to executed request
-    response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    response = context.flow_data['action']['response']['body']
+
     rpt_index = utils.get_index_from_cardinal(index)
     payment_options = utils.get_nested_field(response, "paymentOption")
     payment_option = payment_options[0]
 
     # retrieve payment notices and raw RPT in order to execute checks on data
-    payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
+    # payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
+    payment_notices = context.flow_data['common']['payment_notices']
+
     payment_notice = payment_notices[rpt_index]
-    rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
+    # rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
+    rpts = context.flow_data['common']['rpts']
+
     rpt = [rpt for rpt in rpts if rpt['payment_data']['iuv'] == payment_notice['iuv']][0]
     payment_data = rpt['payment_data']
 
@@ -744,7 +771,7 @@ def check_paymentoption_amounts(context, index):
     utils.assert_show_message(payment_option['isPartialPayment'] == False, f"The payment option must be not defined as partial payment.")
 
 
-@then('the response contains the status in {status} for the payment option')
+@then('the response contains the status in {status} for the payment option') #MODIFIED
 def check_paymentposition_status(context, status):
     # skipping this step if its execution is not required
     if session.skip_tests(context):
@@ -752,7 +779,9 @@ def check_paymentposition_status(context, status):
         return
 
     # retrieve response information related to executed request
-    response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    response = context.flow_data['action']['response']['body']
+
     payment_options = utils.get_nested_field(response, "paymentOption")
     payment_option = payment_options[0]
 
@@ -761,7 +790,7 @@ def check_paymentposition_status(context, status):
                               f"The payment option must be equals to [{status}]. Current status: [{payment_option['status']}]")
 
 
-@then('the response contains the transfers correctly generated from RPT')
+@then('the response contains the transfers correctly generated from RPT')#MODIFIED
 def check_paymentposition_transfers(context):
     # skipping this step if its execution is not required
     if session.skip_tests(context):
@@ -769,12 +798,17 @@ def check_paymentposition_transfers(context):
         return
 
     # retrieve response information related to executed request
-    response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    response = context.flow_data['action']['response']['body']
+
     payment_options = utils.get_nested_field(response, "paymentOption")
     transfers_from_po = payment_options[0]['transfer']
 
     # retrieve payment notices and raw RPT in order to execute checks on data
-    raw_rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
+    # raw_rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
+    raw_rpts = context.flow_data['common']['rpts']
+
+
     rpt = [rpt for rpt in raw_rpts if rpt['payment_data']['iuv'] == payment_options[0]['iuv']][0]
     transfers_from_rpt = rpt['payment_data']['transfers']
 
@@ -809,16 +843,3 @@ def check_paymentposition_transfers(context):
                                       f"There is not IBAN definition in transfer {transfer_index} but RPT transfer require it.")
             utils.assert_show_message(transfer_from_po['iban'] == transfer_from_rpt['creditor_iban'],
                                       f"The IBAN defined in transfer {transfer_index} is not equals to the one defined in RPT. GPD's: [{transfer_from_po['iban']}], RPT's: [{transfer_from_rpt['creditor_iban']}]")
-
-
-
-
-
-
-
-
-
-
-
-
-

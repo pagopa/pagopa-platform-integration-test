@@ -143,3 +143,6 @@ def get_nested_field(object, field_name):
         return analyzed_object
     except Exception as e:
         return None
+
+def get_random_alphanumeric_string(length):
+    return ''.join(random.choice(string.ascii_letters + string.digits) for i in range(length))
