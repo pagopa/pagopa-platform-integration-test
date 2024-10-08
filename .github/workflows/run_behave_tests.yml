@@ -28,4 +28,4 @@ jobs:
         id: load_secrets
       - name: 'Run tests with Behave'
         run: |
-          python3 -m behave
+          python3 -m behave --tags=@runnable -v
