@@ -212,7 +212,7 @@ def generate_checkposition(payment_notices):
 
 # ==============================================
 
-def generate_activatepaymentnotice(test_data, payment_notices, rpt, session_id):
+def generate_activatepaymentnotice(test_data, payment_notices, rpt, session_id, channel_checkout_password):
 
     iuv = rpt['payment_data']['iuv']
     total_amount = rpt['payment_data']['total_amount']
@@ -226,7 +226,7 @@ def generate_activatepaymentnotice(test_data, payment_notices, rpt, session_id):
         psp=test_data['psp_wisp'],
         psp_broker=test_data['psp_broker_wisp'],
         channel=test_data['channel_checkout'],
-        password=test_data['channel_checkout_password'],
+        password=channel_checkout_password,
         idempotency_key=idempotency_key,
         fiscal_code=payment_notice['domain_id'],
         notice_number=notice_number,

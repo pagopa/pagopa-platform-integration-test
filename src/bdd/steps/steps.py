@@ -222,15 +222,21 @@ def search_in_re_by_iuv(context):
     # session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, re_events)
     context.flow_data['action']['response']['body'] = re_events
 
-@given('all the IUV codes of the sent RPTs')
+@given('all the IUV codes of the sent RPTs') #MODIFIED
 def get_iuvs_from_session(context):
     session.set_skip_tests(context, False)
 
     # retrieve raw RPTs from context
-    raw_rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
+    # raw_rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
+    raw_rpts  = context.flow_data['common']['rpts']
+
+
 
     #  update IUV structure with all the ones retrieved from raw RPTs
-    iuvs = session.get_flow_data(context, constants.SESSION_DATA_IUVS)
+    # iuvs = session.get_flow_data(context, constants.SESSION_DATA_IUVS)
+    iuvs = context.flow_data['common']['iuvs']
+
+
     if iuvs is None:
         iuvs = [None, None, None, None, None]
     rpt_index = 0
@@ -240,7 +246,9 @@ def get_iuvs_from_session(context):
         rpt_index += 1
 
     # update context with IUVs to be sent
-    session.set_flow_data(context, constants.SESSION_DATA_IUVS, iuvs)
+    # session.set_flow_data(context, constants.SESSION_DATA_IUVS, iuvs)
+
+    context.flow_data['common']['iuvs'] = iuvs
 
 @given('a waiting time of {time_in_seconds} second{notes}')
 def wait_for_n_seconds(context, time_in_seconds, notes):
@@ -318,15 +326,8 @@ def send_primitive(context, actor, primitive):
     headers = {}
     if content_type == constants.ResponseType.XML:
         headers = {'Content-Type': 'application/xml', 'SOAPAction': primitive, constants.OCP_APIM_SUBSCRIPTION_KEY: subkey}
-
-        # print(f"HEADERS_1 ACTOR SENDS A PRIVITIVE ACTION = {headers}")
-        #
-        # assert False
     elif content_type == constants.ResponseType.JSON:
         headers = {'Content-Type': 'application/json', constants.OCP_APIM_SUBSCRIPTION_KEY: subkey}
-        # print(f"HEADERS_2 ACTOR SENDS A PRIVITIVE ACTION = {headers}")
-        #
-        # assert False
     req_description = constants.REQ_DESCRIPTION_EXECUTE_SOAP_CALL.format(step=context.running_step)
 
     status_code, body_response, _ = utils.execute_request(url, "post", headers, request, content_type, description=req_description)
@@ -477,7 +478,8 @@ def get_iuv_from_session(context, index):
 @then('all the related notice numbers can be retrieved')
 def retrieve_payment_notice_from_re_event(context):
     # retrieve events elated to executed request
-    re_events = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    # re_events = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    re_events = context.flow_data['action']['response']['body']
 
     # executing assertions
     needed_events = [re_event for re_event in re_events if 'status' in re_event and re_event[
@@ -496,7 +498,9 @@ def retrieve_payment_notice_from_re_event(context):
             "notice_number": payment_notice[2],
             "payment_token": None
         })
-    session.set_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES, payment_notices)
+
+    # session.set_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES, payment_notices)
+    context.flow_data['common']['payment_notices'] = payment_notices
 
 
 # Send a checkPosition request
@@ -507,13 +511,17 @@ def generate_checkposition(context):
     session.set_skip_tests(context, False)
 
     # generate checkPosition request from retrieved payment notices
-    payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
+    # payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
+    payment_notices = context.flow_data['common']['payment_notices']
+
     request = requestgen.generate_checkposition(payment_notices)
 
     # update context with request to be sent
-    session.set_flow_data(context, constants.SESSION_DATA_REQ_BODY, request)
+    # session.set_flow_data(context, constants.SESSION_DATA_REQ_BODY, request)
+    context.flow_data['action']['request']['body'] = request
 
-@then('the response contains the field {field_name} as not empty list')
+
+@then('the response contains the field {field_name} as not empty list') #MODIFICATO
 def check_field(context, field_name):
     # retrieve response information related to executed request
 
@@ -535,19 +543,23 @@ def check_field(context, field_name):
 
 # Send one or more activatePaymentNoticeV2 requests
 
-@given('a valid activatePaymentNoticeV2 request on {index} payment notice')
+@given('a valid activatePaymentNoticeV2 request on {index} payment notice') #MODIFIED
 def generate_activatepaymentnotice(context, index):
     session.set_skip_tests(context, False)
 
     # retrieve test_data in order to generate flow_data session data
-    test_data = session.get_test_data(context)
+    # test_data = session.get_test_data(context)
+    test_data = context.commondata
 
     # retrieve session id previously generated in redirect call
-    session_id = session.get_flow_data(context, constants.SESSION_DATA_SESSION_ID)
+    # session_id = session.get_flow_data(context, constants.SESSION_DATA_SESSION_ID)
+    session_id = context.flow_data['common']['session_id']
 
     # retrieve payment notices in order to generate request
     payment_notice_index = utils.get_index_from_cardinal(index)
-    payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
+
+    # payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
+    payment_notices = context.flow_data['common']['payment_notices']
 
     # check if payment notice at passed index exists
     if payment_notice_index + 1 > len(payment_notices):
@@ -555,14 +567,18 @@ def generate_activatepaymentnotice(context, index):
         return
 
     # generate activatePaymentNoticeV2 request from retrieved payment notices
-    rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
+    # rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
+    rpts = context.flow_data['common']['rpts']
+
     request = requestgen.generate_activatepaymentnotice(test_data, payment_notices, rpts[payment_notice_index],
-                                                        session_id)
+                                                        session_id, context.secrets.CHANNEL_CHECKOUT_PASSWORD)
 
     # update context with request to be sent
-    session.set_flow_data(context, constants.SESSION_DATA_REQ_BODY, request)
+    # session.set_flow_data(context, constants.SESSION_DATA_REQ_BODY, request)
+    context.flow_data['action']['request']['body'] = request
 
-@then('the response contains the field {field_name} with non-null value')
+
+@then('the response contains the field {field_name} with non-null value') #MODIFIED
 def check_field(context, field_name):
     # skipping this step if its execution is not required
     if session.skip_tests(context):
@@ -570,8 +586,11 @@ def check_field(context, field_name):
         return
 
     # retrieve response information related to executed request
-    response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
-    content_type = session.get_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE)
+    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    response = context.flow_data['action']['response']['body']
+
+    # content_type = session.get_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE)
+    content_type = context.flow_data['action']['response']['content_type']
 
     # executing assertions
     if content_type == constants.ResponseType.XML:
@@ -580,7 +599,7 @@ def check_field(context, field_name):
         field_value_in_object = utils.get_nested_field(response, field_name)
     utils.assert_show_message(field_value_in_object is not None, f"The field [{field_name}] does not exists.")
 
-@then('the payment token can be retrieved and associated to {index} RPT')
+@then('the payment token can be retrieved and associated to {index} RPT') #MODIFIED
 def retrieve_payment_token_from_activatepaymentnotice(context, index):
     # skipping this step if its execution is not required
     if session.skip_tests(context):
@@ -589,18 +608,23 @@ def retrieve_payment_token_from_activatepaymentnotice(context, index):
 
     # retrieve information related to executed request
     rpt_index = utils.get_index_from_cardinal(index)
-    response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    response = context.flow_data['action']['response']['body']
+
     field_value_in_object = response.find('.//paymentToken')
 
     # executing assertions
-    payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
+    # payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
+    payment_notices = context.flow_data['common']['payment_notices']
+
     utils.assert_show_message(len(payment_notices) >= rpt_index + 1,
                               f"Not enough payment notices are defined in the session data for correctly point at index {rpt_index}.")
     payment_notice = payment_notices[rpt_index]
     utils.assert_show_message('iuv' in payment_notice, f"No valid payment is defined at index {rpt_index}.")
     payment_notice['payment_token'] = field_value_in_object.text
-    session.set_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES, payment_notices)
 
+    # session.set_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES, payment_notices)
+    context.flow_data['common']['payment_notices'] = payment_notices
 
 # Check if WISP session timers were created (METODI PRESENTI SOTTO COMMON!!)
 
