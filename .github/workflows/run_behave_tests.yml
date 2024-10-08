@@ -15,34 +15,17 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3 #v5.2.0
         with:
-          python-version: 3.10.5
-      - uses: cryptic-wizard/run-behave-tests@v0.4.0
-        with:
-          test-path: src/automation-test
-          test-output-name: results.json
-
-  notify:
-    needs: [ integration_test ]
-    runs-on: ubuntu-latest
-    name: Notify
-
-    steps:
-      - name: Report Status
-        if: always()
-        uses: ravsamhq/notify-slack-action@be814b201e233b2dc673608aa46e5447c8ab13f2 # v2
-        with:
-          status: ${{ needs.integration_test.result }}
-          #token: ${{ secrets.GITHUB_TOKEN }}
-          #notify_when: 'failure'
-          icon_success: ":white_check_mark:"
-          notification_title: '{workflow} has {status_message}'
-          message_format: '{emoji} <{workflow_url}|{workflow}> {status_message} in <{repo_url}|{repo}>'
-          footer: 'Linked to Repo <{repo_url}|{repo}>'
+          python-version: 3.x
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements
+      - name: 'Load secrets'
+        run: |
+          echo "$SECRETS" >> ./config/.secrets.yaml
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #- name: Submit results to Xray
-      #  env:
-      #    JIRA_SERVER_URL: ${{ secrets.JIRA_SERVER_URL }}
-      #    JIRA_USERNAME: ${{ secrets.JIRA_USERNAME }}
-      #    JIRA_PASSWORD: ${{ secrets.JIRA_PASSWORD }}
-      #  run: 'curl -H "Content-Type: multipart/form-data" -u $JIRA_USERNAME:$JIRA_PASSWORD -F "info=@info.json result=@results.json" "$JIRA_SERVER_URL/rest/raven/1.0/import/execution/behave/multipart?projectKey=PQ"'
+          SECRETS: ${{ secrets.SECRETS }}
+        id: load_secrets
+      - name: 'Run tests with Behave'
+        run: |
+          python3 -m behave
