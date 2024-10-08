@@ -38,7 +38,7 @@ def generate_single_rpt(context, payment_type, number_of_transfers, number_of_st
     # test_data = session.get_test_data(context)
 
     # print(f"TEST DATA = {test_data}")
-    test_data = commondata['TEST_DATA']
+    test_data = context.commondata
 
     domain_id = test_data['creditor_institution']
     # print(f"DOMAIN ID = {domain_id}")
@@ -188,9 +188,6 @@ def search_in_re_by_iuv(context):
 
     # creditor_institution = session.get_test_data(context)['creditor_institution']
     creditor_institution = context.commondata['creditor_institution']
-    print(f"creditor_istitution = {creditor_institution} ")
-
-
 
     today = utils.get_current_date()
     re_events = []
@@ -200,7 +197,9 @@ def search_in_re_by_iuv(context):
     headers = {'Content-Type': 'application/json', constants.OCP_APIM_SUBSCRIPTION_KEY: subkey}
 
     # for each iuv it is required to retrieve events from RE
-    for iuv in iuvs:
+
+    # AGGIUNTO .values() !!
+    for iuv in iuvs.values():
         if iuv is not None:
             # initialize API call and get response
             url = base_url.format(creditor_institution=creditor_institution, iuv=iuv, date_from=today, date_to=today)
@@ -220,7 +219,7 @@ def search_in_re_by_iuv(context):
     # session.set_flow_data(context, constants.SESSION_DATA_RES_CODE, status_code)
     context.flow_data['action']['response']['status_code'] = status_code
 
-    session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, re_events)
+    # session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, re_events)
     context.flow_data['action']['response']['body'] = re_events
 
 @given('all the IUV codes of the sent RPTs')
@@ -251,15 +250,14 @@ def wait_for_n_seconds(context, time_in_seconds, notes):
     time.sleep(int(time_in_seconds))
     logging.info(f"Wait time ended")
 
-@given('a valid nodoInviaRPT request')
+@given('a valid nodoInviaRPT request') #MODIFIED
 def generate_nodoinviarpt(context):
     session.set_skip_tests(context, False)
 
     # retrieve test_data in order to generate flow_data session data
     # test_data = session.get_test_data(context)
 
-    test_data = commondata['TEST_DATA']
-
+    test_data = context.commondata
     # generate nodoInviaRPT request from raw RPT
     # raw_rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
 
@@ -270,7 +268,7 @@ def generate_nodoinviarpt(context):
     # session.set_flow_data(context, constants.SESSION_DATA_REQ_BODY, request)
     context.flow_data['action']['request']['body'] = request
 
-@then('the response contains the field {field_name} with value {field_value}')
+@then('the response contains the field {field_name} with value {field_value}') #MODIFIED
 def check_field(context, field_name, field_value):
     # skipping this step if its execution is not required
     if session.skip_tests(context):
@@ -279,12 +277,21 @@ def check_field(context, field_name, field_value):
 
     # retrieve response information related to executed request
     field_value = field_value.replace('\'', '')
-    response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
-    content_type = session.get_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE)
+    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    response = context.flow_data['action']['response']['body']
+
+    print(f"FIELD_NAME = {field_name},"
+          f"FIELD_VALUE = {field_value},"
+          f"RESPONSE = {response}")
+
+    # content_type = session.get_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE)
+    content_type = context.flow_data['action']['response']['content_type']
 
     # executing assertions
     if content_type == constants.ResponseType.XML:
         field_value_in_object = response.find(f'.//{field_name}')
+        print(f"field_value_in_object = {field_value_in_object}")
+
         utils.assert_show_message(field_value_in_object is not None, f"The field [{field_name}] does not exists.")
         field_value_in_object = field_value_in_object.text
     elif content_type == constants.ResponseType.JSON:
@@ -293,7 +300,7 @@ def check_field(context, field_name, field_value):
         utils.assert_show_message(field_value_in_object == field_value,
                               f"The field [{field_name}] is not equals to {field_value}. Current value: {field_value_in_object}.")
 
-@when('the {actor} sends a {primitive} action')
+@when('the {actor} sends a {primitive} action') #MODIFIED
 def send_primitive(context, actor, primitive):
 
     # skipping this step if its execution is not required
@@ -308,10 +315,6 @@ def send_primitive(context, actor, primitive):
 
     # initialize API call and get response
     url, subkey, content_type = router.get_primitive_url(context, primitive)
-
-    print(f"url ACTOR SENDS A PRIVITIVE ACTION = {url}")
-    print(f"content_type ACTOR SENDS A PRIVITIVE ACTION = {content_type}")
-
     headers = {}
     if content_type == constants.ResponseType.XML:
         headers = {'Content-Type': 'application/xml', 'SOAPAction': primitive, constants.OCP_APIM_SUBSCRIPTION_KEY: subkey}
@@ -326,13 +329,6 @@ def send_primitive(context, actor, primitive):
         # assert False
     req_description = constants.REQ_DESCRIPTION_EXECUTE_SOAP_CALL.format(step=context.running_step)
 
-    # print(f"HEADERS_2 ACTOR SENDS A PRIVITIVE ACTION = {headers}")
-    # print(f"URL = {url},"
-    #       f"HEADERS = {headers},"
-    #       f"REQUEST = {request},"
-    #       f"CONTENT_TYPE = {content_type}")
-
-    # assert False
     status_code, body_response, _ = utils.execute_request(url, "post", headers, request, content_type, description=req_description)
 
     # update context setting all information about response
@@ -346,7 +342,7 @@ def send_primitive(context, actor, primitive):
     logging.info(f"Response status code: {status_code}")
     logging.info(f"Response body: {body_response}")
 
-@then('the response contains the {url_type} URL')
+@then('the response contains the {url_type} URL') #MODIFIED
 def check_redirect_url(context, url_type):
 
     # retrieve information related to executed request
