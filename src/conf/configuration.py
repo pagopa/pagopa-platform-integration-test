@@ -21,17 +21,15 @@ try:
     if settings.TARGET_ENV in all_secrets:
         secrets = all_secrets[settings.TARGET_ENV]
 except AttributeError as e:
-    logging.warning(e)
+    logging.error(e)
     exit()
-
 
 commondata = Dynaconf(
     settings_files=['commondata.yaml'],
 )
 
 try:
-    if commondata is not None:
-        print('commondata is populated')
-except AttributeError as e:
-    logging.warning(e)
+    commondata = commondata['TEST_DATA'].to_dict()
+except KeyError as e:
+    logging.error(e)
     exit()
