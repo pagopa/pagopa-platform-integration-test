@@ -180,6 +180,7 @@ ACTIVATE_PAYMENT_NOTICE = """<soapenv:Envelope xmlns:soapenv="http://schemas.xml
 SESSION_DATA = 'session_data'
 SESSION_DATA_TEST_DATA = 'test_data' #commondata.yaml
 SKIP_TESTS = 'skip_tests'
+PASSWORD_PLACEHOLDER = 'placeholder'
 
 SESSION_DATA_REQ_BODY = 'flow_data.action.request.body'
 SESSION_DATA_RES_BODY = 'flow_data.action.response.body'
