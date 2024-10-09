@@ -212,7 +212,7 @@ def generate_checkposition(payment_notices):
 
 # ==============================================
 
-def generate_activatepaymentnotice(test_data, payment_notices, rpt, session_id, channel_checkout_password):
+def generate_activatepaymentnotice(test_data, payment_notices, rpt, session_id, channel_checkout_password = "placeholder"):
 
     iuv = rpt['payment_data']['iuv']
     total_amount = rpt['payment_data']['total_amount']
