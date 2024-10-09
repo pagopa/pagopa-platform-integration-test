@@ -21,41 +21,24 @@ def generate_single_rpt(context, payment_type, number_of_transfers, number_of_st
     # force IUV definition if the RPT is part of multibeneficiary cart
     iuv = None
 
-    # is_multibeneficiary_cart = session.get_flow_data(context, constants.SESSION_DATA_CART_IS_MULTIBENEFICIARY)
     is_multibeneficiary_cart = context.flow_data['common']['cart']['is_multibeneficiary']
 
     if is_multibeneficiary_cart is not None and is_multibeneficiary_cart == True:
-        # iuv = session.get_flow_data(context, constants.SESSION_DATA_CART_MULTIBENEFICIARY_IUV)
         iuv = context.flow_data['common']['cart']['iuv_for_multibeneficiary']
 
     # force CCP definition if the RPT is part of multibeneficiary cart
     ccp = None
     if is_multibeneficiary_cart:
-        # ccp = session.get_flow_data(context, constants.SESSION_DATA_CART_ID)
+
         ccp = context.flow_data['common']['cart']['id']
-
-    # setting main infotest_data = commondata['TEST_DATA']
-    # test_data = session.get_test_data(context)
-
-    # print(f"TEST DATA = {test_data}")
     test_data = context.commondata
 
     domain_id = test_data['creditor_institution']
-    # print(f"DOMAIN ID = {domain_id}")
-
-    # print(f"PAYEE_ISTITUTION = {domain_id}")
 
     payee_institution = test_data['payee_institutions_1']
-    # print(f"PAYEE_ISTITUTION = {payee_institution}")
-
-    # assert False
-    # print(f"PAYEE INSTITUTION = {payee_institution}")
 
     # set valid payee institution if non-first RPT of multibeneficiary cart must be created
-    # rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
     rpts = context.flow_data['common']['rpts']
-
-    # print(f"RPTS  = {rpts}")
 
     if is_multibeneficiary_cart:
         if len(rpts) == 1:
@@ -74,12 +57,7 @@ def generate_single_rpt(context, payment_type, number_of_transfers, number_of_st
     # update the list of generated raw RPTs
     rpts.append(rpt)
 
-    # session.set_flow_data(context, constants.SESSION_DATA_RAW_RPTS, rpts)
-
-
     context.flow_data['common']['rpts'] = rpts
-    # print(f"RPTS = {context.flow_data['common']['rpts']}")
-
 
 @given('an existing payment position related to {index} RPT with segregation code equals to {segregation_code} and state equals to {payment_status}')
 def generate_payment_position(context, index, segregation_code, payment_status):
@@ -91,9 +69,6 @@ def generate_payment_position(context, index, segregation_code, payment_status):
     payment_notice_index = utils.get_index_from_cardinal(index)
     rpt = raw_rpts[payment_notice_index]
 
-    # print(f"RPT = {rpt}")
-
-    # assert False
     # generate payment position from extracted RPT
     payment_positions = requestgen.generate_gpd_paymentposition(context, rpt, segregation_code, payment_status)
 
@@ -112,18 +87,8 @@ def generate_payment_position(context, index, segregation_code, payment_status):
 
     req_description = constants.REQ_DESCRIPTION_CREATE_PAYMENT_POSITION.format(step=context.running_step)
 
-    # print(f"URL = {url}"
-    #       f"HEADERS = {headers}"
-    #       f"PAYMENT_POSITIONS = {payment_positions}"
-    #       f"REQ_DESCRIPTION = {req_description}")
-
     status_code, body, _ = utils.execute_request(url, "post", headers, payment_positions, type=constants.ResponseType.JSON,
                                               description=req_description)
-
-    # print(f"BODY FROM REQUEST = {body}")
-
-    # assert False
-
     # executing assertions
     utils.assert_show_message(status_code == 201,
                               f"The debt position for RPT with index [{index}] was not created. Expected status code [201], Current status code [{status_code}]")
@@ -143,10 +108,8 @@ def step_impl(context, scenario_name):
 @then('these events are related to each payment token')#MODIFIED
 def check_event_token_relation(context):
     # retrieve events and payment notices related to executed request
-    # needed_events = session.get_flow_data(context, constants.SESSION_DATA_LAST_ANALYZED_RE_EVENT)
     needed_events = context.flow_data['common']['re']['last_analyzed_event']
 
-    # payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
     payment_notices = context.flow_data['common']['payment_notices']
 
     # executing assertions
@@ -163,7 +126,6 @@ def check_event(context, business_process, field_name, field_value):
         return
 
     # retrieve response information related to executed request
-    # re_events = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
     re_events = context.flow_data['action']['response']['body']
 
     # executing assertions
@@ -177,7 +139,6 @@ def check_event(context, business_process, field_name, field_value):
                               f"There are not events with business process {business_process} and field {field_name} with value [{field_value}].")
 
     # set needed events in context in order to be better analyzed in the next steps
-    # session.set_flow_data(context, constants.SESSION_DATA_LAST_ANALYZED_RE_EVENT, needed_events)
     context.flow_data['common']['re']['last_analyzed_event'] = needed_events
 
 @when('the user searches for flow steps by IUVs') #MODIFIED
@@ -188,10 +149,8 @@ def search_in_re_by_iuv(context):
         return
 
     # retrieve and initialize information needed for next API execution
-    # iuvs = session.get_flow_data(context, constants.SESSION_DATA_IUVS)
     iuvs = context.flow_data['common']['iuvs']
 
-    # creditor_institution = session.get_test_data(context)['creditor_institution']
     creditor_institution = context.commondata['creditor_institution']
 
     today = utils.get_current_date()
@@ -221,7 +180,6 @@ def search_in_re_by_iuv(context):
             re_events.extend(body_response['data'])
 
     # update context setting all information about response
-    # session.set_flow_data(context, constants.SESSION_DATA_RES_CODE, status_code)
     context.flow_data['action']['response']['status_code'] = status_code
 
     # session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, re_events)
@@ -232,13 +190,9 @@ def get_iuvs_from_session(context):
     session.set_skip_tests(context, False)
 
     # retrieve raw RPTs from context
-    # raw_rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
     raw_rpts  = context.flow_data['common']['rpts']
 
-
-
     #  update IUV structure with all the ones retrieved from raw RPTs
-    # iuvs = session.get_flow_data(context, constants.SESSION_DATA_IUVS)
     iuvs = context.flow_data['common']['iuvs']
 
 
@@ -251,8 +205,6 @@ def get_iuvs_from_session(context):
         rpt_index += 1
 
     # update context with IUVs to be sent
-    # session.set_flow_data(context, constants.SESSION_DATA_IUVS, iuvs)
-
     context.flow_data['common']['iuvs'] = iuvs
 
 @given('a waiting time of {time_in_seconds} second{notes}')
@@ -268,17 +220,12 @@ def generate_nodoinviarpt(context):
     session.set_skip_tests(context, False)
 
     # retrieve test_data in order to generate flow_data session data
-    # test_data = session.get_test_data(context)
-
     test_data = context.commondata
     # generate nodoInviaRPT request from raw RPT
-    # raw_rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
-
     raw_rpts = context.flow_data['common']['rpts']
     request = requestgen.generate_nodoinviarpt(test_data, raw_rpts[0], context.secrets.STATION_PASSWORD)
 
     # update context with request and edit flow_data
-    # session.set_flow_data(context, constants.SESSION_DATA_REQ_BODY, request)
     context.flow_data['action']['request']['body'] = request
 
 @then('the response contains the field {field_name} with value {field_value}') #MODIFIED
@@ -290,12 +237,7 @@ def check_field(context, field_name, field_value):
 
     # retrieve response information related to executed request
     field_value = field_value.replace('\'', '')
-    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
     response = context.flow_data['action']['response']['body']
-
-    print(f"FIELD_NAME = {field_name},"
-          f"FIELD_VALUE = {field_value},"
-          f"RESPONSE = {response}")
 
     # content_type = session.get_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE)
     content_type = context.flow_data['action']['response']['content_type']
@@ -322,9 +264,7 @@ def send_primitive(context, actor, primitive):
         return
 
     # retrieve generated request from context in order to execute the API call
-    # request = session.get_flow_data(context, constants.SESSION_DATA_REQ_BODY)
     request = context.flow_data['action']['request']['body']
-
 
     # initialize API call and get response
     url, subkey, content_type = router.get_primitive_url(context, primitive)
@@ -338,11 +278,8 @@ def send_primitive(context, actor, primitive):
     status_code, body_response, _ = utils.execute_request(url, "post", headers, request, content_type, description=req_description)
 
     # update context setting all information about response
-    # session.set_flow_data(context, constants.SESSION_DATA_RES_CODE, status_code)
     context.flow_data['action']['response']['status_code'] = status_code
-    # session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, body_response)
     context.flow_data['action']['response']['body'] = body_response
-    # session.set_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE, content_type)
     context.flow_data['action']['response']['content_type'] = content_type
 
     logging.info(f"Response status code: {status_code}")
@@ -352,7 +289,6 @@ def send_primitive(context, actor, primitive):
 def check_redirect_url(context, url_type):
 
     # retrieve information related to executed request
-    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
     response = context.flow_data['action']['response']['body']
 
     url = response.find('.//url')
@@ -372,8 +308,6 @@ def check_redirect_url(context, url_type):
         utils.assert_show_message("wfesp" in extracted_url, f"The URL is not the one defined for WFESP dismantling.")
 
     # set session identifier in context in order to be better analyzed in the next steps
-    # session.set_flow_data(context, constants.SESSION_DATA_SESSION_ID, id_session)
-
     context.flow_data['common']['session_id'] = id_session
 
 # Execute NM1-to-NMU conversion in wisp-converter
@@ -382,7 +316,6 @@ def get_valid_sessionid(context):
     session.set_skip_tests(context, False)
 
     # retrieve session id previously generated in redirect call
-    # session_id = session.get_flow_data(context, constants.SESSION_DATA_SESSION_ID)
     session_id = context.flow_data['common']['session_id']
 
     # executing assertions
@@ -394,7 +327,6 @@ def send_sessionid_to_wispdismantling(context):
     # initialize API call and get response
     url, _ = router.get_rest_url(context, "redirect")
     headers = {'Content-Type': 'application/xml'}
-    # sessionId = session.get_flow_data(context, constants.SESSION_DATA_SESSION_ID)
     session_id = context.flow_data['common']['session_id']
 
 
@@ -411,7 +343,6 @@ def send_sessionid_to_wispdismantling(context):
         location_header = response_headers['Location']
         attach(location_header, name="Received response")
 
-        # session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, location_header)
         context.flow_data['action']['response']['body'] = location_header
 
     else:
@@ -419,10 +350,7 @@ def send_sessionid_to_wispdismantling(context):
         session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, response_body)
         context.flow_data['action']['response']['body'] = response_body
 
-    # session.set_flow_data(context, constants.SESSION_DATA_RES_CODE, status_code)
     context.flow_data['action']['response']['status_code'] = status_code
-
-    # session.set_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE, constants.ResponseType.HTML)
     context.flow_data['action']['response']['content_type'] = constants.ResponseType.HTML
 
 @then('the {actor} receives the HTTP status code {status_code}') #MODIFIED
@@ -433,16 +361,13 @@ def check_status_code(context, actor, status_code):
         return
 
     # retrieve status code related to executed request
-    # status_code = session.get_flow_data(context, constants.SESSION_DATA_RES_CODE)
     status_code = context.flow_data['action']['response']['status_code']
     # executing assertions
     utils.assert_show_message(status_code == int(status_code),
                               f"The status code is not 200. Current value: {status_code}.")
-    # assert False
 @then('the user can be redirected to Checkout')
 def check_redirect_url(context):
     # retrieve redirect URL extracted from executed request
-    # location_redirect_url = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
     location_redirect_url = context.flow_data['action']['response']['body']
 
     # executing assertions
@@ -458,7 +383,6 @@ def get_iuv_from_session(context, index):
 
     # retrieve raw RPTs from context
     rpt_index = utils.get_index_from_cardinal(index)
-    # raw_rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
     raw_rpts = context.flow_data['common']['rpts']
 
     # check if IUV at passed index exists
@@ -468,7 +392,6 @@ def get_iuv_from_session(context, index):
 
     #  update IUV structure with the one retrieved from raw RPTs
     iuv = raw_rpts[rpt_index]['payment_data']['iuv']
-    # iuvs = session.get_flow_data(context, constants.SESSION_DATA_IUVS)
     iuvs = context.flow_data['common']['iuvs']
 
     if iuvs is None:
@@ -476,14 +399,12 @@ def get_iuv_from_session(context, index):
     iuvs[rpt_index] = iuv
 
     # update context with IUVs to be sent
-    # session.set_flow_data(context, constants.SESSION_DATA_IUVS, iuvs)
     context.flow_data['common']['iuvs'] = iuvs
 
 
 @then('all the related notice numbers can be retrieved')
 def retrieve_payment_notice_from_re_event(context):
     # retrieve events elated to executed request
-    # re_events = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
     re_events = context.flow_data['action']['response']['body']
 
     # executing assertions
@@ -504,7 +425,6 @@ def retrieve_payment_notice_from_re_event(context):
             "payment_token": None
         })
 
-    # session.set_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES, payment_notices)
     context.flow_data['common']['payment_notices'] = payment_notices
 
 
@@ -516,13 +436,11 @@ def generate_checkposition(context):
     session.set_skip_tests(context, False)
 
     # generate checkPosition request from retrieved payment notices
-    # payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
     payment_notices = context.flow_data['common']['payment_notices']
 
     request = requestgen.generate_checkposition(payment_notices)
 
     # update context with request to be sent
-    # session.set_flow_data(context, constants.SESSION_DATA_REQ_BODY, request)
     context.flow_data['action']['request']['body'] = request
 
 
@@ -530,10 +448,7 @@ def generate_checkposition(context):
 def check_field(context, field_name):
     # retrieve response information related to executed request
 
-    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
     response = context.flow_data['action']['response']['body']
-
-    # content_type = session.get_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE)
     content_type = context.flow_data['action']['response']['content_type']
 
     # executing assertions
@@ -553,11 +468,9 @@ def generate_activatepaymentnotice(context, index):
     session.set_skip_tests(context, False)
 
     # retrieve test_data in order to generate flow_data session data
-    # test_data = session.get_test_data(context)
     test_data = context.commondata
 
     # retrieve session id previously generated in redirect call
-    # session_id = session.get_flow_data(context, constants.SESSION_DATA_SESSION_ID)
     session_id = context.flow_data['common']['session_id']
 
     # retrieve payment notices in order to generate request
@@ -572,14 +485,12 @@ def generate_activatepaymentnotice(context, index):
         return
 
     # generate activatePaymentNoticeV2 request from retrieved payment notices
-    # rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
     rpts = context.flow_data['common']['rpts']
 
     request = requestgen.generate_activatepaymentnotice(test_data, payment_notices, rpts[payment_notice_index],
                                                         session_id, context.secrets.CHANNEL_CHECKOUT_PASSWORD)
 
     # update context with request to be sent
-    # session.set_flow_data(context, constants.SESSION_DATA_REQ_BODY, request)
     context.flow_data['action']['request']['body'] = request
 
 
@@ -591,10 +502,8 @@ def check_field(context, field_name):
         return
 
     # retrieve response information related to executed request
-    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
     response = context.flow_data['action']['response']['body']
 
-    # content_type = session.get_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE)
     content_type = context.flow_data['action']['response']['content_type']
 
     # executing assertions
@@ -613,13 +522,11 @@ def retrieve_payment_token_from_activatepaymentnotice(context, index):
 
     # retrieve information related to executed request
     rpt_index = utils.get_index_from_cardinal(index)
-    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
     response = context.flow_data['action']['response']['body']
 
     field_value_in_object = response.find('.//paymentToken')
 
     # executing assertions
-    # payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
     payment_notices = context.flow_data['common']['payment_notices']
 
     utils.assert_show_message(len(payment_notices) >= rpt_index + 1,
@@ -628,12 +535,7 @@ def retrieve_payment_token_from_activatepaymentnotice(context, index):
     utils.assert_show_message('iuv' in payment_notice, f"No valid payment is defined at index {rpt_index}.")
     payment_notice['payment_token'] = field_value_in_object.text
 
-    # session.set_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES, payment_notices)
     context.flow_data['common']['payment_notices'] = payment_notices
-
-# Check if WISP session timers were created (METODI PRESENTI SOTTO COMMON!!)
-
-# Send a closePaymentV2 request
 
 @given('a valid closePaymentV2 request with outcome {outcome}') #MODIFIED
 def generate_closepayment(context, outcome):
@@ -643,24 +545,20 @@ def generate_closepayment(context, outcome):
     test_data = context.commondata
 
     # generate request
-    # payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
     payment_notices = context.flow_data['common']['payment_notices']
 
     # generate closePaymentV2 request from retrieved raw RPTs and payment notices
-    # rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
     rpts = context.flow_data['common']['rpts']
 
     request = requestgen.generate_closepayment(test_data, payment_notices, rpts, outcome)
 
     # update context with request to be sent
-    # session.set_flow_data(context, constants.SESSION_DATA_REQ_BODY, request)
     context.flow_data['action']['request']['body'] = request
 
 @then('these events are related to each notice number')#MODIFIED
 def check_event_token_relation(context):
 
     # retrieve events and payment notices related to executed request
-    # needed_events = session.get_flow_data(context, constants.SESSION_DATA_LAST_ANALYZED_RE_EVENT)
     needed_events = context.flow_data['common']['re']['last_analyzed_event']
 
     # payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
@@ -679,7 +577,6 @@ def check_event_token_relation(context):
 def search_paymentposition_by_iuv(context, index):
     # retrieve payment notice from context in order to execute the API call
     rpt_index = utils.get_index_from_cardinal(index)
-    # payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
     payment_notices = context.flow_data['common']['payment_notices']
 
 
@@ -701,7 +598,6 @@ def search_paymentposition_by_iuv(context, index):
                                                           description=req_description)
 
     # update context setting all information about response
-    # session.set_flow_data(context, constants.SESSION_DATA_RES_CODE, status_code)
     context.flow_data['action']['response'][status_code] = status_code
 
     # session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, body_response)
@@ -718,7 +614,6 @@ def check_single_paymentoption(context):
         return
 
     # retrieve information related to executed request
-    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
     response = context.flow_data['action']['response']['body']
 
     # executing assertions
@@ -734,7 +629,6 @@ def check_single_paymentoption(context):
     payment_options[0]['transfer'] = transfers
     response['paymentOption'] = payment_options
 
-    # session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, response)
     context.flow_data['action']['response']['body'] = response
 
 @then('the response contains the payment option correctly generated from {index} RPT')#MODIFIED
@@ -746,7 +640,6 @@ def check_paymentoption_amounts(context, index):
         return
 
     # retrieve response information related to executed request
-    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
     response = context.flow_data['action']['response']['body']
 
     rpt_index = utils.get_index_from_cardinal(index)
@@ -754,11 +647,9 @@ def check_paymentoption_amounts(context, index):
     payment_option = payment_options[0]
 
     # retrieve payment notices and raw RPT in order to execute checks on data
-    # payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
     payment_notices = context.flow_data['common']['payment_notices']
 
     payment_notice = payment_notices[rpt_index]
-    # rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
     rpts = context.flow_data['common']['rpts']
 
     rpt = [rpt for rpt in rpts if rpt['payment_data']['iuv'] == payment_notice['iuv']][0]
@@ -779,7 +670,6 @@ def check_paymentposition_status(context, status):
         return
 
     # retrieve response information related to executed request
-    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
     response = context.flow_data['action']['response']['body']
 
     payment_options = utils.get_nested_field(response, "paymentOption")
@@ -798,14 +688,12 @@ def check_paymentposition_transfers(context):
         return
 
     # retrieve response information related to executed request
-    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
     response = context.flow_data['action']['response']['body']
 
     payment_options = utils.get_nested_field(response, "paymentOption")
     transfers_from_po = payment_options[0]['transfer']
 
     # retrieve payment notices and raw RPT in order to execute checks on data
-    # raw_rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
     raw_rpts = context.flow_data['common']['rpts']
 
 

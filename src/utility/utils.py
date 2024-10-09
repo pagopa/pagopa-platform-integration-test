@@ -25,10 +25,6 @@ def execute_request(url, method, headers, payload=None, type=constants.ResponseT
 
     response = requests.request(method=method, url=url, headers=headers, data=payload, verify=False,
                                 allow_redirects=allow_redirect)
-    print(f"REQUEST_IN_METHOD = {payload},"
-          f"HEADERS_IN_METHOD = {headers},"
-          f"METHOD_IN_METHOD = {method},"
-          f"URL_IN_METHOD = {url}")
 
     object_response = None
     if not url.endswith('/info') and response.text is not None and len(response.text) > 0:
@@ -36,9 +32,6 @@ def execute_request(url, method, headers, payload=None, type=constants.ResponseT
         if type == constants.ResponseType.XML:
             formatted_response = remove_namespace(response.text)
 
-            print(f"FORMATTED_RESPONSE = {formatted_response}")
-
-            # assert False
             attach(obfuscate_secrets("URL: " + url + "\nResponse:\n" + formatted_response),
                    name=f'{description} - Received response', attachment_type=attachment_type.TEXT)
             if formatted_response is not None:
