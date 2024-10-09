@@ -169,7 +169,6 @@ def search_in_re_by_iuv(context):
 
     # for each iuv it is required to retrieve events from RE
 
-    # AGGIUNTO .values() !!
     for iuv in iuvs.values():
         if iuv is not None:
             # initialize API call and get response
@@ -360,7 +359,6 @@ def send_sessionid_to_wispdismantling(context):
 
     else:
         attach(response_body, name='Received response')
-        session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, response_body)
         context.flow_data['action']['response']['body'] = response_body
 
     context.flow_data['action']['response']['status_code'] = status_code
