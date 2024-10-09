@@ -1,16 +1,16 @@
 import base64
-from decimal import Decimal
 import json
-import logging
 import uuid
-from src.utility import constants, utils
+
 import session as session
+
+from src.utility import constants
+from src.utility import utils
 
 
 # ==============================================
 
-def generate_nodoinviarpt(test_data, rpt, station_password = constants.PASSWORD_PLACEHOLDER):
-
+def generate_nodoinviarpt(test_data, rpt, station_password=constants.PASSWORD_PLACEHOLDER):
     payer_from_rpt = rpt['payer']
     payee_from_rpt = rpt['payee_institution']
     delegate_from_rpt = rpt['payer_delegate']
@@ -75,12 +75,13 @@ def generate_nodoinviarpt(test_data, rpt, station_password = constants.PASSWORD_
     )
     return request
 
+
 # ==============================================
 
-def generate_nodoinviacarrellorpt(test_data, cart_id, rpts, psp, psp_broker, channel, password, is_multibeneficiary=False):
-    rpt_list = ""
+def generate_nodoinviacarrellorpt(test_data, cart_id, rpts, psp, psp_broker, channel, password,
+                                  is_multibeneficiary=False):
+    rpt_list = ''
     for rpt in rpts:
-
         payer_from_rpt = rpt['payer']
         payee_from_rpt = rpt['payee_institution']
         delegate_from_rpt = rpt['payer_delegate']
@@ -137,7 +138,7 @@ def generate_nodoinviacarrellorpt(test_data, cart_id, rpts, psp, psp_broker, cha
             ccp=rpt['payment_data']['ccp'],
             rpt=base64.b64encode(rpt_content.encode('utf-8')).decode('utf-8')
         )
-        
+
     request = constants.NODOINVIACARRELLORPT_STRUCTURE.format(
         creditor_institution_broker=test_data['creditor_institution_broker'],
         station=test_data['station'],
@@ -151,20 +152,19 @@ def generate_nodoinviacarrellorpt(test_data, cart_id, rpts, psp, psp_broker, cha
     )
     return request
 
+
 # ==============================================
 
 def generate_transfers(test_data, payment):
-
-    transfers_content = ""
+    transfers_content = ''
     for transfer in payment['transfers']:
 
-        transfer_content = ""                
-        if transfer['is_mbd'] == False:
+        if not transfer['is_mbd']:
             transfer_content = constants.RPT_SINGLE_TRANSFER_STRUCTURE.format(
                 payer_fiscal_code=test_data['payer']['fiscal_code'],
                 transfer_iuv=transfer['iuv'],
-                transfer_amount="{:.2f}".format(transfer['amount']),
-                transfer_fee="{:.2f}".format(transfer['fee']),
+                transfer_amount='{:.2f}'.format(transfer['amount']),
+                transfer_fee='{:.2f}'.format(transfer['fee']),
                 transfer_creditor_iban=transfer['creditor_iban'],
                 transfer_creditor_bic=transfer['creditor_bic'],
                 transfer_creditor_iban2=transfer['creditor_iban'],
@@ -176,8 +176,8 @@ def generate_transfers(test_data, payment):
             transfer_content = constants.RPT_SINGLE_MBD_TRANSFER_STRUCTURE.format(
                 payer_fiscal_code=test_data['payer']['fiscal_code'],
                 transfer_iuv=transfer['iuv'],
-                transfer_amount="{:.2f}".format(transfer['amount']),
-                transfer_fee="{:.2f}".format(transfer['fee']),
+                transfer_amount='{:.2f}'.format(transfer['amount']),
+                transfer_fee='{:.2f}'.format(transfer['fee']),
                 transfer_payer_info=transfer['payer_info'],
                 transfer_taxonomy=transfer['taxonomy'],
                 transfer_stamp_type=transfer['stamp_type'],
@@ -185,10 +185,10 @@ def generate_transfers(test_data, payment):
                 transfer_stamp_province=transfer['stamp_province']
             )
         transfers_content += transfer_content
-            
+
     return constants.RPT_TRANSFER_SET_STRUCTURE.format(
         payment_payment_date=payment['payment_date'],
-        payment_total_amount="{:.2f}".format(payment['total_amount']),
+        payment_total_amount='{:.2f}'.format(payment['total_amount']),
         payment_payment_type=payment['payment_type'],
         payment_iuv=payment['iuv'],
         payment_ccp=payment['ccp'],
@@ -197,31 +197,32 @@ def generate_transfers(test_data, payment):
         transfers=transfers_content
     )
 
+
 # ==============================================
 
 def generate_checkposition(payment_notices):
-
-    checkposition = {"positionslist":[]}
+    checkposition = {'positionslist': []}
     for payment_notice in payment_notices:
-        checkposition["positionslist"].append({
-            "fiscalCode": payment_notice['domain_id'],
-            "noticeNumber": payment_notice['notice_number']
+        checkposition['positionslist'].append({
+            'fiscalCode': payment_notice['domain_id'],
+            'noticeNumber': payment_notice['notice_number']
         })
     content = json.dumps(checkposition, separators=(',', ':'))
     return content
 
+
 # ==============================================
 
-def generate_activatepaymentnotice(test_data, payment_notices, rpt, session_id, channel_checkout_password = constants.PASSWORD_PLACEHOLDER):
-
+def generate_activatepaymentnotice(test_data, payment_notices, rpt, session_id,
+                                   channel_checkout_password=constants.PASSWORD_PLACEHOLDER):
     iuv = rpt['payment_data']['iuv']
     total_amount = rpt['payment_data']['total_amount']
     notice_number = None
     for payment_notice in payment_notices:
         if payment_notice['iuv'] == iuv:
-            notice_number = payment_notice['notice_number']    
-    idempotency_key = notice_number + '_' + utils.get_random_digit_string(10) 
-    
+            notice_number = payment_notice['notice_number']
+    idempotency_key = notice_number + '_' + utils.get_random_digit_string(10)
+
     return constants.ACTIVATE_PAYMENT_NOTICE.format(
         psp=test_data['psp_wisp'],
         psp_broker=test_data['psp_broker_wisp'],
@@ -230,93 +231,93 @@ def generate_activatepaymentnotice(test_data, payment_notices, rpt, session_id, 
         idempotency_key=idempotency_key,
         fiscal_code=payment_notice['domain_id'],
         notice_number=notice_number,
-        amount="{:.2f}".format(total_amount),
+        amount='{:.2f}'.format(total_amount),
         payment_note=session_id
     )
+
 
 # ==============================================
 
 def generate_closepayment(test_data, payment_notices, rpts, outcome):
-
     transactionId = utils.get_random_alphanumeric_string(32)
     amount = round(sum(rpt['payment_data']['total_amount'] for rpt in rpts), 2)
     fees = round(sum(rpt['payment_data']['total_fee'] for rpt in rpts), 2)
     grand_total = round((amount + fees) * 100, 2)
     auth_code = utils.get_random_digit_string(6)
     rrn = utils.get_random_digit_string(12)
-    now = utils.get_current_datetime() + ".000Z";
+    now = utils.get_current_datetime() + '.000Z'
 
     closepayment = {
-        "paymentTokens": [payment_notice['payment_token'] for payment_notice in payment_notices],
-        "outcome": outcome,
-        "idPSP": "BCITITMM",
-        "idBrokerPSP": "00799960158",
-        "idChannel": test_data['channel_payment'],
-        "paymentMethod": "CP",
-        "transactionId": transactionId,
-        "totalAmount": round(grand_total / 100, 2),
-        "fee": fees,
-        "timestampOperation": now,
-        "transactionDetails": {
-            "transaction": {
-                "transactionId": transactionId,
-                "transactionStatus": "Confermato",
-                "creationDate": now,
-                "grandTotal": int(grand_total),
-                "amount": int(amount * 100),
-                "fee": int(fees * 100),
-                "authorizationCode": auth_code,
-                "rrn": rrn,
-                "psp": {
-                    "idPsp": test_data['psp_payment'],
-                    "idChannel": test_data['channel_payment'],
-                    "businessName": test_data['psp_name'],
-                    "brokerName": test_data['psp_broker_payment'],
-                    "pspOnUs": False
+        'paymentTokens': [payment_notice['payment_token'] for payment_notice in payment_notices],
+        'outcome': outcome,
+        'idPSP': 'BCITITMM',
+        'idBrokerPSP': '00799960158',
+        'idChannel': test_data['channel_payment'],
+        'paymentMethod': 'CP',
+        'transactionId': transactionId,
+        'totalAmount': round(grand_total / 100, 2),
+        'fee': fees,
+        'timestampOperation': now,
+        'transactionDetails': {
+            'transaction': {
+                'transactionId': transactionId,
+                'transactionStatus': 'Confermato',
+                'creationDate': now,
+                'grandTotal': int(grand_total),
+                'amount': int(amount * 100),
+                'fee': int(fees * 100),
+                'authorizationCode': auth_code,
+                'rrn': rrn,
+                'psp': {
+                    'idPsp': test_data['psp_payment'],
+                    'idChannel': test_data['channel_payment'],
+                    'businessName': test_data['psp_name'],
+                    'brokerName': test_data['psp_broker_payment'],
+                    'pspOnUs': False
                 },
-                "timestampOperation": now,
-                "paymentGateway": "NPG"
+                'timestampOperation': now,
+                'paymentGateway': 'NPG'
             },
-            "info": {
-                "type": "CP",
-                "brandLogo": "https://assets.cdn.platform.pagopa.it/creditcard/mastercard.png",
-                "brand": "MC",
-                "paymentMethodName": "CARDS",
-                "clientId": "CHECKOUT"
+            'info': {
+                'type': 'CP',
+                'brandLogo': 'https://assets.cdn.platform.pagopa.it/creditcard/mastercard.png',
+                'brand': 'MC',
+                'paymentMethodName': 'CARDS',
+                'clientId': 'CHECKOUT'
             },
-            "user": {
-                "type": "GUEST"
+            'user': {
+                'type': 'GUEST'
             }
         },
-        "additionalPaymentInformations": {
-            "outcomePaymentGateway": outcome,
-            "fee": "{:.2f}".format(fees),
-            "totalAmount": "{:.2f}".format(grand_total / 100),
-            "timestampOperation": now,
-            "rrn": rrn,
-            "authorizationCode": auth_code,
-            "email": "test@mail.it"
+        'additionalPaymentInformations': {
+            'outcomePaymentGateway': outcome,
+            'fee': '{:.2f}'.format(fees),
+            'totalAmount': '{:.2f}'.format(grand_total / 100),
+            'timestampOperation': now,
+            'rrn': rrn,
+            'authorizationCode': auth_code,
+            'email': 'test@mail.it'
         }
     }
-    
+
     content = json.dumps(closepayment, separators=(',', ':'))
     return content
+
 
 # ==============================================
 
 def create_rpt(test_data, iuv, ccp, domain_id, payee_institution, payment_type, number_of_transfers, number_of_mbd=0):
-
-    payer_info = "CP1.1"
-    taxonomy_simple_transfer = "9/0301109AP"
-    taxonomy_stamp_transfer = "9/0301116TS/9/24B0060000000017"
-    payment_description = "/RFB/{iuv}/{amount:.2f}/TXT/DEBITORE/{fiscal_code}"
+    payer_info = 'CP1.1'
+    taxonomy_simple_transfer = '9/0301109AP'
+    taxonomy_stamp_transfer = '9/0301116TS/9/24B0060000000017'
+    payment_description = '/RFB/{iuv}/{amount:.2f}/TXT/DEBITORE/{fiscal_code}'
     iuv = utils.generate_iuv() if iuv is None else iuv
     payer_delegate = test_data['payer_delegate']
     transfers = []
 
     no_mbd_transfers = number_of_transfers - number_of_mbd
     for i in range(number_of_transfers):
-        
+
         amount = utils.generate_random_monetary_amount(10.00, 599.99)
         transfer_note = payment_description.format(
             iuv=iuv,
@@ -339,22 +340,22 @@ def create_rpt(test_data, iuv, ccp, domain_id, payee_institution, payment_type, 
             })
             no_mbd_transfers -= 1
 
-        # generating MBD transfer    
+        # generating MBD transfer
         else:
             transfers.append({
                 'iuv': iuv,
                 'amount': 16.00,
                 'fee': utils.generate_random_monetary_amount(0.10, 0.50),
-                'stamp_hash': "cXVlc3RhIMOoIHVuYSBtYXJjYSBkYSBib2xsbw==",
-                'stamp_type': "01",
-                'stamp_province': "RM",
+                'stamp_hash': 'cXVlc3RhIMOoIHVuYSBtYXJjYSBkYSBib2xsbw==',
+                'stamp_type': '01',
+                'stamp_province': 'RM',
                 'payer_info': f"{payer_info} - MBD for transfer {i}",
                 'taxonomy': taxonomy_stamp_transfer,
                 'transfer_note': transfer_note,
                 'is_mbd': True
             })
 
-    total_amount = round(sum(transfer["amount"] for transfer in transfers), 2)
+    total_amount = round(sum(transfer['amount'] for transfer in transfers), 2)
     payment_note = payment_description.format(
         iuv=iuv,
         amount=total_amount,
@@ -362,35 +363,35 @@ def create_rpt(test_data, iuv, ccp, domain_id, payee_institution, payment_type, 
     )
 
     rpt = {
-        "domain": {
-            "id": domain_id,
-            "name": payee_institution['name'],
-            "station": test_data['station']
+        'domain': {
+            'id': domain_id,
+            'name': payee_institution['name'],
+            'station': test_data['station']
         },
-        "date_time_request": utils.get_current_datetime(),
-        "payer": test_data['payer'],
-        "payer_delegate": payer_delegate,
-        "payee_institution": payee_institution,
-        "payment_data": {
+        'date_time_request': utils.get_current_datetime(),
+        'payer': test_data['payer'],
+        'payer_delegate': payer_delegate,
+        'payee_institution': payee_institution,
+        'payment_data': {
             'iuv': iuv,
             'ccp': utils.generate_ccp() if ccp is None else ccp,
             'payment_date': utils.get_current_date(),
             'total_amount': total_amount,
-            'total_fee': round(sum(transfer["fee"] for transfer in transfers), 2),
+            'total_fee': round(sum(transfer['fee'] for transfer in transfers), 2),
             'payment_type': payment_type,
-            "debtor_iban": payer_delegate['iban'],
-            "debtor_bic": payer_delegate['bic'],
-            "payment_note": payment_note,
-            "transfers": transfers
+            'debtor_iban': payer_delegate['iban'],
+            'debtor_bic': payer_delegate['bic'],
+            'payment_note': payment_note,
+            'transfers': transfers
         }
     }
 
     return rpt
 
+
 # ==============================================
 
 def generate_gpd_paymentposition(context, rpt, segregation_code, payment_status):
-
     payment_positions = session.get_flow_data(context, constants.SESSION_DATA_DEBT_POSITIONS)
     if payment_positions is None:
         payment_positions = []
@@ -398,80 +399,80 @@ def generate_gpd_paymentposition(context, rpt, segregation_code, payment_status)
     payment_data = rpt['payment_data']
     payer = rpt['payer']
 
-    iuv = payment_data['iuv'] 
-    total_amount = payment_data['total_amount'] 
-    domain_id = rpt['domain']['id'] 
-    fiscal_code = payer['fiscal_code'] 
+    iuv = payment_data['iuv']
+    total_amount = payment_data['total_amount']
+    domain_id = rpt['domain']['id']
+    fiscal_code = payer['fiscal_code']
     nav = utils.generate_nav(segregation_code)
-    extracted_transfers = payment_data['transfers'] 
-    
+    extracted_transfers = payment_data['transfers']
+
     transfers = []
     transfer_index = 1
     for extracted_transfer in extracted_transfers:
         iban = extracted_transfer['creditor_iban'] if 'creditor_iban' in extracted_transfer else None
-        stamp = None if extracted_transfer['is_mbd'] == False else {
-            "stampType": extracted_transfer['stamp_type'], 
-            "hashDocument": extracted_transfer['stamp_hash'], 
-            "provincialResidence": extracted_transfer['stamp_province'] 
+        stamp = None if not extracted_transfer['is_mbd'] else {
+            'stampType': extracted_transfer['stamp_type'],
+            'hashDocument': extracted_transfer['stamp_hash'],
+            'provincialResidence': extracted_transfer['stamp_province']
         }
         transfers.append({
-            "idTransfer": transfer_index,
-            "amount": round(extracted_transfer['amount'] * 100), 
-            "organizationFiscalCode": domain_id,
-            "remittanceInformation": extracted_transfer['transfer_note'], 
-            "category": extracted_transfer['taxonomy'], 
-            "iban": iban,
-            "postalIban": iban if iban is not None and iban[5:10] == "07601" else None,
-            "stamp": stamp,
-            "transferMetadata": [
+            'idTransfer': transfer_index,
+            'amount': round(extracted_transfer['amount'] * 100),
+            'organizationFiscalCode': domain_id,
+            'remittanceInformation': extracted_transfer['transfer_note'],
+            'category': extracted_transfer['taxonomy'],
+            'iban': iban,
+            'postalIban': iban if iban is not None and iban[5:10] == '07601' else None,
+            'stamp': stamp,
+            'transferMetadata': [
                 {
-                    "key": "DatiSpecificiRiscossione",
-                    "value": extracted_transfer['taxonomy'] 
+                    'key': 'DatiSpecificiRiscossione',
+                    'value': extracted_transfer['taxonomy']
                 }
             ]
         })
         transfer_index += 1
 
     payment_position = {
-        "iupd": f'wisp_{domain_id}_{uuid.uuid4()}',
-        "type": "F",
-        "payStandIn": False,
-        "fiscalCode": fiscal_code,
-        "fullName": payer['name'], 
-        "streetName": payer['address'], 
-        "civicNumber": payer['address_number'], 
-        "postalCode": payer['address_zipcode'], 
-        "city": payer['address_location'], 
-        "province": payer['address_province'], 
-        "region": None,
-        "country": payer['address_nation'], 
-        "email": payer['email'], 
-        "phone": None,
-        "switchToExpired": False,
-        "companyName": rpt['domain']['name'],
-        "officeName": None,
-        "validityDate": None,
-        "paymentDate": None,
-        "pull": False,
-        "status": f"{payment_status}",
-        "paymentOption": [
+        'iupd': f'wisp_{domain_id}_{uuid.uuid4()}',
+        'type': 'F',
+        'payStandIn': False,
+        'fiscalCode': fiscal_code,
+        'fullName': payer['name'],
+        'streetName': payer['address'],
+        'civicNumber': payer['address_number'],
+        'postalCode': payer['address_zipcode'],
+        'city': payer['address_location'],
+        'province': payer['address_province'],
+        'region': None,
+        'country': payer['address_nation'],
+        'email': payer['email'],
+        'phone': None,
+        'switchToExpired': False,
+        'companyName': rpt['domain']['name'],
+        'officeName': None,
+        'validityDate': None,
+        'paymentDate': None,
+        'pull': False,
+        'status': f"{payment_status}",
+        'paymentOption': [
             {
-                "nav": nav,
-                "iuv": iuv,
-                "amount": round(total_amount * 100),
-                "description": f"/RFB/{iuv}/{total_amount}/TXT/DEBITORE/{fiscal_code}",
-                "isPartialPayment": False,
-                "dueDate": f'{utils.get_tomorrow_datetime()}.000000000',
-                "retentionDate": None,
-                "fee": 0,
-                "notificationFee": None,
-                "transfer": transfers,
-                "paymentOptionMetadata": None
+                'nav': nav,
+                'iuv': iuv,
+                'amount': round(total_amount * 100),
+                'description': f"/RFB/{iuv}/{total_amount}/TXT/DEBITORE/{fiscal_code}",
+                'isPartialPayment': False,
+                'dueDate': f'{utils.get_tomorrow_datetime()}.000000000',
+                'retentionDate': None,
+                'fee': 0,
+                'notificationFee': None,
+                'transfer': transfers,
+                'paymentOptionMetadata': None
             }
         ]
     }
     payment_positions.append(payment_position)
-    content = json.dumps({"paymentPositions": payment_positions}, separators=(',', ':'))
+    content = json.dumps({'paymentPositions': payment_positions}, separators=(',', ':'))
     return content
 
 # ==============================================

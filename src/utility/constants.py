@@ -177,37 +177,37 @@ ACTIVATE_PAYMENT_NOTICE = """<soapenv:Envelope xmlns:soapenv="http://schemas.xml
 </soapenv:Envelope>
 """
 
-SESSION_DATA = "session_data"
-SESSION_DATA_TEST_DATA = "test_data" #commondata.yaml
-SKIP_TESTS = "skip_tests"
-PASSWORD_PLACEHOLDER = "placeholder"
+SESSION_DATA = 'session_data'
+SESSION_DATA_TEST_DATA = 'test_data' #commondata.yaml
+SKIP_TESTS = 'skip_tests'
+PASSWORD_PLACEHOLDER = 'placeholder'
 
-SESSION_DATA_REQ_BODY = "flow_data.action.request.body"
-SESSION_DATA_RES_BODY = "flow_data.action.response.body"
-SESSION_DATA_RES_CODE = "flow_data.action.response.status_code"
-SESSION_DATA_RES_CONTENTTYPE = "flow_data.action.response.content_type"
-SESSION_DATA_TRIGGER_PRIMITIVE = "flow_data.action.trigger_primitive.name"
+SESSION_DATA_REQ_BODY = 'flow_data.action.request.body'
+SESSION_DATA_RES_BODY = 'flow_data.action.response.body'
+SESSION_DATA_RES_CODE = 'flow_data.action.response.status_code'
+SESSION_DATA_RES_CONTENTTYPE = 'flow_data.action.response.content_type'
+SESSION_DATA_TRIGGER_PRIMITIVE = 'flow_data.action.trigger_primitive.name'
 
-SESSION_DATA_SESSION_ID = "flow_data.common.session_id"
-SESSION_DATA_IUVS = "flow_data.common.iuvs"
-SESSION_DATA_CART_ID = "flow_data.common.cart.id"
-SESSION_DATA_CART_IS_MULTIBENEFICIARY = "flow_data.common.cart.is_multibeneficiary"
-SESSION_DATA_CART_MULTIBENEFICIARY_IUV = "flow_data.common.cart.iuv_for_multibeneficiary"
-SESSION_DATA_PAYMENT_NOTICES = "flow_data.common.payment_notices"
-SESSION_DATA_DEBT_POSITIONS = "flow_data.common.debt_positions"
-SESSION_DATA_RAW_RPTS = "flow_data.common.rpts"
-SESSION_DATA_LAST_ANALYZED_RE_EVENT = "flow_data.common.re.last_analyzed_event"
+SESSION_DATA_SESSION_ID = 'flow_data.common.session_id'
+SESSION_DATA_IUVS = 'flow_data.common.iuvs'
+SESSION_DATA_CART_ID = 'flow_data.common.cart.id'
+SESSION_DATA_CART_IS_MULTIBENEFICIARY = 'flow_data.common.cart.is_multibeneficiary'
+SESSION_DATA_CART_MULTIBENEFICIARY_IUV = 'flow_data.common.cart.iuv_for_multibeneficiary'
+SESSION_DATA_PAYMENT_NOTICES = 'flow_data.common.payment_notices'
+SESSION_DATA_DEBT_POSITIONS = 'flow_data.common.debt_positions'
+SESSION_DATA_RAW_RPTS = 'flow_data.common.rpts'
+SESSION_DATA_LAST_ANALYZED_RE_EVENT = 'flow_data.common.re.last_analyzed_event'
 
-PRIMITIVE_NODOINVIARPT = "nodoInviaRPT"
-PRIMITIVE_NODOINVIACARRELLORPT = "nodoInviaCarrelloRPT"
+PRIMITIVE_NODOINVIARPT = 'nodoInviaRPT'
+PRIMITIVE_NODOINVIACARRELLORPT = 'nodoInviaCarrelloRPT'
 
-OCP_APIM_SUBSCRIPTION_KEY = "Ocp-Apim-Subscription-Key"
+OCP_APIM_SUBSCRIPTION_KEY = 'Ocp-Apim-Subscription-Key'
 
-REQ_DESCRIPTION_EXECUTE_SOAP_CALL = "Step: [{step}]"
-REQ_DESCRIPTION_EXECUTE_CALL_TO_WISPCONV = "Step: [{step}]: on sessionId: [{sessionId}]"
-REQ_DESCRIPTION_RETRIEVE_EVENTS_FROM_RE = "Step: [{step}]: on IUV: [{iuv}]"
-REQ_DESCRIPTION_RETRIEVE_PAYMENT_POSITION = "Step: [{step}] on IUV: [{iuv}]"
-REQ_DESCRIPTION_CREATE_PAYMENT_POSITION = "Step: [{step}]"
+REQ_DESCRIPTION_EXECUTE_SOAP_CALL = 'Step: [{step}]'
+REQ_DESCRIPTION_EXECUTE_CALL_TO_WISPCONV = 'Step: [{step}]: on sessionId: [{sessionId}]'
+REQ_DESCRIPTION_RETRIEVE_EVENTS_FROM_RE = 'Step: [{step}]: on IUV: [{iuv}]'
+REQ_DESCRIPTION_RETRIEVE_PAYMENT_POSITION = 'Step: [{step}] on IUV: [{iuv}]'
+REQ_DESCRIPTION_CREATE_PAYMENT_POSITION = 'Step: [{step}]'
 
 
 class ResponseType(Enum):
@@ -216,32 +216,32 @@ class ResponseType(Enum):
     HTML = 3
 
 empty_flow_data = {
-    "action": {
-        "request": {
-            "body": {}
+    'action': {
+        'request': {
+            'body': {}
         },
-        "response": {
-            "body": {},
-            "status_code": {},
-            "content_type": {}
+        'response': {
+            'body': {},
+            'status_code': {},
+            'content_type': {}
         },
-        "trigger_primitive": {
-            "name": {}
+        'trigger_primitive': {
+            'name': {}
         }
     },
-    "common": {
-        "session_id": {},
-        "iuvs": {},
-        "cart": {
-            "id": {},
-            "is_multibeneficiary": {},
-            "iuv_for_multibeneficiary": {}
+    'common': {
+        'session_id': {},
+        'iuvs': {},
+        'cart': {
+            'id': {},
+            'is_multibeneficiary': {},
+            'iuv_for_multibeneficiary': {}
         },
-        "payment_notices": {},
-        "debt_positions": {},
-        "rpts": [],
-        "re": {
-            "last_analyzed_event": {}
+        'payment_notices': {},
+        'debt_positions': {},
+        'rpts': [],
+        're': {
+            'last_analyzed_event': {}
         }
     }
 }

@@ -1,7 +1,10 @@
 import copy
 import logging
+
+from src.conf.configuration import commondata
+from src.conf.configuration import secrets
+from src.conf.configuration import settings
 from src.utility import constants
-from src.conf.configuration import settings, secrets, commondata
 from src.utility.constants import empty_flow_data
 
 

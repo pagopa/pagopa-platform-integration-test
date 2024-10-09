@@ -162,13 +162,3 @@ Feature: User pays a single payment from existing payment position via nodoInvia
     And the response contains the payment option correctly generated from fifth RPT
     And the response contains the status in PO_PAID for the payment option
     And the response contains the transfers correctly generated from RPT
-
-
-
-
-
-
-
-
-
-

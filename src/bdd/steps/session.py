@@ -1,21 +1,22 @@
-import logging
-# import constants as constants
-from src.utility import constants, utils
+from src.utility import constants
+
 
 def clear_session(context):
-
     setattr(context, constants.SESSION_DATA, {})
     setattr(context, constants.SKIP_TESTS, False)
+
 
 # ==============================================
 
 def skip_tests(context):
     return getattr(context, constants.SKIP_TESTS)
 
+
 # ==============================================
 
 def set_skip_tests(context, value):
     setattr(context, constants.SKIP_TESTS, value)
+
 
 # ==============================================
 
@@ -39,6 +40,7 @@ def get_test_data(context):
 
     return get_flow_data(context, constants.SESSION_DATA_TEST_DATA)
 
+
 # ==============================================
 
 def set_flow_data(context, field_name, value):
@@ -52,6 +54,7 @@ def set_flow_data(context, field_name, value):
             analyzed_object[field] = value
         else:
             analyzed_object = analyzed_object[field]
+
 
 # ==============================================
 
