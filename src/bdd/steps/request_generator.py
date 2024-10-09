@@ -9,9 +9,7 @@ import session as session
 
 # ==============================================
 
-placeholder = "placeholder"
-
-def generate_nodoinviarpt(test_data, rpt, station_password = placeholder):
+def generate_nodoinviarpt(test_data, rpt, station_password = constants.PASSWORD_PLACEHOLDER):
 
     payer_from_rpt = rpt['payer']
     payee_from_rpt = rpt['payee_institution']
@@ -214,7 +212,7 @@ def generate_checkposition(payment_notices):
 
 # ==============================================
 
-def generate_activatepaymentnotice(test_data, payment_notices, rpt, session_id, channel_checkout_password = placeholder):
+def generate_activatepaymentnotice(test_data, payment_notices, rpt, session_id, channel_checkout_password = constants.PASSWORD_PLACEHOLDER):
 
     iuv = rpt['payment_data']['iuv']
     total_amount = rpt['payment_data']['total_amount']
