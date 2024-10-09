@@ -19,7 +19,7 @@ jobs:
         with:
           test-path: src/automation-test
           test-output-name: results.json
-  
+
   notify:
     needs: [ integration_test ]
     runs-on: ubuntu-latest
@@ -45,5 +45,3 @@ jobs:
       #    JIRA_USERNAME: ${{ secrets.JIRA_USERNAME }}
       #    JIRA_PASSWORD: ${{ secrets.JIRA_PASSWORD }}
       #  run: 'curl -H "Content-Type: multipart/form-data" -u $JIRA_USERNAME:$JIRA_PASSWORD -F "info=@info.json result=@results.json" "$JIRA_SERVER_URL/rest/raven/1.0/import/execution/behave/multipart?projectKey=PQ"'
-
-    

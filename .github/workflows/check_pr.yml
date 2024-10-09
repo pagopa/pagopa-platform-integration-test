@@ -99,23 +99,23 @@ jobs:
               var ignored = 0
               const execSync = require('child_process').execSync;
               for (const file of IGNORED_FILES.trim().split(',')) {
-            
+
                 const ignored_additions_str = execSync('git --no-pager  diff --numstat origin/main..origin/${{ github.head_ref}} | grep ' + file + ' | cut -f 1', { encoding: 'utf-8' })
                 const ignored_deletions_str = execSync('git --no-pager  diff --numstat origin/main..origin/${{ github.head_ref}} | grep ' + file + ' | cut -f 2', { encoding: 'utf-8' })
-            
+
                 const ignored_additions = ignored_additions_str.split('\n').map(elem=> parseInt(elem || 0)).reduce(
                 (accumulator, currentValue) => accumulator + currentValue,
                 0);
                 const ignored_deletions = ignored_deletions_str.split('\n').map(elem=> parseInt(elem || 0)).reduce(
                 (accumulator, currentValue) => accumulator + currentValue,
                 0);
-            
+
                 ignored += ignored_additions + ignored_deletions;
               }
               changes -= ignored
               console.log('ignored lines: ' + ignored + ' , consider changes: ' + changes);
             }
-            
+
             if (changes < 200){
               github.rest.issues.addLabels({
                 issue_number: context.issue.number,
@@ -123,8 +123,8 @@ jobs:
                 repo: context.repo.repo,
                 labels: ['size/small']
               })
-            
-            
+
+
               var labels = await github.rest.issues.listLabelsOnIssue({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
@@ -148,7 +148,7 @@ jobs:
                 repo: context.repo.repo,
                 labels: ['size/large']
               })
-            
+
               var comments = await github.rest.issues.listComments({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
@@ -171,7 +171,7 @@ jobs:
                 repo: context.repo.repo,
                 body: 'This PR exceeds the recommended size of 400 lines. Please make sure you are NOT addressing multiple issues with one PR. _Note this PR might be rejected due to its size._'
               })
-            
+
               var labels = await github.rest.issues.listLabelsOnIssue({
                  issue_number: context.issue.number,
                 owner: context.repo.owner,
@@ -186,5 +186,5 @@ jobs:
                     name: 'size/small'
                 })
               }
-            
+
             }
