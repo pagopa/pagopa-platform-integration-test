@@ -31,8 +31,6 @@ commondata = Dynaconf(
     settings_files=['commondata.yaml'],
 )
 
-commondata = commondata['TEST_DATA'].to_dict()
-
 try:
     commondata = commondata['TEST_DATA'].to_dict()
 except KeyError as e:
