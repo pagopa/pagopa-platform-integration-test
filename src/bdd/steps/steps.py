@@ -63,8 +63,7 @@ def generate_single_rpt(context, payment_type, number_of_transfers, number_of_st
     context.flow_data['common']['rpts'] = rpts
 
 
-@given(
-    'an existing payment position related to {index} RPT with segregation code equals to {segregation_code} and state equals to {payment_status}')
+@given('an existing payment position related to {index} RPT with segregation code equals to {segregation_code} and state equals to {payment_status}')
 def generate_payment_position(context, index, segregation_code, payment_status):
     session.set_skip_tests(context, False)
 
@@ -104,6 +103,9 @@ def generate_payment_position(context, index, segregation_code, payment_status):
 def step_impl(context, scenario_name):
     all_scenarios = [scenario for feature in context._runner.features for scenario in feature.walk_scenarios()]
     phase = ([scenario for scenario in all_scenarios if scenario_name in scenario.name] or [None])[0]
+
+    print(f"step {all_scenarios}")
+
     text_step = ''.join(
         [step.keyword + ' ' + step.name + "\n\"\"\"\n" + (step.text or '') + "\n\"\"\"\n" for step in phase.steps])
     context.execute_steps(text_step)
@@ -188,7 +190,7 @@ def search_in_re_by_iuv(context):
     # update context setting all information about response
     context.flow_data['action']['response']['status_code'] = status_code
 
-    # session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, re_events)
+     # session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, re_events)
     context.flow_data['action']['response']['body'] = re_events
 
 
@@ -752,3 +754,116 @@ def check_paymentposition_transfers(context):
                                       f"There is not IBAN definition in transfer {transfer_index} but RPT transfer require it.")
             utils.assert_show_message(transfer_from_po['iban'] == transfer_from_rpt['creditor_iban'],
                                       f"The IBAN defined in transfer {transfer_index} is not equals to the one defined in RPT. GPD's: [{transfer_from_po['iban']}], RPT's: [{transfer_from_rpt['creditor_iban']}]")
+
+# SECOND HAPPY PATH
+@given('a cart of RPTs {note}') #MODIFIED
+def generate_empty_cart(context, note):
+    # retrieve test_data in order to generate flow_data session data
+    test_data = context.commondata
+
+    # set trigger primitive information
+    # session.set_flow_data(context, constants.SESSION_DATA_TRIGGER_PRIMITIVE, constants.PRIMITIVE_NODOINVIACARRELLORPT)
+
+    context.flow_data['action']['trigger_primitive']['name'] = constants.PRIMITIVE_NODOINVIACARRELLORPT
+
+
+
+    # generate cart identifier and defining info about multibeneficiary cart on flow_data
+    if "for multibeneficiary" in note:
+        iuv = utils.generate_iuv(in_18digit_format=True)
+        # session.set_flow_data(context, constants.SESSION_DATA_CART_ID,
+        #                       utils.generate_cart_id(iuv, test_data['creditor_institution']))
+
+        context.flow_data['common']['cart']['id'] = utils.generate_cart_id(iuv, test_data['creditor_institution'])
+
+
+        # session.set_flow_data(context, constants.SESSION_DATA_CART_IS_MULTIBENEFICIARY, True)
+        context.flow_data['common']['cart']['is_multibeneficiary'] = True
+
+
+        # session.set_flow_data(context, constants.SESSION_DATA_CART_MULTIBENEFICIARY_IUV, iuv)
+        context.flow_data['common']['cart']['iuv_for_multibeneficiary'] = iuv
+
+    # generate cart identifier and set multibeneficiary info to False on flow_data
+    else:
+        # session.set_flow_data(context, constants.SESSION_DATA_CART_ID,
+        #                       utils.generate_cart_id(None, test_data['creditor_institution']))
+
+        context.flow_data['common']['cart']['id'] = utils.generate_cart_id(None, test_data['creditor_institution'])
+
+
+        # session.set_flow_data(context, constants.SESSION_DATA_CART_IS_MULTIBENEFICIARY, False)
+        context.flow_data['common']['cart']['is_multibeneficiary'] = False
+
+
+@given('a valid nodoInviaCarrelloRPT request{options}') #MODIFIED
+def generate_nodoinviacarrellorpt(context, options):
+    session.set_skip_tests(context, False)
+
+    # retrieve test_data in order to generate flow_data session data
+    # test_data = session.get_test_data(context)
+    test_data = context.commondata
+
+    # retrieve info about multibeneficiary status
+    # rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
+    rpts = context.flow_data['common']['rpts']
+
+    # cart_id = session.get_flow_data(context, constants.SESSION_DATA_CART_ID)
+    cart_id = context.flow_data['common']['cart']['id']
+
+    # is_multibeneficiary = session.get_flow_data(context, constants.SESSION_DATA_CART_IS_MULTIBENEFICIARY)
+    is_multibeneficiary = context.flow_data['common']['cart']['is_multibeneficiary']
+
+
+    # set channel and password regarding the required options
+    channel = test_data['channel_wisp']
+    # password = test_data['channel_wisp_password']
+    password = context.secrets.CHANNEL_WISP_PASSWORD
+    psp = test_data['psp_wisp']
+    psp_broker = test_data['psp_broker_wisp']
+    if "WFESP channel" in options:
+        channel = test_data['channel_wfesp']
+        # password = test_data['channel_wfesp_password']
+        password = context.secrets.CHANNEL_WFESP_PASSWORD
+        psp = test_data['psp_wfesp']
+        psp_broker = test_data['psp_broker_wfesp']
+
+    # generate nodoInviaCarrelloRPT request from raw RPTs and info about multibeneficiary status
+    request = requestgen.generate_nodoinviacarrellorpt(test_data, cart_id, rpts, psp, psp_broker, channel, password,
+                                                       is_multibeneficiary)
+
+    logging.debug("\n\n==request==")
+    logging.debug(request)
+
+    # update context with request to be sent
+    # session.set_flow_data(context, constants.SESSION_DATA_REQ_BODY, request)
+    context.flow_data['action']['request']['body'] = request
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
