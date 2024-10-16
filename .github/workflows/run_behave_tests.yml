@@ -33,13 +33,13 @@ jobs:
       - name: 'Run tests with Behave'
         run: |
           behave --tags=@runnable --format allure_behave.formatter:AllureFormatter -o results --junit-directory=junit --junit --summary --show-timings -v
-      - name: Load test report history
-        uses: actions/checkout@v3
-        if: always()
-        continue-on-error: true
-        with:
-          ref: gh-pages
-          path: gh-pages
+#      - name: Load test report history
+#        uses: actions/checkout@v3
+#        if: always()
+#        continue-on-error: true
+#        with:
+#          ref: gh-pages
+#          path: gh-pages
       - name: Build test report
         uses: simple-elf/allure-report-action@a8d7257abe23000967accc7ef411c4e67a22fe89
         if: always()
