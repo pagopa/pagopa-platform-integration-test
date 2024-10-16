@@ -37,3 +37,20 @@ jobs:
         with:
           name: behave-report
           path: reports
+
+  Display_test_report:
+    runs-on: ubuntu-latest
+    needs: [ Integration_test ]
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@184d73b71b93c222403b2e7f1ffebe4508014249
+        with:
+          name: behave-report
+          path: doc
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./doc
