@@ -28,3 +28,5 @@ jobs:
       - name: 'Run tests with Behave'
         run: |
           behave --tags=@runnable --format allure_behave.formatter:AllureFormatter -o results --junit-directory=junit --junit --summary --show-timings -v
+      - name: Install Allure
+        run: sudo apt-get install -y allure
