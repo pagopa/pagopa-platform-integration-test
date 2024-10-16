@@ -15,8 +15,7 @@ from src.utility import utils
 
 # User pays a single payment with single transfer and no stamp on nodoInviaRPT that exists already in GPD
 
-@given(
-    'a single RPT of type {payment_type} with {number_of_transfers} transfers of which {number_of_stamps} are stamps')
+@given('a single RPT of type {payment_type} with {number_of_transfers} transfers of which {number_of_stamps} are stamps')
 def generate_single_rpt(context, payment_type, number_of_transfers, number_of_stamps):
     session.set_skip_tests(context, False)
     if number_of_stamps == 'none':
@@ -101,10 +100,11 @@ def generate_payment_position(context, index, segregation_code, payment_status):
 
 @step('the execution of "{scenario_name}" was successful')
 def step_impl(context, scenario_name):
-    all_scenarios = [scenario for feature in context._runner.features for scenario in feature.walk_scenarios()]
-    phase = ([scenario for scenario in all_scenarios if scenario_name in scenario.name] or [None])[0]
+    all_scenarios = [scenario
+                     for feature in context._runner.features
+                     for scenario in feature.walk_scenarios()]
 
-    print(f"step {all_scenarios}")
+    phase = ([scenario for scenario in all_scenarios if scenario_name in scenario.name])[0]
 
     text_step = ''.join(
         [step.keyword + ' ' + step.name + "\n\"\"\"\n" + (step.text or '') + "\n\"\"\"\n" for step in phase.steps])
