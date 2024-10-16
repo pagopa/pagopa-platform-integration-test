@@ -27,4 +27,4 @@ jobs:
         id: load_secrets
       - name: 'Run tests with Behave'
         run: |
-          python3 -m behave --tags=@runnable -v
+          behave --tags=@runnable --format allure_behave.formatter:AllureFormatter -o results --junit-directory=junit --junit --summary --show-timings -v
