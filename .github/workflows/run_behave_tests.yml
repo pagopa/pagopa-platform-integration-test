@@ -30,3 +30,10 @@ jobs:
           behave --tags=@runnable --format allure_behave.formatter:AllureFormatter -o results --junit-directory=junit --junit --summary --show-timings -v
       - name: Install Allure
         run: sudo apt-get install -y allure
+      - name: Generate test report
+        run: allure generate results -o reports --clean
+      - name: Store Behave report
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808
+        with:
+          name: behave-report
+          path: reports
