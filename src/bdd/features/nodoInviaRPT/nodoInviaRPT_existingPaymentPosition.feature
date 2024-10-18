@@ -1,10 +1,10 @@
 Feature: User pays a single payment from existing payment position via nodoInviaRPT
 
-  Scenario: : before start
+  Background:
     Given systems up
 
 
-@runnable @nodo_invia_rpt @test
+@runnable @nodo_invia_rpt @happy_path
   Scenario: User pays a single payment with single transfer and no stamp on nodoInviaRPT that exists already in GPD
     Given a single RPT of type BBT with 1 transfers of which 0 are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
@@ -12,62 +12,57 @@ Feature: User pays a single payment from existing payment position via nodoInvia
     Then the execution of "Execute redirect and complete payment from NodoInviaRPT" was successful
     And the execution of "Check if existing debt position was used" was successful
 
-#COMMON
-  Scenario: Send a nodoInviaRPT request
-    Given a valid nodoInviaRPT request
-    When the user sends a nodoInviaRPT action
-    Then the user receives the HTTP status code 200
-    And the response contains the field esito with value OK
-    And the response contains the redirect URL
+@runnable @nodo_invia_rpt @happy_path
+  Scenario: User pays a single payment with no transfer and one stamp on nodoInviaRPT that exists already in GPD
+    Given a single RPT of type BBT with 1 transfers of which 1 are stamps
+    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
+    When the execution of "Send a nodoInviaRPT request" was successful
+    Then the execution of "Execute redirect and complete payment from NodoInviaRPT" was successful
+    And the execution of "Check if existing debt position was used" was successful
 
-  Scenario: Execute redirect and complete payment from NodoInviaRPT
-    When the execution of "Execute NM1-to-NMU conversion in wisp-converter" was successful
-    Then the execution of "Retrieve all related notice numbers from executed redirect" was successful
-    And the execution of "Send a checkPosition request" was successful
-    And the execution of "Send one or more activatePaymentNoticeV2 requests" was successful
-    And the execution of "Check if WISP session timers were created" was successful
-    And the execution of "Send a closePaymentV2 request" was successful
-    And the execution of "Check if WISP session timers were deleted and all RTs were sent" was successful
-    And the execution of "Check the paid payment positions" was successful
+  # ===============================================================================================
+  # ===============================================================================================
 
-  Scenario: Check if existing debt position was used
-    Given a waiting time of 2 seconds to wait for Nodo to write RE events
-    And the first IUV code of the sent RPTs
-    When the user searches for flow steps by IUVs
-    Then the user receives the HTTP status code 200
-    And there is a redirect event with field status with value UPDATED_EXISTING_PAYMENT_POSITION_IN_GPD
+  @runnable @nodo_invia_rpt @happy_path
+  Scenario: User pays a single payment with single transfer and one stamp on nodoInviaRPT that exists already in GPD
+    Given a single RPT of type BBT with 2 transfers of which 1 are stamps
+    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
+    When the execution of "Send a nodoInviaRPT request" was successful
+    Then the execution of "Execute redirect and complete payment from NodoInviaRPT" was successful
+    And the execution of "Check if existing debt position was used" was successful
 
-  Scenario: Send a checkPosition request
-    Given a valid checkPosition request
-    When the creditor institution sends a checkPosition action
-    Then the creditor institution receives the HTTP status code 200
-    And the response contains the field outcome with value OK
-    And the response contains the field positionslist as not empty list
+  # ===============================================================================================
+  # ===============================================================================================
 
-  Scenario: Check if WISP session timers were created
-    Given a waiting time of 5 seconds to wait for Nodo to write RE events
-    And all the IUV codes of the sent RPTs
-    When the user searches for flow steps by IUVs
-    Then the user receives the HTTP status code 200
-    And there is a timer-set event with field operationStatus with value Success
-    And these events are related to each payment token
+  @runnable @nodo_invia_rpt @unhappy_1
+  Scenario: User tries to pay a single payment with single transfer and no stamp on nodoInviaRPT that exists already in GPD in invalid state
+    Given a single RPT of type BBT with 1 transfers of which 0 are stamps
+    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to DRAFT
+    When the execution of "Send a nodoInviaRPT request" was successful
+    Then the execution of "Fails on execute NM1-to-NMU conversion in wisp-converter" was successful
+    And the execution of "Check if existing debt position was invalid but has sent a KO receipt" was successful
 
-  Scenario: Send a closePaymentV2 request
-    Given a valid closePaymentV2 request with outcome OK
-    When the creditor institution sends a closePaymentV2 action
-    Then the creditor institution receives the HTTP status code 200
-    And the response contains the field outcome with value OK
+  # ===============================================================================================
+  # ===============================================================================================
 
-  Scenario: Check if WISP session timers were deleted and all RTs were sent
-    Given a waiting time of 10 seconds to wait for Nodo to write RE events
-    And all the IUV codes of the sent RPTs
-    When the user searches for flow steps by IUVs
-    Then the user receives the HTTP status code 200
-    Then there is a timer-delete event with field status with value RECEIPT_TIMER_GENERATION_DELETED_SCHEDULED_SEND
-    And these events are related to each payment token
-    Then there is a receipt-ok event with field status with value RT_SEND_SUCCESS
-    And these events are related to each notice number
-#FINE COMMON
+  @runnable @nodo_invia_rpt @unhappy_path
+  Scenario: User tries to pay a single payment on nodoInviaRPT that was inserted from ACA and is in valid state
+    Given a single RPT of type BBT with 1 transfers of which 0 are stamps
+    And an existing payment position related to first RPT with segregation code equals to 01 and state equals to VALID
+    When the execution of "Send a nodoInviaRPT request" was successful
+    Then the execution of "Fails on execute NM1-to-NMU conversion in wisp-converter" was successful
+    And the execution of "Check if existing debt position was invalid from ACA but has sent a KO receipt" was successful
+
+  # ===============================================================================================
+  # ===============================================================================================
+
+  @runnable @nodo_invia_rpt @unhappy_path1
+  Scenario: User tries to pay a single payment on nodoInviaRPT that was inserted from ACA and is in invalid state
+    Given a single RPT of type BBT with 1 transfers of which 0 are stamps
+    And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT
+    When the execution of "Send a nodoInviaRPT request" was successful
+    Then the execution of "Fails on execute NM1-to-NMU conversion in wisp-converter" was successful
+    And the execution of "Check if existing debt position was invalid but has sent a KO receipt" was successful
 
 
 #Execute redirect and complete payment from NodoInviaRPT
@@ -162,3 +157,13 @@ Feature: User pays a single payment from existing payment position via nodoInvia
     And the response contains the payment option correctly generated from fifth RPT
     And the response contains the status in PO_PAID for the payment option
     And the response contains the transfers correctly generated from RPT
+
+  Scenario: Execute redirect and complete payment from NodoInviaCarrelloRPT
+    When the execution of "Execute NM1-to-NMU conversion in wisp-converter" was successful
+    Then the execution of "Retrieve all related notice numbers from executed redirect" was successful
+    And the execution of "Send a checkPosition request" was successful
+    And the execution of "Send one or more activatePaymentNoticeV2 requests" was successful
+    And the execution of "Check if WISP session timers were created" was successful
+    And the execution of "Send a closePaymentV2 request" was successful
+    And the execution of "Check if WISP session timers were deleted and all RTs were sent" was successful
+    And the execution of "Check the paid payment positions" was successful

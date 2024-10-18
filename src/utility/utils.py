@@ -152,3 +152,17 @@ def get_nested_field(object, field_name):
 
 def get_random_alphanumeric_string(length):
     return ''.join(random.choice(string.ascii_letters + string.digits) for i in range(length))
+
+def generate_cart_id(iuv, creditor_institution):
+    cart_id = ""
+    if iuv is not None:
+        cart_id = creditor_institution + iuv + "-" + get_random_digit_string(5)
+    else:
+        cart_id = get_random_digit_string(32)
+    return cart_id
+
+def change_last_numeric_char(value):
+    last_char = value[-1]
+    other_char = value[:-1]
+    new_last_char = str((int(last_char) + 1) % 10)
+    return other_char + new_last_char
