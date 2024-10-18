@@ -2,7 +2,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
 
   Background:
     Given systems up
-    And a new session
+
 
   # ===============================================================================================
   # ===============================================================================================

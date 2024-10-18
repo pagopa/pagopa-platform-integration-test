@@ -2,7 +2,6 @@ Feature: User pays a multibeneficiary payment carts on nodoInviaCarrelloRPT
 
   Background:
     Given systems up
-    And a new session
 
   # ===============================================================================================
   # ===============================================================================================

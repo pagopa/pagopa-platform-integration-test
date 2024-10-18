@@ -15,6 +15,37 @@ from src.utility import utils
 
 # User pays a single payment with single transfer and no stamp on nodoInviaRPT that exists already in GPD
 
+@then('the response contains the transfers correctly generated from all RPTs')
+def check_paymentposition_transfers_for_multibeneficiary(context):
+
+    # retrieve response information related to executed request
+    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    response = context.flow_data['action']['response']['body']
+
+    payment_options = utils.get_nested_field(response, "paymentOption")
+    transfers_from_po = payment_options[0]['transfer']
+
+    # retrieve transfers from RPTs in order to execute checks on data
+    # raw_rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
+    raw_rpts = context.flow_data['common']['rpts']
+    transfers_from_rpt = []
+    for rpt in raw_rpts:
+        for transfer in rpt['payment_data']['transfers']:
+            transfers_from_rpt.append(transfer)
+
+    # executing assertions
+    utils.assert_show_message(len(transfers_from_po) == len(transfers_from_rpt), f"There are not the same amount of transfers. GPD's: [{len(transfers_from_po)}], RPT's: [{len(transfers_from_rpt)}]")
+    for transfer_index in range(len(transfers_from_po)):
+        transfer_from_po = transfers_from_po[transfer_index]
+        # using this filter because it cannot be used a filter on IUV for multibeneficiary
+        transfer_from_rpt = next((transfer for transfer in transfers_from_rpt if transfer['transfer_note'] == transfer_from_po['remittanceInformation']), None)
+        utils.assert_show_message(transfer_from_rpt is not None, f"It is not possible to find a transfer in RPT cart with transfer note [{transfer_from_po['remittanceInformation']}]")
+        utils.assert_show_message(transfer_from_po['status'] == "T_UNREPORTED", f"The status of the transfer {transfer_index} must be equals to [T_UNREPORTED]. Current status: [{transfer_from_po['status']}]")
+        utils.assert_show_message('transferMetadata' in transfer_from_po and len(transfer_from_po['transferMetadata']) > 0, f"There are not transfer metadata in transfer {transfer_index} but at least one is required.")
+        utils.assert_show_message('iban' in transfer_from_po, f"There is not IBAN definition in transfer {transfer_index} but RPT transfer require it.")
+        utils.assert_show_message(transfer_from_po['iban'] == transfer_from_rpt['creditor_iban'], f"The IBAN defined in transfer {transfer_index} is not equals to the one defined in RPT. GPD's: [{transfer_from_po['iban']}], RPT's: [{transfer_from_rpt['creditor_iban']}]")
+        utils.assert_show_message(int(transfer_from_po['amount']) == round(transfer_from_rpt['amount'] * 100), f"The amount of the transfer {transfer_index} must be equals to the same defined in the payment position. GPD's: [{int(transfer_from_po['amount'])}], RPT's: [{round(transfer_from_rpt['amount'])}]")
+
 @given('a single RPT of type {payment_type} with {number_of_transfers} transfers of which {number_of_stamps} are stamps')
 def generate_single_rpt(context, payment_type, number_of_transfers, number_of_stamps):
     session.set_skip_tests(context, False)
@@ -62,6 +93,55 @@ def generate_single_rpt(context, payment_type, number_of_transfers, number_of_st
     context.flow_data['common']['rpts'] = rpts
 
 
+@then('the response contains the payment option correctly generated from all RPTs')
+def check_paymentoption_amounts_for_multibeneficiary(context):
+    # retrieve response information related to executed request
+    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    response = context.flow_data['action']['response']['body']
+    payment_options = utils.get_nested_field(response, "paymentOption")
+    payment_option = payment_options[0]
+
+    # calculate the correct amount of RPTs
+    # raw_rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
+    raw_rpts = context.flow_data['common']['rpts']
+    amount = 0
+    for rpt in raw_rpts:
+        amount += rpt['payment_data']['total_amount']
+    amount = round(amount * 100)
+
+    # executing assertions
+    utils.assert_show_message(response['pull'] == False, f"The payment option must be not defined for pull payments.")
+    utils.assert_show_message(int(payment_option['amount']) == amount,
+                              f"The total amount calculated from all RPTs in multibeneficiary cart is not equals to the one defined in GPD payment position. GPD's: [{int(payment_option['amount'])}], RPT's: [{amount}]")
+    utils.assert_show_message(payment_option['notificationFee'] == 0,
+                              f"The notification fee in the payment position defined for GPD must be always 0.")
+    utils.assert_show_message(payment_option['isPartialPayment'] == False,
+                              f"The payment option must be not defined as partial payment.")
+
+
+@given('the same nodoInviaCarrelloRPT for another try')
+def update_old_nodoInviaCarrelloRPT_request(context):
+    # change cart identifier editing last char value
+    # cart_id = session.get_flow_data(context, constants.SESSION_DATA_CART_ID)
+    cart_id = context.flow_data['common']['cart']['id']
+
+    # session.set_flow_data(context, constants.SESSION_DATA_CART_ID, utils.change_last_numeric_char(cart_id))
+    context.flow_data['common']['cart']['id'] = utils.change_last_numeric_char(cart_id)
+
+
+    # change all CCPs content editing last char value
+    # rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
+    rpts = context.flow_data['common']['rpts']
+
+    for rpt in rpts:
+        ccp = rpt['payment_data']['ccp']
+        rpt['payment_data']['ccp'] = utils.change_last_numeric_char(ccp)
+
+    # update context with request and edit flow_data
+    # session.set_flow_data(context, constants.SESSION_DATA_RAW_RPTS, rpts)
+
+    context.flow_data['common']['rpts'] = rpts
+
 @given('an existing payment position related to {index} RPT with segregation code equals to {segregation_code} and state equals to {payment_status}')
 def generate_payment_position(context, index, segregation_code, payment_status):
     session.set_skip_tests(context, False)
@@ -104,7 +184,7 @@ def step_impl(context, scenario_name):
                      for feature in context._runner.features
                      for scenario in feature.walk_scenarios()]
 
-    phase = ([scenario for scenario in all_scenarios if scenario_name in scenario.name])[0]
+    phase = ([scenario for scenario in all_scenarios if scenario_name in scenario.name] or [None])[0]
 
     text_step = ''.join(
         [step.keyword + ' ' + step.name + "\n\"\"\"\n" + (step.text or '') + "\n\"\"\"\n" for step in phase.steps])
@@ -143,6 +223,9 @@ def check_event(context, business_process, field_name, field_value):
                               f"There are not events with business process {business_process}.")
     needed_events = [re_event for re_event in needed_process_events if
                      field_name in re_event and re_event[field_name] == field_value]
+
+    print(f"NEEDED_EVENTS = {needed_events}")
+
     utils.assert_show_message(len(needed_events) > 0,
                               f"There are not events with business process {business_process} and field {field_name} with value [{field_value}].")
 
@@ -296,6 +379,20 @@ def send_primitive(context, actor, primitive):
 
     logging.info(f"Response status code: {status_code}")
     logging.info(f"Response body: {body_response}")
+
+
+@then('the {actor} receives an HTML page with an error')
+def check_html_error_page(context, actor):
+    # retrieve response body related to executed request
+    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
+    response = context.flow_data['action']['response']['body']
+
+
+    # executing assertions
+    utils.assert_show_message('<!DOCTYPE html>' in response, f"The response is not an HTML page")
+    utils.assert_show_message('Si &egrave; verificato un errore imprevisto' in response,
+                              f"The HTML page does not contains an error message.")
+
 
 
 @then('the response contains the {url_type} URL')  # MODIFIED
@@ -838,32 +935,3 @@ def generate_nodoinviacarrellorpt(context, options):
     # update context with request to be sent
     # session.set_flow_data(context, constants.SESSION_DATA_REQ_BODY, request)
     context.flow_data['action']['request']['body'] = request
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

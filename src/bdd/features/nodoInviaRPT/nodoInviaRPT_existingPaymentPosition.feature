@@ -34,7 +34,7 @@ Feature: User pays a single payment from existing payment position via nodoInvia
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_rpt @unhappy_path
+  @runnable @nodo_invia_rpt @unhappy_1
   Scenario: User tries to pay a single payment with single transfer and no stamp on nodoInviaRPT that exists already in GPD in invalid state
     Given a single RPT of type BBT with 1 transfers of which 0 are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to DRAFT
@@ -56,7 +56,7 @@ Feature: User pays a single payment from existing payment position via nodoInvia
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_rpt @unhappy_path
+  @runnable @nodo_invia_rpt @unhappy_path1
   Scenario: User tries to pay a single payment on nodoInviaRPT that was inserted from ACA and is in invalid state
     Given a single RPT of type BBT with 1 transfers of which 0 are stamps
     And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT
