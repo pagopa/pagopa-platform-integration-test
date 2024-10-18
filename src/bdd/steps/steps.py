@@ -19,14 +19,12 @@ from src.utility import utils
 def check_paymentposition_transfers_for_multibeneficiary(context):
 
     # retrieve response information related to executed request
-    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
     response = context.flow_data['action']['response']['body']
 
     payment_options = utils.get_nested_field(response, "paymentOption")
     transfers_from_po = payment_options[0]['transfer']
 
     # retrieve transfers from RPTs in order to execute checks on data
-    # raw_rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
     raw_rpts = context.flow_data['common']['rpts']
     transfers_from_rpt = []
     for rpt in raw_rpts:
@@ -96,13 +94,11 @@ def generate_single_rpt(context, payment_type, number_of_transfers, number_of_st
 @then('the response contains the payment option correctly generated from all RPTs')
 def check_paymentoption_amounts_for_multibeneficiary(context):
     # retrieve response information related to executed request
-    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
     response = context.flow_data['action']['response']['body']
     payment_options = utils.get_nested_field(response, "paymentOption")
     payment_option = payment_options[0]
 
     # calculate the correct amount of RPTs
-    # raw_rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
     raw_rpts = context.flow_data['common']['rpts']
     amount = 0
     for rpt in raw_rpts:
@@ -122,7 +118,6 @@ def check_paymentoption_amounts_for_multibeneficiary(context):
 @given('the same nodoInviaCarrelloRPT for another try')
 def update_old_nodoInviaCarrelloRPT_request(context):
     # change cart identifier editing last char value
-    # cart_id = session.get_flow_data(context, constants.SESSION_DATA_CART_ID)
     cart_id = context.flow_data['common']['cart']['id']
 
     # session.set_flow_data(context, constants.SESSION_DATA_CART_ID, utils.change_last_numeric_char(cart_id))
@@ -130,7 +125,6 @@ def update_old_nodoInviaCarrelloRPT_request(context):
 
 
     # change all CCPs content editing last char value
-    # rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
     rpts = context.flow_data['common']['rpts']
 
     for rpt in rpts:
@@ -138,8 +132,6 @@ def update_old_nodoInviaCarrelloRPT_request(context):
         rpt['payment_data']['ccp'] = utils.change_last_numeric_char(ccp)
 
     # update context with request and edit flow_data
-    # session.set_flow_data(context, constants.SESSION_DATA_RAW_RPTS, rpts)
-
     context.flow_data['common']['rpts'] = rpts
 
 @given('an existing payment position related to {index} RPT with segregation code equals to {segregation_code} and state equals to {payment_status}')
@@ -332,7 +324,6 @@ def check_field(context, field_name, field_value):
     field_value = field_value.replace('\'', '')
     response = context.flow_data['action']['response']['body']
 
-    # content_type = session.get_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE)
     content_type = context.flow_data['action']['response']['content_type']
 
     # executing assertions
@@ -898,17 +889,13 @@ def generate_nodoinviacarrellorpt(context, options):
     session.set_skip_tests(context, False)
 
     # retrieve test_data in order to generate flow_data session data
-    # test_data = session.get_test_data(context)
     test_data = context.commondata
 
     # retrieve info about multibeneficiary status
-    # rpts = session.get_flow_data(context, constants.SESSION_DATA_RAW_RPTS)
     rpts = context.flow_data['common']['rpts']
 
     # cart_id = session.get_flow_data(context, constants.SESSION_DATA_CART_ID)
     cart_id = context.flow_data['common']['cart']['id']
-
-    # is_multibeneficiary = session.get_flow_data(context, constants.SESSION_DATA_CART_IS_MULTIBENEFICIARY)
     is_multibeneficiary = context.flow_data['common']['cart']['is_multibeneficiary']
 
 
@@ -933,5 +920,4 @@ def generate_nodoinviacarrellorpt(context, options):
     logging.debug(request)
 
     # update context with request to be sent
-    # session.set_flow_data(context, constants.SESSION_DATA_REQ_BODY, request)
     context.flow_data['action']['request']['body'] = request
