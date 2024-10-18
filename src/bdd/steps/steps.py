@@ -216,8 +216,6 @@ def check_event(context, business_process, field_name, field_value):
     needed_events = [re_event for re_event in needed_process_events if
                      field_name in re_event and re_event[field_name] == field_value]
 
-    print(f"NEEDED_EVENTS = {needed_events}")
-
     utils.assert_show_message(len(needed_events) > 0,
                               f"There are not events with business process {business_process} and field {field_name} with value [{field_value}].")
 
@@ -329,7 +327,6 @@ def check_field(context, field_name, field_value):
     # executing assertions
     if content_type == constants.ResponseType.XML:
         field_value_in_object = response.find(f'.//{field_name}')
-        print(f"field_value_in_object = {field_value_in_object}")
 
         utils.assert_show_message(field_value_in_object is not None, f"The field [{field_name}] does not exists.")
         field_value_in_object = field_value_in_object.text
