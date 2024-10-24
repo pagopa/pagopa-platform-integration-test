@@ -913,8 +913,5 @@ def generate_nodoinviacarrellorpt(context, options):
     request = requestgen.generate_nodoinviacarrellorpt(test_data, cart_id, rpts, psp, psp_broker, channel, password,
                                                        is_multibeneficiary)
 
-    logging.debug("\n\n==request==")
-    logging.debug(request)
-
     # update context with request to be sent
     context.flow_data['action']['request']['body'] = request
