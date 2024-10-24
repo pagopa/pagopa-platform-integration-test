@@ -77,14 +77,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     When the execution of "Send a nodoInviaCarrelloRPT request" was successful
     Then the execution of "Execute redirect and complete payment from NodoInviaCarrelloRPT" was successful
     And the execution of "Check if existing debt position was used" was successful
-  
-  # ===============================================================================================
-  # ===============================================================================================
-  
-  #@runnable @nodo_invia_carrello_rpt @unhappy_path
-  #Scenario: User pays a multibeneficiary cart on nodoInviaCarrelloRPT that exists already in GPD
-  #<><><><><><><><><><><><><><><>
-  
+
   # ===============================================================================================
   # ===============================================================================================
 
@@ -163,20 +156,24 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
   # ===============================================================================================
   # ===============================================================================================
   
-  #@runnable @nodo_invia_carrello_rpt @unhappy_path
-  #Scenario: User tries to pay a multibeneficiary cart on nodoInviaCarrelloRPT that exists already in GPD in invalid state
-  #<><><><><><><><><><><><><><><>
+  @not_implemented @nodo_invia_carrello_rpt @unhappy_path
+  Scenario: User tries to pay a multibeneficiary cart on nodoInviaCarrelloRPT that exists already in GPD in invalid state
 
-  # ===============================================================================================
-  # ===============================================================================================
+#   ===============================================================================================
+#   ===============================================================================================
 
-  #@runnable @nodo_invia_carrello_rpt @unhappy_path
-  #Scenario: User tries to pay a multibeneficiary cart on nodoInviaCarrelloRPT that was inserted from ACA and is in valid state
-  #<><><><><><><><><><><><><><><>
+  @not_implemented @nodo_invia_carrello_rpt @unhappy_path
+  Scenario: User tries to pay a multibeneficiary cart on nodoInviaCarrelloRPT that was inserted from ACA and is in valid state
 
-  # ===============================================================================================
-  # ===============================================================================================
+#   ===============================================================================================
+#   ===============================================================================================
 
-  #@runnable @nodo_invia_carrello_rpt @unhappy_path
-  #Scenario: User tries to pay a multibeneficiary cart on nodoInviaCarrelloRPT that was inserted from ACA and is in invalid state
-  #<><><><><><><><><><><><><><><>
+  @not_implemented @nodo_invia_carrello_rpt @unhappy_path
+  Scenario: User tries to pay a multibeneficiary cart on nodoInviaCarrelloRPT that was inserted from ACA and is in invalid state
+
+
+#   ===============================================================================================
+#   ===============================================================================================
+
+  @not_implemented @nodo_invia_carrello_rpt @unhappy_path
+  Scenario: User pays a multibeneficiary cart on nodoInviaCarrelloRPT that exists already in GPD
