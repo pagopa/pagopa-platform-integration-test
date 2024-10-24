@@ -38,7 +38,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     When the execution of "Send a nodoInviaCarrelloRPT request" was successful
     Then the execution of "Execute redirect and complete payment from NodoInviaCarrelloRPT" was successful
     And the execution of "Check if existing debt position was used" was successful
-  
+
   # ===============================================================================================
   # ===============================================================================================
 
@@ -113,7 +113,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     When the execution of "Send a nodoInviaCarrelloRPT request" was successful
     Then the execution of "Fails on execute NM1-to-NMU conversion in wisp-converter" was successful
     And the execution of "Check if existing debt position was invalid but has sent a KO receipt" was successful
-  
+
   # ===============================================================================================
   # ===============================================================================================
 
@@ -152,10 +152,10 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     When the execution of "Send a nodoInviaCarrelloRPT request" was successful
     Then the execution of "Fails on execute NM1-to-NMU conversion in wisp-converter" was successful
     And the execution of "Check if existing debt position was invalid but has sent a KO receipt" was successful
-  
+
   # ===============================================================================================
   # ===============================================================================================
-  
+
   @not_implemented @nodo_invia_carrello_rpt @unhappy_path
   Scenario: User tries to pay a multibeneficiary cart on nodoInviaCarrelloRPT that exists already in GPD in invalid state
 

@@ -3,10 +3,10 @@ Feature: Common scenarios for nodoInviaCarrelloRPT
   Scenario: Send a nodoInviaCarrelloRPT request
     Given a valid nodoInviaCarrelloRPT request for WISP channel
     When the user sends a nodoInviaCarrelloRPT action
-    Then the user receives the HTTP status code 200 
+    Then the user receives the HTTP status code 200
     And the response contains the field esitoComplessivoOperazione with value OK
     And the response contains the redirect URL
-  
+
   # ===============================================================================================
   # ===============================================================================================
 
@@ -22,13 +22,13 @@ Feature: Common scenarios for nodoInviaCarrelloRPT
 
   # ===============================================================================================
   # ===============================================================================================
-  
+
   Scenario: Check the paid payment position, generated from multibeneficiary cart
     When the user searches for payment position in GPD by first IUV
     Then the user receives the HTTP status code 200
     And the response contains the field status with value PAID
     And the response contains a single payment option
-    And the response contains the payment option correctly generated from all RPTs 
+    And the response contains the payment option correctly generated from all RPTs
     And the response contains the status in PO_PAID for the payment option
     And the response contains the transfers correctly generated from all RPTs
 
@@ -82,5 +82,3 @@ Feature: Common scenarios for nodoInviaCarrelloRPT
     And the execution of "Check if WISP session timers were created" was successful
     And the execution of "Send a KO closePaymentV2 request" was successful
     And the execution of "Check if WISP session timers were deleted and all RTs were sent in KO" was successful
-
-

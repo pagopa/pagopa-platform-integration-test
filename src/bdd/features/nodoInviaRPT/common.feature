@@ -3,13 +3,13 @@ Feature: Common scenarios for nodoInviaRPT
   Scenario: Send a nodoInviaRPT request
     Given a valid nodoInviaRPT request
     When the user sends a nodoInviaRPT action
-    Then the user receives the HTTP status code 200 
+    Then the user receives the HTTP status code 200
     And the response contains the field esito with value OK
     And the response contains the redirect URL
 
   # ===============================================================================================
   # ===============================================================================================
-  
+
   Scenario: Retrieve all related notice numbers from executed redirect
     Given a waiting time of 2 seconds to wait for Nodo to write RE events
     Given the first IUV code of the sent RPTs
@@ -30,7 +30,7 @@ Feature: Common scenarios for nodoInviaRPT
 
   # ===============================================================================================
   # ===============================================================================================
-  
+
   Scenario: Check the paid payment positions
     # executing the check on payment position for first IUV
     When the user searches for payment position in GPD by first IUV
@@ -75,7 +75,7 @@ Feature: Common scenarios for nodoInviaRPT
 
   # ===============================================================================================
   # ===============================================================================================
-  
+
   Scenario: Check if existing debt position was used
     Given a waiting time of 2 seconds to wait for Nodo to write RE events
     And the first IUV code of the sent RPTs
@@ -85,7 +85,7 @@ Feature: Common scenarios for nodoInviaRPT
 
   # ===============================================================================================
   # ===============================================================================================
-  
+
   Scenario: Check if existing debt position was invalid but has sent a KO receipt
     Given a waiting time of 2 seconds to wait for Nodo to write RE events
     And the first IUV code of the sent RPTs

@@ -48,7 +48,7 @@ Feature: User pays a single payment with stamp via nodoInviaRPT
     Given a single RPT of type PO with 1 transfers of which 1 are stamps
     And a valid nodoInviaRPT request
     When the user sends a nodoInviaRPT action
-    Then the user receives the HTTP status code 200 
+    Then the user receives the HTTP status code 200
     And the response contains the field esito with value OK
     And the response contains the old WISP URL
 
@@ -60,6 +60,6 @@ Feature: User pays a single payment with stamp via nodoInviaRPT
     Given a single RPT of type PO with 2 transfers of which 1 are stamps
     And a valid nodoInviaRPT request
     When the user sends a nodoInviaRPT action
-    Then the user receives the HTTP status code 200 
+    Then the user receives the HTTP status code 200
     And the response contains the field esito with value KO
     And the response contains the field faultCode with value PPT_SEMANTICA
