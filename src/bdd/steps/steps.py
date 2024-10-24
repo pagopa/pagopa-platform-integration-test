@@ -263,7 +263,6 @@ def search_in_re_by_iuv(context):
     # update context setting all information about response
     context.flow_data['action']['response']['status_code'] = status_code
 
-     # session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, re_events)
     context.flow_data['action']['response']['body'] = re_events
 
 
@@ -372,7 +371,6 @@ def send_primitive(context, actor, primitive):
 @then('the {actor} receives an HTML page with an error')
 def check_html_error_page(context, actor):
     # retrieve response body related to executed request
-    # response = session.get_flow_data(context, constants.SESSION_DATA_RES_BODY)
     response = context.flow_data['action']['response']['body']
 
 
@@ -578,7 +576,6 @@ def generate_activatepaymentnotice(context, index):
     # retrieve payment notices in order to generate request
     payment_notice_index = utils.get_index_from_cardinal(index)
 
-    # payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
     payment_notices = context.flow_data['common']['payment_notices']
 
     # check if payment notice at passed index exists
@@ -665,7 +662,6 @@ def check_event_token_relation(context):
     # retrieve events and payment notices related to executed request
     needed_events = context.flow_data['common']['re']['last_analyzed_event']
 
-    # payment_notices = session.get_flow_data(context, constants.SESSION_DATA_PAYMENT_NOTICES)
     payment_notices = context.flow_data['common']['payment_notices']
 
     # executing assertions
@@ -705,10 +701,8 @@ def search_paymentposition_by_iuv(context, index):
     # update context setting all information about response
     context.flow_data['action']['response'][status_code] = status_code
 
-    # session.set_flow_data(context, constants.SESSION_DATA_RES_BODY, body_response)
     context.flow_data['action']['response']['body'] = body_response
 
-    # session.set_flow_data(context, constants.SESSION_DATA_RES_CONTENTTYPE, constants.ResponseType.JSON)
     context.flow_data['action']['response']['content_type'] = constants.ResponseType.JSON
 
 
@@ -847,8 +841,6 @@ def generate_empty_cart(context, note):
     test_data = context.commondata
 
     # set trigger primitive information
-    # session.set_flow_data(context, constants.SESSION_DATA_TRIGGER_PRIMITIVE, constants.PRIMITIVE_NODOINVIACARRELLORPT)
-
     context.flow_data['action']['trigger_primitive']['name'] = constants.PRIMITIVE_NODOINVIACARRELLORPT
 
 
@@ -856,28 +848,20 @@ def generate_empty_cart(context, note):
     # generate cart identifier and defining info about multibeneficiary cart on flow_data
     if 'for multibeneficiary' in note:
         iuv = utils.generate_iuv(in_18digit_format=True)
-        # session.set_flow_data(context, constants.SESSION_DATA_CART_ID,
-        #                       utils.generate_cart_id(iuv, test_data['creditor_institution']))
 
         context.flow_data['common']['cart']['id'] = utils.generate_cart_id(iuv, test_data['creditor_institution'])
 
 
-        # session.set_flow_data(context, constants.SESSION_DATA_CART_IS_MULTIBENEFICIARY, True)
         context.flow_data['common']['cart']['is_multibeneficiary'] = True
 
 
-        # session.set_flow_data(context, constants.SESSION_DATA_CART_MULTIBENEFICIARY_IUV, iuv)
         context.flow_data['common']['cart']['iuv_for_multibeneficiary'] = iuv
 
     # generate cart identifier and set multibeneficiary info to False on flow_data
     else:
-        # session.set_flow_data(context, constants.SESSION_DATA_CART_ID,
-        #                       utils.generate_cart_id(None, test_data['creditor_institution']))
-
         context.flow_data['common']['cart']['id'] = utils.generate_cart_id(None, test_data['creditor_institution'])
 
 
-        # session.set_flow_data(context, constants.SESSION_DATA_CART_IS_MULTIBENEFICIARY, False)
         context.flow_data['common']['cart']['is_multibeneficiary'] = False
 
 
@@ -891,25 +875,21 @@ def generate_nodoinviacarrellorpt(context, options):
     # retrieve info about multibeneficiary status
     rpts = context.flow_data['common']['rpts']
 
-    # cart_id = session.get_flow_data(context, constants.SESSION_DATA_CART_ID)
     cart_id = context.flow_data['common']['cart']['id']
     is_multibeneficiary = context.flow_data['common']['cart']['is_multibeneficiary']
 
 
     # set channel and password regarding the required options
     channel = test_data['channel_wisp']
-    # password = test_data['channel_wisp_password']
     password = context.secrets.CHANNEL_WISP_PASSWORD
     psp = test_data['psp_wisp']
     psp_broker = test_data['psp_broker_wisp']
     if 'WFESP channel' in options:
         channel = test_data['channel_wfesp']
-        # password = test_data['channel_wfesp_password']
         password = context.secrets.CHANNEL_WFESP_PASSWORD
         psp = test_data['psp_wfesp']
         psp_broker = test_data['psp_broker_wfesp']
 
-    # generate nodoInviaCarrelloRPT request from raw RPTs and info about multibeneficiary status
     request = requestgen.generate_nodoinviacarrellorpt(test_data, cart_id, rpts, psp, psp_broker, channel, password,
                                                        is_multibeneficiary)
 
