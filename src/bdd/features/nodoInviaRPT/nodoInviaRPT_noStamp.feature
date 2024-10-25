@@ -104,4 +104,3 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
     And the execution of "Send a checkPosition request" was successful
     And the execution of "Send one or more activatePaymentNoticeV2 request" was successful
     And the execution of "Fails on execute NM1-to-NMU conversion in wisp-converter" was successful
-
