@@ -113,10 +113,10 @@ Feature: Common scenarios for nodoInviaRPT
     Then the execution of "Retrieve all related notice numbers from executed redirect" was successful
     And the execution of "Send a checkPosition request" was successful
     And the execution of "Send one or more activatePaymentNoticeV2 requests" was successful
-#    And the execution of "Check if WISP session timers were created" was successful
-#    And the execution of "Send a closePaymentV2 request" was successful
-#    And the execution of "Check if WISP session timers were deleted and all RTs were sent" was successful
-#    And the execution of "Check the paid payment positions" was successful
+    And the execution of "Check if WISP session timers were created" was successful
+    And the execution of "Send a closePaymentV2 request" was successful
+    And the execution of "Check if WISP session timers were deleted and all RTs were sent" was successful
+    And the execution of "Check the paid payment positions" was successful
 
 
     Scenario: Send a closePaymentV2 request
