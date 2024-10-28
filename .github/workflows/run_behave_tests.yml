@@ -4,6 +4,15 @@ on:
   schedule:
     - cron: '0 1 * * *'  # Esegue ogni giorno alle 01:00 UTC
   workflow_dispatch:  # Permette di eseguire manualmente il workflow
+    inputs:
+      environment:
+        description: "Select the target enviroment"
+        required: false
+        default: UAT
+        type: choice
+        options:
+          - DEV
+          - UAT
 
 jobs:
   integration_test:
