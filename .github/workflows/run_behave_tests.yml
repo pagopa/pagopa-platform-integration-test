@@ -8,20 +8,16 @@ on:
       environment:
         description: "Select the target environment"
         required: false
-        default: UAT
+        default: uat
         type: choice
         options:
-          - DEV
-          - UAT
+          - dev
+          - uat
 
 jobs:
   integration_test:
     runs-on: ubuntu-latest
     name: Run Integration Tests
-
-    env:
-      TARGET_ENV: ${{ github.event.inputs.environment }}
-      SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS_DEV if github.event.inputs.environment == 'DEV' else secrets.INTEGRATION_TESTS_SECRETS_UAT }}
 
     steps:
       - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 #v4.2.0
@@ -39,5 +35,7 @@ jobs:
 
       - name: 'Run tests with Behave'
         run: |
-          echo "Running tests in $TARGET_ENV environment"
+          echo "Running tests in ${{ github.event.inputs.environment }} environment"
           python3 -m behave --tags=@runnable -v
+        env:
+          TARGET_ENV: ${{ github.event.inputs.environment }}
