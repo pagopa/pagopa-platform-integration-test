@@ -1,6 +1,7 @@
 """Parse configuration file to obtain current settings.
 """
 import logging
+import os
 
 import urllib3
 from dynaconf import Dynaconf
@@ -15,6 +16,8 @@ settings = Dynaconf(
     envvar_prefix=ENV_VAR_PREFIX,
     settings_files=['config.yaml'],
 )
+
+settings = settings[os.environ['TARGET_ENV']]
 
 # Load the secrets for the specified environment
 secrets = {}
