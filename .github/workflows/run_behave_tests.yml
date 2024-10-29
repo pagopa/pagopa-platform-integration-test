@@ -4,11 +4,24 @@ on:
   schedule:
     - cron: '0 1 * * *'  # Esegue ogni giorno alle 01:00 UTC
   workflow_dispatch:  # Permette di eseguire manualmente il workflow
+    inputs:
+      environment:
+        description: "Select the target environment"
+        required: false
+        default: UAT
+        type: choice
+        options:
+          - DEV
+          - UAT
 
 jobs:
   integration_test:
     runs-on: ubuntu-latest
     name: Run Integration Tests
+
+    env:
+      TARGET_ENV: ${{ github.event.inputs.environment }}
+      SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS_DEV if github.event.inputs.environment == 'DEV' else secrets.INTEGRATION_TESTS_SECRETS_UAT }}
 
     steps:
       - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 #v4.2.0
@@ -20,12 +33,11 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
+
       - name: 'Load secrets'
-        run: |
-          echo "$SECRETS" >> ./config/.secrets.yaml
-        env:
-          SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS }}
-        id: load_secrets
+        run: echo "$SECRETS" >> ./config/.secrets.yaml
+
       - name: 'Run tests with Behave'
         run: |
+          echo "Running tests in $TARGET_ENV environment"
           python3 -m behave --tags=@runnable -v
