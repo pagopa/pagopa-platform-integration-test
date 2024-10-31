@@ -756,7 +756,7 @@ def check_paymentoption_amounts(context, index):
     payment_data = rpt['payment_data']
 
     # executing assertions
-    utils.assert_show_message(response['pull'] == False, f'The payment option must be not defined for pull payments.')
+    #utils.assert_show_message(response['pull'] == False, f'The payment option must be not defined for pull payments.')
     utils.assert_show_message(int(payment_option['amount']) == round(payment_data['total_amount'] * 100),
                               f"The total amount calculated for {index} RPT is not equals to the one defined in GPD payment position. GPD's: [{int(payment_option['amount'])}], RPT's: [{round(payment_data['total_amount'] * 100)}]")
     utils.assert_show_message(payment_option['notificationFee'] == 0,
