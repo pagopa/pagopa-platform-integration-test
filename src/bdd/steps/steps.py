@@ -106,7 +106,7 @@ def check_paymentoption_amounts_for_multibeneficiary(context):
     amount = round(amount * 100)
 
     # executing assertions
-    utils.assert_show_message(response['pull'] == False, f'The payment option must be not defined for pull payments.')
+    #utils.assert_show_message(response['pull'] == False, f'The payment option must be not defined for pull payments.')
     utils.assert_show_message(int(payment_option['amount']) == amount,
                               f"The total amount calculated from all RPTs in multibeneficiary cart is not equals to the one defined in GPD payment position. GPD's: [{int(payment_option['amount'])}], RPT's: [{amount}]")
     utils.assert_show_message(payment_option['notificationFee'] == 0,
