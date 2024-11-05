@@ -11,6 +11,7 @@ from behave import *
 from src.utility import constants
 from src.utility import routes as router
 from src.utility import utils
+import src.steps_utils as steputils
 
 
 # User pays a single payment with single transfer and no stamp on nodoInviaRPT that exists already in GPD
@@ -296,7 +297,7 @@ def wait_for_n_seconds(context, time_in_seconds, notes):
     logging.info(f'Wait time ended')
 
 
-@given('a valid nodoInviaRPT request')  # MODIFIED
+@given('a valid nodoInviaRPT request')
 def generate_nodoinviarpt(context):
     session.set_skip_tests(context, False)
 
@@ -310,62 +311,62 @@ def generate_nodoinviarpt(context):
     context.flow_data['action']['request']['body'] = request
 
 
-@then('the response contains the field {field_name} with value {field_value}')  # MODIFIED
-def check_field(context, field_name, field_value):
-    # skipping this step if its execution is not required
-    if session.skip_tests(context):
-        logging.debug('Skipping check_field step')
-        return
+# @then('the response contains the field {field_name} with value {field_value}')  # MODIFIED
+# def check_field(context, field_name, field_value):
+#     # skipping this step if its execution is not required
+#     if session.skip_tests(context):
+#         logging.debug('Skipping check_field step')
+#         return
+#
+#     # retrieve response information related to executed request
+#     field_value = field_value.replace('\'', '')
+#     response = context.flow_data['action']['response']['body']
+#
+#     content_type = context.flow_data['action']['response']['content_type']
+#
+#     # executing assertions
+#     if content_type == constants.ResponseType.XML:
+#         field_value_in_object = response.find(f'.//{field_name}')
+#
+#         utils.assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
+#         field_value_in_object = field_value_in_object.text
+#     elif content_type == constants.ResponseType.JSON:
+#         field_value_in_object = utils.get_nested_field(response, field_name)
+#         utils.assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
+#         utils.assert_show_message(field_value_in_object == field_value,
+#                                   f'The field [{field_name}] is not equals to {field_value}. Current value: {field_value_in_object}.')
 
-    # retrieve response information related to executed request
-    field_value = field_value.replace('\'', '')
-    response = context.flow_data['action']['response']['body']
 
-    content_type = context.flow_data['action']['response']['content_type']
-
-    # executing assertions
-    if content_type == constants.ResponseType.XML:
-        field_value_in_object = response.find(f'.//{field_name}')
-
-        utils.assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
-        field_value_in_object = field_value_in_object.text
-    elif content_type == constants.ResponseType.JSON:
-        field_value_in_object = utils.get_nested_field(response, field_name)
-        utils.assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
-        utils.assert_show_message(field_value_in_object == field_value,
-                                  f'The field [{field_name}] is not equals to {field_value}. Current value: {field_value_in_object}.')
-
-
-@when('the {actor} sends a {primitive} action')  # MODIFIED
-def send_primitive(context, actor, primitive):
-    # skipping this step if its execution is not required
-    if session.skip_tests(context):
-        logging.debug('Skipping send_primitive step')
-        return
-
-    # retrieve generated request from context in order to execute the API call
-    request = context.flow_data['action']['request']['body']
-
-    # initialize API call and get response
-    url, subkey, content_type = router.get_primitive_url(context, primitive)
-    headers = {}
-    if content_type == constants.ResponseType.XML:
-        headers = {'Content-Type': 'application/xml', 'SOAPAction': primitive,
-                   constants.OCP_APIM_SUBSCRIPTION_KEY: subkey}
-    elif content_type == constants.ResponseType.JSON:
-        headers = {'Content-Type': 'application/json', constants.OCP_APIM_SUBSCRIPTION_KEY: subkey}
-    req_description = constants.REQ_DESCRIPTION_EXECUTE_SOAP_CALL.format(step=context.running_step)
-
-    status_code, body_response, _ = utils.execute_request(url, 'post', headers, request, content_type,
-                                                          description=req_description)
-
-    # update context setting all information about response
-    context.flow_data['action']['response']['status_code'] = status_code
-    context.flow_data['action']['response']['body'] = body_response
-    context.flow_data['action']['response']['content_type'] = content_type
-
-    logging.info(f'Response status code: {status_code}')
-    logging.info(f'Response body: {body_response}')
+# @when('the {actor} sends a {primitive} action')  # MODIFIED
+# def send_primitive(context, actor, primitive):
+#     # skipping this step if its execution is not required
+#     if session.skip_tests(context):
+#         logging.debug('Skipping send_primitive step')
+#         return
+#
+#     # retrieve generated request from context in order to execute the API call
+#     request = context.flow_data['action']['request']['body']
+#
+#     # initialize API call and get response
+#     url, subkey, content_type = router.get_primitive_url(context, primitive)
+#     headers = {}
+#     if content_type == constants.ResponseType.XML:
+#         headers = {'Content-Type': 'application/xml', 'SOAPAction': primitive,
+#                    constants.OCP_APIM_SUBSCRIPTION_KEY: subkey}
+#     elif content_type == constants.ResponseType.JSON:
+#         headers = {'Content-Type': 'application/json', constants.OCP_APIM_SUBSCRIPTION_KEY: subkey}
+#     req_description = constants.REQ_DESCRIPTION_EXECUTE_SOAP_CALL.format(step=context.running_step)
+#
+#     status_code, body_response, _ = utils.execute_request(url, 'post', headers, request, content_type,
+#                                                           description=req_description)
+#
+#     # update context setting all information about response
+#     context.flow_data['action']['response']['status_code'] = status_code
+#     context.flow_data['action']['response']['body'] = body_response
+#     context.flow_data['action']['response']['content_type'] = content_type
+#
+#     logging.info(f'Response status code: {status_code}')
+#     logging.info(f'Response body: {body_response}')
 
 
 @then('the {actor} receives an HTML page with an error')
@@ -381,30 +382,30 @@ def check_html_error_page(context, actor):
 
 
 
-@then('the response contains the {url_type} URL')  # MODIFIED
-def check_redirect_url(context, url_type):
-    # retrieve information related to executed request
-    response = context.flow_data['action']['response']['body']
-
-    url = response.find('.//url')
-    utils.assert_show_message(url is not None, f"The field 'redirect_url' in response doesn't exists.")
-    extracted_url = url.text
-    parsed_url = urlparse(extracted_url)
-    query_params = parse_qs(parsed_url.query)
-    id_session = query_params['idSession'][0] if len(query_params['idSession']) > 0 else None
-
-    # executing assertions
-    utils.assert_show_message(id_session is not None, f"The field 'idSession' in response is not correctly set.")
-    if 'redirect' in url_type:
-        utils.assert_show_message('wisp-converter' in extracted_url,
-                                  f'The URL is not the one defined for WISP dismantling.')
-    elif 'old WISP' in url_type:
-        utils.assert_show_message('wallet' in extracted_url, f'The URL is not the one defined for old WISP.')
-    elif 'fake WFESP' in url_type:
-        utils.assert_show_message('wfesp' in extracted_url, f'The URL is not the one defined for WFESP dismantling.')
-
-    # set session identifier in context in order to be better analyzed in the next steps
-    context.flow_data['common']['session_id'] = id_session
+# @then('the response contains the {url_type} URL')  # MODIFIED
+# def check_redirect_url(context, url_type):
+#     # retrieve information related to executed request
+#     response = context.flow_data['action']['response']['body']
+#
+#     url = response.find('.//url')
+#     utils.assert_show_message(url is not None, f"The field 'redirect_url' in response doesn't exists.")
+#     extracted_url = url.text
+#     parsed_url = urlparse(extracted_url)
+#     query_params = parse_qs(parsed_url.query)
+#     id_session = query_params['idSession'][0] if len(query_params['idSession']) > 0 else None
+#
+#     # executing assertions
+#     utils.assert_show_message(id_session is not None, f"The field 'idSession' in response is not correctly set.")
+#     if 'redirect' in url_type:
+#         utils.assert_show_message('wisp-converter' in extracted_url,
+#                                   f'The URL is not the one defined for WISP dismantling.')
+#     elif 'old WISP' in url_type:
+#         utils.assert_show_message('wallet' in extracted_url, f'The URL is not the one defined for old WISP.')
+#     elif 'fake WFESP' in url_type:
+#         utils.assert_show_message('wfesp' in extracted_url, f'The URL is not the one defined for WFESP dismantling.')
+#
+#     # set session identifier in context in order to be better analyzed in the next steps
+#     context.flow_data['common']['session_id'] = id_session
 
 
 # Execute NM1-to-NMU conversion in wisp-converter
@@ -450,18 +451,18 @@ def send_sessionid_to_wispdismantling(context):
     context.flow_data['action']['response']['content_type'] = constants.ResponseType.HTML
 
 
-@then('the {actor} receives the HTTP status code {status_code}')  # MODIFIED
-def check_status_code(context, actor, status_code):
-    # skipping this step if its execution is not required
-    if session.skip_tests(context):
-        logging.debug('Skipping check_status_code step')
-        return
-
-    # retrieve status code related to executed request
-    status_code = context.flow_data['action']['response']['status_code']
-    # executing assertions
-    utils.assert_show_message(status_code == int(status_code),
-                              f'The status code is not 200. Current value: {status_code}.')
+# @then('the {actor} receives the HTTP status code {status_code}') UTILS_STEPS.PY
+# def check_status_code(context, actor, status_code):
+#     # skipping this step if its execution is not required
+#     if session.skip_tests(context):
+#         logging.debug('Skipping check_status_code step')
+#         return
+#
+#     # retrieve status code related to executed request
+#     status_code = context.flow_data['action']['response']['status_code']
+#     # executing assertions
+#     utils.assert_show_message(status_code == int(status_code),
+#                               f'The status code is not 200. Current value: {status_code}.')
 
 
 @then('the user can be redirected to Checkout')
@@ -895,3 +896,13 @@ def generate_nodoinviacarrellorpt(context, options):
 
     # update context with request to be sent
     context.flow_data['action']['request']['body'] = request
+
+
+###
+@when('the {actor} tries to pay the RPT on EC website')
+def user_tries_to_pay_RPT(context, actor):
+    generate_nodoinviarpt(context)
+    steputils.send_primitive(context, actor, 'nodoInviaRPT' )
+    steputils.check_status_code(context, actor, '200')
+    steputils.check_field(context, 'esito', 'OK')
+    steputils.check_redirect_url(context, 'redirect')

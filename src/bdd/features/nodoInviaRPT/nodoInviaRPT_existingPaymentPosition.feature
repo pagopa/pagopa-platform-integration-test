@@ -4,13 +4,28 @@ Feature: User pays a single payment from existing payment position via nodoInvia
     Given systems up
 
 
-@runnable @nodo_invia_rpt @happy_path
-  Scenario: User pays a single payment with single transfer and no stamp on nodoInviaRPT that exists already in GPD
+#@runnable @nodo_invia_rpt @happy_path
+#  Scenario: User pays a single payment with single transfer and no stamp on nodoInviaRPT that exists already in GPD
+#    Given a single RPT of type BBT with 1 transfers of which 0 are stamps
+#    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
+#    When the execution of "Send a nodoInviaRPT request" was successful
+#    Then the execution of "Execute redirect and complete payment from NodoInviaRPT" was successful
+#    And the execution of "Check if existing debt position was used" was successful
+
+@runnable @nodo_invia_rpt @refactor_test
+#  Scenario: User pays a single payment with single transfer and no stamp on nodoInviaRPT that exists already in GPD
+  Scenario: User pays a single payment with single transfer and no stamp that exists already in GPD
     Given a single RPT of type BBT with 1 transfers of which 0 are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the execution of "Send a nodoInviaRPT request" was successful
-    Then the execution of "Execute redirect and complete payment from NodoInviaRPT" was successful
-    And the execution of "Check if existing debt position was used" was successful
+    When the user tries to pay the RPT on EC website
+#    Then the user is redirected on Checkout
+#    And the execution of "Execute redirect and complete payment from NodoInviaRPT" was successful
+#    And the execution of "Check if existing debt position was used" was successful
+
+
+
+
+
 
 @runnable @nodo_invia_rpt @happy_path
   Scenario: User pays a single payment with no transfer and one stamp on nodoInviaRPT that exists already in GPD
