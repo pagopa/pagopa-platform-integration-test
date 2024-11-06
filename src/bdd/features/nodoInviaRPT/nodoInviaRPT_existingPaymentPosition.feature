@@ -18,7 +18,7 @@ Feature: User pays a single payment from existing payment position via nodoInvia
     Given a single RPT of type BBT with 1 transfers of which 0 are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
     When the user tries to pay the RPT on EC website
-#    Then the user is redirected on Checkout
+    Then the user is redirected on Checkout
 #    And the execution of "Execute redirect and complete payment from NodoInviaRPT" was successful
 #    And the execution of "Check if existing debt position was used" was successful
 
