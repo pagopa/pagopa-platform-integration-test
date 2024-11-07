@@ -336,9 +336,6 @@ def retrieve_payment_token_from_activatepaymentnotice(context, index):
     response = context.flow_data['action']['response']['body']
 
     field_value_in_object = response.find('.//paymentToken')
-
-    print(f"FIELD IN VALUE = {field_value_in_object}")
-
     # executing assertions
     payment_notices = context.flow_data['common']['payment_notices']
 
@@ -617,13 +614,13 @@ def send_checkposition_request(context):
 
 def send_index_activatePaymentNoticeV2_request(context, index):
 
-    for i in range(index):
-        generate_activatepaymentnotice(context, i)
-        send_primitive(context, 'creditor istitution', 'activatePaymentNoticeV2')
-        check_status_code(context, 'creditor istitution', '200')
-        check_field(context, 'outcome', 'OK')
-        check_field_with_non_null_value(context, 'paymentToken')
-        retrieve_payment_token_from_activatepaymentnotice(context, i)
+    # for i in range(index):
+    generate_activatepaymentnotice(context, index)
+    send_primitive(context, 'creditor istitution', 'activatePaymentNoticeV2')
+    check_status_code(context, 'creditor istitution', '200')
+    check_field(context, 'outcome', 'OK')
+    check_field_with_non_null_value(context, 'paymentToken')
+    retrieve_payment_token_from_activatepaymentnotice(context, index)
 
 def check_wisp_session_timers(context):
     wait_for_n_seconds(context, '5', 'to wait for Nodo to write RE events')
@@ -650,14 +647,14 @@ def check_wisp_session_timers_del_and_rts_were_sent(context):
 
 def check_index_paid_payment_positions(context, index):
 
-    for i in range(index):
-        search_paymentposition_by_iuv(context, i)
-        check_status_code(context, 'user', '200')
-        check_field(context, 'status', 'PAID')
-        check_single_paymentoption(context)
-        check_paymentoption_amounts(context, i)
-        check_paymentposition_status(context, 'PO_PAID')
-        check_paymentposition_transfers(context)
+    # for i in range(index):
+    search_paymentposition_by_iuv(context, index)
+    check_status_code(context, 'user', '200')
+    check_field(context, 'status', 'PAID')
+    check_single_paymentoption(context)
+    check_paymentoption_amounts(context, index)
+    check_paymentposition_status(context, 'PO_PAID')
+    check_paymentposition_transfers(context)
 
 
 
