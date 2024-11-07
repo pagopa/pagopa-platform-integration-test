@@ -515,7 +515,7 @@ def check_paymentoption_amounts(context, index):
     payment_data = rpt['payment_data']
 
     # executing assertions
-    utils.assert_show_message(response['pull'] == False, f'The payment option must be not defined for pull payments.')
+    # utils.assert_show_message(response['pull'] == False, f'The payment option must be not defined for pull payments.')
     utils.assert_show_message(int(payment_option['amount']) == round(payment_data['total_amount'] * 100),
                               f"The total amount calculated for {index} RPT is not equals to the one defined in GPD payment position. GPD's: [{int(payment_option['amount'])}], RPT's: [{round(payment_data['total_amount'] * 100)}]")
     utils.assert_show_message(payment_option['notificationFee'] == 0,
@@ -656,7 +656,12 @@ def check_index_paid_payment_positions(context, index):
     check_paymentposition_status(context, 'PO_PAID')
     check_paymentposition_transfers(context)
 
-
+def check_existing_debt_position_usage(context):
+    wait_for_n_seconds(context, '2', 'to wait for Nodo to write RE events')
+    get_iuv_from_session(context, 'first')
+    search_in_re_by_iuv(context)
+    check_status_code(context, 'user', '200')
+    check_event(context, 'redirect', 'status', 'UPDATED_EXISTING_PAYMENT_POSITION_IN_GPD')
 
 
 

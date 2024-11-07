@@ -914,3 +914,9 @@ def user_redirected_to_checkout(context, actor):
     steputils.send_closePaymentV2_request(context)
     steputils.check_wisp_session_timers_del_and_rts_were_sent(context)
     steputils.check_index_paid_payment_positions(context, 'first')
+
+
+@then('the payment is done')
+def payment_done_check(context):
+    steputils.check_existing_debt_position_usage(context)
+
