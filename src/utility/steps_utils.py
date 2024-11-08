@@ -597,6 +597,16 @@ def exec_nm1_to_nmu(context, actor):
     check_status_code(context, actor, '302')
     check_checkout_url(context)
 
+# @then('the {actor} receives an HTML page with an error')
+def check_html_error_page(context, actor):
+    # retrieve response body related to executed request
+    response = context.flow_data['action']['response']['body']
+
+
+    # executing assertions
+    utils.assert_show_message('<!DOCTYPE html>' in response, f'The response is not an HTML page')
+    utils.assert_show_message('Si &egrave; verificato un errore imprevisto' in response,
+                              f'The HTML page does not contains an error message.')
 
 def retrieve_related_notice_numbers_from_redirect(context):
     wait_for_n_seconds(context, '2', 'to wait for Nodo to write RE events')
@@ -663,11 +673,19 @@ def check_existing_debt_position_usage(context):
     check_status_code(context, 'user', '200')
     check_event(context, 'redirect', 'status', 'UPDATED_EXISTING_PAYMENT_POSITION_IN_GPD')
 
+def check_fail_nm1_to_nmu_conversion(context):
+    get_valid_sessionid(context)
+    send_sessionid_to_wispdismantling(context)
+    check_status_code(context, 'user', '200')
+    check_html_error_page(context, 'user')
 
-
-
-
-
+def check_debt_position_invalid_and_sent_ko_receipt(context):
+    wait_for_n_seconds(context, '2', 'to wait for Nodo to write RE events')
+    get_iuv_from_session(context, 'first')
+    search_in_re_by_iuv(context)
+    check_status_code(context, 'user', '200')
+    check_event(context, 'redirect', 'operationErrorCode', 'WIC-1205')
+    check_event(context, 'redirect', 'status', 'RT_SEND_SUCCESS')
 
 
 

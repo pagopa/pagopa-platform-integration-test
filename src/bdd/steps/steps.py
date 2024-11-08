@@ -367,16 +367,16 @@ def generate_nodoinviarpt(context):
 #     logging.info(f'Response body: {body_response}')
 
 
-@then('the {actor} receives an HTML page with an error')
-def check_html_error_page(context, actor):
-    # retrieve response body related to executed request
-    response = context.flow_data['action']['response']['body']
-
-
-    # executing assertions
-    utils.assert_show_message('<!DOCTYPE html>' in response, f'The response is not an HTML page')
-    utils.assert_show_message('Si &egrave; verificato un errore imprevisto' in response,
-                              f'The HTML page does not contains an error message.')
+# @then('the {actor} receives an HTML page with an error')
+# def check_html_error_page(context, actor):
+#     # retrieve response body related to executed request
+#     response = context.flow_data['action']['response']['body']
+#
+#
+#     # executing assertions
+#     utils.assert_show_message('<!DOCTYPE html>' in response, f'The response is not an HTML page')
+#     utils.assert_show_message('Si &egrave; verificato un errore imprevisto' in response,
+#                               f'The HTML page does not contains an error message.')
 
 
 
@@ -407,46 +407,46 @@ def check_html_error_page(context, actor):
 
 
 # Execute NM1-to-NMU conversion in wisp-converter
-@given('a valid session identifier to be redirected to WISP dismantling')
-def get_valid_sessionid(context):
-    session.set_skip_tests(context, False)
+# @given('a valid session identifier to be redirected to WISP dismantling')
+# def get_valid_sessionid(context):
+#     session.set_skip_tests(context, False)
+#
+#     # retrieve session id previously generated in redirect call
+#     session_id = context.flow_data['common']['session_id']
+#
+#     # executing assertions
+#     utils.assert_show_message(len(session_id) == 36,
+#                               f'The session ID must consist of a UUID only. Session ID: [{session_id}]')
 
-    # retrieve session id previously generated in redirect call
-    session_id = context.flow_data['common']['session_id']
 
-    # executing assertions
-    utils.assert_show_message(len(session_id) == 36,
-                              f'The session ID must consist of a UUID only. Session ID: [{session_id}]')
-
-
-@when('the user continue the session in WISP dismantling')
-def send_sessionid_to_wispdismantling(context):
-    # initialize API call and get response
-    url, _ = router.get_rest_url(context, 'redirect')
-    headers = {'Content-Type': 'application/xml'}
-    session_id = context.flow_data['common']['session_id']
-
-    url += session_id
-    req_description = constants.REQ_DESCRIPTION_EXECUTE_CALL_TO_WISPCONV.format(step=context.running_step,
-                                                                                sessionId=session_id)
-    status_code, response_body, response_headers = utils.execute_request(url, 'get', headers,
-                                                                         type=constants.ResponseType.HTML,
-                                                                         allow_redirect=False,
-                                                                         description=req_description)
-
-    # update context setting all information about response
-    if 'Location' in response_headers:
-        location_header = response_headers['Location']
-        attach(location_header, name='Received response')
-
-        context.flow_data['action']['response']['body'] = location_header
-
-    else:
-        attach(response_body, name='Received response')
-        context.flow_data['action']['response']['body'] = response_body
-
-    context.flow_data['action']['response']['status_code'] = status_code
-    context.flow_data['action']['response']['content_type'] = constants.ResponseType.HTML
+# @when('the user continue the session in WISP dismantling')
+# def send_sessionid_to_wispdismantling(context):
+#     # initialize API call and get response
+#     url, _ = router.get_rest_url(context, 'redirect')
+#     headers = {'Content-Type': 'application/xml'}
+#     session_id = context.flow_data['common']['session_id']
+#
+#     url += session_id
+#     req_description = constants.REQ_DESCRIPTION_EXECUTE_CALL_TO_WISPCONV.format(step=context.running_step,
+#                                                                                 sessionId=session_id)
+#     status_code, response_body, response_headers = utils.execute_request(url, 'get', headers,
+#                                                                          type=constants.ResponseType.HTML,
+#                                                                          allow_redirect=False,
+#                                                                          description=req_description)
+#
+#     # update context setting all information about response
+#     if 'Location' in response_headers:
+#         location_header = response_headers['Location']
+#         attach(location_header, name='Received response')
+#
+#         context.flow_data['action']['response']['body'] = location_header
+#
+#     else:
+#         attach(response_body, name='Received response')
+#         context.flow_data['action']['response']['body'] = response_body
+#
+#     context.flow_data['action']['response']['status_code'] = status_code
+#     context.flow_data['action']['response']['content_type'] = constants.ResponseType.HTML
 
 
 # @then('the {actor} receives the HTTP status code {status_code}') UTILS_STEPS.PY
@@ -920,3 +920,10 @@ def user_redirected_to_checkout(context, actor):
 def payment_done_check(context):
     steputils.check_existing_debt_position_usage(context)
 
+@then('execute NM1-to-NMU conversion in wisp-converter fails')
+def nm1_to_nmu_fails(context):
+    steputils.check_fail_nm1_to_nmu_conversion(context)
+
+@then('existing debt position was invalid but has sent a KO receipt')
+def debt_position_invalid(context):
+    steputils.check_debt_position_invalid_and_sent_ko_receipt(context)
