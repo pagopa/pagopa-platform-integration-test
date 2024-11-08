@@ -48,24 +48,24 @@ Feature: User pays a single payment from existing payment position via nodoInvia
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_rpt @unhappy_path
+  @runnable @nodo_invia_rpt @refactor_test_unhappy
   Scenario: User tries to pay a single payment on nodoInviaRPT that was inserted from ACA and is in valid state
     Given a single RPT of type BBT with 1 transfers of which 0 are stamps
     And an existing payment position related to first RPT with segregation code equals to 01 and state equals to VALID
-    When the execution of "Send a nodoInviaRPT request" was successful
-    Then the execution of "Fails on execute NM1-to-NMU conversion in wisp-converter" was successful
-    And the execution of "Check if existing debt position was invalid from ACA but has sent a KO receipt" was successful
+    When the user tries to pay the RPT on EC website
+    Then the user is redirected on Checkout
+    And the payment is done
 
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_rpt @unhappy_path1
+  @runnable @nodo_invia_rpt @refactor_test_unhappy
   Scenario: User tries to pay a single payment on nodoInviaRPT that was inserted from ACA and is in invalid state
     Given a single RPT of type BBT with 1 transfers of which 0 are stamps
     And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT
-    When the execution of "Send a nodoInviaRPT request" was successful
-    Then the execution of "Fails on execute NM1-to-NMU conversion in wisp-converter" was successful
-    And the execution of "Check if existing debt position was invalid but has sent a KO receipt" was successful
+    When the user tries to pay the RPT on EC website
+    Then the user is redirected on Checkout
+    And the payment is done
 
 
 #Execute redirect and complete payment from NodoInviaRPT
