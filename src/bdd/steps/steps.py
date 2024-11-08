@@ -226,10 +226,10 @@ def user_redirected_to_checkout(context, actor):
 def payment_done_check(context):
     steputils.check_existing_debt_position_usage(context)
 
-@then('execute NM1-to-NMU conversion in wisp-converter fails')
+@then('conversion to new model fails in wisp-converter')
 def nm1_to_nmu_fails(context):
     steputils.check_fail_nm1_to_nmu_conversion(context)
 
-@then('existing debt position was invalid but has sent a KO receipt')
+@then('the KO receipt was sent')
 def debt_position_invalid(context):
     steputils.check_debt_position_invalid_and_sent_ko_receipt(context)
