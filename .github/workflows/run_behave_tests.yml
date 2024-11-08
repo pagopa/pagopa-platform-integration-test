@@ -44,10 +44,10 @@ jobs:
 
       - name: 'Run tests with Behave'
         run: |
-          echo "Running tests in ${{ github.event.inputs.environment }} environment"
+          echo "Running tests in $TARGET_ENV environment"
           behave --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
         env:
-          TARGET_ENV: ${{ github.event.inputs.environment }}
+          TARGET_ENV: ${{ env.TARGET_ENVIRONMENT }}
       - name: Load test report history
         uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 #v4.2.0
         if: always()
