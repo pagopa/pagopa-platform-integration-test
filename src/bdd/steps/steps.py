@@ -196,6 +196,13 @@ def user_tries_to_pay_RPT(context, actor):
     steputils.check_field(context, 'esito', 'OK')
     steputils.check_redirect_url(context, 'redirect')
 
+@given(u'the {actor} tried to pay the RPT on EC website')
+def user_tried_to_pay_RPT(context, actor):
+    user_tries_to_pay_RPT(context, actor)
+    nm1_to_nmu_succeeds(context)
+    retrieve_notice_numbers_from_redirect(context)
+    checkposition_request(context)
+
 @then('the {actor} is redirected on Checkout completing the payment')
 def user_redirected_to_checkout(context, actor):
     steputils.exec_nm1_to_nmu(context, actor)
@@ -213,6 +220,7 @@ def payment_done_check(context):
     steputils.check_existing_debt_position_usage(context)
 
 @then('conversion to new model fails in wisp-converter')
+@given(u'conversion to new model fails in wisp-converter')
 def nm1_to_nmu_fails(context):
     steputils.check_fail_nm1_to_nmu_conversion(context)
 
@@ -220,12 +228,19 @@ def nm1_to_nmu_fails(context):
 def debt_position_invalid(context):
     steputils.check_debt_position_invalid_and_sent_ko_receipt(context)
 
-@then('the user receives a successful response with the old WISP URL ')
+@when('the user sends a nodoInviaRPT request')
 def check_successful_response_with_old_wisp_url(context):
     steputils.generate_nodoinviarpt(context)
     steputils.send_primitive(context, 'user', 'nodoInviaRPT')
+
+
+@then('the user receives a successful response')
+def check_esito_response(context):
     steputils.check_status_code(context, 'user','200')
     steputils.check_field(context, 'esito', 'OK')
+
+@then('the response contains the old WISP URL')
+def check_old_wisp_url(context):
     steputils.check_redirect_url(context, 'old WISP')
 
 @then('the conversion to new model succeeds in wisp-converter')
@@ -240,6 +255,6 @@ def retrieve_notice_numbers_from_redirect(context):
 def checkposition_request(context):
     steputils.send_checkposition_request(context)
 
-@then('send activatePaymentNoticeV2 requests')
+@given(u'send activatePaymentNoticeV2 requests')
 def send_activatePaymentNoticeV2_request(context):
     steputils.send_index_activatePaymentNoticeV2_request(context, 5)
