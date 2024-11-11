@@ -74,7 +74,6 @@ def check_field(context, field_name, field_value):
         utils.assert_show_message(field_value_in_object == field_value,
                                   f'The field [{field_name}] is not equals to {field_value}. Current value: {field_value_in_object}.')
 
-
 # @then('the response contains the {url_type} URL')  # MODIFIED
 def check_redirect_url(context, url_type):
     # retrieve information related to executed request
@@ -591,12 +590,6 @@ def check_paymentposition_transfers(context):
             utils.assert_show_message(transfer_from_po['iban'] == transfer_from_rpt['creditor_iban'],
                                       f"The IBAN defined in transfer {transfer_index} is not equals to the one defined in RPT. GPD's: [{transfer_from_po['iban']}], RPT's: [{transfer_from_rpt['creditor_iban']}]")
 
-def exec_nm1_to_nmu(context, actor):
-    get_valid_sessionid(context)
-    send_sessionid_to_wispdismantling(context)
-    check_status_code(context, actor, '302')
-    check_checkout_url(context)
-
 # @then('the {actor} receives an HTML page with an error')
 def check_html_error_page(context, actor):
     # retrieve response body related to executed request
@@ -607,6 +600,27 @@ def check_html_error_page(context, actor):
     utils.assert_show_message('<!DOCTYPE html>' in response, f'The response is not an HTML page')
     utils.assert_show_message('Si &egrave; verificato un errore imprevisto' in response,
                               f'The HTML page does not contains an error message.')
+
+# @given('a valid nodoInviaRPT request')
+def generate_nodoinviarpt(context):
+    session.set_skip_tests(context, False)
+
+    # retrieve test_data in order to generate flow_data session data
+    test_data = context.commondata
+    # generate nodoInviaRPT request from raw RPT
+    raw_rpts = context.flow_data['common']['rpts']
+    request = requestgen.generate_nodoinviarpt(test_data, raw_rpts[0], context.secrets.STATION_PASSWORD)
+
+    # update context with request and edit flow_data
+    context.flow_data['action']['request']['body'] = request
+
+
+######################################
+def exec_nm1_to_nmu(context, actor):
+    get_valid_sessionid(context)
+    send_sessionid_to_wispdismantling(context)
+    check_status_code(context, actor, '302')
+    check_checkout_url(context)
 
 def retrieve_related_notice_numbers_from_redirect(context):
     wait_for_n_seconds(context, '2', 'to wait for Nodo to write RE events')

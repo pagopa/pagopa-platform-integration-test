@@ -124,20 +124,6 @@ def step_impl(context, scenario_name):
         [step.keyword + ' ' + step.name + "\n\"\"\"\n" + (step.text or '') + "\n\"\"\"\n" for step in phase.steps])
     context.execute_steps(text_step)
 
-
-@given('a valid nodoInviaRPT request')
-def generate_nodoinviarpt(context):
-    session.set_skip_tests(context, False)
-
-    # retrieve test_data in order to generate flow_data session data
-    test_data = context.commondata
-    # generate nodoInviaRPT request from raw RPT
-    raw_rpts = context.flow_data['common']['rpts']
-    request = requestgen.generate_nodoinviarpt(test_data, raw_rpts[0], context.secrets.STATION_PASSWORD)
-
-    # update context with request and edit flow_data
-    context.flow_data['action']['request']['body'] = request
-
 # SECOND HAPPY PATH
 @given('a cart of RPTs {note}') #MODIFIED
 def generate_empty_cart(context, note):
@@ -204,7 +190,7 @@ def generate_nodoinviacarrellorpt(context, options):
 ###
 @when('the {actor} tries to pay the RPT on EC website')
 def user_tries_to_pay_RPT(context, actor):
-    generate_nodoinviarpt(context)
+    steputils.generate_nodoinviarpt(context)
     steputils.send_primitive(context, actor, 'nodoInviaRPT' )
     steputils.check_status_code(context, actor, '200')
     steputils.check_field(context, 'esito', 'OK')
@@ -233,3 +219,11 @@ def nm1_to_nmu_fails(context):
 @then('the KO receipt was sent')
 def debt_position_invalid(context):
     steputils.check_debt_position_invalid_and_sent_ko_receipt(context)
+
+@then('the user receives a successful response with the old WISP URL ')
+def check_successful_response_with_old_wisp_url(context):
+    steputils.generate_nodoinviarpt(context)
+    steputils.send_primitive(context, 'user', 'nodoInviaRPT')
+    steputils.check_status_code(context, 'user','200')
+    steputils.check_field(context, 'esito', 'OK')
+    steputils.check_redirect_url(context, 'old WISP')
