@@ -227,3 +227,19 @@ def check_successful_response_with_old_wisp_url(context):
     steputils.check_status_code(context, 'user','200')
     steputils.check_field(context, 'esito', 'OK')
     steputils.check_redirect_url(context, 'old WISP')
+
+@then('the conversion to new model succeeds in wisp-converter')
+def nm1_to_nmu_succeeds(context):
+    steputils.exec_nm1_to_nmu(context, 'user')
+
+@then('the notice numbers are retrieved from redirect')
+def retrieve_notice_numbers_from_redirect(context):
+    steputils.retrieve_related_notice_numbers_from_redirect(context)
+
+@then('the checkPosition request was successful')
+def checkposition_request(context):
+    steputils.send_checkposition_request(context)
+
+@then('send activatePaymentNoticeV2 requests')
+def send_activatePaymentNoticeV2_request(context):
+    steputils.send_index_activatePaymentNoticeV2_request(context, 5)

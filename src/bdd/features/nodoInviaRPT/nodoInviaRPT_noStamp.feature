@@ -79,9 +79,10 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   @runnable @nodo_invia_rpt @happy_path @to_fix
   Scenario: User executes a first redirect from nodoInviaRPT, then execute the redirection again and complete the payment flow
     Given a single RPT of type BBT with 1 transfers of which 0 are stamps
-    When the execution of "Send a nodoInviaRPT request" was successful
-    Then the execution of "Execute NM1-to-NMU conversion in wisp-converter" was successful
-    And the execution of "Execute redirect and complete payment from NodoInviaRPT" was successful
+    When the user tries to pay the RPT on EC website
+#    Then the execution of "Execute NM1-to-NMU conversion in wisp-converter" was successful
+    Then the conversion to new model succeeds in wisp-converter
+    Then the user is redirected on Checkout completing the payment
 
   # ===============================================================================================
   # ===============================================================================================
@@ -89,19 +90,26 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   @runnable @nodo_invia_rpt @unhappy_path
   Scenario: User tries two time to pay the same nodoInviaRPT but fails
     Given a single RPT of type BBT with 1 transfers of which 0 are stamps
-    When the execution of "Send a nodoInviaRPT request" was successful
-    Then the execution of "Execute redirect and complete payment from NodoInviaRPT" was successful
-    And the execution of "Fails on execute NM1-to-NMU conversion in wisp-converter" was successful
+    When the user tries to pay the RPT on EC website
+    Then the user is redirected on Checkout completing the payment
+    And conversion to new model fails in wisp-converter
 
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_rpt @unhappy_path
+  @runnable @nodo_invia_rpt @unhappy_path_ref
   Scenario: User tries payment with nodoInviaRPT until activatePaymentNoticeV2, then retries again the flow but fails
     Given a single RPT of type BBT with 1 transfers of which 0 are stamps
-    When the execution of "Send a nodoInviaRPT request" was successful
-    Then the execution of "Execute NM1-to-NMU conversion in wisp-converter" was successful
-    And the execution of "Retrieve all related notice numbers from executed redirect" was successful
-    And the execution of "Send a checkPosition request" was successful
-    And the execution of "Send one or more activatePaymentNoticeV2 request" was successful
-    And the execution of "Fails on execute NM1-to-NMU conversion in wisp-converter" was successful
+#    When the execution of "Send a nodoInviaRPT request" was successful
+    When the user tries to pay the RPT on EC website
+#    Then the execution of "Execute NM1-to-NMU conversion in wisp-converter" was successful
+    Then the conversion to new model succeeds in wisp-converter
+#    And the execution of "Retrieve all related notice numbers from executed redirect" was successful
+    Then the notice numbers are retrieved from redirect
+#    And the execution of "Send a checkPosition request" was successful
+    Then the checkPosition request was successful
+#    cambiare il titolo dello step
+#    And the execution of "Send one or more activatePaymentNoticeV2 request" was successful
+    Then send activatePaymentNoticeV2 requests
+#    And the execution of "Fails on execute NM1-to-NMU conversion in wisp-converter" was successful
+    Then conversion to new model fails in wisp-converter
