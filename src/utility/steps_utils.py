@@ -288,7 +288,7 @@ def generate_activatepaymentnotice(context, index):
     session_id = context.flow_data['common']['session_id']
 
     # retrieve payment notices in order to generate request
-    payment_notice_index = utils.get_index_from_cardinal(index)
+    payment_notice_index = index
 
     payment_notices = context.flow_data['common']['payment_notices']
 
@@ -332,7 +332,7 @@ def retrieve_payment_token_from_activatepaymentnotice(context, index):
         return
 
     # retrieve information related to executed request
-    rpt_index = utils.get_index_from_cardinal(index)
+    rpt_index = index
     response = context.flow_data['action']['response']['body']
 
     field_value_in_object = response.find('.//paymentToken')
@@ -439,7 +439,7 @@ def check_event_notice_number_relation(context):
 # @when('the user searches for payment position in GPD by {index} IUV')  # MODIFIED
 def search_paymentposition_by_iuv(context, index):
     # retrieve payment notice from context in order to execute the API call
-    rpt_index = utils.get_index_from_cardinal(index)
+    rpt_index = index
     payment_notices = context.flow_data['common']['payment_notices']
 
     # skipping this step if its execution is not required
@@ -501,7 +501,7 @@ def check_paymentoption_amounts(context, index):
     # retrieve response information related to executed request
     response = context.flow_data['action']['response']['body']
 
-    rpt_index = utils.get_index_from_cardinal(index)
+    rpt_index = index
     payment_options = utils.get_nested_field(response, 'paymentOption')
     payment_option = payment_options[0]
 
@@ -624,13 +624,14 @@ def send_checkposition_request(context):
 
 def send_index_activatePaymentNoticeV2_request(context, index):
 
-    # for i in range(index):
-    generate_activatepaymentnotice(context, index)
-    send_primitive(context, 'creditor istitution', 'activatePaymentNoticeV2')
-    check_status_code(context, 'creditor istitution', '200')
-    check_field(context, 'outcome', 'OK')
-    check_field_with_non_null_value(context, 'paymentToken')
-    retrieve_payment_token_from_activatepaymentnotice(context, index)
+    for i in range(index):
+        generate_activatepaymentnotice(context, i)
+        send_primitive(context, 'creditor istitution', 'activatePaymentNoticeV2')
+        check_status_code(context, 'creditor istitution', '200')
+        check_field(context, 'outcome', 'OK')
+        check_field_with_non_null_value(context, 'paymentToken')
+        retrieve_payment_token_from_activatepaymentnotice(context, i)
+
 
 def check_wisp_session_timers(context):
     wait_for_n_seconds(context, '5', 'to wait for Nodo to write RE events')
@@ -657,14 +658,15 @@ def check_wisp_session_timers_del_and_rts_were_sent(context):
 
 def check_index_paid_payment_positions(context, index):
 
-    # for i in range(index):
-    search_paymentposition_by_iuv(context, index)
-    check_status_code(context, 'user', '200')
-    check_field(context, 'status', 'PAID')
-    check_single_paymentoption(context)
-    check_paymentoption_amounts(context, index)
-    check_paymentposition_status(context, 'PO_PAID')
-    check_paymentposition_transfers(context)
+    for i in range(index):
+        search_paymentposition_by_iuv(context, i)
+        check_status_code(context, 'user', '200')
+        check_field(context, 'status', 'PAID')
+        check_single_paymentoption(context)
+        check_paymentoption_amounts(context, i)
+        check_paymentposition_status(context, 'PO_PAID')
+        check_paymentposition_transfers(context)
+
 
 def check_existing_debt_position_usage(context):
     wait_for_n_seconds(context, '2', 'to wait for Nodo to write RE events')
