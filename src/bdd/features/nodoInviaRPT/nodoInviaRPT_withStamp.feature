@@ -41,7 +41,7 @@ Feature: User pays a single payment with stamp via nodoInviaRPT
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_rpt @happy_path_1
+  @runnable @nodo_invia_rpt @happy_path
   Scenario: User pays a single payment as PO type with no simple transfer and one stamp on nodoInviaRPT
     Given a single RPT of type PO with 1 transfers of which 1 are stamps
     And the user tries to pay the RPT on EC website
@@ -50,7 +50,7 @@ Feature: User pays a single payment with stamp via nodoInviaRPT
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_rpt @unhappy_path_h1
+  @runnable @nodo_invia_rpt @unhappy_path
   Scenario: User pays a single payment as PO type with one simple transfer and one stamp on nodoInviaRPT
     Given a single RPT of type PO with 2 transfers of which 1 are stamps
     And the user tries to pay the RPT on EC website but fails
