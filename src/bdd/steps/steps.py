@@ -125,7 +125,8 @@ def step_impl(context, scenario_name):
     context.execute_steps(text_step)
 
 # SECOND HAPPY PATH
-@given('a cart of RPTs {note}') #MODIFIED
+@given('a cart of RPTs {note}')
+@then('a cart of RPTs {note}')
 def generate_empty_cart(context, note):
     # retrieve test_data in order to generate flow_data session data
     test_data = context.commondata
@@ -155,7 +156,8 @@ def generate_empty_cart(context, note):
         context.flow_data['common']['cart']['is_multibeneficiary'] = False
 
 
-@given('a valid nodoInviaCarrelloRPT request{options}') #MODIFIED
+@given('a valid nodoInviaCarrelloRPT request{options}')
+@then('a valid nodoInviaCarrelloRPT request{options}')
 def generate_nodoinviacarrellorpt(context, options):
     session.set_skip_tests(context, False)
 
@@ -197,6 +199,7 @@ def user_tries_to_pay_RPT(context, actor):
     steputils.check_redirect_url(context, 'redirect')
 
 @given(u'the {actor} tried to pay the RPT on EC website')
+@then(u'the {actor} tried to pay the RPT on EC website')
 def user_tried_to_pay_RPT(context, actor):
     user_tries_to_pay_RPT(context, actor)
     nm1_to_nmu_succeeds(context)
@@ -256,5 +259,7 @@ def checkposition_request(context):
     steputils.send_checkposition_request(context)
 
 @given(u'send activatePaymentNoticeV2 requests')
+@then(u'send activatePaymentNoticeV2 requests')
 def send_activatePaymentNoticeV2_request(context):
     steputils.send_index_activatePaymentNoticeV2_request(context, 5)
+

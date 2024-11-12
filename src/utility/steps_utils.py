@@ -702,14 +702,3 @@ def check_debt_position_invalid_and_sent_ko_receipt(context):
     check_status_code(context, 'user', '200')
     check_event(context, 'redirect', 'operationErrorCode', 'WIC-1205')
     check_event(context, 'redirect', 'status', 'RT_SEND_SUCCESS')
-
-
-
-
-
-
-
-
-
-
-
