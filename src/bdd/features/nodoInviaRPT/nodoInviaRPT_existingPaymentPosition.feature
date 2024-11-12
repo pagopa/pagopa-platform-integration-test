@@ -42,9 +42,6 @@ Feature: User pays a single payment from existing payment position via nodoInvia
     Then conversion to new model fails in wisp-converter
     And the KO receipt was sent
 
-#    Then the execution of "Fails on execute NM1-to-NMU conversion in wisp-converter" was successful
-#    And the execution of "Check if existing debt position was invalid but has sent a KO receipt" was successful
-
   # ===============================================================================================
   # ===============================================================================================
 

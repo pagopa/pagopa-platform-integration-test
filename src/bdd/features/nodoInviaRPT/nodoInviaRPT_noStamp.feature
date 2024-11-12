@@ -12,13 +12,6 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
     When the user tries to pay the RPT on EC website
     Then the user is redirected on Checkout completing the payment
 
-
-    @runnable @nodo_invia_rpt @happy_path @happy_path_PO
-  Scenario: User pays a single payment with single transfer and no stamp on nodoInviaRPT
-    Given a single RPT of type PO with 1 transfers of which none are stamps
-    When the user tries to pay the RPT on EC website
-    Then the user is redirected on Checkout completing the payment
-
   # ===============================================================================================
   # ===============================================================================================
 
@@ -58,7 +51,7 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_rpt @happy_path_refacc
+  @runnable @nodo_invia_rpt @happy_path
   Scenario: User pays a single payment as PO type with one transfer and no stamp on nodoInviaRPT
     Given a single RPT of type PO with 1 transfers of which 0 are stamps
     When the user sends a nodoInviaRPT request
@@ -101,7 +94,7 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_rpt @unhappy_path_refe
+  @runnable @nodo_invia_rpt @unhappy_path
   Scenario: User tries payment with nodoInviaRPT until activatePaymentNoticeV2, then retries again the flow but fails
     Given a single RPT of type BBT with 1 transfers of which 0 are stamps
     And the user tried to pay the RPT on EC website

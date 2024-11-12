@@ -17,6 +17,7 @@ def generate_single_rpt(context, payment_type, number_of_transfers, number_of_st
     if number_of_stamps == 'none':
         number_of_stamps = '0'
 
+    context.payment_type = payment_type
     # force IUV definition if the RPT is part of multibeneficiary cart
     iuv = None
 
@@ -191,12 +192,26 @@ def generate_nodoinviacarrellorpt(context, options):
 
 ###
 @when('the {actor} tries to pay the RPT on EC website')
+@given(u'the {actor} tries to pay the RPT on EC website')
 def user_tries_to_pay_RPT(context, actor):
     steputils.generate_nodoinviarpt(context)
     steputils.send_primitive(context, actor, 'nodoInviaRPT' )
     steputils.check_status_code(context, actor, '200')
     steputils.check_field(context, 'esito', 'OK')
-    steputils.check_redirect_url(context, 'redirect')
+
+    if context.payment_type == 'BBT':
+        steputils.check_redirect_url(context, 'redirect')
+
+
+@when('the {actor} tries to pay the RPT on EC website but fails')
+@given(u'the {actor} tries to pay the RPT on EC website but fails')
+def user_fail_to_pay_RPT(context, actor):
+    steputils.generate_nodoinviarpt(context)
+    steputils.send_primitive(context, actor, 'nodoInviaRPT')
+    steputils.check_status_code(context, actor, '200')
+    steputils.check_field(context, 'esito', 'KO')
+    if context.payment_type == 'BBT':
+        steputils.check_redirect_url(context, 'redirect')
 
 @given(u'the {actor} tried to pay the RPT on EC website')
 @then(u'the {actor} tried to pay the RPT on EC website')
@@ -236,13 +251,13 @@ def check_successful_response_with_old_wisp_url(context):
     steputils.generate_nodoinviarpt(context)
     steputils.send_primitive(context, 'user', 'nodoInviaRPT')
 
-
 @then('the user receives a successful response')
 def check_esito_response(context):
     steputils.check_status_code(context, 'user','200')
     steputils.check_field(context, 'esito', 'OK')
 
 @then('the response contains the old WISP URL')
+@given(u'the response contains the old WISP URL')
 def check_old_wisp_url(context):
     steputils.check_redirect_url(context, 'old WISP')
 
@@ -263,3 +278,7 @@ def checkposition_request(context):
 def send_activatePaymentNoticeV2_request(context):
     steputils.send_index_activatePaymentNoticeV2_request(context, 5)
 
+@given(u'the response contains the field faultCode with value PPT_SEMANTICA')
+@then(u'the response contains the field faultCode with value PPT_SEMANTICA')
+def check_faultcode_ppt_semantica(context):
+    steputils.check_field(context, 'faultCode', 'PPT_SEMANTICA')
