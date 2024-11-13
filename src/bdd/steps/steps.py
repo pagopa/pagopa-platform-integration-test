@@ -125,9 +125,7 @@ def step_impl(context, scenario_name):
         [step.keyword + ' ' + step.name + "\n\"\"\"\n" + (step.text or '') + "\n\"\"\"\n" for step in phase.steps])
     context.execute_steps(text_step)
 
-# SECOND HAPPY PATH
 @given('a cart of RPTs {note}')
-@then('a cart of RPTs {note}')
 def generate_empty_cart(context, note):
     # retrieve test_data in order to generate flow_data session data
     test_data = context.commondata
@@ -198,6 +196,16 @@ def user_redirected_to_checkout(context, actor):
     steputils.check_wisp_session_timers_del_and_rts_were_sent(context)
     steputils.check_index_paid_payment_positions(context, 5)
 
+@then('the {actor} is redirected on Checkout completing the multibeneficiary payment')
+def user_redirected_to_checkout(context, actor):
+    steputils.exec_nm1_to_nmu(context, actor)
+    steputils.retrieve_related_notice_numbers_from_redirect(context)
+    steputils.send_checkposition_request(context)
+    steputils.send_index_activatePaymentNoticeV2_request(context, 5)
+    steputils.check_wisp_session_timers(context)
+    steputils.send_closePaymentV2_request(context)
+    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)
+    steputils.check_paid_payment_position_from_multibeneficiary_cart(context)
 
 @then('the debt position was closed')
 def payment_done_check(context):
@@ -240,7 +248,6 @@ def checkposition_request(context):
     steputils.send_checkposition_request(context)
 
 @given(u'send activatePaymentNoticeV2 requests')
-@then(u'send activatePaymentNoticeV2 requests')
 def send_activatePaymentNoticeV2_request(context):
     steputils.send_index_activatePaymentNoticeV2_request(context, 5)
 
@@ -249,8 +256,8 @@ def send_activatePaymentNoticeV2_request(context):
 def check_faultcode_ppt_semantica(context):
     steputils.check_field(context, 'faultCode', 'PPT_SEMANTICA')
 
-@when(u'the user tries to pay the RPT on EC website with cart')
-@then(u'the {actor} tries to pay the RPT on EC website with cart')
+@when(u'the {actor} tries to pay a cart of RPTs on EC website')
+@then(u'the user tries to pay a cart of RPTs on EC website')
 def user_tried_to_pay_RPT_with_cart(context):
     steputils.generate_nodoinviacarrellorpt(context, 'for WISP channel')
     steputils.send_primitive(context, 'user', 'nodoInviaCarrelloRPT')

@@ -6,13 +6,13 @@ Feature: User pays a multibeneficiary payment carts on nodoInviaCarrelloRPT
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_carrello_rpt @happy_path
+  @runnable @nodo_invia_carrello_rpt @happy_path_11
   Scenario: User pays a multibeneficiary cart with two RPTs with a total of two transfers via nodoInviaCarrelloRPT
     Given a cart of RPTs for multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
-    When the execution of "Send a nodoInviaCarrelloRPT request" was successful
-    Then the execution of "Execute redirect and complete payment from multibeneficiary NodoInviaCarrelloRPT" was successful
+    When the user tries to pay a cart of RPTs on EC website
+    Then the user is redirected on Checkout completing the multibeneficiary payment
 
   # ===============================================================================================
   # ===============================================================================================
@@ -22,8 +22,8 @@ Feature: User pays a multibeneficiary payment carts on nodoInviaCarrelloRPT
     Given a cart of RPTs for multibeneficiary
     And a single RPT of type BBT with 2 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
-    When the execution of "Send a nodoInviaCarrelloRPT request" was successful
-    Then the execution of "Execute redirect and complete payment from multibeneficiary NodoInviaCarrelloRPT" was successful
+    When the user tries to pay a cart of RPTs on EC website
+    Then the user is redirected on Checkout completing the multibeneficiary payment
 
   # ===============================================================================================
   # ===============================================================================================
@@ -33,8 +33,8 @@ Feature: User pays a multibeneficiary payment carts on nodoInviaCarrelloRPT
     Given a cart of RPTs for multibeneficiary
     And a single RPT of type BBT with 3 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
-    When the execution of "Send a nodoInviaCarrelloRPT request" was successful
-    Then the execution of "Execute redirect and complete payment from multibeneficiary NodoInviaCarrelloRPT" was successful
+    When the user tries to pay a cart of RPTs on EC website
+    Then the user is redirected on Checkout completing the multibeneficiary payment
 
   # ===============================================================================================
   # ===============================================================================================
@@ -44,12 +44,13 @@ Feature: User pays a multibeneficiary payment carts on nodoInviaCarrelloRPT
     Given a cart of RPTs for multibeneficiary
     And a single RPT of type BBT with 4 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
-    When the execution of "Send a nodoInviaCarrelloRPT request" was successful
-    Then the execution of "Execute redirect and complete payment from multibeneficiary NodoInviaCarrelloRPT" was successful
+    When the user tries to pay a cart of RPTs on EC website
+    Then the user is redirected on Checkout completing the multibeneficiary payment
 
   # ===============================================================================================
   # ===============================================================================================
 
+  #daVedere
   @runnable @nodo_invia_carrello_rpt @unhappy_path
   Scenario: User tries to pay a multibeneficiary cart with two RPTs with a total of six transfers via nodoInviaCarrelloRPT
     Given a cart of RPTs for multibeneficiary

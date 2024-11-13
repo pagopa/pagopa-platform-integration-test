@@ -20,7 +20,6 @@ Feature: Common scenarios for nodoInviaRPT
   # ===============================================================================================
   # ===============================================================================================
 
-#  check_wisp_session_timers
     Scenario: Check if WISP session timers were created
     Given a waiting time of 5 seconds to wait for Nodo to write RE events
     And all the IUV codes of the sent RPTs

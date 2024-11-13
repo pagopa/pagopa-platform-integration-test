@@ -7,7 +7,7 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path @happy_path
-  Scenario: User pays a single payment with single transfer and no stamp on nodoInviaRPT
+  Scenario: User pays a single payment with single transfer and no stamp
     Given a single RPT of type BBT with 1 transfers of which none are stamps
     When the user tries to pay the RPT on EC website
     Then the user is redirected on Checkout completing the payment
@@ -16,7 +16,7 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  Scenario: User pays a single payment with two transfers and no stamp on nodoInviaRPT
+  Scenario: User pays a single payment with two transfers and no stamp
     Given a single RPT of type BBT with 2 transfers of which none are stamps
     When the user tries to pay the RPT on EC website
     Then the user is redirected on Checkout completing the payment
@@ -25,7 +25,7 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  Scenario: User pays a single payment with three transfers and no stamp on nodoInviaRPT
+  Scenario: User pays a single payment with three transfers and no stamp
     Given a single RPT of type BBT with 3 transfers of which none are stamps
     When the user tries to pay the RPT on EC website
     Then the user is redirected on Checkout completing the payment
@@ -34,7 +34,7 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  Scenario: User pays a single payment with four transfers and no stamp on nodoInviaRPT
+  Scenario: User pays a single payment with four transfers and no stamp
     Given a single RPT of type BBT with 4 transfers of which none are stamps
     When the user tries to pay the RPT on EC website
     Then the user is redirected on Checkout completing the payment
@@ -43,7 +43,7 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  Scenario: User pays a single payment with five transfers and no stamp on nodoInviaRPT
+  Scenario: User pays a single payment with five transfers and no stamp
     Given a single RPT of type BBT with 5 transfers of which none are stamps
     When the user tries to pay the RPT on EC website
     Then the user is redirected on Checkout completing the payment
@@ -52,7 +52,7 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  Scenario: User pays a single payment as PO type with one transfer and no stamp on nodoInviaRPT
+  Scenario: User pays a single payment as PO type with one transfer and no stamp
     Given a single RPT of type PO with 1 transfers of which 0 are stamps
     When the user sends a nodoInviaRPT request
     Then the user receives a successful response
@@ -62,7 +62,7 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @unhappy_path
-  Scenario: User pays a single payment as PO type with two transfer and no stamp on nodoInviaRPT
+  Scenario: User pays a single payment as PO type with two transfer and no stamp
     Given a single RPT of type PO with 2 transfers of which 0 are stamps
     And a valid nodoInviaRPT request
     When the user sends a nodoInviaRPT action
@@ -74,7 +74,7 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path @to_fix
-  Scenario: User executes a first redirect from nodoInviaRPT, then execute the redirection again and complete the payment flow
+  Scenario: User executes a first redirect, then execute the redirection again and complete the payment flow
     Given a single RPT of type BBT with 1 transfers of which 0 are stamps
     When the user tries to pay the RPT on EC website
 #    Then the execution of "Execute NM1-to-NMU conversion in wisp-converter" was successful
@@ -85,7 +85,7 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @unhappy_path
-  Scenario: User tries two time to pay the same nodoInviaRPT but fails
+  Scenario: User tries two time to pay the same RPT but fails
     Given a single RPT of type BBT with 1 transfers of which 0 are stamps
     When the user tries to pay the RPT on EC website
     Then the user is redirected on Checkout completing the payment

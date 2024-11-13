@@ -490,6 +490,30 @@ def check_single_paymentoption(context):
 
     context.flow_data['action']['response']['body'] = response
 
+# @then('the response contains the payment option correctly generated from all RPTs')
+def check_paymentoption_amounts_for_multibeneficiary(context):
+    # retrieve response information related to executed request
+    response = context.flow_data['action']['response']['body']
+    payment_options = utils.get_nested_field(response, 'paymentOption')
+    payment_option = payment_options[0]
+
+    # calculate the correct amount of RPTs
+    raw_rpts = context.flow_data['common']['rpts']
+    amount = 0
+    for rpt in raw_rpts:
+        amount += rpt['payment_data']['total_amount']
+    amount = round(amount * 100)
+
+    # executing assertions
+    #utils.assert_show_message(response['pull'] == False, f'The payment option must be not defined for pull payments.')
+    utils.assert_show_message(int(payment_option['amount']) == amount,
+                              f"The total amount calculated from all RPTs in multibeneficiary cart is not equals to the one defined in GPD payment position. GPD's: [{int(payment_option['amount'])}], RPT's: [{amount}]")
+    utils.assert_show_message(payment_option['notificationFee'] == 0,
+                              f'The notification fee in the payment position defined for GPD must be always 0.')
+    utils.assert_show_message(payment_option['isPartialPayment'] == False,
+                              f'The payment option must be not defined as partial payment.')
+
+
 # @then('the response contains the payment option correctly generated from {index} RPT')  # MODIFIED
 def check_paymentoption_amounts(context, index):
     # skipping this step if its execution is not required
@@ -646,6 +670,35 @@ def generate_nodoinviarpt(context):
     # update context with request and edit flow_data
     context.flow_data['action']['request']['body'] = request
 
+# @then('the response contains the transfers correctly generated from all RPTs')
+def check_paymentposition_transfers_for_multibeneficiary(context):
+
+    # retrieve response information related to executed request
+    response = context.flow_data['action']['response']['body']
+
+    payment_options = utils.get_nested_field(response, 'paymentOption')
+    transfers_from_po = payment_options[0]['transfer']
+
+    # retrieve transfers from RPTs in order to execute checks on data
+    raw_rpts = context.flow_data['common']['rpts']
+    transfers_from_rpt = []
+    for rpt in raw_rpts:
+        for transfer in rpt['payment_data']['transfers']:
+            transfers_from_rpt.append(transfer)
+
+    # executing assertions
+    utils.assert_show_message(len(transfers_from_po) == len(transfers_from_rpt), f"There are not the same amount of transfers. GPD's: [{len(transfers_from_po)}], RPT's: [{len(transfers_from_rpt)}]")
+    for transfer_index in range(len(transfers_from_po)):
+        transfer_from_po = transfers_from_po[transfer_index]
+        # using this filter because it cannot be used a filter on IUV for multibeneficiary
+        transfer_from_rpt = next((transfer for transfer in transfers_from_rpt if transfer['transfer_note'] == transfer_from_po['remittanceInformation']), None)
+        utils.assert_show_message(transfer_from_rpt is not None, f"It is not possible to find a transfer in RPT cart with transfer note [{transfer_from_po['remittanceInformation']}]")
+        utils.assert_show_message(transfer_from_po['status'] == 'T_UNREPORTED', f"The status of the transfer {transfer_index} must be equals to [T_UNREPORTED]. Current status: [{transfer_from_po['status']}]")
+        utils.assert_show_message('transferMetadata' in transfer_from_po and len(transfer_from_po['transferMetadata']) > 0, f'There are not transfer metadata in transfer {transfer_index} but at least one is required.')
+        utils.assert_show_message('iban' in transfer_from_po, f'There is not IBAN definition in transfer {transfer_index} but RPT transfer require it.')
+        utils.assert_show_message(transfer_from_po['iban'] == transfer_from_rpt['creditor_iban'], f"The IBAN defined in transfer {transfer_index} is not equals to the one defined in RPT. GPD's: [{transfer_from_po['iban']}], RPT's: [{transfer_from_rpt['creditor_iban']}]")
+        utils.assert_show_message(int(transfer_from_po['amount']) == round(transfer_from_rpt['amount'] * 100), f"The amount of the transfer {transfer_index} must be equals to the same defined in the payment position. GPD's: [{int(transfer_from_po['amount'])}], RPT's: [{round(transfer_from_rpt['amount'])}]")
+
 
 ######################################
 def exec_nm1_to_nmu(context, actor):
@@ -713,6 +766,14 @@ def check_index_paid_payment_positions(context, index):
         check_paymentposition_status(context, 'PO_PAID')
         check_paymentposition_transfers(context)
 
+def check_paid_payment_position_from_multibeneficiary_cart(context):
+    search_paymentposition_by_iuv(context, 1)
+    check_status_code(context, 'user', '200')
+    check_field(context, 'status', 'PAID')
+    check_single_paymentoption(context)
+    check_paymentoption_amounts_for_multibeneficiary(context)
+    check_paymentposition_status(context, 'PO_PAID')
+    check_paymentposition_transfers_for_multibeneficiary(context)
 
 def check_existing_debt_position_usage(context):
     wait_for_n_seconds(context, '2', 'to wait for Nodo to write RE events')
