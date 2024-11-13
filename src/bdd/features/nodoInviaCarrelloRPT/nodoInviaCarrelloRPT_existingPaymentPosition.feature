@@ -93,7 +93,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_carrello_rpt @unhappy_path_1
+  @runnable @nodo_invia_carrello_rpt @unhappy_path
   Scenario: User tries to pay a cart with single RPT on nodoInviaCarrelloRPT that was inserted from ACA and is in valid state
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
