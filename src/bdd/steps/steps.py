@@ -157,40 +157,6 @@ def generate_empty_cart(context, note):
         context.flow_data['common']['cart']['is_multibeneficiary'] = False
 
 
-@given('a valid nodoInviaCarrelloRPT request{options}')
-@then('a valid nodoInviaCarrelloRPT request{options}')
-def generate_nodoinviacarrellorpt(context, options):
-    session.set_skip_tests(context, False)
-
-    # retrieve test_data in order to generate flow_data session data
-    test_data = context.commondata
-
-    # retrieve info about multibeneficiary status
-    rpts = context.flow_data['common']['rpts']
-
-    cart_id = context.flow_data['common']['cart']['id']
-    is_multibeneficiary = context.flow_data['common']['cart']['is_multibeneficiary']
-
-
-    # set channel and password regarding the required options
-    channel = test_data['channel_wisp']
-    password = context.secrets.CHANNEL_WISP_PASSWORD
-    psp = test_data['psp_wisp']
-    psp_broker = test_data['psp_broker_wisp']
-    if 'WFESP channel' in options:
-        channel = test_data['channel_wfesp']
-        password = context.secrets.CHANNEL_WFESP_PASSWORD
-        psp = test_data['psp_wfesp']
-        psp_broker = test_data['psp_broker_wfesp']
-
-    request = requestgen.generate_nodoinviacarrellorpt(test_data, cart_id, rpts, psp, psp_broker, channel, password,
-                                                       is_multibeneficiary)
-
-    # update context with request to be sent
-    context.flow_data['action']['request']['body'] = request
-
-
-###
 @when('the {actor} tries to pay the RPT on EC website')
 @given(u'the {actor} tries to pay the RPT on EC website')
 def user_tries_to_pay_RPT(context, actor):
@@ -282,3 +248,12 @@ def send_activatePaymentNoticeV2_request(context):
 @then(u'the response contains the field faultCode with value PPT_SEMANTICA')
 def check_faultcode_ppt_semantica(context):
     steputils.check_field(context, 'faultCode', 'PPT_SEMANTICA')
+
+@when(u'the user tries to pay the RPT on EC website with cart')
+@then(u'the {actor} tries to pay the RPT on EC website with cart')
+def user_tried_to_pay_RPT_with_cart(context):
+    steputils.generate_nodoinviacarrellorpt(context, 'for WISP channel')
+    steputils.send_primitive(context, 'user', 'nodoInviaCarrelloRPT')
+    steputils.check_status_code(context, 'user', '200')
+    steputils.check_field(context, 'esitoComplessivoOperazione', 'OK')
+    steputils.check_redirect_url(context, 'redirect')

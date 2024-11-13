@@ -11,9 +11,9 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the execution of "Send a nodoInviaCarrelloRPT request" was successful
-    Then the execution of "Execute redirect and complete payment from NodoInviaCarrelloRPT" was successful
-    And the execution of "Check if existing debt position was used" was successful
+    When the user tries to pay the RPT on EC website with cart
+    Then the user is redirected on Checkout completing the payment
+    And the debt position was closed
 
   # ===============================================================================================
   # ===============================================================================================
@@ -23,9 +23,9 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 3 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the execution of "Send a nodoInviaCarrelloRPT request" was successful
-    Then the execution of "Execute redirect and complete payment from NodoInviaCarrelloRPT" was successful
-    And the execution of "Check if existing debt position was used" was successful
+    When the user tries to pay the RPT on EC website with cart
+    Then the user is redirected on Checkout completing the payment
+    And the debt position was closed
 
   # ===============================================================================================
   # ===============================================================================================
@@ -35,9 +35,9 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 2 transfers of which 1 are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the execution of "Send a nodoInviaCarrelloRPT request" was successful
-    Then the execution of "Execute redirect and complete payment from NodoInviaCarrelloRPT" was successful
-    And the execution of "Check if existing debt position was used" was successful
+    When the user tries to pay the RPT on EC website with cart
+    Then the user is redirected on Checkout completing the payment
+    And the debt position was closed
 
   # ===============================================================================================
   # ===============================================================================================
@@ -48,9 +48,9 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the execution of "Send a nodoInviaCarrelloRPT request" was successful
-    Then the execution of "Execute redirect and complete payment from NodoInviaCarrelloRPT" was successful
-    And the execution of "Check if existing debt position was used" was successful
+    When the user tries to pay the RPT on EC website with cart
+    Then the user is redirected on Checkout completing the payment
+    And the debt position was closed
 
   # ===============================================================================================
   # ===============================================================================================
@@ -61,9 +61,9 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And a single RPT of type BBT with 3 transfers of which none are stamps
     And a single RPT of type BBT with 3 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the execution of "Send a nodoInviaCarrelloRPT request" was successful
-    Then the execution of "Execute redirect and complete payment from NodoInviaCarrelloRPT" was successful
-    And the execution of "Check if existing debt position was used" was successful
+    When the user tries to pay the RPT on EC website with cart
+    Then the user is redirected on Checkout completing the payment
+    And the debt position was closed
 
   # ===============================================================================================
   # ===============================================================================================
@@ -74,9 +74,9 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And a single RPT of type BBT with 2 transfers of which 1 are stamps
     And a single RPT of type BBT with 3 transfers of which 1 are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the execution of "Send a nodoInviaCarrelloRPT request" was successful
-    Then the execution of "Execute redirect and complete payment from NodoInviaCarrelloRPT" was successful
-    And the execution of "Check if existing debt position was used" was successful
+    When the user tries to pay the RPT on EC website with cart
+    Then the user is redirected on Checkout completing the payment
+    And the debt position was closed
 
   # ===============================================================================================
   # ===============================================================================================

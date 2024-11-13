@@ -601,6 +601,38 @@ def check_html_error_page(context, actor):
     utils.assert_show_message('Si &egrave; verificato un errore imprevisto' in response,
                               f'The HTML page does not contains an error message.')
 
+# @given('a valid nodoInviaCarrelloRPT request{options}')
+# @then('a valid nodoInviaCarrelloRPT request{options}')
+def generate_nodoinviacarrellorpt(context, options):
+    session.set_skip_tests(context, False)
+
+    # retrieve test_data in order to generate flow_data session data
+    test_data = context.commondata
+
+    # retrieve info about multibeneficiary status
+    rpts = context.flow_data['common']['rpts']
+
+    cart_id = context.flow_data['common']['cart']['id']
+    is_multibeneficiary = context.flow_data['common']['cart']['is_multibeneficiary']
+
+
+    # set channel and password regarding the required options
+    channel = test_data['channel_wisp']
+    password = context.secrets.CHANNEL_WISP_PASSWORD
+    psp = test_data['psp_wisp']
+    psp_broker = test_data['psp_broker_wisp']
+    if 'WFESP channel' in options:
+        channel = test_data['channel_wfesp']
+        password = context.secrets.CHANNEL_WFESP_PASSWORD
+        psp = test_data['psp_wfesp']
+        psp_broker = test_data['psp_broker_wfesp']
+
+    request = requestgen.generate_nodoinviacarrellorpt(test_data, cart_id, rpts, psp, psp_broker, channel, password,
+                                                       is_multibeneficiary)
+
+    # update context with request to be sent
+    context.flow_data['action']['request']['body'] = request
+
 # @given('a valid nodoInviaRPT request')
 def generate_nodoinviarpt(context):
     session.set_skip_tests(context, False)
