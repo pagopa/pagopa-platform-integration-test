@@ -156,7 +156,6 @@ def generate_empty_cart(context, note):
 
 
 @when('the {actor} tries to pay the RPT on EC website')
-@given(u'the {actor} tries to pay the RPT on EC website')
 def user_tries_to_pay_RPT(context, actor):
     steputils.generate_nodoinviarpt(context)
     steputils.send_primitive(context, actor, 'nodoInviaRPT' )
@@ -168,7 +167,6 @@ def user_tries_to_pay_RPT(context, actor):
 
 
 @when('the {actor} tries to pay the RPT on EC website but fails')
-@given(u'the {actor} tries to pay the RPT on EC website but fails')
 def user_fail_to_pay_RPT(context, actor):
     steputils.generate_nodoinviarpt(context)
     steputils.send_primitive(context, actor, 'nodoInviaRPT')
@@ -177,7 +175,6 @@ def user_fail_to_pay_RPT(context, actor):
     if context.payment_type == 'BBT':
         steputils.check_redirect_url(context, 'redirect')
 
-@given(u'the {actor} tried to pay the RPT on EC website')
 @then(u'the {actor} tried to pay the RPT on EC website')
 def user_tried_to_pay_RPT(context, actor):
     user_tries_to_pay_RPT(context, actor)
@@ -212,7 +209,6 @@ def payment_done_check(context):
     steputils.check_existing_debt_position_usage(context)
 
 @then('conversion to new model fails in wisp-converter')
-@given(u'conversion to new model fails in wisp-converter')
 def nm1_to_nmu_fails(context):
     steputils.check_fail_nm1_to_nmu_conversion(context)
 
@@ -231,7 +227,6 @@ def check_esito_response(context):
     steputils.check_field(context, 'esito', 'OK')
 
 @then('the response contains the old WISP URL')
-@given(u'the response contains the old WISP URL')
 def check_old_wisp_url(context):
     steputils.check_redirect_url(context, 'old WISP')
 
@@ -251,13 +246,11 @@ def checkposition_request(context):
 def send_activatePaymentNoticeV2_request(context):
     steputils.send_index_activatePaymentNoticeV2_request(context, 5)
 
-@given(u'the response contains the field faultCode with value PPT_SEMANTICA')
 @then(u'the response contains the field faultCode with value PPT_SEMANTICA')
 def check_faultcode_ppt_semantica(context):
     steputils.check_field(context, 'faultCode', 'PPT_SEMANTICA')
 
 @when(u'the {actor} tries to pay a cart of RPTs on EC website')
-@then(u'the user tries to pay a cart of RPTs on EC website')
 def user_tried_to_pay_RPT_with_cart(context):
     steputils.generate_nodoinviacarrellorpt(context, 'for WISP channel')
     steputils.send_primitive(context, 'user', 'nodoInviaCarrelloRPT')
