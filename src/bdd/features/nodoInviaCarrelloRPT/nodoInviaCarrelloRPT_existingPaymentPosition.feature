@@ -86,21 +86,21 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to DRAFT
-    When the execution of "Send a nodoInviaCarrelloRPT request" was successful
-    Then the execution of "Fails on execute NM1-to-NMU conversion in wisp-converter" was successful
-    And the execution of "Check if existing debt position was invalid but has sent a KO receipt" was successful
+    When the user tries to pay the RPT on EC website with cart
+    Then conversion to new model fails in wisp-converter
+    And the KO receipt was sent
 
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_carrello_rpt @unhappy_path
+  @runnable @nodo_invia_carrello_rpt @unhappy_path_1
   Scenario: User tries to pay a cart with single RPT on nodoInviaCarrelloRPT that was inserted from ACA and is in valid state
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 01 and state equals to VALID
-    When the execution of "Send a nodoInviaCarrelloRPT request" was successful
-    Then the execution of "Fails on execute NM1-to-NMU conversion in wisp-converter" was successful
-    And the execution of "Check if existing debt position was invalid from ACA but has sent a KO receipt" was successful
+    When the user tries to pay the RPT on EC website with cart
+    Then conversion to new model fails in wisp-converter
+    And the KO receipt was sent
 
   # ===============================================================================================
   # ===============================================================================================
@@ -110,9 +110,9 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT
-    When the execution of "Send a nodoInviaCarrelloRPT request" was successful
-    Then the execution of "Fails on execute NM1-to-NMU conversion in wisp-converter" was successful
-    And the execution of "Check if existing debt position was invalid but has sent a KO receipt" was successful
+    When the user tries to pay the RPT on EC website with cart
+    Then conversion to new model fails in wisp-converter
+    And the KO receipt was sent
 
   # ===============================================================================================
   # ===============================================================================================
@@ -123,9 +123,9 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to DRAFT
-    When the execution of "Send a nodoInviaCarrelloRPT request" was successful
-    Then the execution of "Fails on execute NM1-to-NMU conversion in wisp-converter" was successful
-    And the execution of "Check if existing debt position was invalid but has sent a KO receipt" was successful
+     When the user tries to pay the RPT on EC website with cart
+    Then conversion to new model fails in wisp-converter
+    And the KO receipt was sent
 
   # ===============================================================================================
   # ===============================================================================================
@@ -136,9 +136,9 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 01 and state equals to VALID
-    When the execution of "Send a nodoInviaCarrelloRPT request" was successful
-    Then the execution of "Fails on execute NM1-to-NMU conversion in wisp-converter" was successful
-    And the execution of "Check if existing debt position was invalid from ACA but has sent a KO receipt" was successful
+     When the user tries to pay the RPT on EC website with cart
+    Then conversion to new model fails in wisp-converter
+    And the KO receipt was sent
 
   # ===============================================================================================
   # ===============================================================================================
@@ -149,9 +149,9 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT
-    When the execution of "Send a nodoInviaCarrelloRPT request" was successful
-    Then the execution of "Fails on execute NM1-to-NMU conversion in wisp-converter" was successful
-    And the execution of "Check if existing debt position was invalid but has sent a KO receipt" was successful
+     When the user tries to pay the RPT on EC website with cart
+    Then conversion to new model fails in wisp-converter
+    And the KO receipt was sent
 
   # ===============================================================================================
   # ===============================================================================================

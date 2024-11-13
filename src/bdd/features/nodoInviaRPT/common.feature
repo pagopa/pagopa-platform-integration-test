@@ -98,17 +98,6 @@ Feature: Common scenarios for nodoInviaRPT
   # ===============================================================================================
   # ===============================================================================================
 
-  Scenario: Check if existing debt position was invalid from ACA but has sent a KO receipt
-    Given a waiting time of 2 seconds to wait for Nodo to write RE events
-    And the first IUV code of the sent RPTs
-    When the user searches for flow steps by IUVs
-    Then the user receives the HTTP status code 200
-    And there is a redirect event with field operationErrorCode with value WIC-1205
-    And there is a redirect event with field status with value RT_SEND_SUCCESS
-
-  # ===============================================================================================
-  # ===============================================================================================
-
   Scenario: Execute redirect and complete payment from NodoInviaRPT
     When the execution of "Execute NM1-to-NMU conversion in wisp-converter" was successful
     Then the execution of "Retrieve all related notice numbers from executed redirect" was successful
