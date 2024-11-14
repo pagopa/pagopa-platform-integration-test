@@ -8,7 +8,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: User pays a cart with single RPT with one transfer via nodoInviaCarrelloRPT
+  Scenario: User pays a cart with single RPT with one transfer
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
     When the user tries to pay the RPT on EC website
@@ -18,7 +18,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: User pays a cart with single RPT with two transfers via nodoInviaCarrelloRPT
+  Scenario: User pays a cart with single RPT with two transfers
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 2 transfers of which none are stamps
     When the user tries to pay the RPT on EC website
@@ -29,7 +29,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: User pays a cart with single RPT with three transfers via nodoInviaCarrelloRPT
+  Scenario: User pays a cart with single RPT with three transfers
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 3 transfers of which none are stamps
     When the user tries to pay the RPT on EC website
@@ -40,7 +40,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: User pays a cart with single RPT with four transfers via nodoInviaCarrelloRPT
+  Scenario: User pays a cart with single RPT with four transfers
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 4 transfers of which none are stamps
     When the user tries to pay the RPT on EC website
@@ -51,7 +51,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: User pays a cart with single RPT with five transfers via nodoInviaCarrelloRPT
+  Scenario: User pays a cart with single RPT with five transfers
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 5 transfers of which none are stamps
     When the user tries to pay the RPT on EC website
@@ -62,7 +62,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: User pays a cart with three RPTs with one transfer each one via nodoInviaCarrelloRPT
+  Scenario: User pays a cart with three RPTs with one transfer each one
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
@@ -75,7 +75,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: User pays a cart with four RPTs with one transfer each one via nodoInviaCarrelloRPT
+  Scenario: User pays a cart with four RPTs with one transfer each one
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
@@ -89,7 +89,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: User pays a cart with five RPTs with one transfer each one via nodoInviaCarrelloRPT
+  Scenario: User pays a cart with five RPTs with one transfer each one
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
@@ -104,7 +104,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: User pays a cart with two RPTs with a total of five transfers via nodoInviaCarrelloRPT
+  Scenario: User pays a cart with two RPTs with a total of five transfers
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 2 transfers of which none are stamps
     And a single RPT of type BBT with 3 transfers of which none are stamps
@@ -116,7 +116,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: User pays a cart with three RPTs with a total of five transfers via nodoInviaCarrelloRPT
+  Scenario: User pays a cart with three RPTs with a total of five transfers
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 2 transfers of which none are stamps
@@ -129,7 +129,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: User pays a cart with three RPTs with a total of ten transfers via nodoInviaCarrelloRPT
+  Scenario: User pays a cart with three RPTs with a total of ten transfers
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 3 transfers of which none are stamps
     And a single RPT of type BBT with 3 transfers of which none are stamps
@@ -141,8 +141,8 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_carrello_rpt @happy_path_1
-  Scenario: User pays a cart with two RPTs on WFESP flow via nodoInviaCarrelloRPT
+  @runnable @nodo_invia_carrello_rpt @happy_path
+  Scenario: User pays a cart with two RPTs on WFESP flow
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type CP with 1 transfers of which none are stamps
     And a single RPT of type CP with 1 transfers of which none are stamps
@@ -153,41 +153,41 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: User tries to pay, via nodoInviaCarrelloRPT, a cart with two RPTs but the payment closure fails, then
+  Scenario: User tries to pay a cart with two RPTs but the payment closure fails, then
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
-    When the execution of "Send a nodoInviaCarrelloRPT request" was successful
-    When the execution of "Execute redirect but not closing payment from multibeneficiary NodoInviaCarrelloRPT" was successful
-    Given the same nodoInviaCarrelloRPT for another try
-    When the execution of "Send a nodoInviaCarrelloRPT request" was successful
-    Then the execution of "Execute redirect and complete payment from NodoInviaCarrelloRPT" was successful
+    When the user tries to pay the RPT on EC website
+    Then the user is redirected on Checkout not completing the multibeneficiary payment
+    And the same nodoInviaCarrelloRPT for another try
+    When the user tries to pay the RPT on EC website
+    Then the user is redirected on Checkout completing the multibeneficiary payment
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @unhappy_path
-  Scenario: User tries to pay, via nodoInviaCarrelloRPT, a cart with one RPT that has a quantity of transfers above the limit
+  Scenario: User tries to pay a cart with one RPT that has a quantity of transfers above the limit
     Given a cart of RPTs non-multibeneficiary
-    When a single RPT of type BBT with 6 transfers of which none are stamps
-    Then the user tries to pay a cart of RPTs on EC website but fails having the field value PPT_SINTASSI_XSD
-
+    And a single RPT of type BBT with 6 transfers of which none are stamps
+    When the user tries to pay a cart of RPTs on EC website with no redirect URL check
+    Then fails having a quantity of transfers above the limit and getting the error PPT_SINTASSI_XSD
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_carrello_rpt @unhappy_path
-  Scenario: User tries to pay, via nodoInviaCarrelloRPT, a cart with two RPT that has a quantity of transfers above the limit
+  @runnable @nodo_invia_carrello_rpt @unhappy_path_path
+  Scenario: User tries to pay a cart with two RPT that has a quantity of transfers above the limit
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 2 transfers of which none are stamps
     And a single RPT of type BBT with 6 transfers of which none are stamps
-    When a single RPT of type BBT with 6 transfers of which none are stamps
-    Then the user tries to pay a cart of RPTs on EC website but fails having the field value PPT_SINTASSI_XSD
-
+    And a single RPT of type BBT with 6 transfers of which none are stamps
+    When the user tries to pay a cart of RPTs on EC website with no redirect URL check
+    Then fails having a quantity of transfers above the limit and getting the error PPT_SINTASSI_XSD
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @unhappy_path
-  Scenario: User tries to pay, via nodoInviaCarrelloRPT, a cart with two RPTs but the payment closure fails
+  Scenario: User tries to pay a cart with two RPTs but the payment closure fails
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps

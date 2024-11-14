@@ -257,9 +257,9 @@ def checkposition_request(context):
 def send_activatePaymentNoticeV2_request(context):
     steputils.send_index_activatePaymentNoticeV2_request(context, 5)
 
-@then(u'the response contains the field faultCode with value PPT_SEMANTICA')
-def check_faultcode_ppt_semantica(context):
-    steputils.check_field(context, 'faultCode', 'PPT_SEMANTICA')
+@then(u'fails {error_notes} and getting the error {error_value}')
+def check_faultcode_with_notes(context, error_notes, error_value):
+    steputils.check_field(context, 'faultCode', error_value)
 
 @when(u'the {actor} tries to pay a cart of RPTs on EC website')
 def user_tried_to_pay_RPT_with_cart(context, actor):
@@ -282,6 +282,8 @@ def user_tried_to_pay_RPT_with_cart(context, actor, field_value):
     steputils.generate_nodoinviacarrellorpt(context, 'for WISP channel')
     steputils.send_primitive(context, actor, 'nodoInviaCarrelloRPT')
     steputils.check_status_code(context, actor, '200')
+
+
     steputils.check_field(context, 'esitoComplessivoOperazione', 'KO')
     steputils.check_field(context, 'faultCode', field_value)
 
