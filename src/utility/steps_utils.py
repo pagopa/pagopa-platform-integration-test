@@ -745,6 +745,12 @@ def send_closePaymentV2_request(context):
     check_status_code(context, 'creditor istitution', '200')
     check_field(context, 'outcome', 'OK')
 
+def send_KO_closePaymentV2_request(context):
+    generate_closepayment(context, 'KO')
+    send_primitive(context, 'creditor istitution','closePaymentV2')
+    check_status_code(context, 'creditor istitution', '200')
+    check_field(context, 'outcome', 'OK')
+
 def check_wisp_session_timers_del_and_rts_were_sent(context):
     wait_for_n_seconds(context, '10', 'to wait for Nodo to write RE events')
     get_iuvs_from_session(context)
@@ -753,6 +759,16 @@ def check_wisp_session_timers_del_and_rts_were_sent(context):
     check_event(context, 'timer-delete', 'status', 'RECEIPT_TIMER_GENERATION_DELETED_SCHEDULED_SEND')
     check_event_token_relation(context)
     check_event(context, 'receipt-ok','status','RT_SEND_SUCCESS')
+    check_event_notice_number_relation(context)
+
+def check_wisp_session_timers_del_and_rts_were_sent_receipt_ko(context):
+    wait_for_n_seconds(context, '10', 'to wait for Nodo to write RE events')
+    get_iuvs_from_session(context)
+    search_in_re_by_iuv(context)
+    check_status_code(context, 'user', '200')
+    check_event(context, 'timer-delete', 'status', 'RECEIPT_TIMER_GENERATION_DELETED_SCHEDULED_SEND')
+    check_event_token_relation(context)
+    check_event(context, 'receipt-ko','status','RT_SEND_SUCCESS')
     check_event_notice_number_relation(context)
 
 def check_index_paid_payment_positions(context, index):

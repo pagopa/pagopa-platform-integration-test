@@ -205,6 +205,16 @@ def user_redirected_to_checkout(context, actor):
     steputils.check_wisp_session_timers_del_and_rts_were_sent(context)
     steputils.check_paid_payment_position_from_multibeneficiary_cart(context)
 
+@then('the {actor} is redirected on Checkout not completing the multibeneficiary payment')
+def user_redirected_to_checkout(context, actor):
+    steputils.exec_nm1_to_nmu(context, actor)
+    steputils.retrieve_related_notice_numbers_from_redirect(context)
+    steputils.send_checkposition_request(context)
+    steputils.send_index_activatePaymentNoticeV2_request(context, 5)
+    steputils.check_wisp_session_timers(context)
+    steputils.send_KO_closePaymentV2_request(context)
+    steputils.check_wisp_session_timers_del_and_rts_were_sent_receipt_ko(context)
+
 @then('the debt position was closed')
 def payment_done_check(context):
     steputils.check_existing_debt_position_usage(context)
@@ -252,10 +262,10 @@ def check_faultcode_ppt_semantica(context):
     steputils.check_field(context, 'faultCode', 'PPT_SEMANTICA')
 
 @when(u'the {actor} tries to pay a cart of RPTs on EC website')
-def user_tried_to_pay_RPT_with_cart(context):
+def user_tried_to_pay_RPT_with_cart(context, actor):
     steputils.generate_nodoinviacarrellorpt(context, 'for WISP channel')
-    steputils.send_primitive(context, 'user', 'nodoInviaCarrelloRPT')
-    steputils.check_status_code(context, 'user', '200')
+    steputils.send_primitive(context, actor, 'nodoInviaCarrelloRPT')
+    steputils.check_status_code(context, actor, '200')
     steputils.check_field(context, 'esitoComplessivoOperazione', 'OK')
     steputils.check_redirect_url(context, 'redirect')
 
@@ -272,3 +282,4 @@ def user_tried_to_pay_RPT_with_cart(context, actor, field_value):
 @then(u'the response contains the field {field_name} with value {field_value}')
 def check_field(context, field_name, field_value):
    steputils.check_field(context, field_name, field_value)
+
