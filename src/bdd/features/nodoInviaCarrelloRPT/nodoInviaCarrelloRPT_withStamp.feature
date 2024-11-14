@@ -89,26 +89,18 @@ Feature: User pays a payment carts with stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_carrello_rpt @unhappy_path
+  @runnable @nodo_invia_carrello_rpt @unhappy_path_1
   Scenario: User tries to pay, via nodoInviaCarrelloRPT, a cart with one RPT that has a quantity of transfers and stamps above the limit
     Given a cart of RPTs non-multibeneficiary
-    And a single RPT of type BBT with 6 transfers of which 3 are stamps
-    Given a valid nodoInviaCarrelloRPT request for WISP channel
-    When the user sends a nodoInviaCarrelloRPT action
-    Then the user receives the HTTP status code 200
-    And the response contains the field esitoComplessivoOperazione with value KO
-    And the response contains the field faultCode with value PPT_SINTASSI_XSD
+    When a single RPT of type BBT with 6 transfers of which 3 are stamps
+    Then the user tries to pay a cart of RPTs on EC website but fails having the field value PPT_SINTASSI_XSD
 
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_carrello_rpt @unhappy_path
+  @runnable @nodo_invia_carrello_rpt @unhappy_path_1
   Scenario: User tries to pay, via nodoInviaCarrelloRPT, a cart with two RPTs that has a quantity of transfers and stamps above the limit
     Given a cart of RPTs non-multibeneficiary
-    And a single RPT of type BBT with 2 transfers of which 1 are stamps
+    When a single RPT of type BBT with 2 transfers of which 1 are stamps
     And a single RPT of type BBT with 6 transfers of which 2 are stamps
-    Given a valid nodoInviaCarrelloRPT request for WISP channel
-    When the user sends a nodoInviaCarrelloRPT action
-    Then the user receives the HTTP status code 200
-    And the response contains the field esitoComplessivoOperazione with value KO
-    And the response contains the field faultCode with value PPT_SINTASSI_XSD
+    Then the user tries to pay a cart of RPTs on EC website but fails having the field value PPT_SINTASSI_XSD

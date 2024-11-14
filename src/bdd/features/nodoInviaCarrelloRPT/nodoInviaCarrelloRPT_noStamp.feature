@@ -141,16 +141,13 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_carrello_rpt @happy_path
+  @runnable @nodo_invia_carrello_rpt @happy_path_1
   Scenario: User pays a cart with two RPTs on WFESP flow via nodoInviaCarrelloRPT
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type CP with 1 transfers of which none are stamps
     And a single RPT of type CP with 1 transfers of which none are stamps
-    And a valid nodoInviaCarrelloRPT request for WFESP channel
-    When the user sends a nodoInviaCarrelloRPT action
-    Then the user receives the HTTP status code 200
-    And the response contains the field esitoComplessivoOperazione with value OK
-    And the response contains the fake WFESP URL
+    When the user tries to pay a cart of RPTs on EC website
+    Then the response contains the fake WFESP URL
 
   # ===============================================================================================
   # ===============================================================================================

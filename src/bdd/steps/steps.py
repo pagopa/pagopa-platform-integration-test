@@ -283,3 +283,6 @@ def user_tried_to_pay_RPT_with_cart(context, actor, field_value):
 def check_field(context, field_name, field_value):
    steputils.check_field(context, field_name, field_value)
 
+@then('the response contains the {url_type} URL')
+def check_redirect_url(context, url_type):
+    steputils.check_redirect_url(context,url_type)
