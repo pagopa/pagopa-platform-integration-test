@@ -89,7 +89,7 @@ Feature: User pays a payment carts with stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_carrello_rpt @unhappy_path_1
+  @runnable @nodo_invia_carrello_rpt @unhappy_path
   Scenario: User tries to pay, via nodoInviaCarrelloRPT, a cart with one RPT that has a quantity of transfers and stamps above the limit
     Given a cart of RPTs non-multibeneficiary
     When a single RPT of type BBT with 6 transfers of which 3 are stamps
@@ -98,7 +98,7 @@ Feature: User pays a payment carts with stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_carrello_rpt @unhappy_path_1
+  @runnable @nodo_invia_carrello_rpt @unhappy_path
   Scenario: User tries to pay, via nodoInviaCarrelloRPT, a cart with two RPTs that has a quantity of transfers and stamps above the limit
     Given a cart of RPTs non-multibeneficiary
     When a single RPT of type BBT with 2 transfers of which 1 are stamps

@@ -269,6 +269,13 @@ def user_tried_to_pay_RPT_with_cart(context, actor):
     steputils.check_field(context, 'esitoComplessivoOperazione', 'OK')
     steputils.check_redirect_url(context, 'redirect')
 
+@when(u'the {actor} tries to pay a cart of RPTs on EC website with no redirect URL check')
+def user_tried_to_pay_RPT_with_cart(context, actor):
+    steputils.generate_nodoinviacarrellorpt(context, 'for WISP channel')
+    steputils.send_primitive(context, actor, 'nodoInviaCarrelloRPT')
+    steputils.check_status_code(context, actor, '200')
+    steputils.check_field(context, 'esitoComplessivoOperazione', 'OK')
+
 @when(u'the {actor} tries to pay a cart of RPTs on EC website but fails having the field value {field_value}')
 @then(u'the {actor} tries to pay a cart of RPTs on EC website but fails having the field value {field_value}')
 def user_tried_to_pay_RPT_with_cart(context, actor, field_value):
