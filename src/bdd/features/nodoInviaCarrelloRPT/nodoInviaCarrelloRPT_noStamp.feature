@@ -175,7 +175,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_carrello_rpt @unhappy_path_path
+  @runnable @nodo_invia_carrello_rpt @unhappy_path
   Scenario: User tries to pay a cart with two RPT that has a quantity of transfers above the limit
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 2 transfers of which none are stamps
