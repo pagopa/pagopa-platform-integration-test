@@ -11,7 +11,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the user tries to pay the RPT on EC website with cart
+    When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
     And the debt position was closed
 
@@ -23,7 +23,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 3 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the user tries to pay the RPT on EC website with cart
+    When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
     And the debt position was closed
 
@@ -35,7 +35,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 2 transfers of which 1 are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the user tries to pay the RPT on EC website with cart
+    When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
     And the debt position was closed
 
@@ -48,7 +48,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the user tries to pay the RPT on EC website with cart
+    When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
     And the debt position was closed
 
@@ -61,7 +61,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And a single RPT of type BBT with 3 transfers of which none are stamps
     And a single RPT of type BBT with 3 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the user tries to pay the RPT on EC website with cart
+    When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
     And the debt position was closed
 
@@ -74,7 +74,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And a single RPT of type BBT with 2 transfers of which 1 are stamps
     And a single RPT of type BBT with 3 transfers of which 1 are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the user tries to pay the RPT on EC website with cart
+    When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
     And the debt position was closed
 
@@ -86,7 +86,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to DRAFT
-    When the user tries to pay the RPT on EC website with cart
+    When the user tries to pay a cart of RPTs on EC website
     Then conversion to new model fails in wisp-converter
     And the KO receipt was sent
 
@@ -98,7 +98,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 01 and state equals to VALID
-    When the user tries to pay the RPT on EC website with cart
+    When the user tries to pay a cart of RPTs on EC website
     Then conversion to new model fails in wisp-converter
     And the KO receipt was sent
 
@@ -110,7 +110,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT
-    When the user tries to pay the RPT on EC website with cart
+    When the user tries to pay a cart of RPTs on EC website
     Then conversion to new model fails in wisp-converter
     And the KO receipt was sent
 
@@ -123,7 +123,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to DRAFT
-     When the user tries to pay the RPT on EC website with cart
+    When the user tries to pay a cart of RPTs on EC website
     Then conversion to new model fails in wisp-converter
     And the KO receipt was sent
 
@@ -136,7 +136,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 01 and state equals to VALID
-     When the user tries to pay the RPT on EC website with cart
+    When the user tries to pay a cart of RPTs on EC website
     Then conversion to new model fails in wisp-converter
     And the KO receipt was sent
 
@@ -149,7 +149,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT
-     When the user tries to pay the RPT on EC website with cart
+    When the user tries to pay a cart of RPTs on EC website
     Then conversion to new model fails in wisp-converter
     And the KO receipt was sent
 

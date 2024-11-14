@@ -77,7 +77,6 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   Scenario: User executes a first redirect, then execute the redirection again and complete the payment flow
     Given a single RPT of type BBT with 1 transfers of which 0 are stamps
     When the user tries to pay the RPT on EC website
-#    Then the execution of "Execute NM1-to-NMU conversion in wisp-converter" was successful
     Then the conversion to new model succeeds in wisp-converter
     Then the user is redirected on Checkout completing the payment
 

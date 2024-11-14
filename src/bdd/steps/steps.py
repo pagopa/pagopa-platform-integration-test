@@ -59,7 +59,7 @@ def generate_single_rpt(context, payment_type, number_of_transfers, number_of_st
 
     context.flow_data['common']['rpts'] = rpts
 
-@given('the same nodoInviaCarrelloRPT for another try')
+@then('the same nodoInviaCarrelloRPT for another try')
 def update_old_nodoInviaCarrelloRPT_request(context):
     # change cart identifier editing last char value
     cart_id = context.flow_data['common']['cart']['id']
