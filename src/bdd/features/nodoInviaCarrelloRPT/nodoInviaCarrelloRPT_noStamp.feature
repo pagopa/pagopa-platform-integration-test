@@ -141,7 +141,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_carrello_rpt @happy_path_1
+  @runnable @nodo_invia_carrello_rpt @happy_path
   Scenario: User pays a cart with two RPTs on WFESP flow via nodoInviaCarrelloRPT
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type CP with 1 transfers of which none are stamps
