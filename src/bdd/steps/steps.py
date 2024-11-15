@@ -224,7 +224,7 @@ def payment_done_check(context):
 def nm1_to_nmu_fails(context):
     steputils.check_fail_nm1_to_nmu_conversion(context)
 
-@then('the KO receipt was sent')
+@then('the KO receipt is sent')
 def debt_position_invalid(context):
     steputils.check_debt_position_invalid_and_sent_ko_receipt(context)
 

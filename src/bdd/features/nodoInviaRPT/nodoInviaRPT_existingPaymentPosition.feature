@@ -39,7 +39,7 @@ Feature: User pays a single payment from existing payment position via nodoInvia
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to DRAFT
     When the user tries to pay the RPT on EC website
     Then conversion to new model fails in wisp-converter
-    And the KO receipt was sent
+    And the KO receipt is sent
 
   # ===============================================================================================
   # ===============================================================================================
@@ -50,7 +50,7 @@ Feature: User pays a single payment from existing payment position via nodoInvia
     And an existing payment position related to first RPT with segregation code equals to 01 and state equals to VALID
     When the user tries to pay the RPT on EC website
     Then conversion to new model fails in wisp-converter
-    And the KO receipt was sent
+    And the KO receipt is sent
 
   # ===============================================================================================
   # ===============================================================================================
@@ -61,4 +61,4 @@ Feature: User pays a single payment from existing payment position via nodoInvia
     And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT
     When the user tries to pay the RPT on EC website
     Then conversion to new model fails in wisp-converter
-    And the KO receipt was sent
+    And the KO receipt is sent
