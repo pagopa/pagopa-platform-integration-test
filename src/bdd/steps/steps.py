@@ -216,7 +216,7 @@ def user_redirected_to_checkout(context, actor):
     steputils.send_KO_closePaymentV2_request(context)
     steputils.check_wisp_session_timers_del_and_rts_were_sent_receipt_ko(context)
 
-@then('the debt position was closed')
+@then('the debt position is closed')
 def payment_done_check(context):
     steputils.check_existing_debt_position_usage(context)
 

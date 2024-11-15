@@ -13,7 +13,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
     When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
-    And the debt position was closed
+    And the debt position is closed
 
   # ===============================================================================================
   # ===============================================================================================
@@ -25,7 +25,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
     When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
-    And the debt position was closed
+    And the debt position is closed
 
   # ===============================================================================================
   # ===============================================================================================
@@ -37,7 +37,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
     When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
-    And the debt position was closed
+    And the debt position is closed
 
   # ===============================================================================================
   # ===============================================================================================
@@ -50,7 +50,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
     When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
-    And the debt position was closed
+    And the debt position is closed
 
   # ===============================================================================================
   # ===============================================================================================
@@ -63,7 +63,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
     When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
-    And the debt position was closed
+    And the debt position is closed
 
   # ===============================================================================================
   # ===============================================================================================
@@ -76,7 +76,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
     When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
-    And the debt position was closed
+    And the debt position is closed
 
   # ===============================================================================================
   # ===============================================================================================
