@@ -278,14 +278,9 @@ def user_tried_to_pay_RPT_with_cart(context, actor):
     steputils.check_status_code(context, actor, '200')
     steputils.check_field(context, 'esitoComplessivoOperazione', 'OK')
 
-@when(u'the {actor} tries to pay a cart of RPTs on EC website but fails')
-@then(u'the {actor} tries to pay a cart of RPTs on EC website but fails')
-def user_tried_to_pay_RPT_with_cart(context, actor):
-    steputils.generate_nodoinviacarrellorpt(context, 'for WISP channel')
-    steputils.send_primitive(context, actor, 'nodoInviaCarrelloRPT')
-    steputils.check_status_code(context, actor, '200')
+@when('fails trying to pay')
+def fails_trying_to_pay(context):
     steputils.check_field(context, 'esitoComplessivoOperazione', 'KO')
-
 
 @then(u'the response contains the field {field_name} with value {field_value}')
 @when(u'the response contains the field {field_name} with value {field_value}')
