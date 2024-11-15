@@ -92,15 +92,16 @@ Feature: User pays a payment carts with stamps on nodoInviaCarrelloRPT
   @runnable @nodo_invia_carrello_rpt @unhappy_path
   Scenario: User tries to pay a cart with one RPT that has a quantity of transfers and stamps above the limit
     Given a cart of RPTs non-multibeneficiary
-    When a single RPT of type BBT with 6 transfers of which 3 are stamps
-    Then the user tries to pay a cart of RPTs on EC website but fails having the field value PPT_SINTASSI_XSD
-
+    And a single RPT of type BBT with 6 transfers of which 3 are stamps
+    When the user tries to pay a cart of RPTs on EC website with no redirect URL check
+    Then fails having a quantity of transfers above the limit and getting the error PPT_SINTASSI_XSD
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @unhappy_path
   Scenario: User tries to pay a cart with two RPTs that has a quantity of transfers and stamps above the limit
     Given a cart of RPTs non-multibeneficiary
-    When a single RPT of type BBT with 2 transfers of which 1 are stamps
+    And a single RPT of type BBT with 2 transfers of which 1 are stamps
     And a single RPT of type BBT with 6 transfers of which 2 are stamps
-    Then the user tries to pay a cart of RPTs on EC website but fails having the field value PPT_SINTASSI_XSD
+    When the user tries to pay a cart of RPTs on EC website with no redirect URL check
+    Then fails having a quantity of transfers above the limit and getting the error PPT_SINTASSI_XSD

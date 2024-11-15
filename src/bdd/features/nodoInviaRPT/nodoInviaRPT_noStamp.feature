@@ -64,10 +64,7 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   @runnable @nodo_invia_rpt @unhappy_path
   Scenario: User pays a single payment as PO type with two transfer and no stamp
     Given a single RPT of type PO with 2 transfers of which 0 are stamps
-    And a valid nodoInviaRPT request
-    When the user sends a nodoInviaRPT action
-    Then the user receives the HTTP status code 200
-    And the response contains the field esito with value KO
+    When the user tries to pay the RPT on EC website but fails
     And the response contains the field faultCode with value PPT_SEMANTICA
 
   # ===============================================================================================
@@ -96,6 +93,6 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   @runnable @nodo_invia_rpt @unhappy_path
   Scenario: User tries payment with nodoInviaRPT until activatePaymentNoticeV2, then retries again the flow but fails
     Given a single RPT of type BBT with 1 transfers of which 0 are stamps
-    And the user tried to pay the RPT on EC website
+    When the user tried to pay the RPT on EC website
     And send activatePaymentNoticeV2 requests
-    And conversion to new model fails in wisp-converter
+    Then conversion to new model fails in wisp-converter

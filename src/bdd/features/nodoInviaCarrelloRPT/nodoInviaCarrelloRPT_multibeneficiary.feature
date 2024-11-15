@@ -67,7 +67,7 @@ Feature: User pays a multibeneficiary payment carts on nodoInviaCarrelloRPT
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
     When the user tries to pay a cart of RPTs on EC website but fails
-    And the response contains the field description with value 'Il carrello non contiene solo 2 RPT'
+    Then the response contains the field description with value 'Il carrello non contiene solo 2 RPT'
 
   # ===============================================================================================
   # ===============================================================================================
@@ -77,9 +77,8 @@ Feature: User pays a multibeneficiary payment carts on nodoInviaCarrelloRPT
     Given a cart of RPTs for multibeneficiary
     And a single RPT of type BBT with 3 transfers of which none are stamps
     And a single RPT of type BBT with 2 transfers of which none are stamps
-    Given a valid nodoInviaCarrelloRPT request for WISP channel
     When the user tries to pay a cart of RPTs on EC website but fails
-    And the response contains the field description with value 'La seconda RPT non contiene solo 1 versamento'
+    Then the response contains the field description with value 'La seconda RPT non contiene solo 1 versamento'
 
   # ===============================================================================================
   # ===============================================================================================
@@ -90,4 +89,4 @@ Feature: User pays a multibeneficiary payment carts on nodoInviaCarrelloRPT
     And a single RPT of type BBT with 2 transfers of which 1 are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
     When the user tries to pay a cart of RPTs on EC website but fails
-    And the response contains the field description with value 'Nessuna RPT deve contienere marca da bollo'
+    Then the response contains the field description with value 'Nessuna RPT deve contienere marca da bollo'

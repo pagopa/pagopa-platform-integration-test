@@ -177,6 +177,7 @@ def user_fail_to_pay_RPT(context, actor):
         steputils.check_redirect_url(context, 'redirect')
 
 @then(u'the {actor} tried to pay the RPT on EC website')
+@when(u'the {actor} tried to pay the RPT on EC website')
 def user_tried_to_pay_RPT(context, actor):
     user_tries_to_pay_RPT(context, actor)
     nm1_to_nmu_succeeds(context)
@@ -254,6 +255,7 @@ def checkposition_request(context):
     steputils.send_checkposition_request(context)
 
 @given(u'send activatePaymentNoticeV2 requests')
+@when(u'send activatePaymentNoticeV2 requests')
 def send_activatePaymentNoticeV2_request(context):
     steputils.send_index_activatePaymentNoticeV2_request(context, 5)
 
@@ -276,19 +278,17 @@ def user_tried_to_pay_RPT_with_cart(context, actor):
     steputils.check_status_code(context, actor, '200')
     steputils.check_field(context, 'esitoComplessivoOperazione', 'OK')
 
-@when(u'the {actor} tries to pay a cart of RPTs on EC website but fails having the field value {field_value}')
-@then(u'the {actor} tries to pay a cart of RPTs on EC website but fails having the field value {field_value}')
-def user_tried_to_pay_RPT_with_cart(context, actor, field_value):
+@when(u'the {actor} tries to pay a cart of RPTs on EC website but fails')
+@then(u'the {actor} tries to pay a cart of RPTs on EC website but fails')
+def user_tried_to_pay_RPT_with_cart(context, actor):
     steputils.generate_nodoinviacarrellorpt(context, 'for WISP channel')
     steputils.send_primitive(context, actor, 'nodoInviaCarrelloRPT')
     steputils.check_status_code(context, actor, '200')
-
-
     steputils.check_field(context, 'esitoComplessivoOperazione', 'KO')
-    steputils.check_field(context, 'faultCode', field_value)
 
 
 @then(u'the response contains the field {field_name} with value {field_value}')
+@when(u'the response contains the field {field_name} with value {field_value}')
 def check_field(context, field_name, field_value):
    steputils.check_field(context, field_name, field_value)
 
