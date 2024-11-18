@@ -81,7 +81,7 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @unhappy_path
-  Scenario: User tries two time to pay the same RPT but fails
+  Scenario: User tries two time to pay the same RPT but the conversion to the new model fails
     Given a single RPT of type BBT with 1 transfers of which 0 are stamps
     When the user tries to pay the RPT on EC website
     Then the user is redirected on Checkout completing the payment
