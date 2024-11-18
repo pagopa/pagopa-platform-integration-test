@@ -59,7 +59,7 @@ def generate_single_rpt(context, payment_type, number_of_transfers, number_of_st
 
     context.flow_data['common']['rpts'] = rpts
 
-@then('the same nodoInviaCarrelloRPT for another try')
+@then('the same cart is used for another try')
 def update_old_nodoInviaCarrelloRPT_request(context):
     # change cart identifier editing last char value
     cart_id = context.flow_data['common']['cart']['id']
@@ -157,6 +157,7 @@ def generate_empty_cart(context, note):
 
 
 @when('the {actor} tries to pay the RPT on EC website')
+@given('the {actor} tries to pay the RPT on EC website')
 def user_tries_to_pay_RPT(context, actor):
     steputils.generate_nodoinviarpt(context)
     steputils.send_primitive(context, actor, 'nodoInviaRPT' )
@@ -207,6 +208,7 @@ def user_redirected_to_checkout(context, actor):
     steputils.check_paid_payment_position_from_multibeneficiary_cart(context)
 
 @then('the {actor} is redirected on Checkout not completing the multibeneficiary payment')
+@given('the {actor} is redirected on Checkout not completing the multibeneficiary payment')
 def user_redirected_to_checkout(context, actor):
     steputils.exec_nm1_to_nmu(context, actor)
     steputils.retrieve_related_notice_numbers_from_redirect(context)
@@ -264,6 +266,7 @@ def check_faultcode_with_notes(context, error_notes, error_value):
     steputils.check_field(context, 'faultCode', error_value)
 
 @when(u'the {actor} tries to pay a cart of RPTs on EC website')
+@then(u'the {actor} tries to pay a cart of RPTs on EC website')
 def user_tried_to_pay_RPT_with_cart(context, actor):
     steputils.generate_nodoinviacarrellorpt(context, 'for WISP channel')
     steputils.send_primitive(context, actor, 'nodoInviaCarrelloRPT')
