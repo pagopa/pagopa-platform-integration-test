@@ -88,7 +88,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to DRAFT
     When the user tries to pay a cart of RPTs on EC website
     Then conversion to new model fails in wisp-converter
-    And the KO receipt was sent
+    And the KO receipt is sent
 
   # ===============================================================================================
   # ===============================================================================================
@@ -100,7 +100,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And an existing payment position related to first RPT with segregation code equals to 01 and state equals to VALID
     When the user tries to pay a cart of RPTs on EC website
     Then conversion to new model fails in wisp-converter
-    And the KO receipt was sent
+    And the KO receipt is sent
 
   # ===============================================================================================
   # ===============================================================================================
@@ -112,7 +112,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT
     When the user tries to pay a cart of RPTs on EC website
     Then conversion to new model fails in wisp-converter
-    And the KO receipt was sent
+    And the KO receipt is sent
 
   # ===============================================================================================
   # ===============================================================================================
@@ -125,7 +125,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to DRAFT
     When the user tries to pay a cart of RPTs on EC website
     Then conversion to new model fails in wisp-converter
-    And the KO receipt was sent
+    And the KO receipt is sent
 
   # ===============================================================================================
   # ===============================================================================================
@@ -138,7 +138,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And an existing payment position related to first RPT with segregation code equals to 01 and state equals to VALID
     When the user tries to pay a cart of RPTs on EC website
     Then conversion to new model fails in wisp-converter
-    And the KO receipt was sent
+    And the KO receipt is sent
 
   # ===============================================================================================
   # ===============================================================================================
@@ -151,7 +151,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT
     When the user tries to pay a cart of RPTs on EC website
     Then conversion to new model fails in wisp-converter
-    And the KO receipt was sent
+    And the KO receipt is sent
 
   # ===============================================================================================
   # ===============================================================================================
