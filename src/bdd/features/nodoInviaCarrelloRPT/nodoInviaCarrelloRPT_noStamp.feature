@@ -11,7 +11,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   Scenario: User pays a cart with single RPT with one transfer
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
-    When the user tries to pay the RPT on EC website
+    When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
 
   # ===============================================================================================
@@ -21,7 +21,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   Scenario: User pays a cart with single RPT with two transfers
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 2 transfers of which none are stamps
-    When the user tries to pay the RPT on EC website
+    When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
 
 
@@ -32,7 +32,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   Scenario: User pays a cart with single RPT with three transfers
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 3 transfers of which none are stamps
-    When the user tries to pay the RPT on EC website
+    When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
 
 
@@ -43,7 +43,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   Scenario: User pays a cart with single RPT with four transfers
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 4 transfers of which none are stamps
-    When the user tries to pay the RPT on EC website
+    When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
 
 
@@ -54,7 +54,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   Scenario: User pays a cart with single RPT with five transfers
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 5 transfers of which none are stamps
-    When the user tries to pay the RPT on EC website
+    When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
 
 
@@ -67,7 +67,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
-    When the user tries to pay the RPT on EC website
+    When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
 
 
@@ -81,7 +81,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
-    When the user tries to pay the RPT on EC website
+    When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
 
 
@@ -96,7 +96,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
-    When the user tries to pay the RPT on EC website
+    When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
 
 
@@ -108,7 +108,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 2 transfers of which none are stamps
     And a single RPT of type BBT with 3 transfers of which none are stamps
-    When the user tries to pay the RPT on EC website
+    When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
 
 
@@ -121,7 +121,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 2 transfers of which none are stamps
     And a single RPT of type BBT with 2 transfers of which none are stamps
-    When the user tries to pay the RPT on EC website
+    When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
 
 
@@ -134,7 +134,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
     And a single RPT of type BBT with 3 transfers of which none are stamps
     And a single RPT of type BBT with 3 transfers of which none are stamps
     And a single RPT of type BBT with 4 transfers of which none are stamps
-    When the user tries to pay the RPT on EC website
+    When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
 
 
@@ -153,7 +153,7 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: User tries to pay a cart with two RPTs but the payment closure fails, then
+  Scenario: User tries to pay a cart with two RPTs but the payment closure fails, then tries again successfully
     Given a cart of RPTs non-multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
