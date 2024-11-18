@@ -61,7 +61,7 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_rpt @unhappy_path_1
+  @runnable @nodo_invia_rpt @unhappy_path
   Scenario: User pays a single payment as PO type with two transfer and no stamp
     Given a single RPT of type PO with 2 transfers of which 0 are stamps
     When the user tries to pay the RPT on EC website but fails
