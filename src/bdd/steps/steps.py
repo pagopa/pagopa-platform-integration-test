@@ -218,7 +218,7 @@ def user_redirected_to_checkout(context, actor):
     steputils.send_KO_closePaymentV2_request(context)
     steputils.check_wisp_session_timers_del_and_rts_were_sent_receipt_ko(context)
 
-@then('the debt position is closed')
+@then('the debt position was closed')
 def payment_done_check(context):
     steputils.check_existing_debt_position_usage(context)
 
@@ -266,7 +266,7 @@ def check_faultcode_with_notes(context, error_notes, error_value):
     steputils.check_field(context, 'faultCode', error_value)
 
 @when(u'the {actor} tries to pay a cart of RPTs on EC website')
-@then(u'the {actor} tries to pay a cart of RPTs on EC website')
+@given(u'the {actor} tries to pay a cart of RPTs on EC website')
 def user_tried_to_pay_RPT_with_cart(context, actor):
     steputils.generate_nodoinviacarrellorpt(context, 'for WISP channel')
     steputils.send_primitive(context, actor, 'nodoInviaCarrelloRPT')
