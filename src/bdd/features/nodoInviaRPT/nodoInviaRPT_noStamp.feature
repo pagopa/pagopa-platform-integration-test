@@ -91,7 +91,7 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @unhappy_path
-  Scenario: User tries payment with nodoInviaRPT until activatePaymentNoticeV2, then retries again the flow but fails
+  Scenario: User tries the payment, then retries again the flow but fails
     Given a single RPT of type BBT with 1 transfers of which 0 are stamps
     When the user tried to pay the RPT on EC website
     And send activatePaymentNoticeV2 requests
