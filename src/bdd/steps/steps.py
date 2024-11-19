@@ -1,17 +1,15 @@
-import logging
-import time
-
 import request_generator as requestgen
 import session as session
-from allure_commons._allure import attach
 from behave import *
 
+import src.utility.steps_utils as steputils
 from src.utility import constants
 from src.utility import routes as router
 from src.utility import utils
-import src.utility.steps_utils as steputils
 
-@given('a single RPT of type {payment_type} with {number_of_transfers} transfers of which {number_of_stamps} are stamps')
+
+@given(
+    'a single RPT of type {payment_type} with {number_of_transfers} transfers of which {number_of_stamps} are stamps')
 @when('a single RPT of type {payment_type} with {number_of_transfers} transfers of which {number_of_stamps} are stamps')
 def generate_single_rpt(context, payment_type, number_of_transfers, number_of_stamps):
     session.set_skip_tests(context, False)
@@ -59,6 +57,7 @@ def generate_single_rpt(context, payment_type, number_of_transfers, number_of_st
 
     context.flow_data['common']['rpts'] = rpts
 
+
 @then('the same cart is used for another try')
 def update_old_nodoInviaCarrelloRPT_request(context):
     # change cart identifier editing last char value
@@ -66,7 +65,6 @@ def update_old_nodoInviaCarrelloRPT_request(context):
 
     # session.set_flow_data(context, constants.SESSION_DATA_CART_ID, utils.change_last_numeric_char(cart_id))
     context.flow_data['common']['cart']['id'] = utils.change_last_numeric_char(cart_id)
-
 
     # change all CCPs content editing last char value
     rpts = context.flow_data['common']['rpts']
@@ -78,7 +76,9 @@ def update_old_nodoInviaCarrelloRPT_request(context):
     # update context with request and edit flow_data
     context.flow_data['common']['rpts'] = rpts
 
-@given('an existing payment position related to {index} RPT with segregation code equals to {segregation_code} and state equals to {payment_status}')
+
+@given(
+    'an existing payment position related to {index} RPT with segregation code equals to {segregation_code} and state equals to {payment_status}')
 def generate_payment_position(context, index, segregation_code, payment_status):
     session.set_skip_tests(context, False)
 
@@ -126,6 +126,7 @@ def step_impl(context, scenario_name):
         [step.keyword + ' ' + step.name + "\n\"\"\"\n" + (step.text or '') + "\n\"\"\"\n" for step in phase.steps])
     context.execute_steps(text_step)
 
+
 @given('a cart of RPTs {note}')
 def generate_empty_cart(context, note):
     # retrieve test_data in order to generate flow_data session data
@@ -134,24 +135,19 @@ def generate_empty_cart(context, note):
     # set trigger primitive information
     context.flow_data['action']['trigger_primitive']['name'] = constants.PRIMITIVE_NODOINVIACARRELLORPT
 
-
-
     # generate cart identifier and defining info about multibeneficiary cart on flow_data
     if 'for multibeneficiary' in note:
         iuv = utils.generate_iuv(in_18digit_format=True)
 
         context.flow_data['common']['cart']['id'] = utils.generate_cart_id(iuv, test_data['creditor_institution'])
 
-
         context.flow_data['common']['cart']['is_multibeneficiary'] = True
-
 
         context.flow_data['common']['cart']['iuv_for_multibeneficiary'] = iuv
 
     # generate cart identifier and set multibeneficiary info to False on flow_data
     else:
         context.flow_data['common']['cart']['id'] = utils.generate_cart_id(None, test_data['creditor_institution'])
-
 
         context.flow_data['common']['cart']['is_multibeneficiary'] = False
 
@@ -160,7 +156,7 @@ def generate_empty_cart(context, note):
 @given('the {actor} tries to pay the RPT on EC website')
 def user_tries_to_pay_RPT(context, actor):
     steputils.generate_nodoinviarpt(context)
-    steputils.send_primitive(context, actor, 'nodoInviaRPT' )
+    steputils.send_primitive(context, actor, 'nodoInviaRPT')
     steputils.check_status_code(context, actor, '200')
     steputils.check_field(context, 'esito', 'OK')
 
@@ -177,6 +173,7 @@ def user_fail_to_pay_RPT(context, actor):
     if context.payment_type == 'BBT':
         steputils.check_redirect_url(context, 'redirect')
 
+
 @then(u'the {actor} tried to pay the RPT on EC website')
 @when(u'the {actor} tried to pay the RPT on EC website')
 def user_tried_to_pay_RPT(context, actor):
@@ -184,6 +181,7 @@ def user_tried_to_pay_RPT(context, actor):
     nm1_to_nmu_succeeds(context)
     retrieve_notice_numbers_from_redirect(context)
     checkposition_request(context)
+
 
 @then('the {actor} is redirected on Checkout completing the payment')
 def user_redirected_to_checkout(context, actor):
@@ -196,6 +194,7 @@ def user_redirected_to_checkout(context, actor):
     steputils.check_wisp_session_timers_del_and_rts_were_sent(context)
     steputils.check_index_paid_payment_positions(context, 5)
 
+
 @then('the {actor} is redirected on Checkout completing the multibeneficiary payment')
 def user_redirected_to_checkout(context, actor):
     steputils.exec_nm1_to_nmu(context, actor)
@@ -206,6 +205,7 @@ def user_redirected_to_checkout(context, actor):
     steputils.send_closePaymentV2_request(context)
     steputils.check_wisp_session_timers_del_and_rts_were_sent(context)
     steputils.check_paid_payment_position_from_multibeneficiary_cart(context)
+
 
 @then('the {actor} is redirected on Checkout not completing the multibeneficiary payment')
 @given('the {actor} is redirected on Checkout not completing the multibeneficiary payment')
@@ -218,52 +218,64 @@ def user_redirected_to_checkout(context, actor):
     steputils.send_KO_closePaymentV2_request(context)
     steputils.check_wisp_session_timers_del_and_rts_were_sent_receipt_ko(context)
 
+
 @then('the debt position is closed')
 def payment_done_check(context):
     steputils.check_existing_debt_position_usage(context)
+
 
 @then('conversion to new model fails in wisp-converter')
 def nm1_to_nmu_fails(context):
     steputils.check_fail_nm1_to_nmu_conversion(context)
 
+
 @then('the KO receipt is sent')
 def debt_position_invalid(context):
     steputils.check_debt_position_invalid_and_sent_ko_receipt(context)
+
 
 @when('the user sends a nodoInviaRPT request')
 def check_successful_response_with_old_wisp_url(context):
     steputils.generate_nodoinviarpt(context)
     steputils.send_primitive(context, 'user', 'nodoInviaRPT')
 
+
 @then('the user receives a successful response')
 def check_esito_response(context):
-    steputils.check_status_code(context, 'user','200')
+    steputils.check_status_code(context, 'user', '200')
     steputils.check_field(context, 'esito', 'OK')
+
 
 @then('the response contains the old WISP URL')
 def check_old_wisp_url(context):
     steputils.check_redirect_url(context, 'old WISP')
 
+
 @then('the conversion to new model succeeds in wisp-converter')
 def nm1_to_nmu_succeeds(context):
     steputils.exec_nm1_to_nmu(context, 'user')
+
 
 @then('the notice numbers are retrieved from redirect')
 def retrieve_notice_numbers_from_redirect(context):
     steputils.retrieve_related_notice_numbers_from_redirect(context)
 
+
 @then('the checkPosition request was successful')
 def checkposition_request(context):
     steputils.send_checkposition_request(context)
+
 
 @given(u'send activatePaymentNoticeV2 requests')
 @when(u'send activatePaymentNoticeV2 requests')
 def send_activatePaymentNoticeV2_request(context):
     steputils.send_index_activatePaymentNoticeV2_request(context, 5)
 
+
 @then(u'fails {error_notes} and getting the error {error_value}')
 def check_faultcode_with_notes(context, error_notes, error_value):
     steputils.check_field(context, 'faultCode', error_value)
+
 
 @when(u'the {actor} tries to pay a cart of RPTs on EC website')
 @given(u'the {actor} tries to pay a cart of RPTs on EC website')
@@ -274,6 +286,7 @@ def user_tried_to_pay_RPT_with_cart(context, actor):
     steputils.check_field(context, 'esitoComplessivoOperazione', 'OK')
     steputils.check_redirect_url(context, 'redirect')
 
+
 @when(u'the {actor} tries to pay a cart of RPTs on EC website with no redirect URL check')
 def user_tried_to_pay_RPT_with_cart(context, actor):
     steputils.generate_nodoinviacarrellorpt(context, 'for WISP channel')
@@ -281,15 +294,18 @@ def user_tried_to_pay_RPT_with_cart(context, actor):
     steputils.check_status_code(context, actor, '200')
     steputils.check_field(context, 'esitoComplessivoOperazione', 'OK')
 
+
 @when('fails trying to pay')
 def fails_trying_to_pay(context):
     steputils.check_field(context, 'esitoComplessivoOperazione', 'KO')
 
+
 @then(u'the response contains the field {field_name} with value {field_value}')
 @when(u'the response contains the field {field_name} with value {field_value}')
 def check_field(context, field_name, field_value):
-   steputils.check_field(context, field_name, field_value)
+    steputils.check_field(context, field_name, field_value)
+
 
 @then('the response contains the {url_type} URL')
 def check_redirect_url(context, url_type):
-    steputils.check_redirect_url(context,url_type)
+    steputils.check_redirect_url(context, url_type)
