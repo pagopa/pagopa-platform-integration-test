@@ -9,7 +9,7 @@ Feature: User pays a single payment from existing payment position via nodoInvia
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
     When the user tries to pay the RPT on EC website
     Then the user is redirected on Checkout completing the payment
-    And the debt position was closed
+    And the debt position is closed
 
   @runnable @nodo_invia_rpt @happy_path
   Scenario: User pays a single payment with no transfer and one stamp that exists already in GPD
@@ -17,7 +17,7 @@ Feature: User pays a single payment from existing payment position via nodoInvia
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
     When the user tries to pay the RPT on EC website
     Then the user is redirected on Checkout completing the payment
-    And the debt position was closed
+    And the debt position is closed
 
   # ===============================================================================================
   # ===============================================================================================
@@ -28,7 +28,7 @@ Feature: User pays a single payment from existing payment position via nodoInvia
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
     When the user tries to pay the RPT on EC website
     Then the user is redirected on Checkout completing the payment
-    And the debt position was closed
+    And the debt position is closed
 
   # ===============================================================================================
   # ===============================================================================================
