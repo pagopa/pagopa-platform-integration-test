@@ -176,6 +176,7 @@ def user_fail_to_pay_RPT(context, actor):
 
 @then(u'the {actor} tried to pay the RPT on EC website')
 @when(u'the {actor} tried to pay the RPT on EC website')
+@given(u'the {actor} tried to pay the RPT on EC website')
 def user_tried_to_pay_RPT(context, actor):
     user_tries_to_pay_RPT(context, actor)
     nm1_to_nmu_succeeds(context)
