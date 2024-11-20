@@ -75,7 +75,7 @@ jobs:
   SendSlackNotification:
     needs: Integration_test
     uses: ./.github/workflows/send-notification.yml
-    if: always() && github.event_name == 'schedule' && needs.BuildAndScan.result == 'failure'
+    if: always()
 #    with:
 #      CVE_CRITICAL: ${{needs.BuildAndScan.outputs.CVE_CRITICAL}}
 #      CVE_HIGH: ${{needs.BuildAndScan.outputs.CVE_HIGH}}
