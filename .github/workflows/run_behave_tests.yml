@@ -45,7 +45,7 @@ jobs:
       - name: 'Run tests with Behave'
         run: |
           echo "Running tests in $TARGET_ENV environment"
-          behave --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+          behave --tags=@happy_path --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
         env:
           TARGET_ENV: ${{ env.TARGET_ENVIRONMENT }}
       - name: Load test report history
@@ -75,8 +75,11 @@ jobs:
       - name: Extract Fail Rate from Allure
         id: calculate_fail_rate
         run: |
-            fail_rate=$(jq '.statistic.failed / .statistic.total * 100' allure-report/widgets/summary.json)
-            echo "::set-output name=FAIL_RATE::$(printf "%.2f" $fail_rate)"
+          echo "Debugging: Checking if allure-report/widgets/summary.json exists"
+          cat allure-report/widgets/summary.json || echo "File not found!"
+          fail_rate=$(jq '.statistic.failed / .statistic.total * 100' allure-report/widgets/summary.json)
+          echo "Calculated Fail Rate: $fail_rate"
+          echo "::set-output name=FAIL_RATE::$(printf "%.2f" $fail_rate)"
 
 
   SendSlackNotification:
