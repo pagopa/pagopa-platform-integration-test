@@ -34,7 +34,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": " https://pagopa.github.io/pagopa-platform-integration-test/integration-tests | Fail Rate: *${{ inputs.FAIL_RATE }}%* >"
+                    "text": " https://pagopa.github.io/pagopa-platform-integration-test/integration-tests | Fail Rate: *${{ inputs.FAIL_RATE | tostring | default('N/A') }}%*"
                   }
                 }
               ]
