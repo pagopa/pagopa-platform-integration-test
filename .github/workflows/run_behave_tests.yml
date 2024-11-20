@@ -74,6 +74,8 @@ jobs:
           publish_branch: gh-pages
           publish_dir: allure-history
       - name: Clone gh-pages branch into a temporary directory
+        if: always()
+        continue-on-error: true
         run: |
           git clone --branch gh-pages --depth 1 https://github.com/pagopa/pagopa-platform-integration-test.git temp-gh-pages
           echo "Cloned gh-pages branch into temp-gh-pages directory."
