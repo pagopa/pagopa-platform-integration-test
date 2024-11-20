@@ -95,9 +95,9 @@ jobs:
           echo "Debugging: Checking if temp-gh-pages directory exists"
           ls -la temp-gh-pages || echo "Directory 'temp-gh-pages' not found!"
           
-          echo "Debugging: Checking if latest run directory exists in temp-gh-pages"
-          latest_dir=$(ls -d temp-gh-pages/integration-tests/*/ | sort -V | tail -n 1)
-          echo "Latest directory: $latest_dir"
+          echo "Debugging: Checking for the latest numeric directory in integration-tests"
+          latest_dir=$(ls -d temp-gh-pages/integration-tests/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
+          echo "Latest numeric directory: $latest_dir"
           
           summary_file="$latest_dir/widgets/summary.json"
           echo "Debugging: Checking if $summary_file exists"
