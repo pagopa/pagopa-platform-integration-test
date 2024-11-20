@@ -73,7 +73,7 @@ jobs:
           publish_branch: gh-pages
           publish_dir: allure-history
   SendSlackNotification:
-    needs: BuildAndScan
+    needs: Build test report
     uses: ./.github/workflows/send-notification.yml
     if: always() && github.event_name == 'schedule' && needs.BuildAndScan.result == 'failure'
 #    with:
