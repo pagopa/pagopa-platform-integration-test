@@ -35,7 +35,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-
+          sudo apt-get install -y jq
       - name: 'Load secrets'
         run: echo "$SECRETS" >> ./config/.secrets.yaml
         env:
@@ -72,12 +72,16 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-history
+      - name: Extract Fail Rate from Allure
+        run: |
+          fail_rate=$(jq '.statistic.failed / .statistic.total * 100' allure-report/widgets/summary.json)
+          echo "FAIL_RATE=$(printf "%.2f" $fail_rate)" >> $GITHUB_ENV
+
+
   SendSlackNotification:
     needs: Integration_test
     uses: ./.github/workflows/send-notification.yml
     if: always()
-#    with:
-#      CVE_CRITICAL: ${{needs.BuildAndScan.outputs.CVE_CRITICAL}}
-#      CVE_HIGH: ${{needs.BuildAndScan.outputs.CVE_HIGH}}
-#      CVE_MEDIUM: ${{needs.BuildAndScan.outputs.CVE_MEDIUM}}
+    with:
+      FAIL_RATE: ${{ env.FAIL_RATE }}
     secrets: inherit

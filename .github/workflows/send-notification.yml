@@ -3,13 +3,7 @@ name: "Send notification"
 on:
   workflow_call:
     inputs:
-      CVE_CRITICAL:
-        required: false
-        type: string
-      CVE_HIGH:
-        required: false
-        type: string
-      CVE_MEDIUM:
+      FAIL_RATE:
         required: false
         type: string
     secrets:
@@ -40,7 +34,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": " https://pagopa.github.io/pagopa-platform-integration-test/integration-tests |See details on GitHub>"
+                    "text": " https://pagopa.github.io/pagopa-platform-integration-test/integration-tests | Fail Rate: *${{ inputs.FAIL_RATE }}%* >"
                   }
                 }
               ]
