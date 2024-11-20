@@ -45,7 +45,7 @@ jobs:
       - name: 'Run tests with Behave'
         run: |
           echo "Running tests in $TARGET_ENV environment"
-          behave --tags=@happy_path --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+          behave --tags=@happy_path_1 --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
         env:
           TARGET_ENV: ${{ env.TARGET_ENVIRONMENT }}
       - name: Load test report history
@@ -72,6 +72,16 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-history
+      - name: Clone gh-pages branch
+        run: |
+          git clone --branch gh-pages --depth 1 https://github.com/pagopa/pagopa-platform-integration-test.git gh-pages
+          echo "Cloned gh-pages branch."
+      - name: Find Latest Run Directory
+        id: find_latest_run
+        run: |
+          latest_dir=$(ls -d gh-pages/integration-tests/*/ | sort -V | tail -n 1)
+          echo "Latest directory: $latest_dir"
+          echo "::set-output name=latest_dir::$latest_dir"
       - name: Extract Fail Rate from Allure
         id: calculate_fail_rate
         run: |
