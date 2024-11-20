@@ -17,6 +17,8 @@ on:
 jobs:
   Integration_test:
     runs-on: ubuntu-latest
+    outputs:
+      FAIL_RATE: ${{env.FAIL_RATE}}
     name: Run Integration Tests
     env:
       TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'uat' }}
@@ -94,25 +96,25 @@ jobs:
         run: |
           echo "Debugging: Checking if temp-gh-pages directory exists"
           ls -la temp-gh-pages || echo "Directory 'temp-gh-pages' not found!"
-          
+
           echo "Debugging: Checking for the latest numeric directory in integration-tests"
           latest_dir=$(ls -d temp-gh-pages/integration-tests/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
           echo "Latest numeric directory: $latest_dir"
-          
+
           summary_file="$latest_dir/widgets/summary.json"
           echo "Debugging: Checking if $summary_file exists"
           cat $summary_file || echo "File not found!"
-          
+
           if [ -f "$summary_file" ]; then
             fail_rate=$(jq '.statistic.failed / .statistic.total * 100' "$summary_file")
             fail_rate_string=$(printf "%.2f" $fail_rate) # Forza il formato a stringa
             echo "Calculated Fail Rate: $fail_rate_string"
-            echo "FAIL_RATE=$fail_rate_string" >> $GITHUB_OUTPUT
+            echo "FAIL_RATE=$fail_rate_string" >> $GITHUB_ENV
           else
             echo "Summary file not found or missing data!"
-            echo "FAIL_RATE=N/A" >> $GITHUB_OUTPUT
-          fi
-
+            echo "FAIL_RATE=N/A" >> $GITHUB_ENV
+          fi  
+  
 
   SendSlackNotification:
     needs: Integration_test
