@@ -58,6 +58,7 @@ jobs:
       - name: Build test report
         uses: simple-elf/allure-report-action@91e6ff976a8b2303f2551ca36c39ba5256952c08
         if: always()
+        continue-on-error: true
         with:
           gh_pages: gh-pages
           allure_results: allure-results
@@ -73,16 +74,22 @@ jobs:
           publish_branch: gh-pages
           publish_dir: allure-history
       - name: Clone gh-pages branch
+        if: always()
+        continue-on-error: true
         run: |
           git clone --branch gh-pages --depth 1 https://github.com/pagopa/pagopa-platform-integration-test.git gh-pages
           echo "Cloned gh-pages branch."
       - name: Find Latest Run Directory
+        if: always()
+        continue-on-error: true
         id: find_latest_run
         run: |
           latest_dir=$(ls -d gh-pages/integration-tests/*/ | sort -V | tail -n 1)
           echo "Latest directory: $latest_dir"
           echo "::set-output name=latest_dir::$latest_dir"
       - name: Extract Fail Rate from Allure
+        if: always()
+        continue-on-error: true
         id: calculate_fail_rate
         run: |
           echo "Debugging: Checking if allure-report/widgets/summary.json exists"
