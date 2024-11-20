@@ -73,12 +73,10 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-history
-      - name: Clone gh-pages branch
-        if: always()
-        continue-on-error: true
+      - name: Clone gh-pages branch into a temporary directory
         run: |
-          git clone --branch gh-pages --depth 1 https://github.com/pagopa/pagopa-platform-integration-test.git gh-pages
-          echo "Cloned gh-pages branch."
+          git clone --branch gh-pages --depth 1 https://github.com/pagopa/pagopa-platform-integration-test.git temp-gh-pages
+          echo "Cloned gh-pages branch into temp-gh-pages directory."
       - name: Find Latest Run Directory
         if: always()
         continue-on-error: true
@@ -92,11 +90,25 @@ jobs:
         continue-on-error: true
         id: calculate_fail_rate
         run: |
-          echo "Debugging: Checking if allure-report/widgets/summary.json exists"
-          cat allure-report/widgets/summary.json || echo "File not found!"
-          fail_rate=$(jq '.statistic.failed / .statistic.total * 100' allure-report/widgets/summary.json)
-          echo "Calculated Fail Rate: $fail_rate"
-          echo "::set-output name=FAIL_RATE::$(printf "%.2f" $fail_rate)"
+          echo "Debugging: Checking if temp-gh-pages directory exists"
+          ls -la temp-gh-pages || echo "Directory 'temp-gh-pages' not found!"
+          
+          echo "Debugging: Checking if latest run directory exists in temp-gh-pages"
+          latest_dir=$(ls -d temp-gh-pages/integration-tests/*/ | sort -V | tail -n 1)
+          echo "Latest directory: $latest_dir"
+          
+          summary_file="$latest_dir/widgets/summary.json"
+          echo "Debugging: Checking if $summary_file exists"
+          cat $summary_file || echo "File not found!"
+          
+          if [ -f "$summary_file" ]; then
+            fail_rate=$(jq '.statistic.failed / .statistic.total * 100' "$summary_file")
+            echo "Calculated Fail Rate: $fail_rate"
+            echo "::set-output name=FAIL_RATE::$(printf "%.2f" $fail_rate)"
+          else
+            echo "Summary file not found or missing data!"
+            echo "::set-output name=FAIL_RATE::N/A"
+          fi
 
 
   SendSlackNotification:
