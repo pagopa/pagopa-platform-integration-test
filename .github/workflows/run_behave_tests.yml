@@ -117,6 +117,9 @@ jobs:
             echo "FAIL_RATE_INT=0" >> $GITHUB_ENV
             echo "FAIL_RATE=N/A" >> $GITHUB_ENV
           fi
+        env:
+          FAIL_RATE: ${{ env.FAIL_RATE }}
+          FAIL_RATE_INT: ${{ env.FAIL_RATE_INT }}
   
 
   SendSlackNotification:
