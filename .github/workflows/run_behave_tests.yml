@@ -113,8 +113,10 @@ jobs:
             echo "FAIL_RATE=$fail_rate_string" >> $GITHUB_ENV
           
             if (( $(echo "$fail_rate > 80" | bc -l) )); then
+              echo "true" >> $GITHUB_ENV
               echo "FAIL_RATE_ABOVE_80=true" >> $GITHUB_ENV
             else
+              echo "false" >> $GITHUB_ENV
               echo "FAIL_RATE_ABOVE_80=false" >> $GITHUB_ENV
             fi
           else
@@ -122,13 +124,17 @@ jobs:
             echo "FAIL_RATE=N/A" >> $GITHUB_ENV
             echo "FAIL_RATE_ABOVE_80=false" >> $GITHUB_ENV
           fi
+          env:
+          FAIL_RATE: ${{ env.FAIL_RATE }}
+          FAIL_RATE_ABOVE_80: ${{ env.FAIL_RATE_ABOVE_80 }}
   
   
 
   SendSlackNotification:
     needs: Integration_test
-    uses: ./.github/workflows/send-notification.yml
-    if: ${{ needs.Integration_test.outputs.FAIL_RATE_ABOVE_80 == 'true' }}
-    with:
-      FAIL_RATE: ${{ needs.Integration_test.outputs.FAIL_RATE }}
-    secrets: inherit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug Condition
+        run: |
+          echo "FAIL_RATE_ABOVE_80=${{ needs.Integration_test.outputs.FAIL_RATE_ABOVE_80 }}"
+    if: always()
