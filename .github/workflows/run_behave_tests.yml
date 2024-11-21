@@ -139,7 +139,9 @@ jobs:
           else
             echo "Summary file not found or missing data!"
             echo "FAIL_RATE=N/A" >> $GITHUB_ENV
-          fi  
+          fi
+      - name: Debug FAIL_RATE_INT
+        run: echo "FAIL_RATE_INT=${{ needs.Integration_test.outputs.FAIL_RATE_INT }}"
 
   SendSlackNotification:
     needs: Integration_test
