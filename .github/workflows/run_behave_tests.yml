@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       FAIL_RATE: ${{env.FAIL_RATE}}
-      FAIL_RATE_INT: ${{env.FAIL_RATE}}
+      FAIL_RATE_INT: ${{env.FAIL_RATE_INT}}
     name: Run Integration Tests
     env:
       TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'uat' }}
