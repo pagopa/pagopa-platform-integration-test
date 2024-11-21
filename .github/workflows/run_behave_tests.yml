@@ -94,6 +94,30 @@ jobs:
         if: always()
         continue-on-error: true
         id: calculate_fail_rate
+#        run: |
+#          echo "Debugging: Checking if temp-gh-pages directory exists"
+#          ls -la temp-gh-pages || echo "Directory 'temp-gh-pages' not found!"
+#
+#          echo "Debugging: Checking for the latest numeric directory in integration-tests"
+#          latest_dir=$(ls -d temp-gh-pages/integration-tests/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
+#          echo "Latest numeric directory: $latest_dir"
+#
+#          summary_file="$latest_dir/widgets/summary.json"
+#          echo "Debugging: Checking if $summary_file exists"
+#          cat $summary_file || echo "File not found!"
+#
+#          if [ -f "$summary_file" ]; then
+#            fail_rate=$(jq '.statistic.failed / .statistic.total * 100' "$summary_file")
+#            echo "FAIL_RATE_INT=fail_rate" >> $GITHUB_ENV
+#            echo "FAIL_RATE=$fail_rate" >> $GITHUB_ENV
+#            echo "Calculated Fail Rate: $fail_rate_int%"
+#          else
+#            echo "Summary file not found or missing data!"
+#            echo "FAIL_RATE_INT=0" >> $GITHUB_ENV
+#            echo "FAIL_RATE=N/A" >> $GITHUB_ENV
+#          fi
+#
+
         run: |
           echo "Debugging: Checking if temp-gh-pages directory exists"
           ls -la temp-gh-pages || echo "Directory 'temp-gh-pages' not found!"
@@ -108,15 +132,14 @@ jobs:
 
           if [ -f "$summary_file" ]; then
             fail_rate=$(jq '.statistic.failed / .statistic.total * 100' "$summary_file")
-            fail_rate_int=$(printf "%.0f" $fail_rate) # Converte in intero
-            echo "FAIL_RATE_INT=fail_rate" >> $GITHUB_ENV
-            echo "FAIL_RATE=$fail_rate" >> $GITHUB_ENV
-            echo "Calculated Fail Rate: $fail_rate_int%"
+            fail_rate_string=$(printf "%.2f" $fail_rate) # Forza il formato a stringa
+            echo "Calculated Fail Rate: $fail_rate_string"
+            echo "FAIL_RATE=$fail_rate_string" >> $GITHUB_ENV
+            echo "FAIL_RATE_INT=$fail_rate" >> $GITHUB_ENV
           else
             echo "Summary file not found or missing data!"
-            echo "FAIL_RATE_INT=0" >> $GITHUB_ENV
             echo "FAIL_RATE=N/A" >> $GITHUB_ENV
-          fi
+          fi  
 
   SendSlackNotification:
     needs: Integration_test
