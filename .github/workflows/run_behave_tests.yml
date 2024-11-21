@@ -109,7 +109,7 @@ jobs:
           if [ -f "$summary_file" ]; then
             fail_rate=$(jq '.statistic.failed / .statistic.total * 100' "$summary_file")
             fail_rate_int=$(printf "%.0f" $fail_rate) # Converte in intero
-            echo "FAIL_RATE_INT=$fail_rate_int" >> $GITHUB_ENV
+            echo "FAIL_RATE_INT=fail_rate" >> $GITHUB_ENV
             echo "FAIL_RATE=$fail_rate" >> $GITHUB_ENV
             echo "Calculated Fail Rate: $fail_rate_int%"
           else
@@ -117,10 +117,6 @@ jobs:
             echo "FAIL_RATE_INT=0" >> $GITHUB_ENV
             echo "FAIL_RATE=N/A" >> $GITHUB_ENV
           fi
-        env:
-          FAIL_RATE: ${{ env.FAIL_RATE }}
-          FAIL_RATE_INT: ${{ env.FAIL_RATE_INT }}
-  
 
   SendSlackNotification:
     needs: Integration_test
