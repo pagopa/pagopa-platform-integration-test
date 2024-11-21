@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       FAIL_RATE: ${{env.FAIL_RATE}}
+      FAIL_RATE_ABOVE_80: ${{ env.FAIL_RATE_ABOVE_80 }}
     name: Run Integration Tests
     env:
       TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'uat' }}
@@ -127,7 +128,7 @@ jobs:
   SendSlackNotification:
     needs: Integration_test
     uses: ./.github/workflows/send-notification.yml
-    if: ${{ env.FAIL_RATE_ABOVE_80 == 'true' }}
+    if: ${{ needs.Integration_test.outputs.FAIL_RATE_ABOVE_80 == 'true' }}
     with:
       FAIL_RATE: ${{ needs.Integration_test.outputs.FAIL_RATE }}
     secrets: inherit
