@@ -141,6 +141,8 @@ jobs:
             echo "FAIL_RATE=N/A" >> $GITHUB_ENV
           fi
       - name: Debug FAIL_RATE_INT
+        if: always()
+        continue-on-error: true
         run: echo "FAIL_RATE_INT=${{ needs.Integration_test.outputs.FAIL_RATE_INT }}"
 
   SendSlackNotification:
