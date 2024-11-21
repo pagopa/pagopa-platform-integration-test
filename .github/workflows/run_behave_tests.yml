@@ -143,12 +143,12 @@ jobs:
       - name: Debug FAIL_RATE_INT
         if: always()
         continue-on-error: true
-        run: echo "FAIL_RATE_INT=${{ needs.Integration_test.outputs.FAIL_RATE_INT }}"
+        run: echo "FAIL_RATE_INT=${{ env.FAIL_RATE_INT }}"
 
   SendSlackNotification:
     needs: Integration_test
     uses: ./.github/workflows/send-notification.yml
-    if: ${{ needs.Integration_test.outputs.FAIL_RATE_INT > 80 }}
+    if: ${{ env.FAIL_RATE_INT > 80 }}
     with:
       FAIL_RATE: ${{ needs.Integration_test.outputs.FAIL_RATE }}
     secrets: inherit
