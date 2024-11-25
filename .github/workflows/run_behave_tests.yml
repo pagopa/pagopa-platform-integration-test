@@ -18,8 +18,8 @@ jobs:
   Integration_test:
     runs-on: ubuntu-latest
     outputs:
-      FAIL_RATE: ${{ steps.calculate_fail_rate.outputs.FAIL_RATE }}
-      SEND_NOTIFICATION: ${{ steps.calculate_fail_rate.outputs.SEND_NOTIFICATION }}
+      FAIL_RATE: ${{ env.FAIL_RATE }}
+      SEND_NOTIFICATION: ${{ env.SEND_NOTIFICATION }}
     name: Run Integration Tests
     env:
       TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'uat' }}
@@ -113,9 +113,7 @@ jobs:
             send_notification=false
           fi
           echo "FAIL_RATE=$fail_rate_number" >> $GITHUB_ENV
-          echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_ENV
-          echo "FAIL_RATE=$fail_rate_number" >> $GITHUB_OUTPUT
-          echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_OUTPUT   
+          echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_ENV 
           echo "BIT SEND_NOTIFICATION: $send_notification"
       - name: Debug SEND_NOTIFICATION
         if: always()
