@@ -114,6 +114,7 @@ jobs:
             echo "FAIL_RATE=N/A" >> $GITHUB_ENV
           fi
       - name: Debug Outputs
+        if: always()
         run: |
           echo "FAIL_RATE=${{ needs.Integration_test.outputs.FAIL_RATE }}"
           echo "THRESHOLD=${{ needs.Integration_test.outputs.THRESHOLD }}"   
