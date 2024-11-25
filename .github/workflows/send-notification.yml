@@ -9,6 +9,9 @@ on:
       SEND_NOTIFICATION:
         required: true
         type: string
+      SUCCESS_RATE:
+        required: true
+        type: string
     secrets:
       SLACK_WEBHOOK_URL:
         required: true
@@ -38,7 +41,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": " https://pagopa.github.io/pagopa-platform-integration-test/integration-tests | Fail Rate: *${{ inputs.FAIL_RATE }}%*"
+                    "text": " https://pagopa.github.io/pagopa-platform-integration-test/integration-tests | Fail Rate: *${{ inputs.SUCCESS_RATE }}%*"
                   }
                 }
               ]

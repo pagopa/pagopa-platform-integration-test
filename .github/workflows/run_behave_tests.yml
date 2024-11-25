@@ -49,7 +49,7 @@ jobs:
       - name: 'Run tests with Behave'
         run: |
           echo "Running tests in $TARGET_ENV environment"
-          behave --tags=@test_100 --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+          behave --tags=@happy_path_1 --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
         env:
           TARGET_ENV: ${{ env.TARGET_ENVIRONMENT }}
       - name: Load test report history
@@ -113,9 +113,12 @@ jobs:
             # Evita la divisione per zero
             if [ "$failed" -eq 0 ]; then
               fail_rate_number=0
+              success_rate_number=100
             else
               fail_rate=$(echo "$failed / $total * 100" | bc -l)
               fail_rate_number=$(printf "%.0f" $fail_rate) # Converte in intero
+              success_rate_number=$(echo "100 - $fail_rate" | bc -l)
+              success_rate_number=$(printf "%.0f" $success_rate_number) # Converte in intero
             fi
 
             echo "Calcolato fail_rate_number: $fail_rate_number"
@@ -136,7 +139,9 @@ jobs:
           echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_ENV
           echo "FAIL_RATE=$fail_rate_number" >> $GITHUB_OUTPUT
           echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_OUTPUT
-
+          echo "SUCCESS_RATE=$success_rate_number" >> $GITHUB_ENV
+          echo "SUCCESS_RATE=$success_rate_number" >> $GITHUB_OUTPUT
+          
           # Log finale per debug
           echo "Final FAIL_RATE: $fail_rate_number"
           echo "Final SEND_NOTIFICATION: $send_notification"
@@ -156,5 +161,6 @@ jobs:
     if: always()
     with:
       FAIL_RATE: ${{ needs.Integration_test.outputs.FAIL_RATE }}
+      SUCCESS_RATE: ${{ needs.Integration_test.outputs.SUCCESS_RATE }}
       SEND_NOTIFICATION: ${{ needs.Integration_test.outputs.SEND_NOTIFICATION }}
     secrets: inherit
