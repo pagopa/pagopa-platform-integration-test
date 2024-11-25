@@ -16,22 +16,21 @@ on:
       WISP:
         type: boolean
         description: Run WISP dismantling tests
+        required: false
         default: true
       FdR:
         type: boolean
         description: Run Flussi di Rendicontazione tests
+        required: false
         default: true
-
-env:
-  TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'uat' }}
-  RUN_WISP_TESTS: ${{ github.event.inputs.WISP || 'true' }}
-  RUN_FDR_TESTS: ${{ github.event.inputs.FdR || 'true' }}
 
 jobs:
   WISP_integration_tests:
     runs-on: ubuntu-latest
     name: Run WISP dismantling Integration Tests
-    if: ${{ env.RUN_WISP_TESTS == "true" }}
+    if: ${{ github.event.inputs.WISP != false }}
+    env:
+      TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'uat' }}
     steps:
       - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 #v4.2.0
       - name: Setup Python
@@ -87,7 +86,9 @@ jobs:
   FdR_integration_tests:
     runs-on: ubuntu-latest
     name: Run Integration Tests
-    if: ${{ env.RUN_FDR_TESTS  == "true" }}
+    if: ${{ github.event.inputs.FdR != false }}
+    env:
+      TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'uat' }}
     steps:
       - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 #v4.2.0
       - name: Setup Python
