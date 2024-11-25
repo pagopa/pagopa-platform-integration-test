@@ -6,6 +6,9 @@ on:
       FAIL_RATE:
         required: false
         type: string
+      SEND_NOTIFICATION:
+        required: true
+        type: string
     secrets:
       SLACK_WEBHOOK_URL:
         required: false
@@ -15,6 +18,7 @@ jobs:
     name: Notify Slack
     runs-on: ubuntu-latest
     environment: prod
+    if: ${{ inputs.SEND_NOTIFICATION == 'true' }}
     steps:
       - name: Send notification to Slack
         id: slack
