@@ -18,8 +18,8 @@ jobs:
   Integration_test:
     runs-on: ubuntu-latest
     outputs:
-      FAIL_RATE: ${{env.FAIL_RATE}}
-      THRESHOLD: ${{ env.THRESHOLD }}
+      FAIL_RATE: ${{ steps.calculate_fail_rate.outputs.FAIL_RATE }}
+      SEND_NOTIFICATION: ${{ steps.calculate_fail_rate.outputs.SEND_NOTIFICATION }}
     name: Run Integration Tests
     env:
       TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'uat' }}
@@ -96,33 +96,30 @@ jobs:
         continue-on-error: true
         id: calculate_fail_rate
         run: |
-          echo "Debugging: Checking if temp-gh-pages directory exists"
-          ls -la temp-gh-pages || echo "Directory 'temp-gh-pages' not found!"
-          echo "Debugging: Checking for the latest numeric directory in integration-tests"
-          latest_dir=$(ls -d temp-gh-pages/integration-tests/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
-          echo "Latest numeric directory: $latest_dir"
+          # Calcola la fail rate
+          latest_dir=$(ls -d gh-pages/integration-tests/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
           summary_file="$latest_dir/widgets/summary.json"
-          echo "Debugging: Checking if $summary_file exists"
-          cat $summary_file || echo "File not found!"
           if [ -f "$summary_file" ]; then
             fail_rate=$(jq '.statistic.failed / .statistic.total * 100' "$summary_file")
-            fail_rate_string=$(printf "%.2f" $fail_rate) # Forza il formato a stringa
-            echo "Calculated Fail Rate: $fail_rate_string"
-            echo "FAIL_RATE=$fail_rate_string" >> $GITHUB_ENV
+            fail_rate_number=$(printf "%.0f" $fail_rate) # Converte in intero
           else
-            echo "Summary file not found or missing data!"
-            echo "FAIL_RATE=N/A" >> $GITHUB_ENV
+            fail_rate_number=0
           fi
-      - name: Debug Outputs
-        if: always()
-        run: |
-          echo "FAIL_RATE=${{ needs.Integration_test.outputs.FAIL_RATE }}"
-          echo "THRESHOLD=${{ needs.Integration_test.outputs.THRESHOLD }}"   
+          # Confronta la soglia
+          if [ "$fail_rate_number" -gt "${{ env.THRESHOLD }}" ]; then
+            send_notification=true
+          else
+            send_notification=false
+          fi
+          echo "FAIL_RATE=$fail_rate_number" >> $GITHUB_ENV
+          echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_ENV
+          echo "FAIL_RATE=$fail_rate_number" >> $GITHUB_OUTPUT
+          echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_OUTPUT   
   
 
   SendSlackNotification:
     needs: Integration_test
     uses: ./.github/workflows/send-notification.yml
-    if: ${{ fromJSON(needs.Integration_test.outputs.FAIL_RATE) > fromJSON(needs.Integration_test.outputs.THRESHOLD) }}
+    if: ${{ needs.Integration_test.outputs.SEND_NOTIFICATION == 'true' }}
     with:
       FAIL_RATE: ${{ needs.Integration_test.outputs.FAIL_RATE }}
