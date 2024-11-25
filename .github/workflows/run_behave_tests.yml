@@ -115,7 +115,14 @@ jobs:
           echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_ENV
           echo "FAIL_RATE=$fail_rate_number" >> $GITHUB_OUTPUT
           echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_OUTPUT   
-  
+      - name: Debug SEND_NOTIFICATION
+        if: always()
+        run: |
+          if [ "${{ needs.Integration_test.outputs.SEND_NOTIFICATION }}" == "true" ]; then
+            echo "SEND_NOTIFICATION is true. Notification will be sent."
+          else
+            echo "SEND_NOTIFICATION is false. Notification will not be sent."
+          fi
 
   SendSlackNotification:
     needs: Integration_test
