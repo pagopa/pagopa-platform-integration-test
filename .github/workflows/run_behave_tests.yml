@@ -129,6 +129,6 @@ jobs:
   SendSlackNotification:
     needs: Integration_test
     uses: ./.github/workflows/send-notification.yml
-    if: ${{ needs.Integration_test.calculate_fail_rate.outputs.SEND_NOTIFICATION == 'true' }}
+    if: if [ "${{ needs.Integration_test.outputs.SEND_NOTIFICATION }}" == "true" ];
     with:
       FAIL_RATE: ${{ needs.Integration_test.outputs.FAIL_RATE }}
