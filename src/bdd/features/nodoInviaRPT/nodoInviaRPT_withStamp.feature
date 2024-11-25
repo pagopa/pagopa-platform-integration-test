@@ -10,7 +10,7 @@ Feature: User pays a single payment with stamp via nodoInviaRPT
   Scenario: User pays a single payment with no simple transfer and one stamp
     Given a single RPT of type BBT with 1 transfers of which 1 are stamps
     When the user tries to pay the RPT on EC website
-#    Then the user is redirected on Checkout completing the payment
+    Then the user is redirected on Checkout completing the payment
 
   # ===============================================================================================
   # ===============================================================================================
