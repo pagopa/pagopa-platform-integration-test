@@ -117,7 +117,7 @@ jobs:
             else
               fail_rate=$(echo "$failed / $total * 100" | bc -l)
               fail_rate_number=$(printf "%.0f" $fail_rate) # Converte in intero
-              success_rate_number=$(echo "100 - $fail_rate" | bc -l)
+              success_rate_number=$(echo "100 - fail_rate_number" | bc -l)
               success_rate_number=$(printf "%.0f" $success_rate_number) # Converte in intero
             fi
 
