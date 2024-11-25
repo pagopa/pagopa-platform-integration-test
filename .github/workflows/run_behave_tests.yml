@@ -18,8 +18,8 @@ jobs:
   Integration_test:
     runs-on: ubuntu-latest
     outputs:
-      FAIL_RATE: ${{ env.FAIL_RATE }}
-      SEND_NOTIFICATION: ${{ env.SEND_NOTIFICATION }}
+      FAIL_RATE: ${{env.FAIL_RATE}}
+      SEND_NOTIFICATION: ${{env.SEND_NOTIFICATION}}
     name: Run Integration Tests
     env:
       TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'uat' }}
@@ -118,7 +118,7 @@ jobs:
       - name: Debug SEND_NOTIFICATION
         if: always()
         run: |
-          if [ "${{ needs.Integration_test.outputs.SEND_NOTIFICATION }}" == "true" ]; then
+          if [ "${{ env.SEND_NOTIFICATION }}" == "true" ]; then
             echo "SEND_NOTIFICATION is true. Notification will be sent."
           else
             echo "SEND_NOTIFICATION is false. Notification will not be sent."
@@ -127,6 +127,6 @@ jobs:
   SendSlackNotification:
     needs: Integration_test
     uses: ./.github/workflows/send-notification.yml
-    if: ${{ needs.Integration_test.outputs.SEND_NOTIFICATION == 'true' }}
+    if: ${{ env.SEND_NOTIFICATION == 'true' }}
     with:
       FAIL_RATE: ${{ needs.Integration_test.outputs.FAIL_RATE }}
