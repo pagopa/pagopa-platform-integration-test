@@ -113,7 +113,9 @@ jobs:
             send_notification=false
           fi
           echo "FAIL_RATE=$fail_rate_number" >> $GITHUB_ENV
-          echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_ENV 
+          echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_ENV
+          echo "FAIL_RATE=$fail_rate_number" >> $GITHUB_OUTPUT
+          echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_OUTPUT 
           echo "BIT SEND_NOTIFICATION: $send_notification"
       - name: Debug SEND_NOTIFICATION
         if: always()
@@ -127,6 +129,6 @@ jobs:
   SendSlackNotification:
     needs: Integration_test
     uses: ./.github/workflows/send-notification.yml
-    if: ${{ needs.Integration_test.env.SEND_NOTIFICATION == 'true' }}
+    if: ${{ needs.Integration_test.calculate_fail_rate.outputs.SEND_NOTIFICATION == 'true' }}
     with:
       FAIL_RATE: ${{ needs.Integration_test.outputs.FAIL_RATE }}
