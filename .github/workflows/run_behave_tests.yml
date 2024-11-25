@@ -116,6 +116,7 @@ jobs:
           echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_ENV
           echo "FAIL_RATE=$fail_rate_number" >> $GITHUB_OUTPUT
           echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_OUTPUT   
+          echo "BIT SEND_NOTIFICATION: $send_notification"
       - name: Debug SEND_NOTIFICATION
         if: always()
         run: |
