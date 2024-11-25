@@ -20,6 +20,7 @@ jobs:
     outputs:
       FAIL_RATE: ${{env.FAIL_RATE}}
       SEND_NOTIFICATION: ${{env.SEND_NOTIFICATION}}
+      SUCCESS_RATE: ${{env.SUCCESS_RATE}}
     name: Run Integration Tests
     env:
       TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'uat' }}
