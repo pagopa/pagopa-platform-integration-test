@@ -18,11 +18,11 @@ jobs:
   Integration_test:
     runs-on: ubuntu-latest
     outputs:
-      FAIL_RATE: ${{ env.FAIL_RATE }}
-      FAIL_RATE_INT: ${{ env.FAIL_RATE_INT }}
+      FAIL_RATE: ${{env.FAIL_RATE}}
     name: Run Integration Tests
     env:
       TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'uat' }}
+      THRESHOLD: 80
     steps:
       - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 #v4.2.0
       - name: Setup Python
@@ -94,68 +94,29 @@ jobs:
         if: always()
         continue-on-error: true
         id: calculate_fail_rate
-#        run: |
-#          echo "Debugging: Checking if temp-gh-pages directory exists"
-#          ls -la temp-gh-pages || echo "Directory 'temp-gh-pages' not found!"
-#
-#          echo "Debugging: Checking for the latest numeric directory in integration-tests"
-#          latest_dir=$(ls -d temp-gh-pages/integration-tests/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
-#          echo "Latest numeric directory: $latest_dir"
-#
-#          summary_file="$latest_dir/widgets/summary.json"
-#          echo "Debugging: Checking if $summary_file exists"
-#          cat $summary_file || echo "File not found!"
-#
-#          if [ -f "$summary_file" ]; then
-#            fail_rate=$(jq '.statistic.failed / .statistic.total * 100' "$summary_file")
-#            echo "FAIL_RATE_INT=fail_rate" >> $GITHUB_ENV
-#            echo "FAIL_RATE=$fail_rate" >> $GITHUB_ENV
-#            echo "Calculated Fail Rate: $fail_rate_int%"
-#          else
-#            echo "Summary file not found or missing data!"
-#            echo "FAIL_RATE_INT=0" >> $GITHUB_ENV
-#            echo "FAIL_RATE=N/A" >> $GITHUB_ENV
-#          fi
-#
-
         run: |
           echo "Debugging: Checking if temp-gh-pages directory exists"
           ls -la temp-gh-pages || echo "Directory 'temp-gh-pages' not found!"
-
           echo "Debugging: Checking for the latest numeric directory in integration-tests"
           latest_dir=$(ls -d temp-gh-pages/integration-tests/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
           echo "Latest numeric directory: $latest_dir"
-
           summary_file="$latest_dir/widgets/summary.json"
           echo "Debugging: Checking if $summary_file exists"
           cat $summary_file || echo "File not found!"
-
           if [ -f "$summary_file" ]; then
             fail_rate=$(jq '.statistic.failed / .statistic.total * 100' "$summary_file")
             fail_rate_string=$(printf "%.2f" $fail_rate) # Forza il formato a stringa
             echo "Calculated Fail Rate: $fail_rate_string"
             echo "FAIL_RATE=$fail_rate_string" >> $GITHUB_ENV
-            echo "FAIL_RATE_INT=$fail_rate" >> $GITHUB_ENV
-            echo "FAIL_RATE=$fail_rate_string" >> $GITHUB_OUTPUT
-            echo "FAIL_RATE_INT=$fail_rate" >> $GITHUB_OUTPUT
           else
             echo "Summary file not found or missing data!"
             echo "FAIL_RATE=N/A" >> $GITHUB_ENV
-          fi
-      - name: Debug OUTPUTS
-        if: always()
-        continue-on-error: true
-        run: |
-          echo "FAIL_RATE_INT=${{ steps.calculate_fail_rate.outputs.FAIL_RATE_INT }}"
-          echo "FAIL_RATE=${{ steps.calculate_fail_rate.outputs.FAIL_RATE }}"
+          fi  
+  
 
   SendSlackNotification:
     needs: Integration_test
     uses: ./.github/workflows/send-notification.yml
-    name: Send Slack Notification
-    env:
-      FAIL_RATE_THRESHOLD: 80
-    if: ${{ fromJson(needs.Integration_test.outputs.FAIL_RATE) > fromJson(env.FAIL_RATE_THRESHOLD) }}
+    if: ${{ needs.Integration_test.outputs.FAIL_RATE > env.THRESHOLD }}
     with:
       FAIL_RATE: ${{ needs.Integration_test.outputs.FAIL_RATE }}
-    secrets: inherit
