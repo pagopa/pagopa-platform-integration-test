@@ -102,11 +102,12 @@ jobs:
           if [ -f "$summary_file" ]; then
             fail_rate=$(jq '.statistic.failed / .statistic.total * 100' "$summary_file")
             fail_rate_number=$(printf "%.0f" $fail_rate) # Converte in intero
+            echo "Calcolato fail_rate_number: $fail_rate_number"
           else
             fail_rate_number=0
           fi
           # Confronta la soglia
-          if [ "$fail_rate_number" -gt "${{ env.THRESHOLD }}" ]; then
+          if [ "$fail_rate_number" -gt 80 ]; then
             send_notification=true
           else
             send_notification=false
