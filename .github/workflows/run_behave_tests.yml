@@ -28,7 +28,7 @@ jobs:
   WISP_integration_tests:
     runs-on: ubuntu-latest
     name: Run WISP dismantling Integration Tests
-    if: ${{ github.event.inputs.WISP }} != "false"
+    if: ${{ github.event.inputs.WISP }}
     env:
       TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'uat' }}
     steps:
@@ -87,7 +87,7 @@ jobs:
   FdR_integration_tests:
     runs-on: ubuntu-latest
     name: Run Flussi di Rendicontazione Integration Tests
-    if: ${{ github.event.inputs.FdR }} != "false"
+    if: ${{ github.event.inputs.FdR }}
     env:
       TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'uat' }}
     steps:
