@@ -111,7 +111,7 @@ jobs:
             echo "Failed: $failed, Total: $total"  # Debug valori estratti
 
             # Evita la divisione per zero
-            if [ "$total" -eq 0 ]; then
+            if [ "$failed" -eq 0 ]; then
               fail_rate_number=0
             else
               fail_rate=$(echo "$failed / $total * 100" | bc -l)
