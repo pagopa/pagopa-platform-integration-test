@@ -117,8 +117,8 @@ jobs:
             else
               fail_rate=$(echo "$failed / $total * 100" | bc -l)
               fail_rate_number=$(printf "%.0f" $fail_rate) # Converte in intero
-              success_rate_number=$(echo "100 - fail_rate_number" | bc -l)
-              success_rate_number=$(printf "%.0f" $success_rate_number) # Converte in intero
+              success_rate=$(echo "100 - fail_rate_number" | bc -l)
+              success_rate_string=$(printf "%.2f" $success_rate) # Converte in stringa
             fi
 
             echo "Calcolato fail_rate_number: $fail_rate_number"
@@ -139,8 +139,8 @@ jobs:
           echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_ENV
           echo "FAIL_RATE=$fail_rate_number" >> $GITHUB_OUTPUT
           echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_OUTPUT
-          echo "SUCCESS_RATE=$success_rate_number" >> $GITHUB_ENV
-          echo "SUCCESS_RATE=$success_rate_number" >> $GITHUB_OUTPUT
+          echo "SUCCESS_RATE=$success_rate_string" >> $GITHUB_ENV
+          echo "SUCCESS_RATE=$success_rate_string" >> $GITHUB_OUTPUT
           
           # Log finale per debug
           echo "Final FAIL_RATE: $fail_rate_number"
