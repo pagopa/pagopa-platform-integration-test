@@ -133,3 +133,5 @@ jobs:
     with:
       FAIL_RATE: ${{ needs.Integration_test.outputs.FAIL_RATE }}
       SEND_NOTIFICATION: ${{ needs.Integration_test.outputs.SEND_NOTIFICATION }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_TL_RG }}
+    secrets: inherit
