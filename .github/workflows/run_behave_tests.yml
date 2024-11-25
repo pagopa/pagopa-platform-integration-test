@@ -99,24 +99,48 @@ jobs:
           # Calcola la fail rate
           latest_dir=$(ls -d gh-pages/integration-tests/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
           summary_file="$latest_dir/widgets/summary.json"
+
           if [ -f "$summary_file" ]; then
-            fail_rate=$(jq '.statistic.failed / .statistic.total * 100' "$summary_file")
-            fail_rate_number=$(printf "%.0f" $fail_rate) # Converte in intero
+            echo "Found summary_file: $summary_file"
+            cat "$summary_file"  # Visualizza il contenuto del file per il debug
+
+            # Estrai statistiche con jq
+            failed=$(jq '.statistic.failed // 0' "$summary_file")
+            total=$(jq '.statistic.total // 0' "$summary_file")
+
+            echo "Failed: $failed, Total: $total"  # Debug valori estratti
+
+            # Evita la divisione per zero
+            if [ "$total" -eq 0 ]; then
+              fail_rate_number=0
+            else
+              fail_rate=$(echo "$failed / $total * 100" | bc -l)
+              fail_rate_number=$(printf "%.0f" $fail_rate) # Converte in intero
+            fi
+
             echo "Calcolato fail_rate_number: $fail_rate_number"
           else
+            echo "File summary.json non trovato!"
             fail_rate_number=0
           fi
+
           # Confronta la soglia
           if [ "$fail_rate_number" -gt 80 ]; then
             send_notification=true
           else
             send_notification=false
           fi
+
+          # Output per GitHub Actions
           echo "FAIL_RATE=$fail_rate_number" >> $GITHUB_ENV
           echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_ENV
           echo "FAIL_RATE=$fail_rate_number" >> $GITHUB_OUTPUT
-          echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_OUTPUT 
-          echo "BIT SEND_NOTIFICATION: $send_notification"
+          echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_OUTPUT
+
+          # Log finale per debug
+          echo "Final FAIL_RATE: $fail_rate_number"
+          echo "Final SEND_NOTIFICATION: $send_notification"
+
       - name: Debug SEND_NOTIFICATION
         if: always()
         run: |
