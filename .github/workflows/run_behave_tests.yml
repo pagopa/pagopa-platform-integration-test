@@ -117,6 +117,6 @@ jobs:
   SendSlackNotification:
     needs: Integration_test
     uses: ./.github/workflows/send-notification.yml
-    if: ${{ needs.Integration_test.outputs.FAIL_RATE > env.THRESHOLD }}
+    if: ${{ needs.Integration_test.outputs.FAIL_RATE > needs.Integration_test.env.THRESHOLD }}
     with:
       FAIL_RATE: ${{ needs.Integration_test.outputs.FAIL_RATE }}
