@@ -17,9 +17,14 @@ on:
 jobs:
   Integration_test:
     runs-on: ubuntu-latest
+    outputs:
+      FAIL_RATE: ${{env.FAIL_RATE}}
+      SEND_NOTIFICATION: ${{env.SEND_NOTIFICATION}}
+      SUCCESS_RATE: ${{env.SUCCESS_RATE}}
     name: Run Integration Tests
     env:
       TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'uat' }}
+      THRESHOLD: 80
     steps:
       - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 #v4.2.0
       - name: Setup Python
@@ -35,7 +40,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-
+          sudo apt-get install -y jq
       - name: 'Load secrets'
         run: echo "$SECRETS" >> ./config/.secrets.yaml
         env:
@@ -45,7 +50,7 @@ jobs:
       - name: 'Run tests with Behave'
         run: |
           echo "Running tests in $TARGET_ENV environment"
-          behave --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+          behave --tags=@happy_path --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
         env:
           TARGET_ENV: ${{ env.TARGET_ENVIRONMENT }}
       - name: Load test report history
@@ -58,6 +63,7 @@ jobs:
       - name: Build test report
         uses: simple-elf/allure-report-action@91e6ff976a8b2303f2551ca36c39ba5256952c08
         if: always()
+        continue-on-error: true
         with:
           gh_pages: gh-pages
           allure_results: allure-results
@@ -72,3 +78,90 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-history
+      - name: Clone gh-pages branch into a temporary directory
+        if: always()
+        continue-on-error: true
+        run: |
+          git clone --branch gh-pages --depth 1 https://github.com/pagopa/pagopa-platform-integration-test.git temp-gh-pages
+          echo "Cloned gh-pages branch into temp-gh-pages directory."
+      - name: Find Latest Run Directory
+        if: always()
+        continue-on-error: true
+        id: find_latest_run
+        run: |
+          latest_dir=$(ls -d gh-pages/integration-tests/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
+          echo "Latest directory: $latest_dir"
+          echo "latest_dir=$latest_dir" >> $GITHUB_OUTPUT
+      - name: Extract Fail Rate from Allure
+        if: always()
+        continue-on-error: true
+        id: calculate_fail_rate
+        run: |
+          # Calcola la fail rate
+          latest_dir=$(ls -d gh-pages/integration-tests/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
+          summary_file="$latest_dir/widgets/summary.json"
+
+          if [ -f "$summary_file" ]; then
+            echo "Found summary_file: $summary_file"
+            cat "$summary_file"  # Visualizza il contenuto del file per il debug
+
+            # Estrai statistiche con jq
+            failed=$(jq '.statistic.failed // 0' "$summary_file")
+            total=$(jq '.statistic.total // 0' "$summary_file")
+
+            echo "Failed: $failed, Total: $total"  # Debug valori estratti
+
+            # Evita la divisione per zero
+            if [ "$failed" -eq 0 ]; then
+              fail_rate_number=0
+              success_rate_string="100.00"
+            else
+              fail_rate=$(echo "$failed / $total * 100" | bc -l)
+              fail_rate_number=$(printf "%.0f" $fail_rate) # Converte in intero
+              success_rate=$(echo "100 - $fail_rate" | bc -l) # Usa il valore float corretto
+              success_rate_string=$(printf "%.2f" $success_rate) # Converte in stringa con due decimali
+            fi
+
+            echo "Calcolato fail_rate_number: $fail_rate_number"
+          else
+            echo "File summary.json non trovato!"
+            fail_rate_number=0
+          fi
+
+          # Confronta la soglia
+          if [ "$fail_rate_number" -gt 80 ]; then
+            send_notification=true
+          else
+            send_notification=false
+          fi
+
+          # Output per GitHub Actions
+          echo "FAIL_RATE=$fail_rate_number" >> $GITHUB_ENV
+          echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_ENV
+          echo "FAIL_RATE=$fail_rate_number" >> $GITHUB_OUTPUT
+          echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_OUTPUT
+          echo "SUCCESS_RATE=$success_rate_string" >> $GITHUB_ENV
+          echo "SUCCESS_RATE=$success_rate_string" >> $GITHUB_OUTPUT
+          
+          # Log finale per debug
+          echo "Final FAIL_RATE: $fail_rate_number"
+          echo "Final SEND_NOTIFICATION: $send_notification"
+
+      - name: Debug SEND_NOTIFICATION
+        if: always()
+        run: |
+          if [ "${{ env.SEND_NOTIFICATION }}" == "true" ]; then
+            echo "SEND_NOTIFICATION is true. Notification will be sent."
+          else
+            echo "SEND_NOTIFICATION is false. Notification will not be sent."
+          fi
+
+  SendSlackNotification:
+    needs: Integration_test
+    uses: ./.github/workflows/send-notification.yml
+    if: always()
+    with:
+      FAIL_RATE: ${{ needs.Integration_test.outputs.FAIL_RATE }}
+      SUCCESS_RATE: ${{ needs.Integration_test.outputs.SUCCESS_RATE }}
+      SEND_NOTIFICATION: ${{ needs.Integration_test.outputs.SEND_NOTIFICATION }}
+    secrets: inherit
