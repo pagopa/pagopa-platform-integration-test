@@ -74,54 +74,20 @@ jobs:
           publish_branch: gh-pages
           publish_dir: allure-history
 
-#  ExtractFailRate:
-#    needs: Integration_test
-#    if: always()
-#    uses: ./.github/workflows/extract_allure_fail_rate.yml
-#    with:
-#      THRESHOLD: 80
-#    secrets: inherit
-#
-#  SendSlackNotification:
-#    needs: ExtractFailRate
-#    if: always()
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Debug Outputs
-#        run: |
-#          echo "FAIL_RATE=${{ needs.ExtractFailRate.outputs.FAIL_RATE }}"
-#          echo "SUCCESS_RATE=${{ needs.ExtractFailRate.outputs.SUCCESS_RATE }}"
-#          echo "SEND_NOTIFICATION=${{ needs.ExtractFailRate.outputs.SEND_NOTIFICATION }}"
-#      - name: Notify Slack
-#        if: ${{ needs.ExtractFailRate.outputs.SEND_NOTIFICATION == 'true' }}
-#        run: ./send_slack_notification.sh
-#        env:
-#          FAIL_RATE: ${{ needs.ExtractFailRate.outputs.FAIL_RATE }}
-#          SUCCESS_RATE: ${{ needs.ExtractFailRate.outputs.SUCCESS_RATE }}
-
-  ExtractAndNotify:
-    runs-on: ubuntu-latest
+  ExtractFailRate:
     needs: Integration_test
     if: always()
-    steps:
-      - name: Run ExtractFailRate
-        uses: ./.github/workflows/extract_allure_fail_rate.yml
-        with:
-          THRESHOLD: 80
-          secrets: inherit
-        id: extract_fail_rate
+    uses: ./.github/workflows/extract_allure_fail_rate.yml
+    with:
+      THRESHOLD: 80
+    secrets: inherit
 
-      - name: Debug ExtractFailRate Outputs
-        run: |
-          echo "FAIL_RATE=${{ steps.extract_fail_rate.outputs.FAIL_RATE }}"
-          echo "SUCCESS_RATE=${{ steps.extract_fail_rate.outputs.SUCCESS_RATE }}"
-          echo "SEND_NOTIFICATION=${{ steps.extract_fail_rate.outputs.SEND_NOTIFICATION }}"
-        id: debug_outputs
-
-      - name: Send Slack Notification
-        if: ${{ steps.debug_outputs.outputs.SEND_NOTIFICATION == 'true' }}
-        uses: ./.github/workflows/send_notification.yml
-        with:
-          FAIL_RATE: ${{ steps.debug_outputs.outputs.FAIL_RATE }}
-          SUCCESS_RATE: ${{ steps.debug_outputs.outputs.SUCCESS_RATE }}
-          secrets: inherit
+  SendSlackNotification:
+    needs: ExtractFailRate
+    uses: ./.github/workflows/send_notification.yml
+    if: always()
+    with:
+      FAIL_RATE: ${{ needs.ExtractFailRate.outputs.FAIL_RATE }}
+      SUCCESS_RATE: ${{ needs.ExtractFailRate.outputs.SUCCESS_RATE }}
+      SEND_NOTIFICATION: ${{ needs.ExtractFailRate.outputs.SEND_NOTIFICATION }}
+    secrets: inherit
