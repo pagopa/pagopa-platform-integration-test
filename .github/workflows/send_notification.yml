@@ -20,7 +20,6 @@ jobs:
   Notify:
     name: Notify Slack
     runs-on: ubuntu-latest
-    environment: prod
     if: ${{ inputs.SEND_NOTIFICATION == 'true' }}
     steps:
       - name: Send notification to Slack
