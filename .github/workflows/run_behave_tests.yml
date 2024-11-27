@@ -35,7 +35,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-
+          sudo apt-get install -y jq
       - name: 'Load secrets'
         run: echo "$SECRETS" >> ./config/.secrets.yaml
         env:
@@ -58,6 +58,7 @@ jobs:
       - name: Build test report
         uses: simple-elf/allure-report-action@91e6ff976a8b2303f2551ca36c39ba5256952c08
         if: always()
+        continue-on-error: true
         with:
           gh_pages: gh-pages
           allure_results: allure-results
@@ -72,3 +73,11 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-history
+
+  ExtractFailRate:
+    needs: Integration_test
+    if: always()
+    uses: ./.github/workflows/extract_allure_fail_rate.yml
+    with:
+      THRESHOLD: 80
+    secrets: inherit
