@@ -11,9 +11,9 @@ jobs:
   ExtractFailRate:
     runs-on: ubuntu-latest
     outputs:
-      FAIL_RATE: ${{ env.FAIL_RATE }}
-      SEND_NOTIFICATION: ${{ env.SEND_NOTIFICATION }}
-      SUCCESS_RATE: ${{ env.SUCCESS_RATE }}
+      FAIL_RATE: ${{ steps.extract_fail_rate.outputs.FAIL_RATE }}
+      SEND_NOTIFICATION: ${{ steps.extract_fail_rate.outputs.SEND_NOTIFICATION }}
+      SUCCESS_RATE: ${{ steps.extract_fail_rate.outputs.SUCCESS_RATE }}
     steps:
       - name: Clone gh-pages branch into a temporary directory
         if: always()
@@ -57,9 +57,9 @@ jobs:
             send_notification=false
           fi
 
-          echo "FAIL_RATE=$fail_rate_number" >> $GITHUB_ENV
-          echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_ENV
-          echo "SUCCESS_RATE=$success_rate_string" >> $GITHUB_ENV
+          echo "FAIL_RATE=$fail_rate_number" >> $GITHUB_OUTPUT
+          echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_OUTPUT
+          echo "SUCCESS_RATE=$success_rate_string" >> $GITHUB_OUTPUT
       - name: Debug SEND_NOTIFICATION
         if: always()
         run: |
