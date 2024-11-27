@@ -78,7 +78,7 @@ jobs:
   ExtractFailRate:
     needs: Integration_test
     if: always()
-    uses: ./.github/workflows/extract-fail-rate.yml
+    uses: ./.github/workflows/extract_allure_fail_rate.yml
     with:
       THRESHOLD: ${{ env.THRESHOLD }}
     secrets: inherit
