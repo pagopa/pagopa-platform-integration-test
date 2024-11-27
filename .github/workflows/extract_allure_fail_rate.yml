@@ -14,6 +14,7 @@ jobs:
       FAIL_RATE: ${{ env.FAIL_RATE }}
       SEND_NOTIFICATION: ${{ env.SEND_NOTIFICATION }}
       SUCCESS_RATE: ${{ env.SUCCESS_RATE }}
+      LATEST_FOLDER: ${{ env.LATEST_FOLDER }}
     steps:
       - name: Clone gh-pages branch into a temporary directory
         if: always()
@@ -70,4 +71,5 @@ jobs:
       FAIL_RATE: ${{ needs.ExtractFailRate.outputs.FAIL_RATE }}
       SUCCESS_RATE: ${{ needs.ExtractFailRate.outputs.SUCCESS_RATE }}
       SEND_NOTIFICATION: ${{ needs.ExtractFailRate.outputs.SEND_NOTIFICATION }}
+      LATEST_FOLDER: ${{ needs.ExtractFailRate.outputs.LATEST_FOLDER }}
     secrets: inherit
