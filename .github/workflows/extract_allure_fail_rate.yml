@@ -32,11 +32,6 @@ jobs:
           latest_dir=$(ls -d temp-gh-pages/integration-tests/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
           echo "Latest directory: $latest_dir"
           echo "latest_dir=$latest_dir" >> $GITHUB_OUTPUT
-      - name: Find Latest Run Directory
-        run: |
-          latest_dir=$(ls -d temp-gh-pages/integration-tests/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
-          echo "Latest directory: $latest_dir"
-          echo "latest_dir=$latest_dir" >> $GITHUB_OUTPUT
       - name: Extract Fail Rate from Allure
         run: |
           latest_dir=$(ls -d temp-gh-pages/integration-tests/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
