@@ -17,10 +17,6 @@ on:
 jobs:
   Integration_test:
     runs-on: ubuntu-latest
-    outputs:
-      FAIL_RATE: ${{env.FAIL_RATE}}
-      SEND_NOTIFICATION: ${{env.SEND_NOTIFICATION}}
-      SUCCESS_RATE: ${{env.SUCCESS_RATE}}
     name: Run Integration Tests
     env:
       TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'uat' }}
@@ -78,42 +74,11 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-history
-      - name: Clone gh-pages branch into a temporary directory
-        if: always()
-        continue-on-error: true
-        run: |
-          git clone --branch gh-pages --depth 1 https://github.com/pagopa/pagopa-platform-integration-test.git temp-gh-pages
-          echo "Cloned gh-pages branch into temp-gh-pages directory."
-      - name: Find Latest Run Directory
-        if: always()
-        continue-on-error: true
-        id: find_latest_run
-        run: |
-          latest_dir=$(ls -d gh-pages/integration-tests/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
-          echo "Latest directory: $latest_dir"
-          echo "latest_dir=$latest_dir" >> $GITHUB_OUTPUT
-      - name: Debug SEND_NOTIFICATION
-        if: always()
-        run: |
-          if [ "${{ env.SEND_NOTIFICATION }}" == "true" ]; then
-            echo "SEND_NOTIFICATION is true. Notification will be sent."
-          else
-            echo "SEND_NOTIFICATION is false. Notification will not be sent."
-          fi
 
   ExtractFailRate:
     needs: Integration_test
+    if: always()
     uses: ./.github/workflows/extract-fail-rate.yml
     with:
       THRESHOLD: ${{ env.THRESHOLD }}
-    secrets: inherit
-
-  SendSlackNotification:
-    needs: Integration_test
-    uses: ./.github/workflows/send-notification.yml
-    if: always()
-    with:
-      FAIL_RATE: ${{ needs.Integration_test.outputs.FAIL_RATE }}
-      SUCCESS_RATE: ${{ needs.Integration_test.outputs.SUCCESS_RATE }}
-      SEND_NOTIFICATION: ${{ needs.Integration_test.outputs.SEND_NOTIFICATION }}
     secrets: inherit
