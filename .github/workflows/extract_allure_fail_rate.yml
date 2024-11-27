@@ -68,13 +68,3 @@ jobs:
           else
             echo "SEND_NOTIFICATION is false. Notification will not be sent."
           fi
-
-  SendSlackNotification:
-    needs: ExtractFailRate
-    uses: ./.github/workflows/send_notification.yml
-    if: always()
-    with:
-      FAIL_RATE: ${{ needs.ExtractFailRate.outputs.FAIL_RATE }}
-      SUCCESS_RATE: ${{ needs.ExtractFailRate.outputs.SUCCESS_RATE }}
-      SEND_NOTIFICATION: ${{ needs.ExtractFailRate.outputs.SEND_NOTIFICATION }}
-    secrets: inherit
