@@ -46,7 +46,7 @@ jobs:
       - name: 'Run tests with Behave'
         run: |
           echo "Running tests in $TARGET_ENV environment"
-          behave --tags=@happy_path --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+          behave --tags=@happy_path_1 --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
         env:
           TARGET_ENV: ${{ env.TARGET_ENVIRONMENT }}
       - name: Load test report history
