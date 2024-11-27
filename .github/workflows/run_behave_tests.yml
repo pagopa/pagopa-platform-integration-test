@@ -104,18 +104,13 @@ jobs:
     needs: Integration_test
     if: always()
     steps:
-      # Step 1: Checkout repository
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      # Step 2: Esegui il workflow "ExtractFailRate"
       - name: Run ExtractFailRate
         uses: ./.github/workflows/extract_allure_fail_rate.yml
         with:
           THRESHOLD: 80
           secrets: inherit
+        id: extract_fail_rate
 
-      # Step 3: Debug Outputs da ExtractFailRate
       - name: Debug ExtractFailRate Outputs
         run: |
           echo "FAIL_RATE=${{ steps.extract_fail_rate.outputs.FAIL_RATE }}"
@@ -123,7 +118,6 @@ jobs:
           echo "SEND_NOTIFICATION=${{ steps.extract_fail_rate.outputs.SEND_NOTIFICATION }}"
         id: debug_outputs
 
-      # Step 4: Condizione per inviare la notifica
       - name: Send Slack Notification
         if: ${{ steps.debug_outputs.outputs.SEND_NOTIFICATION == 'true' }}
         uses: ./.github/workflows/send_notification.yml
