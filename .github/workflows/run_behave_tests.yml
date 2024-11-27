@@ -18,6 +18,8 @@ jobs:
   Integration_test:
     runs-on: ubuntu-latest
     name: Run Integration Tests
+    outputs:
+      THRESHOLD: env.THRESHOLD
     env:
       TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'uat' }}
       THRESHOLD: 80
@@ -80,5 +82,5 @@ jobs:
     if: always()
     uses: ./.github/workflows/extract_allure_fail_rate.yml
     with:
-      THRESHOLD: ${{ env.THRESHOLD }}
+      THRESHOLD: ${{ needs.Integration_test.outputs.THRESHOLD }}
     secrets: inherit

@@ -82,7 +82,7 @@ jobs:
     uses: ./.github/workflows/send_notification.yml
     if: always()
     with:
-      FAIL_RATE: ${{ needs.Integration_test.outputs.FAIL_RATE }}
-      SUCCESS_RATE: ${{ needs.Integration_test.outputs.SUCCESS_RATE }}
-      SEND_NOTIFICATION: ${{ needs.Integration_test.outputs.SEND_NOTIFICATION }}
+      FAIL_RATE: ${{ needs.ExtractFailRate.outputs.FAIL_RATE }}
+      SUCCESS_RATE: ${{ needs.ExtractFailRate.outputs.SUCCESS_RATE }}
+      SEND_NOTIFICATION: ${{ needs.ExtractFailRate.outputs.SEND_NOTIFICATION }}
     secrets: inherit
