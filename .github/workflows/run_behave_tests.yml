@@ -84,10 +84,17 @@ jobs:
 
   SendSlackNotification:
     needs: ExtractFailRate
-    uses: ./.github/workflows/send_notification.yml
     if: always()
-    with:
-      FAIL_RATE: ${{ needs.ExtractFailRate.outputs.FAIL_RATE }}
-      SUCCESS_RATE: ${{ needs.ExtractFailRate.outputs.SUCCESS_RATE }}
-      SEND_NOTIFICATION: ${{ needs.ExtractFailRate.outputs.SEND_NOTIFICATION }}
-    secrets: inherit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug Outputs
+        run: |
+          echo "FAIL_RATE=${{ needs.ExtractFailRate.outputs.FAIL_RATE }}"
+          echo "SUCCESS_RATE=${{ needs.ExtractFailRate.outputs.SUCCESS_RATE }}"
+          echo "SEND_NOTIFICATION=${{ needs.ExtractFailRate.outputs.SEND_NOTIFICATION }}"
+      - name: Notify Slack
+        if: ${{ needs.ExtractFailRate.outputs.SEND_NOTIFICATION == 'true' }}
+        run: ./send_slack_notification.sh
+        env:
+          FAIL_RATE: ${{ needs.ExtractFailRate.outputs.FAIL_RATE }}
+          SUCCESS_RATE: ${{ needs.ExtractFailRate.outputs.SUCCESS_RATE }}
