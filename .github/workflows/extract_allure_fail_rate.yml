@@ -6,14 +6,17 @@ on:
       THRESHOLD:
         required: true
         type: number
+    secrets:
+      INTEGRATION_TESTS_SECRETS:
+        required: true
 
 jobs:
   ExtractFailRate:
     runs-on: ubuntu-latest
     outputs:
-      FAIL_RATE: ${{ steps.extract_fail_rate.outputs.FAIL_RATE }}
-      SEND_NOTIFICATION: ${{ steps.extract_fail_rate.outputs.SEND_NOTIFICATION }}
-      SUCCESS_RATE: ${{ steps.extract_fail_rate.outputs.SUCCESS_RATE }}
+      FAIL_RATE: ${{ env.FAIL_RATE }}
+      SEND_NOTIFICATION: ${{ env.SEND_NOTIFICATION }}
+      SUCCESS_RATE: ${{ env.SUCCESS_RATE }}
     steps:
       - name: Clone gh-pages branch into a temporary directory
         if: always()
@@ -30,7 +33,6 @@ jobs:
           echo "Latest directory: $latest_dir"
           echo "latest_dir=$latest_dir" >> $GITHUB_OUTPUT
       - name: Extract Fail Rate from Allure
-        id: extract_fail_rate
         run: |
           latest_dir=$(ls -d temp-gh-pages/integration-tests/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
           summary_file="$latest_dir/widgets/summary.json"
@@ -58,9 +60,9 @@ jobs:
             send_notification=false
           fi
 
-          echo "FAIL_RATE=$fail_rate_number" >> $GITHUB_OUTPUT
-          echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_OUTPUT
-          echo "SUCCESS_RATE=$success_rate_string" >> $GITHUB_OUTPUT
+          echo "FAIL_RATE=$fail_rate_number" >> $GITHUB_ENV
+          echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_ENV
+          echo "SUCCESS_RATE=$success_rate_string" >> $GITHUB_ENV
       - name: Debug SEND_NOTIFICATION
         if: always()
         run: |
@@ -69,3 +71,13 @@ jobs:
           else
             echo "SEND_NOTIFICATION is false. Notification will not be sent."
           fi
+
+  SendSlackNotification:
+    needs: ExtractFailRate
+    uses: ./.github/workflows/send_notification.yml
+    if: always()
+    with:
+      FAIL_RATE: ${{ needs.ExtractFailRate.outputs.FAIL_RATE }}
+      SUCCESS_RATE: ${{ needs.ExtractFailRate.outputs.SUCCESS_RATE }}
+      SEND_NOTIFICATION: ${{ needs.ExtractFailRate.outputs.SEND_NOTIFICATION }}
+    secrets: inherit
