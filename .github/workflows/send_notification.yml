@@ -9,6 +9,9 @@ on:
       SEND_NOTIFICATION:
         required: true
         type: string
+      LATEST_FOLDER:
+        required: true
+        type: string
       SUCCESS_RATE:
         required: true
         type: string
@@ -40,10 +43,10 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": " https://pagopa.github.io/pagopa-platform-integration-test/integration-tests | Success Rate: *${{ inputs.SUCCESS_RATE }}%*"
+                    "text": " https://pagopa.github.io/pagopa-platform-integration-test/integration-tests/${{ inputs.LATEST_FOLDER }}/index.html | Success Rate: *${{ inputs.SUCCESS_RATE }}%*"
                   }
                 }
               ]
             }
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_TL_RG }}
           webhook-type: webhook-trigger

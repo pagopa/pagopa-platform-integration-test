@@ -33,7 +33,7 @@ jobs:
         run: |
           latest_dir=$(ls -d temp-gh-pages/integration-tests/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
           summary_file="$latest_dir/widgets/summary.json"
-
+          latest_folder=$(basename "$latest_dir" | grep -oE '[0-9]+')
           if [ -f "$summary_file" ]; then
             failed=$(jq '.statistic.failed // 0' "$summary_file")
             total=$(jq '.statistic.total // 0' "$summary_file")
@@ -60,6 +60,7 @@ jobs:
           echo "FAIL_RATE=$fail_rate_number" >> $GITHUB_ENV
           echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_ENV
           echo "SUCCESS_RATE=$success_rate_string" >> $GITHUB_ENV
+          echo "LATEST_FOLDER=$latest_folder" >> $GITHUB_ENV
       - name: Debug SEND_NOTIFICATION
         if: always()
         run: |
