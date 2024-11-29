@@ -1,4 +1,4 @@
-from src.utility import constants
+from src.utility.wisp import constants
 
 
 def skip_tests(context):
