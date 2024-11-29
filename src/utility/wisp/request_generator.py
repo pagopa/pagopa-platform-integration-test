@@ -2,7 +2,7 @@ import base64
 import json
 import uuid
 
-import session as session
+from src.bdd.wisp.steps import session as session
 
 from src.utility.wisp import utils, constants
 

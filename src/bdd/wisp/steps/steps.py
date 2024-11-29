@@ -1,5 +1,5 @@
 import src.utility.wisp.request_generator as requestgen
-import src.utility.wisp.session as session
+import session as session
 from behave import *
 
 import src.utility.wisp.steps_utils as steputils
