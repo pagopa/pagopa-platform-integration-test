@@ -56,7 +56,7 @@ jobs:
       - name: 'Run tests with Behave'
         run: |
           echo "Running tests in $TARGET_ENV environment"
-          behave --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+          behave src/bdd/wisp --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
         env:
           TARGET_ENV: ${{ env.TARGET_ENVIRONMENT }}
       - name: Load test report history
@@ -91,6 +91,8 @@ jobs:
     with:
       THRESHOLD: 80
     secrets: inherit
+
+
   FdR_integration_tests:
     runs-on: ubuntu-latest
     name: Run Flussi di Rendicontazione Integration Tests
@@ -108,3 +110,7 @@ jobs:
         with:
           distribution: zulu
           java-version: 17
+      - name: 'Run tests with Behave'
+        run: |
+          echo "Running tests in $TARGET_ENV environment"
+          behave src/bdd/fdr --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
