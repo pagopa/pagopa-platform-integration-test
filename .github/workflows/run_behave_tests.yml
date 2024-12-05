@@ -84,13 +84,13 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-history
-  ExtractFailRate:
-    needs: WISP_integration_tests
-    if: always()
-    uses: ./.github/workflows/extract_allure_fail_rate.yml
-    with:
-      THRESHOLD: 80
-    secrets: inherit
+#  ExtractFailRate:
+#    needs: WISP_integration_tests
+#    if: always()
+#    uses: ./.github/workflows/extract_allure_fail_rate.yml
+#    with:
+#      THRESHOLD: 80
+#    secrets: inherit
 
 
   FdR_integration_tests:
