@@ -15,6 +15,9 @@ on:
       SUCCESS_RATE:
         required: true
         type: string
+      ALLURE_FOLDER:
+        required: true
+        type: string
     secrets:
       SLACK_WEBHOOK_URL:
         required: true
@@ -43,10 +46,10 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": " https://pagopa.github.io/pagopa-platform-integration-test/integration-tests/${{ inputs.LATEST_FOLDER }}/index.html | Success Rate: *${{ inputs.SUCCESS_RATE }}%*"
+                    "text": " https://pagopa.github.io/pagopa-platform-integration-test/${{ inputs.ALLURE_FOLDER }}/${{ inputs.LATEST_FOLDER }}/index.html | Success Rate: *${{ inputs.SUCCESS_RATE }}%*"
                   }
                 }
               ]
             }
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_TL_RG }}
           webhook-type: webhook-trigger
