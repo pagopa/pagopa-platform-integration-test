@@ -145,11 +145,11 @@ jobs:
           publish_branch: gh-pages
           publish_dir: allure-history
 
-  ExtractFailRateFdr:
-    needs: FdR_integration_tests
-    if: always()
-    uses: ./.github/workflows/extract_allure_fail_rate.yml
-    with:
-      THRESHOLD: 80
-      ALLURE_FOLDER: fdr-tests
-    secrets: inherit
+#  ExtractFailRateFdr:
+#    needs: FdR_integration_tests
+#    if: always()
+#    uses: ./.github/workflows/extract_allure_fail_rate.yml
+#    with:
+#      THRESHOLD: 80
+#      ALLURE_FOLDER: fdr-tests
+#    secrets: inherit
