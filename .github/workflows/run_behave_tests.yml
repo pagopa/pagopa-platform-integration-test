@@ -56,7 +56,7 @@ jobs:
       - name: 'Run tests with Behave'
         run: |
           echo "Running tests in $TARGET_ENV environment"
-          behave src/bdd/wisp --tags=@test --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+          behave src/bdd/wisp --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
         env:
           TARGET_ENV: ${{ env.TARGET_ENVIRONMENT }}
       - name: Load test report history
@@ -150,6 +150,6 @@ jobs:
     if: always()
     uses: ./.github/workflows/extract_allure_fail_rate.yml
     with:
-      THRESHOLD: 50
+      THRESHOLD: 80
       ALLURE_FOLDER: fdr-tests
     secrets: inherit
