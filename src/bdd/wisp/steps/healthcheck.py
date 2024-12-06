@@ -3,8 +3,7 @@ import logging
 from behave import given
 
 from src.conf.configuration import secrets
-from src.utility import constants
-from src.utility import utils
+from src.utility.wisp import utils, constants
 
 
 @given('systems up')

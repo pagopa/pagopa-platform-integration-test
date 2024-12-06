@@ -11,7 +11,7 @@ import requests
 from allure import attachment_type
 from allure_commons._allure import attach
 
-from src.utility import constants
+from src.utility.wisp import constants
 
 
 def execute_request(url, method, headers, payload=None, type=constants.ResponseType.XML, allow_redirect=True,

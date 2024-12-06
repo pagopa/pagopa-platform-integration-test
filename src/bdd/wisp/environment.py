@@ -4,8 +4,8 @@ import logging
 from src.conf.configuration import commondata
 from src.conf.configuration import secrets
 from src.conf.configuration import settings
-from src.utility import constants
-from src.utility.constants import empty_flow_data
+from src.utility.wisp import constants
+from src.utility.wisp.constants import empty_flow_data
 
 
 def before_all(context):

@@ -6,6 +6,9 @@ on:
       THRESHOLD:
         required: true
         type: number
+      ALLURE_FOLDER:
+        required: true
+        type: string
 
 jobs:
   ExtractFailRate:
@@ -15,6 +18,7 @@ jobs:
       SEND_NOTIFICATION: ${{ env.SEND_NOTIFICATION }}
       SUCCESS_RATE: ${{ env.SUCCESS_RATE }}
       LATEST_FOLDER: ${{ env.LATEST_FOLDER }}
+      ALLURE_FOLDER: ${{ env.ALLURE_FOLDER }}
     steps:
       - name: Clone gh-pages branch into a temporary directory
         if: always()
@@ -27,12 +31,12 @@ jobs:
         continue-on-error: true
         id: find_latest_run
         run: |
-          latest_dir=$(ls -d temp-gh-pages/integration-tests/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
+          latest_dir=$(ls -d temp-gh-pages/${{ inputs.ALLURE_FOLDER }}/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
           echo "Latest directory: $latest_dir"
           echo "latest_dir=$latest_dir" >> $GITHUB_OUTPUT
       - name: Extract Fail Rate from Allure
         run: |
-          latest_dir=$(ls -d temp-gh-pages/integration-tests/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
+          latest_dir=$(ls -d temp-gh-pages/${{ inputs.ALLURE_FOLDER }}/*/ | grep -E '/[0-9]+/$' | sort -V | tail -n 1)
           summary_file="$latest_dir/widgets/summary.json"
           latest_folder=$(basename "$latest_dir" | grep -oE '[0-9]+')
           if [ -f "$summary_file" ]; then
@@ -62,6 +66,7 @@ jobs:
           echo "SEND_NOTIFICATION=$send_notification" >> $GITHUB_ENV
           echo "SUCCESS_RATE=$success_rate_string" >> $GITHUB_ENV
           echo "LATEST_FOLDER=$latest_folder" >> $GITHUB_ENV
+          echo "ALLURE_FOLDER=${{ inputs.ALLURE_FOLDER }}" >> $GITHUB_ENV
 
   SendSlackNotification:
     needs: ExtractFailRate
@@ -72,4 +77,5 @@ jobs:
       SUCCESS_RATE: ${{ needs.ExtractFailRate.outputs.SUCCESS_RATE }}
       SEND_NOTIFICATION: ${{ needs.ExtractFailRate.outputs.SEND_NOTIFICATION }}
       LATEST_FOLDER: ${{ needs.ExtractFailRate.outputs.LATEST_FOLDER }}
+      ALLURE_FOLDER: ${{ needs.ExtractFailRate.outputs.ALLURE_FOLDER }}
     secrets: inherit
