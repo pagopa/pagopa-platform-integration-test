@@ -156,7 +156,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
   # ===============================================================================================
   # ===============================================================================================
 
-  @not_implemented @runnable @nodo_invia_carrello_rpt @unhappy_path
+  @runnable @nodo_invia_carrello_rpt @unhappy_path
   Scenario: User tries to pay a multibeneficiary cart that exists already in GPD in invalid state
     Given a cart of RPTs for multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
@@ -169,7 +169,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
   # ===============================================================================================
   # ===============================================================================================
 
-  @not_implemented @runnable @nodo_invia_carrello_rpt @unhappy_path
+  @runnable @nodo_invia_carrello_rpt @unhappy_path
   Scenario: User tries to pay a multibeneficiary cart that was inserted from ACA and is in valid state
     Given a cart of RPTs for multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
@@ -182,7 +182,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
   # ===============================================================================================
   # ===============================================================================================
 
-  @not_implemented @runnable @nodo_invia_carrello_rpt @unhappy_path
+  @runnable @nodo_invia_carrello_rpt @unhappy_path
   Scenario: User tries to pay a multibeneficiary cart that was inserted from ACA and is in invalid state
     Given a cart of RPTs for multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
@@ -195,7 +195,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
   # ===============================================================================================
   # ===============================================================================================
 
-  @not_implemented @runnable @nodo_invia_carrello_rpt @unhappy_path
+  @runnable @nodo_invia_carrello_rpt @unhappy_path
   Scenario: User pays a multibeneficiary cart that exists already in GPD
     Given a cart of RPTs for multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
