@@ -162,7 +162,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 48 and state equals to DRAFT
-    When the user tries to pay a cart of RPTs on EC website with no redirect URL check
+    When the user tries to pay a cart of RPTs on EC website
     Then conversion to new model fails in wisp-converter
     And the KO receipt is sent
 
@@ -175,7 +175,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 01 and state equals to VALID
-    When the user tries to pay a cart of RPTs on EC website with no redirect URL check
+    When the user tries to pay a cart of RPTs on EC website
     Then conversion to new model fails in wisp-converter
     And the KO receipt is sent
 
@@ -188,7 +188,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT
-    When the user tries to pay a cart of RPTs on EC website with no redirect URL check
+    When the user tries to pay a cart of RPTs on EC website
     Then conversion to new model fails in wisp-converter
     And the KO receipt is sent
 
@@ -200,7 +200,7 @@ Feature: User pays a payment carts from existing payment position via nodoInviaC
     Given a cart of RPTs for multibeneficiary
     And a single RPT of type BBT with 1 transfers of which none are stamps
     And a single RPT of type BBT with 1 transfers of which none are stamps
-    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to DRAFT
-    When the user tries to pay a cart of RPTs on EC website with no redirect URL check
+    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
+    When the user tries to pay a cart of RPTs on EC website
     Then conversion to new model fails in wisp-converter
     And the KO receipt is sent
