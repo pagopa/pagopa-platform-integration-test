@@ -13,15 +13,9 @@ permissions:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: python:latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
-
-      - name: Setup Python
-        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b #v5.3.0
-        with:
-          python-version: 3.x
-      - run: python3 --version
 
       - name: Install dependencies
         run: |
@@ -30,7 +24,7 @@ jobs:
 
       - name: Build Docs
         run: |
-          python3 scenario_parser.py --repo-name ${{ github.event.repository.name }} --page-name "PagoPA platform integration test"
+          python3 scenario_parser.py --repo-name test --page-name "PagoPA platform integration test"
           mkdocs build
 
       - name: Upload to GitHub pages
@@ -38,5 +32,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: docs
+          publish_dir: site
           keep_files: true
