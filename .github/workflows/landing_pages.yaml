@@ -31,4 +31,11 @@ jobs:
       - name: Build Docs
         run: |
           python3 scenario_parser.py --repo-name ${{ github.event.repository.name }} --page-name "PagoPA platform integration test"
-          mkdocs gh-deploy --force
+          mkdocs build
+
+      - name: Upload to GitHub pages
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e #v4.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: docs
