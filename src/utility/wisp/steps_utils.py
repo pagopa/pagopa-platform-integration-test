@@ -5,9 +5,11 @@ from urllib.parse import urlparse
 
 from allure_commons._allure import attach
 
-import src.utility.wisp.request_generator as requestgen
 import src.bdd.wisp.steps.session as session
-from src.utility.wisp import utils, routes as router, constants
+import src.utility.wisp.request_generator as requestgen
+from src.utility.wisp import constants
+from src.utility.wisp import routes as router
+from src.utility.wisp import utils
 
 
 def check_status_code(context, actor, expected_status_code):
