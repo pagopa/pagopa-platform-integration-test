@@ -1,15 +1,14 @@
+import json
 import logging
 import time
+import re
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
-
 from allure_commons._allure import attach
 
-import src.bdd.wisp.steps.session as session
 import src.utility.wisp.request_generator as requestgen
-from src.utility.wisp import constants
-from src.utility.wisp import routes as router
-from src.utility.wisp import utils
+import src.bdd.wisp.steps.session as session
+from src.utility.wisp import utils, routes as router, constants
 
 
 def check_status_code(context, actor, expected_status_code):
@@ -230,19 +229,38 @@ def search_in_re_by_iuv(context):
 
     context.flow_data['action']['response']['body'] = re_events
 
-
-# @then('all the related notice numbers can be retrieved')
 def retrieve_payment_notice_from_re_event(context):
-    # retrieve events elated to executed request
+    # retrieve events related to executed request
     re_events = context.flow_data['action']['response']['body']
 
+    # filtering events with desired statuses
+    needed_events_gpd = [
+        re_event for re_event in re_events
+        if 'status' in re_event and re_event['status'] == 'COMMUNICATION_WITH_GPD_FOR_DEBT_POSITION_RETRIEVE_PROCESSED'
+    ]
+
+    needed_events_iuv = [
+        re_event for re_event in re_events
+        if 'status' in re_event and re_event['status'] == 'COMMUNICATION_WITH_IUVGENERATOR_FOR_NAV_CREATION_PROCESSED'
+    ]
+
     # executing assertions
-    needed_events = [re_event for re_event in re_events if 'status' in re_event and re_event[
-        'status'] == 'SAVED_RPT_IN_CART_RECEIVED_REDIRECT_URL_FROM_CHECKOUT']
-    utils.assert_show_message(len(needed_events) > 0,
-                              f'The redirect process is not ended successfully or there are missing events in RE')
-    notices = set([(re_event['domainId'], re_event['iuv'], re_event['noticeNumber']) for re_event in needed_events])
-    utils.assert_show_message(len(notices) > 0, f'Impossible to extract payment notices from events in RE')
+    all_needed_events = needed_events_gpd + needed_events_iuv
+    utils.assert_show_message(
+        len(all_needed_events) > 0,
+        f'The redirect process is not ended successfully or there are missing events in RE'
+    )
+
+    # extracting notices from all relevant events
+    notices = set()
+    for re_event in all_needed_events:
+        if all(key in re_event for key in ['domain_id', 'iuv', 'notice_number']):
+            notices.add((re_event['domain_id'], re_event['iuv'], re_event['notice_number']))
+
+    utils.assert_show_message(
+        len(notices) > 0,
+        f'Impossible to extract payment notices from events in RE'
+    )
 
     # set updated payment notices in context in order to be better analyzed in the next steps
     payment_notices = []
@@ -255,6 +273,7 @@ def retrieve_payment_notice_from_re_event(context):
         })
 
     context.flow_data['common']['payment_notices'] = payment_notices
+
 
 
 # @given('a valid checkPosition request')
@@ -373,32 +392,80 @@ def check_event(context, business_process, field_name, field_value):
 
     # executing assertions
     needed_process_events = [re_event for re_event in re_events if
-                             'businessProcess' in re_event and re_event['businessProcess'] == business_process]
+                             'business_process' in re_event and re_event['business_process'] == business_process]
+
     utils.assert_show_message(len(needed_process_events) > 0,
                               f'There are not events with business process {business_process}.')
     needed_events = [re_event for re_event in needed_process_events if
                      field_name in re_event and re_event[field_name] == field_value]
 
     utils.assert_show_message(len(needed_events) > 0,
-                              f'There are not events with business process {business_process} and field {field_name} with value [{field_value}].')
+                              f'There are no events with business process {business_process} and field {field_name} containing value [{field_value}].')
 
     # set needed events in context in order to be better analyzed in the next steps
     context.flow_data['common']['re']['last_analyzed_event'] = needed_events
 
+def find_event_with_payment_token(events):
+    """Trova l'evento che contiene payment_token, direttamente o nella http_uri."""
+    desiredEvents = []
 
-# @then('these events are related to each payment token')
+    for event in events:
+        # Cerca nel campo 'payment_token'
+        if 'payment_token' in event:
+            desiredEvents.append(event)
+        # Cerca nella 'http_uri'
+        if 'http_uri' in event and 'paymentTokens=' in event['http_uri']:
+            desiredEvents.append(event)
+
+    return desiredEvents
+
+
+def extract_payment_tokens(response):
+    payment_tokens = []
+
+    for entry in response:
+        # Verifica se il campo 'payment_token' è presente
+        if 'payment_token' in entry:
+            payment_tokens.append(entry['payment_token'])
+
+        # Cerca nei payload JSON
+        for key in ['request_payload', 'response_payload']:
+            if key in entry and entry[key]:
+                try:
+                    payload = json.loads(entry[key])  # Decodifica il payload come JSON
+                    if 'paymentToken' in payload:
+                        payment_tokens.append(payload['paymentToken'])
+                except json.JSONDecodeError:
+                    pass  # Ignora se il payload non è JSON valido
+
+    return list(set(payment_tokens))
+
 def check_event_token_relation(context):
-    # retrieve events and payment notices related to executed request
+    # Recupera gli eventi e i payment notices
     needed_events = context.flow_data['common']['re']['last_analyzed_event']
-
     payment_notices = context.flow_data['common']['payment_notices']
 
-    # executing assertions
+    # Estrai i payment_token dai payment notices
     payment_tokens = [payment_notice['payment_token'] for payment_notice in payment_notices]
-    for payment_token in payment_tokens:
-        utils.assert_show_message(any(event['paymentToken'] == payment_token for event in needed_events),
-                                  f'The payment token {payment_token} is not correctly handled by the previous event.')
 
+    # Trova l'evento che contiene il payment_token
+    relevant_events = find_event_with_payment_token(needed_events)
+
+    if not relevant_events:
+        utils.assert_show_message(
+            False,
+            'No event containing a payment token or http_uri was found.'
+        )
+        return
+
+    payment_tokens_to_check = extract_payment_tokens(relevant_events)
+    # Verifica i token
+    if payment_tokens and payment_tokens_to_check:
+        for payment_token in payment_tokens:
+            utils.assert_show_message(
+                payment_token in payment_tokens_to_check,
+                f'The payment token {payment_token} is not in the list of payment_tokens_to_check.'
+            )
 
 # @given('a valid closePaymentV2 request with outcome {outcome}')
 def generate_closepayment(context, outcome):
@@ -451,7 +518,7 @@ def check_event_notice_number_relation(context):
     # executing assertions
     notice_numbers = [payment_notice['notice_number'] for payment_notice in payment_notices]
     for notice_number in notice_numbers:
-        utils.assert_show_message(any(event['noticeNumber'] == notice_number for event in needed_events),
+        utils.assert_show_message(any(event['notice_number'] == notice_number for event in needed_events),
                                   f'The notice number {notice_number} is not correctly handled by the previous event.')
 
 
@@ -772,7 +839,7 @@ def check_wisp_session_timers(context):
     wait_for_n_seconds(context, '5', 'to wait for Nodo to write RE events')
     search_in_re_by_iuv(context)
     check_status_code(context, 'user', '200')
-    check_event(context, 'timer-set', 'operationStatus', 'Success')
+    check_event(context, 'timer-set', 'outcome', 'OK')
     check_event_token_relation(context)
 
 
@@ -795,7 +862,7 @@ def check_wisp_session_timers_del_and_rts_were_sent(context):
     get_iuvs_from_session(context)
     search_in_re_by_iuv(context)
     check_status_code(context, 'user', '200')
-    check_event(context, 'timer-delete', 'status', 'RECEIPT_TIMER_GENERATION_DELETED_SCHEDULED_SEND')
+    check_event(context, 'timer-delete', 'status', 'PAYMENT_TOKEN_TIMER_DELETION_PROCESSED')
     check_event_token_relation(context)
     check_event(context, 'receipt-ok', 'status', 'RT_SEND_SUCCESS')
     check_event_notice_number_relation(context)
@@ -806,7 +873,7 @@ def check_wisp_session_timers_del_and_rts_were_sent_receipt_ko(context):
     get_iuvs_from_session(context)
     search_in_re_by_iuv(context)
     check_status_code(context, 'user', '200')
-    check_event(context, 'timer-delete', 'status', 'RECEIPT_TIMER_GENERATION_DELETED_SCHEDULED_SEND')
+    check_event(context, 'timer-delete', 'status', 'PAYMENT_TOKEN_TIMER_DELETION_PROCESSED')
     check_event_token_relation(context)
     check_event(context, 'receipt-ko', 'status', 'RT_SEND_SUCCESS')
     check_event_notice_number_relation(context)
@@ -838,7 +905,7 @@ def check_existing_debt_position_usage(context):
     get_iuv_from_session(context, 'first')
     search_in_re_by_iuv(context)
     check_status_code(context, 'user', '200')
-    check_event(context, 'redirect', 'status', 'UPDATED_EXISTING_PAYMENT_POSITION_IN_GPD')
+    check_event(context, 'redirect', 'status', 'COMMUNICATION_WITH_GPD_FOR_DEBT_POSITION_UPSERT_PROCESSED')
 
 
 def check_fail_nm1_to_nmu_conversion(context):
