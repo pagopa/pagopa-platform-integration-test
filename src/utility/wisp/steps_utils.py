@@ -920,5 +920,5 @@ def check_debt_position_invalid_and_sent_ko_receipt(context):
     get_iuv_from_session(context, 'first')
     search_in_re_by_iuv(context)
     check_status_code(context, 'user', '200')
-    check_event(context, 'redirect', 'operationErrorCode', 'WIC-1205')
+    check_event(context, 'redirect', 'operation_error_code', 'WIC-1300')
     check_event(context, 'redirect', 'status', 'RT_SEND_SUCCESS')
