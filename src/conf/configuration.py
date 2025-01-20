@@ -17,6 +17,9 @@ settings = Dynaconf(
     settings_files=['config.yaml'],
 )
 
+if 'TARGET_ENV' not in os.environ:
+    os.environ['TARGET_ENV'] = 'uat'
+
 settings = settings[os.environ['TARGET_ENV']]
 
 # Load the secrets for the specified environment
