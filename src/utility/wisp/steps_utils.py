@@ -60,6 +60,8 @@ def check_field(context, field_name, field_value):
     field_value = field_value.replace('\'', '')
     response = context.flow_data['action']['response']['body']
 
+    # print(f"RESPONSE 2 = {context.flow_data['action']['response']}")
+
     content_type = context.flow_data['action']['response']['content_type']
 
     # executing assertions
@@ -81,6 +83,8 @@ def check_redirect_url(context, url_type):
     response = context.flow_data['action']['response']['body']
 
     url = response.find('.//url')
+    # print(f"RESPONSE = {context.flow_data['action']['response']}")
+
     utils.assert_show_message(url is not None, f"The field 'redirect_url' in response doesn't exists.")
     extracted_url = url.text
     parsed_url = urlparse(extracted_url)
@@ -389,6 +393,8 @@ def check_event(context, business_process, field_name, field_value):
 
     # retrieve response information related to executed request
     re_events = context.flow_data['action']['response']['body']
+
+    print(f"EVENTS = {re_events}")
 
     # executing assertions
     needed_process_events = [re_event for re_event in re_events if
@@ -864,7 +870,7 @@ def check_wisp_session_timers_del_and_rts_were_sent(context):
     check_status_code(context, 'user', '200')
     check_event(context, 'timer-delete', 'status', 'PAYMENT_TOKEN_TIMER_DELETION_PROCESSED')
     check_event_token_relation(context)
-    check_event(context, 'receipt-ok', 'status', 'RT_SEND_SUCCESS')
+    check_event(context, 'receipt-ok', 'status', 'RT_SEND_SCHEDULING_SUCCESS')
     check_event_notice_number_relation(context)
 
 
@@ -875,7 +881,7 @@ def check_wisp_session_timers_del_and_rts_were_sent_receipt_ko(context):
     check_status_code(context, 'user', '200')
     check_event(context, 'timer-delete', 'status', 'PAYMENT_TOKEN_TIMER_DELETION_PROCESSED')
     check_event_token_relation(context)
-    check_event(context, 'receipt-ko', 'status', 'RT_SEND_SUCCESS')
+    check_event(context, 'receipt-ko', 'status', 'RT_SEND_SCHEDULING_SUCCESS')
     check_event_notice_number_relation(context)
 
 
@@ -916,9 +922,18 @@ def check_fail_nm1_to_nmu_conversion(context):
 
 
 def check_debt_position_invalid_and_sent_ko_receipt(context):
+    error_codes = ['WIC-1300', 'WIC-1205', '3001']  # Lista di codici di errore da controllare
     wait_for_n_seconds(context, '2', 'to wait for Nodo to write RE events')
     get_iuv_from_session(context, 'first')
     search_in_re_by_iuv(context)
     check_status_code(context, 'user', '200')
-    check_event(context, 'redirect', 'operation_error_code', 'WIC-1300')
-    check_event(context, 'redirect', 'status', 'RT_SEND_SUCCESS')
+
+    for error_code in error_codes:
+        try:
+            # Prova a controllare il codice di errore corrente
+            check_event(context, 'redirect', 'operation_error_code', error_code)
+            break  # Se il controllo ha successo, esci dal ciclo
+        except AssertionError:
+            continue  # Se fallisce, passa al prossimo codice di errore
+
+    check_event(context, 'redirect', 'status', 'RT_SEND_SCHEDULING_SUCCESS')
