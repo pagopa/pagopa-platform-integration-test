@@ -1,4 +1,6 @@
-import time
+import re
+
+from playwright.sync_api import expect
 
 
 def mbd_checkout_payment(page, checkout_url, mbd_data, card_info):
@@ -23,3 +25,9 @@ def mbd_checkout_payment(page, checkout_url, mbd_data, card_info):
         'TestCardHolderName TestCardHolderSurname')
 
     page.get_by_role(role='button', name='Continue', exact=True).click()
+
+    page.get_by_role(role='button', name=re.compile(r'^Pay')).click()
+
+    page.get_by_role(role='button', name='Continue', exact=True).click(timeout=60000)
+
+    expect(page).to_have_url(mbd_data['returnUrls']['successUrl'])
