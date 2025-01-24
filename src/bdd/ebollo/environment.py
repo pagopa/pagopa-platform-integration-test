@@ -23,7 +23,7 @@ def before_all(context):
 @fixture
 def playwright_browser_with_page(context):
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         context.page = browser.new_page()
         yield context.page
         context.page.close()
