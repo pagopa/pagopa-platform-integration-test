@@ -10,7 +10,7 @@ fake = Faker('it_IT')
 
 def generate_mbd_payload(first_name='', last_name='', fiscal_code='', amount=0, document_hash='',
                          email='example@example.com', province='RO', id_ci_service='00005',
-                         success_url='https://success', cancel_url='https://cancel', error_url='https://error'):
+                         success_url='https://success.com/', cancel_url='https://cancel.com/', error_url='https://error.com/'):
     if not first_name:
         first_name = fake.name().split(' ')[0]
 
