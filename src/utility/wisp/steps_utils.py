@@ -60,8 +60,6 @@ def check_field(context, field_name, field_value):
     field_value = field_value.replace('\'', '')
     response = context.flow_data['action']['response']['body']
 
-    # print(f"RESPONSE 2 = {context.flow_data['action']['response']}")
-
     content_type = context.flow_data['action']['response']['content_type']
 
     # executing assertions
@@ -83,7 +81,6 @@ def check_redirect_url(context, url_type):
     response = context.flow_data['action']['response']['body']
 
     url = response.find('.//url')
-    # print(f"RESPONSE = {context.flow_data['action']['response']}")
 
     utils.assert_show_message(url is not None, f"The field 'redirect_url' in response doesn't exists.")
     extracted_url = url.text
@@ -394,7 +391,6 @@ def check_event(context, business_process, field_name, field_value):
     # retrieve response information related to executed request
     re_events = context.flow_data['action']['response']['body']
 
-    print(f"EVENTS = {re_events}")
 
     # executing assertions
     needed_process_events = [re_event for re_event in re_events if
@@ -410,7 +406,6 @@ def check_event(context, business_process, field_name, field_value):
 
     # set needed events in context in order to be better analyzed in the next steps
     context.flow_data['common']['re']['last_analyzed_event'] = needed_events
-
 def find_event_with_payment_token(events):
     """Trova l'evento che contiene payment_token, direttamente o nella http_uri."""
     desiredEvents = []
@@ -870,7 +865,7 @@ def check_wisp_session_timers_del_and_rts_were_sent(context):
     check_status_code(context, 'user', '200')
     check_event(context, 'timer-delete', 'status', 'PAYMENT_TOKEN_TIMER_DELETION_PROCESSED')
     check_event_token_relation(context)
-    check_event(context, 'receipt-ok', 'status', 'RT_SEND_SCHEDULING_SUCCESS')
+    check_event(context, 'receipt-ok', 'status', 'RT_SEND_SUCCESS')
     check_event_notice_number_relation(context)
 
 
@@ -881,7 +876,7 @@ def check_wisp_session_timers_del_and_rts_were_sent_receipt_ko(context):
     check_status_code(context, 'user', '200')
     check_event(context, 'timer-delete', 'status', 'PAYMENT_TOKEN_TIMER_DELETION_PROCESSED')
     check_event_token_relation(context)
-    check_event(context, 'receipt-ko', 'status', 'RT_SEND_SCHEDULING_SUCCESS')
+    check_event(context, 'receipt-ko', 'status', 'RT_SEND_SUCCESS')
     check_event_notice_number_relation(context)
 
 
@@ -936,4 +931,4 @@ def check_debt_position_invalid_and_sent_ko_receipt(context):
         except AssertionError:
             continue  # Se fallisce, passa al prossimo codice di errore
 
-    check_event(context, 'redirect', 'status', 'RT_SEND_SCHEDULING_SUCCESS')
+    check_event(context, 'redirect', 'status', 'RT_SEND_SUCCESS')
