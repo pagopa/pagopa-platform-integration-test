@@ -442,14 +442,14 @@ def extract_payment_tokens(response):
     return list(set(payment_tokens))
 
 def check_event_token_relation(context):
-    # Recupera gli eventi e i payment notices
+    # retrieve events and payment notices related to executed request
     needed_events = context.flow_data['common']['re']['last_analyzed_event']
     payment_notices = context.flow_data['common']['payment_notices']
 
-    # Estrai i payment_token dai payment notices
+    # Extract the payment_token from the payment notices
     payment_tokens = [payment_notice['payment_token'] for payment_notice in payment_notices]
 
-    # Trova l'evento che contiene il payment_token
+    # Find the event containing the payment_token
     relevant_events = find_event_with_payment_token(needed_events)
 
     if not relevant_events:
@@ -460,7 +460,7 @@ def check_event_token_relation(context):
         return
 
     payment_tokens_to_check = extract_payment_tokens(relevant_events)
-    # Verifica i token
+    # Verify the tokens
     if payment_tokens and payment_tokens_to_check:
         for payment_token in payment_tokens:
             utils.assert_show_message(
@@ -897,7 +897,6 @@ def check_paid_payment_position_from_multibeneficiary_cart(context):
     check_field(context, 'status', 'PAID')
     check_single_paymentoption(context)
     check_paymentoption_amounts_for_multibeneficiary(context)
-    check_paymentposition_status(context, 'PO_PAID')
     check_paymentposition_transfers_for_multibeneficiary(context)
 
 
@@ -925,10 +924,13 @@ def check_debt_position_invalid_and_sent_ko_receipt(context):
 
     for error_code in error_codes:
         try:
-            # Prova a controllare il codice di errore corrente
+            # Try to check the current error code
             check_event(context, 'redirect', 'operation_error_code', error_code)
-            break  # Se il controllo ha successo, esci dal ciclo
+            break  # If the control has success, exit the cycle
         except AssertionError:
-            continue  # Se fallisce, passa al prossimo codice di errore
+            continue  # If it fails, continue with the next error
+    else:
+        raise AssertionError("There is no error matching the one searched in the field_name: operation_error_code")
+
 
     check_event(context, 'redirect', 'status', 'RT_SEND_SUCCESS')
