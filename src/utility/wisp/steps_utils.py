@@ -407,7 +407,7 @@ def check_event(context, business_process, field_name, field_value):
     # set needed events in context in order to be better analyzed in the next steps
     context.flow_data['common']['re']['last_analyzed_event'] = needed_events
 def find_event_with_payment_token(events):
-    """Trova l'evento che contiene payment_token, direttamente o nella http_uri."""
+    """Find the event containing payment_token directly or from the http_uri"""
     desiredEvents = []
 
     for event in events:
@@ -425,7 +425,7 @@ def extract_payment_tokens(response):
     payment_tokens = []
 
     for entry in response:
-        # Verifica se il campo 'payment_token' è presente
+        # Verify if the field 'payment_token is present'
         if 'payment_token' in entry:
             payment_tokens.append(entry['payment_token'])
 
@@ -433,11 +433,11 @@ def extract_payment_tokens(response):
         for key in ['request_payload', 'response_payload']:
             if key in entry and entry[key]:
                 try:
-                    payload = json.loads(entry[key])  # Decodifica il payload come JSON
+                    payload = json.loads(entry[key])  # Decode the payload as JSON
                     if 'paymentToken' in payload:
                         payment_tokens.append(payload['paymentToken'])
                 except json.JSONDecodeError:
-                    pass  # Ignora se il payload non è JSON valido
+                    pass  # Ignore the payload if the payload is not a valid JSON
 
     return list(set(payment_tokens))
 
