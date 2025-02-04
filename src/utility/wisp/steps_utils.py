@@ -597,7 +597,6 @@ def check_paymentoption_amounts_for_multibeneficiary(context):
             if 'paymentOption' in request_payload:
                 payment_option = request_payload['paymentOption'][0]
 
-                print(f"PAYMENT_OPTION = {payment_option}")
                 # calculate the correct amount of RPTs
                 raw_rpts = context.flow_data['common']['rpts']
                 amount = 0
