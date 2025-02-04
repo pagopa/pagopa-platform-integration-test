@@ -411,10 +411,10 @@ def find_event_with_payment_token(events):
     desiredEvents = []
 
     for event in events:
-        # Cerca nel campo 'payment_token'
+        # Find the field 'payment_token'
         if 'payment_token' in event:
             desiredEvents.append(event)
-        # Cerca nella 'http_uri'
+        # Search in the 'http_uri'
         if 'http_uri' in event and 'paymentTokens=' in event['http_uri']:
             desiredEvents.append(event)
 
@@ -429,7 +429,7 @@ def extract_payment_tokens(response):
         if 'payment_token' in entry:
             payment_tokens.append(entry['payment_token'])
 
-        # Cerca nei payload JSON
+        # Find in the JSON payload
         for key in ['request_payload', 'response_payload']:
             if key in entry and entry[key]:
                 try:
