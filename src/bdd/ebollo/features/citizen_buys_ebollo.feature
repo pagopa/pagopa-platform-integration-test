@@ -1,7 +1,9 @@
 @eBollo
 Feature: As a citizen, I want to purchase an eBollo to access a document that requires the affixing of a revenue stamp
 
+  @test
   Scenario: A citizen successfully purchases an eBollo on the Creditor Institution's website when requesting access to documents
+    When the user pays the eBollo on the checkout page
 
   Scenario: A citizen cancels the payment of an eBollo on the Creditor Institution's website
 

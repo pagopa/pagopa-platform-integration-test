@@ -44,7 +44,7 @@ uat:
     gpd_core:
       url: "https://api.uat.platform.pagopa.it/gpd/api/v2"
       subscription_key: "GPD_SUBSCRIPTION_KEY"
-  #    healthcheck: "/info" #when used, response would be code 500
+    #    healthcheck: "/info" #when used, response would be code 500
     wisp_converter:
       url: "https://uat.wisp2.pagopa.it/wisp-converter/redirect/api/v1"
       healthcheck: "/info"
@@ -52,3 +52,6 @@ uat:
       url: "https://api.uat.platform.pagopa.it/technical-support/wisp-converter/api/v1"
       subscription_key: "TECHNICAL_SUPPORT_SUBSCRIPTION_KEY"
       healthcheck: "/info"
+    mbd:
+      url: 'https://api.uat.platform.pagopa.it/pagopa-mbd-service/v1/organizations/'
+      path: '/mbd'
