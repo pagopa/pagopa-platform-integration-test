@@ -1,14 +1,16 @@
 import json
 import logging
 import time
-import re
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
+
 from allure_commons._allure import attach
 
-import src.utility.wisp.request_generator as requestgen
 import src.bdd.wisp.steps.session as session
-from src.utility.wisp import utils, routes as router, constants
+import src.utility.wisp.request_generator as requestgen
+from src.utility.wisp import constants
+from src.utility.wisp import routes as router
+from src.utility.wisp import utils
 
 
 def check_status_code(context, actor, expected_status_code):
@@ -230,6 +232,7 @@ def search_in_re_by_iuv(context):
 
     context.flow_data['action']['response']['body'] = re_events
 
+
 def retrieve_payment_notice_from_re_event(context):
     # retrieve events related to executed request
     re_events = context.flow_data['action']['response']['body']
@@ -274,7 +277,6 @@ def retrieve_payment_notice_from_re_event(context):
         })
 
     context.flow_data['common']['payment_notices'] = payment_notices
-
 
 
 # @given('a valid checkPosition request')
@@ -391,7 +393,6 @@ def check_event(context, business_process, field_name, field_value):
     # retrieve response information related to executed request
     re_events = context.flow_data['action']['response']['body']
 
-
     # executing assertions
     needed_process_events = [re_event for re_event in re_events if
                              'business_process' in re_event and re_event['business_process'] == business_process]
@@ -406,6 +407,8 @@ def check_event(context, business_process, field_name, field_value):
 
     # set needed events in context in order to be better analyzed in the next steps
     context.flow_data['common']['re']['last_analyzed_event'] = needed_events
+
+
 def find_event_with_payment_token(events):
     """Find the event containing payment_token directly or from the http_uri"""
     desiredEvents = []
@@ -441,6 +444,7 @@ def extract_payment_tokens(response):
 
     return list(set(payment_tokens))
 
+
 def check_event_token_relation(context):
     # retrieve events and payment notices related to executed request
     needed_events = context.flow_data['common']['re']['last_analyzed_event']
@@ -467,6 +471,7 @@ def check_event_token_relation(context):
                 payment_token in payment_tokens_to_check,
                 f'The payment token {payment_token} is not in the list of payment_tokens_to_check.'
             )
+
 
 # @given('a valid closePaymentV2 request with outcome {outcome}')
 def generate_closepayment(context, outcome):
@@ -592,7 +597,7 @@ def check_paymentoption_amounts_for_multibeneficiary(context):
             try:
                 request_payload = json.loads(request_payload)
             except json.JSONDecodeError:
-                raise ValueError("Error parsing the json of request_payload")
+                raise ValueError('Error parsing the json of request_payload')
 
             if 'paymentOption' in request_payload:
                 payment_option = request_payload['paymentOption'][0]
@@ -611,8 +616,6 @@ def check_paymentoption_amounts_for_multibeneficiary(context):
                                           f'The notification fee in the payment position defined for GPD must be always 0.')
                 utils.assert_show_message(payment_option['isPartialPayment'] == False,
                                           f'The payment option must be not defined as partial payment.')
-
-
 
 
 # @then('the response contains the payment option correctly generated from {index} RPT')
@@ -787,7 +790,7 @@ def check_paymentposition_transfers_for_multibeneficiary(context):
             try:
                 request_payload = json.loads(request_payload)
             except json.JSONDecodeError:
-                raise ValueError("Error parsing the json of request_payload")
+                raise ValueError('Error parsing the json of request_payload')
 
             if 'paymentOption' in request_payload:
                 payment_options = request_payload['paymentOption'][0]
@@ -807,7 +810,8 @@ def check_paymentposition_transfers_for_multibeneficiary(context):
                     transfer_from_po = transfers_from_po[transfer_index]
                     # using this filter because it cannot be used a filter on IUV for multibeneficiary
                     transfer_from_rpt = next((transfer for transfer in transfers_from_rpt if
-                                              transfer['transfer_note'] == transfer_from_po['remittanceInformation']), None)
+                                              transfer['transfer_note'] == transfer_from_po['remittanceInformation']),
+                                             None)
                     utils.assert_show_message(transfer_from_rpt is not None,
                                               f"It is not possible to find a transfer in RPT cart with transfer note [{transfer_from_po['remittanceInformation']}]")
                     utils.assert_show_message(transfer_from_po['status'] == 'T_UNREPORTED',
@@ -819,8 +823,9 @@ def check_paymentposition_transfers_for_multibeneficiary(context):
                                               f'There is not IBAN definition in transfer {transfer_index} but RPT transfer require it.')
                     utils.assert_show_message(transfer_from_po['iban'] == transfer_from_rpt['creditor_iban'],
                                               f"The IBAN defined in transfer {transfer_index} is not equals to the one defined in RPT. GPD's: [{transfer_from_po['iban']}], RPT's: [{transfer_from_rpt['creditor_iban']}]")
-                    utils.assert_show_message(int(transfer_from_po['amount']) == round(transfer_from_rpt['amount'] * 100),
-                                              f"The amount of the transfer {transfer_index} must be equals to the same defined in the payment position. GPD's: [{int(transfer_from_po['amount'])}], RPT's: [{round(transfer_from_rpt['amount'])}]")
+                    utils.assert_show_message(
+                        int(transfer_from_po['amount']) == round(transfer_from_rpt['amount'] * 100),
+                        f"The amount of the transfer {transfer_index} must be equals to the same defined in the payment position. GPD's: [{int(transfer_from_po['amount'])}], RPT's: [{round(transfer_from_rpt['amount'])}]")
 
 
 ######################################
@@ -951,7 +956,6 @@ def check_debt_position_invalid_and_sent_ko_receipt(context):
         except AssertionError:
             continue  # If it fails, continue with the next error
     else:
-        raise AssertionError("There is no error matching the one searched in the field_name: operation_error_code")
-
+        raise AssertionError('There is no error matching the one searched in the field_name: operation_error_code')
 
     check_event(context, 'redirect', 'status', 'RT_SEND_SUCCESS')

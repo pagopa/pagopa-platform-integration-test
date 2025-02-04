@@ -8,7 +8,8 @@ from src.utility.wisp import routes as router
 from src.utility.wisp import utils
 
 
-@given('a single RPT of type {payment_type} with {number_of_transfers} transfers of which {number_of_stamps} are stamps')
+@given(
+    'a single RPT of type {payment_type} with {number_of_transfers} transfers of which {number_of_stamps} are stamps')
 @when('a single RPT of type {payment_type} with {number_of_transfers} transfers of which {number_of_stamps} are stamps')
 def generate_single_rpt(context, payment_type, number_of_transfers, number_of_stamps):
     session.set_skip_tests(context, False)
