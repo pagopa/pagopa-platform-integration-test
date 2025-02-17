@@ -1,4 +1,4 @@
-const { addDays, buildStringFromDate, makeidNumber, makeidMix,  } = require("./helpers");
+const { addDays, buildStringFromDate, makeidNumber, makeidMix, } = require("./helpers");
 
 function buildDebtPositionDynamicData(gpdSessionBundle, iupdIn, iuv = makeidNumber(17), validityDate = null) {
     return {
@@ -31,46 +31,111 @@ function buildDebtPositionDynamicData(gpdSessionBundle, iupdIn, iuv = makeidNumb
 function buildCreateDebtPositionRequest(debtPosition, payer) {
     return {
         iupd: debtPosition.iupd,
-        type: "F",
-        fiscalCode: payer.fiscalCode,
-        fullName: payer.name,
-        streetName: payer.streetName,
-        civicNumber: payer.civicNumber,
-        postalCode: payer.postalCode,
-        city: payer.city,
-        province: payer.province,
-        region: payer.region,
-        country: payer.country,
-        email: payer.email,
-        phone: payer.phone,
+        payStandIn: true,
         companyName: payer.companyName,
         officeName: payer.officeName,
-        validityDate: debtPosition.validityDate,
-        switchToExpired: false,
         paymentOption: [
             {
-                iuv: debtPosition.iuv1,
-                amount: debtPosition.amount * 100,
-                description: "Canone Unico Patrimoniale - SkyLab Inc.",
-                isPartialPayment: false,
-                dueDate: debtPosition.dueDate,
-                retentionDate: debtPosition.retentionDate,
-                fee: 0,
-                transfer: [
+                "description": "description payment option",
+                "retentionDate": "2027-01-02T10:56:12.784Z",
+                "switchToExpired": false,
+                "debtor": {
+                    type: "F",
+                    fiscalCode: payer.fiscalCode,
+                    fullName: payer.name,
+                    streetName: payer.streetName,
+                    civicNumber: payer.civicNumber,
+                    postalCode: payer.postalCode,
+                    city: payer.city,
+                    province: payer.province,
+                    region: payer.region,
+                    country: payer.country,
+                    email: payer.email,
+                    phone: payer.phone,
+                },
+                "installments": [
                     {
-                        idTransfer: debtPosition.transferId1,
-                        amount: (debtPosition.amount * 100 / 3),
-                        remittanceInformation: "Rata 1",
-                        category: "9/0101108TS/",
-                        iban: debtPosition.iban,
-                    },
+                        "iuv": "51000000000000013",
+                        "amount": 100,
+                        "description": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                        "dueDate": "2026-12-10T10:56:12.784Z",
+                        "transfer": [
+                            {
+                                "idTransfer": "1",
+                                "amount": 100,
+                                "organizationFiscalCode": "{{ec-test}}",
+                                "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                                "category": "9/0301109AP",
+                                "postalIban": null,
+                                "stamp": null,
+                                "companyName": "PagoPA S.p.A.",
+                                "iban": "IT76P0306909790100000300089",
+                                "transferMetadata": [
+                                    {
+                                        "key": "DatiSpecificiRiscossione",
+                                        "value": "9/0301109AP"
+                                    }
+                                ]
+                            }
+                        ],
+                        "installmentMetadata": [
+                            {
+                                "key": "key1",
+                                "value": "value1"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "description": "description payment option",
+                "retentionDate": "2027-01-02T10:56:12.784Z",
+                "switchToExpired": false,
+                "debtor": {
+                    type: "F",
+                    fiscalCode: payer.fiscalCode,
+                    fullName: payer.name,
+                    streetName: payer.streetName,
+                    civicNumber: payer.civicNumber,
+                    postalCode: payer.postalCode,
+                    city: payer.city,
+                    province: payer.province,
+                    region: payer.region,
+                    country: payer.country,
+                    email: payer.email,
+                    phone: payer.phone,
+                },
+                "installments": [
                     {
-                        idTransfer: debtPosition.transferId2,
-                        organizationFiscalCode: debtPosition.transferOtherCIFiscalCode,
-                        amount: (debtPosition.amount * 100 / 3) * 2,
-                        remittanceInformation: "Rata 2",
-                        category: "9/0101108TS/",
-                        iban: debtPosition.iban,
+                        "iuv": "51000000000000014",
+                        "amount": 100,
+                        "description": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                        "dueDate": "2026-12-10T10:56:12.784Z",
+                        "transfer": [
+                            {
+                                "idTransfer": "1",
+                                "amount": 100,
+                                "organizationFiscalCode": debtPosition.organizationFiscalCode,
+                                "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                                "category": "9/0301109AP",
+                                "postalIban": null,
+                                "stamp": null,
+                                "companyName": "PagoPA S.p.A.",
+                                "iban": "IT76P0306909790100000300089",
+                                "transferMetadata": [
+                                    {
+                                        "key": "DatiSpecificiRiscossione",
+                                        "value": "9/0301109AP"
+                                    }
+                                ]
+                            }
+                        ],
+                        "installmentMetadata": [
+                            {
+                                "key": "key1",
+                                "value": "value1"
+                            }
+                        ]
                     }
                 ]
             }
@@ -79,63 +144,63 @@ function buildCreateDebtPositionRequest(debtPosition, payer) {
 }
 
 function buildCreateMassiveDebtPositionRequest(debtPosition, payer) {
-	
-	return {
-			  paymentPositions: [
-			    {
-			        iupd: debtPosition.iupd,
-			        type: "F",
-			        fiscalCode: payer.fiscalCode,
-			        fullName: payer.name,
-			        streetName: payer.streetName,
-			        civicNumber: payer.civicNumber,
-			        postalCode: payer.postalCode,
-			        city: payer.city,
-			        province: payer.province,
-			        region: payer.region,
-			        country: payer.country,
-			        email: payer.email,
-			        phone: payer.phone,
-			        companyName: payer.companyName,
-			        officeName: payer.officeName,
-			        switchToExpired: false,
-			        paymentOption: [
-			            {
-			                iuv: debtPosition.iuv1,
-			                amount: debtPosition.amount * 100,
-			                description: "Canone Unico Patrimoniale - SkyLab Inc.",
-			                isPartialPayment: false,
-			                dueDate: debtPosition.dueDate,
-			                retentionDate: debtPosition.retentionDate,
-			                fee: 0,
-			                transfer: [
-			                    {
-			                        idTransfer: debtPosition.transferId1,
-			                        amount: (debtPosition.amount * 100 / 3),
-			                        remittanceInformation: "Rata 1",
-			                        category: "9/0101108TS/",
-			                        iban: debtPosition.iban,
-			                    },
-			                    {
-			                        idTransfer: debtPosition.transferId2,
-			                        organizationFiscalCode: debtPosition.transferOtherCIFiscalCode,
-			                        amount: (debtPosition.amount * 100 / 3) * 2,
-			                        remittanceInformation: "Rata 2",
-			                        category: "9/0101108TS/",
-			                        iban: debtPosition.iban,
-			                    }
-			                ],
-			                paymentOptionMetadata: [{key: "string",value: "string"}]
-			            }
-			      ]
-			   }
-			 ]
-		};
+
+    return {
+        paymentPositions: [
+            {
+                iupd: debtPosition.iupd,
+                type: "F",
+                fiscalCode: payer.fiscalCode,
+                fullName: payer.name,
+                streetName: payer.streetName,
+                civicNumber: payer.civicNumber,
+                postalCode: payer.postalCode,
+                city: payer.city,
+                province: payer.province,
+                region: payer.region,
+                country: payer.country,
+                email: payer.email,
+                phone: payer.phone,
+                companyName: payer.companyName,
+                officeName: payer.officeName,
+                switchToExpired: false,
+                paymentOption: [
+                    {
+                        iuv: debtPosition.iuv1,
+                        amount: debtPosition.amount * 100,
+                        description: "Canone Unico Patrimoniale - SkyLab Inc.",
+                        isPartialPayment: false,
+                        dueDate: debtPosition.dueDate,
+                        retentionDate: debtPosition.retentionDate,
+                        fee: 0,
+                        transfer: [
+                            {
+                                idTransfer: debtPosition.transferId1,
+                                amount: (debtPosition.amount * 100 / 3),
+                                remittanceInformation: "Rata 1",
+                                category: "9/0101108TS/",
+                                iban: debtPosition.iban,
+                            },
+                            {
+                                idTransfer: debtPosition.transferId2,
+                                organizationFiscalCode: debtPosition.transferOtherCIFiscalCode,
+                                amount: (debtPosition.amount * 100 / 3) * 2,
+                                remittanceInformation: "Rata 2",
+                                category: "9/0101108TS/",
+                                iban: debtPosition.iban,
+                            }
+                        ],
+                        paymentOptionMetadata: [{ key: "string", value: "string" }]
+                    }
+                ]
+            }
+        ]
+    };
 }
 
 function buildCreateOK_KODebtPositionRequest(bundle, action) {
-	let debtPosition = bundle.debtPosition;
-	let payer = bundle.payer;
+    let debtPosition = bundle.debtPosition;
+    let payer = bundle.payer;
     return {
         iupd: debtPosition.iupd,
         type: "F",
@@ -155,7 +220,7 @@ function buildCreateOK_KODebtPositionRequest(bundle, action) {
         switchToExpired: false,
         paymentOption: [
             {
-                iuv: action == "OK" ? debtPosition.iuvOK:debtPosition.iuvKO,
+                iuv: action == "OK" ? debtPosition.iuvOK : debtPosition.iuvKO,
                 amount: debtPosition.amount * 100,
                 description: "Canone Unico Patrimoniale - SkyLab Inc.",
                 isPartialPayment: false,
@@ -187,45 +252,111 @@ function buildCreateOK_KODebtPositionRequest(bundle, action) {
 function buildUpdateDebtPositionRequest(debtPosition, payer) {
     return {
         iupd: debtPosition.iupd,
-        type: "F",
-        fiscalCode: payer.fiscalCode,
-        fullName: payer.name,
-        streetName: payer.streetName,
-        civicNumber: payer.civicNumber,
-        postalCode: payer.postalCode,
-        city: payer.city,
-        province: payer.province,
-        region: payer.region,
-        country: payer.country,
-        email: payer.email,
-        phone: payer.phone,
-        companyName: payer.companyName + " - Edit",
-        officeName: payer.officeName + " - Edit",
-        switchToExpired: false,
+        payStandIn: true,
+        companyName: payer.companyName,
+        officeName: payer.officeName,
         paymentOption: [
             {
-                iuv: debtPosition.iuv1,
-                amount: debtPosition.amount * 100,
-                description: "Canone Unico Patrimoniale - SkyLab Inc. - Edit",
-                isPartialPayment: false,
-                dueDate: debtPosition.dueDate,
-                retentionDate: debtPosition.retentionDate,
-                fee: 0,
-                transfer: [
+                "description": "description payment option",
+                "retentionDate": "2027-01-02T10:56:12.784Z",
+                "switchToExpired": false,
+                "debtor": {
+                    type: "F",
+                    fiscalCode: payer.fiscalCode,
+                    fullName: payer.name,
+                    streetName: payer.streetName,
+                    civicNumber: payer.civicNumber,
+                    postalCode: payer.postalCode,
+                    city: payer.city,
+                    province: payer.province,
+                    region: payer.region,
+                    country: payer.country,
+                    email: payer.email,
+                    phone: payer.phone,
+                },
+                "installments": [
                     {
-                        idTransfer: debtPosition.transferId1,
-                        amount: (debtPosition.amount * 100 / 3),
-                        remittanceInformation: "Rata 1 Edit",
-                        category: "9/0101108TS/",
-                        iban: debtPosition.iban,
-                    },
+                        "iuv": "51000000000000013",
+                        "amount": 100,
+                        "description": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                        "dueDate": "2026-12-10T10:56:12.784Z",
+                        "transfer": [
+                            {
+                                "idTransfer": "1",
+                                "amount": 100,
+                                "organizationFiscalCode": "{{ec-test}}",
+                                "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                                "category": "9/0301109AP",
+                                "postalIban": null,
+                                "stamp": null,
+                                "companyName": "PagoPA S.p.A.",
+                                "iban": "IT76P0306909790100000300089",
+                                "transferMetadata": [
+                                    {
+                                        "key": "DatiSpecificiRiscossione",
+                                        "value": "9/0301109AP"
+                                    }
+                                ]
+                            }
+                        ],
+                        "installmentMetadata": [
+                            {
+                                "key": "key1",
+                                "value": "value1"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "description": "description payment option",
+                "retentionDate": "2027-01-02T10:56:12.784Z",
+                "switchToExpired": false,
+                "debtor": {
+                    type: "F",
+                    fiscalCode: payer.fiscalCode,
+                    fullName: payer.name,
+                    streetName: payer.streetName,
+                    civicNumber: payer.civicNumber,
+                    postalCode: payer.postalCode,
+                    city: payer.city,
+                    province: payer.province,
+                    region: payer.region,
+                    country: payer.country,
+                    email: payer.email,
+                    phone: payer.phone,
+                },
+                "installments": [
                     {
-                        idTransfer: debtPosition.transferId2,
-                        organizationFiscalCode: debtPosition.transferOtherCIFiscalCode,
-                        amount: (debtPosition.amount * 100 / 3) * 2,
-                        remittanceInformation: "Rata 2 Edit",
-                        category: "9/0101108TS/",
-                        iban: debtPosition.iban,
+                        "iuv": "51000000000000014",
+                        "amount": 100,
+                        "description": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                        "dueDate": "2026-12-10T10:56:12.784Z",
+                        "transfer": [
+                            {
+                                "idTransfer": "1",
+                                "amount": 100,
+                                "organizationFiscalCode": debtPosition.organizationFiscalCode,
+                                "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                                "category": "9/0301109AP",
+                                "postalIban": null,
+                                "stamp": null,
+                                "companyName": "PagoPA S.p.A.",
+                                "iban": "IT76P0306909790100000300089",
+                                "transferMetadata": [
+                                    {
+                                        "key": "DatiSpecificiRiscossione",
+                                        "value": "9/0301109AP"
+                                    }
+                                ]
+                            }
+                        ],
+                        "installmentMetadata": [
+                            {
+                                "key": "key1",
+                                "value": "value1"
+                            }
+                        ]
                     }
                 ]
             }
