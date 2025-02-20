@@ -1,8 +1,8 @@
 Feature: Managing a debt position
 
-
-
-  @test
+Background: 
+    Given GPD running
+  
   Scenario: Debt position creation
     Given a random iupd
     When the debt position is created and published
