@@ -1,8 +1,5 @@
 Feature: Paying a debt position
 
- Background:
-   Given GPD running
-
  Scenario: Pay Debt Position
    Given a random iupd
    When the debt position is created
