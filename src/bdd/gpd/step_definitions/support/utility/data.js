@@ -31,16 +31,16 @@ let gpdSessionBundle = {
         transferDate: undefined
     },
     payer: {
-        name: "Michele Ventimiglia",
-        fiscalCode: "VNTMHL76M09H501D",
-        streetName: "via Washington",
-        civicNumber: "11",
-        postalCode: "89812",
-        city: "Pizzo Calabro",
-        province: "VV",
-        region: "CA",
+        name: "Marina Verdi",
+        fiscalCode: "VRDMRN72A12H501Z",
+        streetName: "Via della Conciliazione",
+        civicNumber: "1",
+        postalCode: "00100",
+        city: "Roma",
+        province: "RM",
+        region: "LAZ",
         country: "IT",
-        email: "micheleventimiglia@skilabmail.com",
+        email: "marina.verdi@mail.com",
         phone: "333-123456789",
         companyName: "SkyLab Inc.",
         officeName: "SkyLab - Sede via Washington"
@@ -49,8 +49,8 @@ let gpdSessionBundle = {
 
 let gpdUpdateBundle = {
     type: "F",
-    fiscalCode: "VNTMHL76M09H501D",
-    fullName: "Michele Ventimiglia",
+    fiscalCode: "VRDMRN72A12H501Z",
+    fullName: "Marina Verdi",
     companyName: "Testing S.p.A."
 }
 

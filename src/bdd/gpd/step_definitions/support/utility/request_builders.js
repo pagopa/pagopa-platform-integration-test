@@ -37,7 +37,7 @@ function buildCreateDebtPositionRequest(debtPosition, payer) {
         paymentOption: [
             {
                 "description": "description payment option",
-                "retentionDate": "2027-01-02T10:56:12.784Z",
+                "retentionDate": debtPosition.retentionDate,
                 "switchToExpired": false,
                 "debtor": {
                     type: "F",
@@ -55,21 +55,21 @@ function buildCreateDebtPositionRequest(debtPosition, payer) {
                 },
                 "installments": [
                     {
-                        "iuv": "51000000000000013",
-                        "amount": 100,
+                        "iuv": debtPosition.iuv1,
+                        "amount": debtPosition.amount * 100,
                         "description": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
-                        "dueDate": "2026-12-10T10:56:12.784Z",
+                        "dueDate": debtPosition.dueDate,
                         "transfer": [
                             {
-                                "idTransfer": "1",
-                                "amount": 100,
+                                "idTransfer": debtPosition.transferId1,
+                                "amount": (debtPosition.amount * 100),
                                 "organizationFiscalCode": debtPosition.organizationFiscalCode,
                                 "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
                                 "category": "9/0301109AP",
                                 "postalIban": null,
                                 "stamp": null,
-                                "companyName": "PagoPA S.p.A.",
-                                "iban": "IT76P0306909790100000300089",
+                                "companyName": debtPosition.companyName,
+                                "iban": debtPosition.iban,
                                 "transferMetadata": [
                                     {
                                         "key": "DatiSpecificiRiscossione",
@@ -89,7 +89,7 @@ function buildCreateDebtPositionRequest(debtPosition, payer) {
             },
             {
                 "description": "description payment option",
-                "retentionDate": "2027-01-02T10:56:12.784Z",
+                "retentionDate": debtPosition.retentionDate,
                 "switchToExpired": false,
                 "debtor": {
                     type: "F",
@@ -107,21 +107,21 @@ function buildCreateDebtPositionRequest(debtPosition, payer) {
                 },
                 "installments": [
                     {
-                        "iuv": "51000000000000014",
-                        "amount": 100,
+                        "iuv": debtPosition.iuv1,
+                        "amount": debtPosition.amount * 100,
                         "description": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
-                        "dueDate": "2026-12-10T10:56:12.784Z",
+                        "dueDate": debtPosition.dueDate,
                         "transfer": [
                             {
-                                "idTransfer": "1",
-                                "amount": 100,
+                                "idTransfer": debtPosition.transferId1,
+                                "amount": (debtPosition.amount * 100),
                                 "organizationFiscalCode": debtPosition.organizationFiscalCode,
                                 "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
                                 "category": "9/0301109AP",
                                 "postalIban": null,
                                 "stamp": null,
-                                "companyName": "PagoPA S.p.A.",
-                                "iban": "IT76P0306909790100000300089",
+                                "companyName": debtPosition.companyName,
+                                "iban": debtPosition.iban,
                                 "transferMetadata": [
                                     {
                                         "key": "DatiSpecificiRiscossione",
@@ -258,7 +258,7 @@ function buildUpdateDebtPositionRequest(debtPosition, payer) {
         paymentOption: [
             {
                 "description": "description payment option",
-                "retentionDate": "2027-01-02T10:56:12.784Z",
+                "retentionDate": debtPosition.retentionDate,
                 "switchToExpired": false,
                 "debtor": {
                     type: "F",
@@ -276,21 +276,21 @@ function buildUpdateDebtPositionRequest(debtPosition, payer) {
                 },
                 "installments": [
                     {
-                        "iuv": "51000000000000013",
-                        "amount": 100,
+                        "iuv": debtPosition.iuv1,
+                        "amount": debtPosition.amount * 100,
                         "description": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
-                        "dueDate": "2026-12-10T10:56:12.784Z",
+                        "dueDate": debtPosition.dueDate,
                         "transfer": [
                             {
-                                "idTransfer": "1",
-                                "amount": 100,
+                                "idTransfer": debtPosition.transferId1,
+                                "amount": (debtPosition.amount * 100),
                                 "organizationFiscalCode": debtPosition.organizationFiscalCode,
                                 "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
                                 "category": "9/0301109AP",
                                 "postalIban": null,
                                 "stamp": null,
-                                "companyName": "PagoPA S.p.A.",
-                                "iban": "IT76P0306909790100000300089",
+                                "companyName": debtPosition.companyName,
+                                "iban": debtPosition.iban,
                                 "transferMetadata": [
                                     {
                                         "key": "DatiSpecificiRiscossione",
@@ -310,7 +310,7 @@ function buildUpdateDebtPositionRequest(debtPosition, payer) {
             },
             {
                 "description": "description payment option",
-                "retentionDate": "2027-01-02T10:56:12.784Z",
+                "retentionDate": debtPosition.retentionDate,
                 "switchToExpired": false,
                 "debtor": {
                     type: "F",
@@ -328,21 +328,21 @@ function buildUpdateDebtPositionRequest(debtPosition, payer) {
                 },
                 "installments": [
                     {
-                        "iuv": "51000000000000014",
-                        "amount": 100,
+                        "iuv": debtPosition.iuv1,
+                        "amount": debtPosition.amount * 100,
                         "description": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
-                        "dueDate": "2026-12-10T10:56:12.784Z",
+                        "dueDate": debtPosition.dueDate,
                         "transfer": [
                             {
-                                "idTransfer": "1",
-                                "amount": 100,
+                                "idTransfer": debtPosition.transferId1,
+                                "amount": (debtPosition.amount * 100),
                                 "organizationFiscalCode": debtPosition.organizationFiscalCode,
                                 "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
                                 "category": "9/0301109AP",
                                 "postalIban": null,
                                 "stamp": null,
-                                "companyName": "PagoPA S.p.A.",
-                                "iban": "IT76P0306909790100000300089",
+                                "companyName": debtPosition.companyName,
+                                "iban": debtPosition.iban,
                                 "transferMetadata": [
                                     {
                                         "key": "DatiSpecificiRiscossione",
