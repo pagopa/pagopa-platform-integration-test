@@ -190,9 +190,7 @@ async function executeReportTransfer(bundle, idOrg) {
 async function executeDebtPositionCreationAndPublication(bundle, idOrg, iupd) {
     bundle.organizationCode = idOrg;
     bundle.debtPosition = buildDebtPositionDynamicData(bundle, iupd);
-    let response = await createAndPublishDebtPosition(bundle.organizationCode, buildUpdateDebtPositionRequest(bundle.debtPosition, bundle.payer));
-    console.log("Response from createAndPublishDebtPosition:", response);
-
+    let response = await createAndPublishDebtPosition(bundle.organizationCode, buildUpdateDebtPositionRequest(bundle.debtPosition, bundle.payer));   
     bundle.responseToCheck = response;
 }
 
