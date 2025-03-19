@@ -46,8 +46,8 @@ function makeidMix(length) {
 //}
 
 function makeidNumber(length) {
-    //var segregationCodes = ["97", "01", "02", "47"];
-    var segregationCodes = ["51"]
+    var segregationCodes = ["97", "01", "02", "47"];
+    //var segregationCodes = ["51"]
     var result = segregationCodes[Math.floor(Math.random() * segregationCodes.length)]; 
 
     var characters = "0123456789";

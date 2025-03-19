@@ -16,7 +16,7 @@ async function assertOutcome(bundle, outcome) {
     assert.match(bundle.responseToCheck.data, new RegExp(`<outcome>${outcome}</outcome>`, "g"));
 }
 
-async function assertStatusCode(bundle, statusCode) {
+async function assertStatusCode(bundle, statusCode) {    
     assert.strictEqual(bundle.responseToCheck.status, statusCode);
 }
 
@@ -49,8 +49,8 @@ async function assertNotificationFeeUpdatedDateNotificationFee(createdDebtPositi
 }
 
 async function assertNav(debtPosition, response) {
-    // nav = auxDigit + iuv
-    assert.strictEqual(response.paymentOption[0].nav, auxDigit + debtPosition.paymentOption[0].iuv);
+    // nav = auxDigit + iuv    
+    assert.strictEqual(response.paymentOption[0].installments[0].nav, auxDigit + debtPosition.paymentOption[0].installments[0].iuv);
 }
 
 async function assertIUV(response, expectedIUV) {
@@ -70,7 +70,7 @@ function randomOrg() {
 }
 
 function randomIupd() {
-    return "IUPD_" + Math.floor(Math.random() * 1000000);
+    return "IUPD-V3-" + Math.floor(Math.random() * 1000000);
 }
 
 module.exports = {

@@ -42,8 +42,8 @@ let gpdSessionBundle = {
         country: "IT",
         email: "marina.verdi@mail.com",
         phone: "333-123456789",
-        companyName: "SkyLab Inc.",
-        officeName: "SkyLab - Sede via Washington"
+        companyName: "PagoPA S.p.A.",
+        officeName: "PagoPA S.p.A."
     },
 }
 

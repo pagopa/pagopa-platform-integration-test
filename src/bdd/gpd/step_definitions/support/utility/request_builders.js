@@ -63,65 +63,15 @@ function buildCreateDebtPositionRequest(debtPosition, payer) {
                             {
                                 "idTransfer": debtPosition.transferId1,
                                 "amount": (debtPosition.amount * 100),
-                                "organizationFiscalCode": debtPosition.organizationFiscalCode,
+                                //"organizationFiscalCode": debtPosition.organizationFiscalCode,
+                                "organizationFiscalCode": "77777777777",
                                 "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
                                 "category": "9/0301109AP",
                                 "postalIban": null,
                                 "stamp": null,
                                 "companyName": debtPosition.companyName,
-                                "iban": debtPosition.iban,
-                                "transferMetadata": [
-                                    {
-                                        "key": "DatiSpecificiRiscossione",
-                                        "value": "9/0301109AP"
-                                    }
-                                ]
-                            }
-                        ],
-                        "installmentMetadata": [
-                            {
-                                "key": "key1",
-                                "value": "value1"
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                "description": "description payment option",
-                "retentionDate": debtPosition.retentionDate,
-                "switchToExpired": false,
-                "debtor": {
-                    type: "F",
-                    fiscalCode: payer.fiscalCode,
-                    fullName: payer.name,
-                    streetName: payer.streetName,
-                    civicNumber: payer.civicNumber,
-                    postalCode: payer.postalCode,
-                    city: payer.city,
-                    province: payer.province,
-                    region: payer.region,
-                    country: payer.country,
-                    email: payer.email,
-                    phone: payer.phone,
-                },
-                "installments": [
-                    {
-                        "iuv": debtPosition.iuv1,
-                        "amount": debtPosition.amount * 100,
-                        "description": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
-                        "dueDate": debtPosition.dueDate,
-                        "transfer": [
-                            {
-                                "idTransfer": debtPosition.transferId1,
-                                "amount": (debtPosition.amount * 100),
-                                "organizationFiscalCode": debtPosition.organizationFiscalCode,
-                                "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
-                                "category": "9/0301109AP",
-                                "postalIban": null,
-                                "stamp": null,
-                                "companyName": debtPosition.companyName,
-                                "iban": debtPosition.iban,
+                                //"iban": debtPosition.iban,
+                                "iban": "IT76P0306909790100000300089",
                                 "transferMetadata": [
                                     {
                                         "key": "DatiSpecificiRiscossione",
@@ -139,6 +89,60 @@ function buildCreateDebtPositionRequest(debtPosition, payer) {
                     }
                 ]
             }
+            //{
+            //    "description": "description payment option",
+            //    "retentionDate": debtPosition.retentionDate,
+            //    "switchToExpired": false,
+            //    "debtor": {
+            //        type: "F",
+            //        fiscalCode: payer.fiscalCode,
+            //        fullName: payer.name,
+            //        streetName: payer.streetName,
+            //        civicNumber: payer.civicNumber,
+            //        postalCode: payer.postalCode,
+            //        city: payer.city,
+            //        province: payer.province,
+            //        region: payer.region,
+            //        country: payer.country,
+            //        email: payer.email,
+            //        phone: payer.phone,
+            //    },
+            //    "installments": [
+            //        {
+            //            "iuv": debtPosition.iuv2,
+            //            "amount": debtPosition.amount * 100,
+            //            "description": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+            //            "dueDate": debtPosition.dueDate,
+            //            "transfer": [
+            //                {
+            //                    "idTransfer": debtPosition.transferId1,
+            //                    "amount": (debtPosition.amount * 100),
+            //                    //"organizationFiscalCode": debtPosition.organizationFiscalCode,
+            //                    "organizationFiscalCode": "77777777777",
+            //                    "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+            //                    "category": "9/0301109AP",
+            //                    "postalIban": null,
+            //                    "stamp": null,
+            //                    "companyName": debtPosition.companyName,
+            //                    //"iban": debtPosition.iban,
+            //                    "iban": "IT76P0306909790100000300089",
+            //                    "transferMetadata": [
+            //                        {
+            //                            "key": "DatiSpecificiRiscossione",
+            //                            "value": "9/0301109AP"
+            //                        }
+            //                    ]
+            //                }
+            //            ],
+            //            "installmentMetadata": [
+            //                {
+            //                    "key": "key1",
+            //                    "value": "value1"
+            //                }
+            //            ]
+            //        }
+            //    ]
+            //}
         ]
     };
 }
@@ -284,65 +288,15 @@ function buildUpdateDebtPositionRequest(debtPosition, payer) {
                             {
                                 "idTransfer": debtPosition.transferId1,
                                 "amount": (debtPosition.amount * 100),
-                                "organizationFiscalCode": debtPosition.organizationFiscalCode,
+                                //"organizationFiscalCode": debtPosition.organizationFiscalCode,
+                                "organizationFiscalCode": "77777777777",
                                 "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
                                 "category": "9/0301109AP",
                                 "postalIban": null,
                                 "stamp": null,
                                 "companyName": debtPosition.companyName,
-                                "iban": debtPosition.iban,
-                                "transferMetadata": [
-                                    {
-                                        "key": "DatiSpecificiRiscossione",
-                                        "value": "9/0301109AP"
-                                    }
-                                ]
-                            }
-                        ],
-                        "installmentMetadata": [
-                            {
-                                "key": "key1",
-                                "value": "value1"
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                "description": "description payment option",
-                "retentionDate": debtPosition.retentionDate,
-                "switchToExpired": false,
-                "debtor": {
-                    type: "F",
-                    fiscalCode: payer.fiscalCode,
-                    fullName: payer.name,
-                    streetName: payer.streetName,
-                    civicNumber: payer.civicNumber,
-                    postalCode: payer.postalCode,
-                    city: payer.city,
-                    province: payer.province,
-                    region: payer.region,
-                    country: payer.country,
-                    email: payer.email,
-                    phone: payer.phone,
-                },
-                "installments": [
-                    {
-                        "iuv": debtPosition.iuv1,
-                        "amount": debtPosition.amount * 100,
-                        "description": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
-                        "dueDate": debtPosition.dueDate,
-                        "transfer": [
-                            {
-                                "idTransfer": debtPosition.transferId1,
-                                "amount": (debtPosition.amount * 100),
-                                "organizationFiscalCode": debtPosition.organizationFiscalCode,
-                                "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
-                                "category": "9/0301109AP",
-                                "postalIban": null,
-                                "stamp": null,
-                                "companyName": debtPosition.companyName,
-                                "iban": debtPosition.iban,
+                                //"iban": debtPosition.iban,
+                                "iban": "IT76P0306909790100000300089",
                                 "transferMetadata": [
                                     {
                                         "key": "DatiSpecificiRiscossione",
@@ -360,6 +314,60 @@ function buildUpdateDebtPositionRequest(debtPosition, payer) {
                     }
                 ]
             }
+            //{
+            //    "description": "description payment option",
+            //    "retentionDate": debtPosition.retentionDate,
+            //    "switchToExpired": false,
+            //    "debtor": {
+            //        type: "F",
+            //        fiscalCode: payer.fiscalCode,
+            //        fullName: payer.name,
+            //        streetName: payer.streetName,
+            //        civicNumber: payer.civicNumber,
+            //        postalCode: payer.postalCode,
+            //        city: payer.city,
+            //        province: payer.province,
+            //        region: payer.region,
+            //        country: payer.country,
+            //        email: payer.email,
+            //        phone: payer.phone,
+            //    },
+            //    "installments": [
+            //        {
+            //            "iuv": debtPosition.iuv2,
+            //            "amount": debtPosition.amount * 100,
+            //            "description": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+            //            "dueDate": debtPosition.dueDate,
+            //            "transfer": [
+            //                {
+            //                    "idTransfer": debtPosition.transferId1,
+            //                    "amount": (debtPosition.amount * 100),
+            //                    //"organizationFiscalCode": debtPosition.organizationFiscalCode,
+            //                    "organizationFiscalCode": "77777777777",
+            //                    "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+            //                    "category": "9/0301109AP",
+            //                    "postalIban": null,
+            //                    "stamp": null,
+            //                    "companyName": debtPosition.companyName,
+            //                    //"iban": debtPosition.iban,
+            //                    "iban": "IT76P0306909790100000300089",
+            //                    "transferMetadata": [
+            //                        {
+            //                            "key": "DatiSpecificiRiscossione",
+            //                            "value": "9/0301109AP"
+            //                        }
+            //                    ]
+            //                }
+            //            ],
+            //            "installmentMetadata": [
+            //                {
+            //                    "key": "key1",
+            //                    "value": "value1"
+            //                }
+            //            ]
+            //        }
+            //    ]
+            //}
         ]
     };
 }
