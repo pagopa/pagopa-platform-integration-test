@@ -47,6 +47,8 @@ Feature: Managing a debt position
     When a node KO result debt position is created
     Then the debt position gets the status code 201
     And the organization gets the nav value after creation
+    
+    #             METHODS NOT YET IMPLEMENTED IN UAT V3
     When the notification fee of the debt position is updated using an OK position on the node
     Then the organization gets the status code 200
     And the organization gets the updated amounts
