@@ -24,7 +24,7 @@ def mbd_checkout_payment(page, checkout_url, mbd_data, card_info):
     page.frame_locator('#frame_CARDHOLDER_NAME').get_by_placeholder('Nome riportato sulla carta').fill(
         'TestCardHolderName TestCardHolderSurname')
 
-    page.get_by_role(role='button', name='Continue', exact=True).click()
+    page.get_by_role(role='button', name='Continua', exact=True).click()
 
     page.get_by_role(role='button', name=re.compile(r'^Pay')).click()
 
