@@ -66,8 +66,7 @@ BeforeAll(async function() {
  *  Debt position creation
  */
 Given('a random iupd', async function () {
-    iupd = randomIupd();
-    //iupd = "IUPD-77777777777-V3-ODP-0003"
+    iupd = randomIupd();    
     // precondition -> deletion possible dirty data
     await executeDebtPositionDeletion(gpdSessionBundle, idOrg, iupd);
 });
