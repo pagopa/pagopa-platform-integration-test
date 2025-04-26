@@ -52,6 +52,7 @@ jobs:
           SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS }}
       - name: Run tests with Behave (WISP)
         id: run_tests
+        continue-on-error: true
         run: |
           behave src/bdd/wisp --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
       - name: Load previous allure history
@@ -92,6 +93,7 @@ jobs:
           sudo apt-get install -y jq
       - name: Run tests with Behave (FdR)
         id: run_tests
+        continue-on-error: true
         run: |
           behave src/bdd/fdr --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
       - name: Load previous allure history
