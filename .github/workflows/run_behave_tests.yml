@@ -69,6 +69,11 @@ jobs:
           allure_history: allure-history
           subfolder: wisp-tests
           keep_reports: 30
+      - name: Upload WISP report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report-wisp
+          path: allure-report-wisp
 
   FdR_integration_tests:
     runs-on: ubuntu-latest
@@ -110,12 +115,29 @@ jobs:
           allure_history: allure-history
           subfolder: fdr-tests
           keep_reports: 30
+      - name: Upload FdR report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report-fdr
+          path: allure-report-fdr
 
   deploy:
     needs: [ WISP_integration_tests, FdR_integration_tests ]
     runs-on: ubuntu-latest
     if: always()
     steps:
+      - name: Download WISP report artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-report-wisp
+          path: allure-report-wisp
+
+      - name: Download FdR report artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-report-fdr
+          path: allure-report-fdr
+
       - name: Checkout gh-pages
         uses: actions/checkout@v4
         with:
