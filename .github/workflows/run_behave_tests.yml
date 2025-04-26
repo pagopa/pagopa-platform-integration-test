@@ -65,8 +65,8 @@ jobs:
         with:
           gh_pages: gh-pages
           allure_results: allure-results
-          allure_report: allure-report
-          allure_history: allure-history/wisp-tests
+          allure_report: allure-report-wisp
+          allure_history: allure-history
           subfolder: wisp-tests
           keep_reports: 30
 
@@ -106,13 +106,13 @@ jobs:
         with:
           gh_pages: gh-pages
           allure_results: allure-results
-          allure_report: allure-report
-          allure_history: allure-history/fdr-tests
+          allure_report: allure-report-fdr
+          allure_history: allure-history
           subfolder: fdr-tests
           keep_reports: 30
 
   deploy:
-    needs: [WISP_integration_tests, FdR_integration_tests]
+    needs: [ WISP_integration_tests, FdR_integration_tests ]
     runs-on: ubuntu-latest
     if: always()
     steps:
@@ -122,19 +122,19 @@ jobs:
           ref: gh-pages
           path: public
 
-      - name: Create timestamp folder names
+      - name: Create timestamp
         id: vars
         run: echo "timestamp=$(date +'%Y-%m-%d-%Hh%M')" >> $GITHUB_ENV
 
       - name: Copy WISP report
         run: |
           mkdir -p public/wisp-tests/${{ env.timestamp }}
-          cp -r allure-history/wisp-tests/. public/wisp-tests/${{ env.timestamp }}/
+          cp -r allure-report-wisp/. public/wisp-tests/${{ env.timestamp }}/
 
       - name: Copy FdR report
         run: |
           mkdir -p public/fdr-tests/${{ env.timestamp }}
-          cp -r allure-history/fdr-tests/. public/fdr-tests/${{ env.timestamp }}/
+          cp -r allure-report-fdr/. public/fdr-tests/${{ env.timestamp }}/
 
       - name: Update WISP index
         run: |
@@ -156,12 +156,12 @@ jobs:
           done
           echo '</ul></body></html>' >> public/fdr-tests/index.html
 
-      - name: Copy Landing page
+      - name: Copy Landing Page
         run: |
           cp landing-page/index.html public/index.html
           touch public/.nojekyll
 
-      - name: Publish to GitHub Pages
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
