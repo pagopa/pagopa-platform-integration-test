@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Test di Integrazione</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f5f8fa;
+    }
+    .hero {
+      background-color: #0073e6;
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+    .btn-custom {
+      background-color: #0073e6;
+      border: none;
+    }
+    .btn-custom:hover {
+      background-color: #005bb5;
+    }
+    footer {
+      margin-top: 4rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+    .badges img {
+      margin: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <h1 class="display-4">📊 Dashboard Test di Integrazione</h1>
+  <p class="lead">Monitoraggio automatizzato dei test di WISP e Flussi di Rendicontazione</p>
+</header>
+
+<div class="container my-5">
+  <div class="row g-4 justify-content-center">
+    <div class="col-md-4 d-flex flex-column align-items-center">
+      <a href="./wisp-tests/index.html" class="btn btn-custom btn-lg w-100 mb-3">🔗 WISP Tests</a>
+      <div class="badges text-center">
+        <img src="https://img.shields.io/github/workflow/status/pagopa/pagopa-platform-integration-test/WISP%20Integration%20Tests?label=WISP%20Build" alt="WISP Build Status">
+        <img src="https://img.shields.io/badge/last%20update-{{ site.time | date: '%Y-%m-%d' }}-blue" alt="Last Update">
+      </div>
+    </div>
+    <div class="col-md-4 d-flex flex-column align-items-center">
+      <a href="./fdr-tests/index.html" class="btn btn-custom btn-lg w-100 mb-3">🔗 FdR Tests</a>
+      <div class="badges text-center">
+        <img src="https://img.shields.io/github/workflow/status/pagopa/pagopa-platform-integration-test/FdR%20Integration%20Tests?label=FdR%20Build" alt="FdR Build Status">
+        <img src="https://img.shields.io/badge/last%20update-{{ site.time | date: '%Y-%m-%d' }}-blue" alt="Last Update">
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="text-muted">
+  <p>© 2025 QA Integration Tests · Powered by GitHub Pages</p>
+</footer>
+
+</body>
+</html>
