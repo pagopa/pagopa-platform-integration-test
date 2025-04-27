@@ -1,0 +1,572 @@
+{
+  "uid" : "2bcd97dabee3cc3b",
+  "name" : "User tries to pay a cart with two RPTs but the payment closure fails, then tries again successfully",
+  "fullName" : "User pays a payment carts without stamps on nodoInviaCarrelloRPT: User tries to pay a cart with two RPTs but the payment closure fails, then tries again successfully",
+  "historyId" : "8f7bec8e2290f1fed21601114f61a466",
+  "time" : {
+    "start" : 1745763360047,
+    "stop" : 1745763408782,
+    "duration" : 48735
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "Given systems up",
+      "time" : {
+        "start" : 1745763360047,
+        "stop" : 1745763360757,
+        "duration" : 710
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Given a cart of RPTs non-multibeneficiary",
+      "time" : {
+        "start" : 1745763360757,
+        "stop" : 1745763360757,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 1 transfers of which none are stamps",
+      "time" : {
+        "start" : 1745763360757,
+        "stop" : 1745763360758,
+        "duration" : 1
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 1 transfers of which none are stamps",
+      "time" : {
+        "start" : 1745763360758,
+        "stop" : 1745763360758,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And the user tries to pay a cart of RPTs on EC website",
+      "time" : {
+        "start" : 1745763360758,
+        "stop" : 1745763361288,
+        "duration" : 530
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "aea52ea9b0a2a7c9",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Sent request",
+        "source" : "aea52ea9b0a2a7c9.txt",
+        "type" : "text/plain",
+        "size" : 15123
+      }, {
+        "uid" : "daf105fbe557b44f",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Received response",
+        "source" : "daf105fbe557b44f.txt",
+        "type" : "text/plain",
+        "size" : 409
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "And the user is redirected on Checkout not completing the multibeneficiary payment",
+      "time" : {
+        "start" : 1745763361288,
+        "stop" : 1745763383415,
+        "duration" : 22127
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "92cf872dd76a0274",
+        "name" : "Received response",
+        "source" : "92cf872dd76a0274.attach",
+        "type" : "text/plain",
+        "size" : 131
+      }, {
+        "uid" : "70ba2ce09f4a20e5",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment]: on IUV: [257225539311835] - Received response",
+        "source" : "70ba2ce09f4a20e5.txt",
+        "type" : "text/plain",
+        "size" : 41231
+      }, {
+        "uid" : "cf9e3cc00d6a3240",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment] - Sent request",
+        "source" : "cf9e3cc00d6a3240.txt",
+        "type" : "text/plain",
+        "size" : 232
+      }, {
+        "uid" : "d3d43487b010fd46",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment] - Received response",
+        "source" : "d3d43487b010fd46.txt",
+        "type" : "text/plain",
+        "size" : 354
+      }, {
+        "uid" : "9749c350f7b4b505",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment] - Sent request",
+        "source" : "9749c350f7b4b505.txt",
+        "type" : "text/plain",
+        "size" : 821
+      }, {
+        "uid" : "65b24238a56bbb1c",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment] - Received response",
+        "source" : "65b24238a56bbb1c.txt",
+        "type" : "text/plain",
+        "size" : 953
+      }, {
+        "uid" : "ce2d13758fe5affe",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment] - Sent request",
+        "source" : "ce2d13758fe5affe.txt",
+        "type" : "text/plain",
+        "size" : 821
+      }, {
+        "uid" : "afa6709655a00e76",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment] - Received response",
+        "source" : "afa6709655a00e76.txt",
+        "type" : "text/plain",
+        "size" : 953
+      }, {
+        "uid" : "f7b6f0581b4650f8",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment]: on IUV: [257225539311835] - Received response",
+        "source" : "f7b6f0581b4650f8.txt",
+        "type" : "text/plain",
+        "size" : 45923
+      }, {
+        "uid" : "3ec5d6008b52b5a6",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment] - Sent request",
+        "source" : "3ec5d6008b52b5a6.txt",
+        "type" : "text/plain",
+        "size" : 1291
+      }, {
+        "uid" : "dbb266ca64f1862c",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment] - Received response",
+        "source" : "dbb266ca64f1862c.txt",
+        "type" : "text/plain",
+        "size" : 104
+      }, {
+        "uid" : "5a35727ee77c0341",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment]: on IUV: [257225539311835] - Received response",
+        "source" : "5a35727ee77c0341.txt",
+        "type" : "text/plain",
+        "size" : 72898
+      }, {
+        "uid" : "c013ac1536ca1b89",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment]: on IUV: [446705177496619] - Received response",
+        "source" : "c013ac1536ca1b89.txt",
+        "type" : "text/plain",
+        "size" : 72898
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 13,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "When the user tries to pay a cart of RPTs on EC website",
+      "time" : {
+        "start" : 1745763383415,
+        "stop" : 1745763384421,
+        "duration" : 1006
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "817db92acde9c24e",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Sent request",
+        "source" : "817db92acde9c24e.txt",
+        "type" : "text/plain",
+        "size" : 15123
+      }, {
+        "uid" : "750d98d59142fce",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Received response",
+        "source" : "750d98d59142fce.txt",
+        "type" : "text/plain",
+        "size" : 409
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "Then the user is redirected on Checkout completing the multibeneficiary payment",
+      "time" : {
+        "start" : 1745763384421,
+        "stop" : 1745763408782,
+        "duration" : 24361
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "b335947031485955",
+        "name" : "Received response",
+        "source" : "b335947031485955.attach",
+        "type" : "text/plain",
+        "size" : 131
+      }, {
+        "uid" : "1af9faf4eeefa79f",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment]: on IUV: [257225539311835] - Received response",
+        "source" : "1af9faf4eeefa79f.txt",
+        "type" : "text/plain",
+        "size" : 117878
+      }, {
+        "uid" : "c8407f5673be95d3",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment]: on IUV: [446705177496619] - Received response",
+        "source" : "c8407f5673be95d3.txt",
+        "type" : "text/plain",
+        "size" : 117878
+      }, {
+        "uid" : "346785b5a1619f0c",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment] - Sent request",
+        "source" : "346785b5a1619f0c.txt",
+        "type" : "text/plain",
+        "size" : 232
+      }, {
+        "uid" : "bfc0b40c0a5c924f",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment] - Received response",
+        "source" : "bfc0b40c0a5c924f.txt",
+        "type" : "text/plain",
+        "size" : 354
+      }, {
+        "uid" : "5bf57b6bb59ef0a2",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment] - Sent request",
+        "source" : "5bf57b6bb59ef0a2.txt",
+        "type" : "text/plain",
+        "size" : 821
+      }, {
+        "uid" : "29e96658b1a8538f",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment] - Received response",
+        "source" : "29e96658b1a8538f.txt",
+        "type" : "text/plain",
+        "size" : 953
+      }, {
+        "uid" : "9346f1d3fa5da4e5",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment] - Sent request",
+        "source" : "9346f1d3fa5da4e5.txt",
+        "type" : "text/plain",
+        "size" : 821
+      }, {
+        "uid" : "90cf09a90ed9d1b3",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment] - Received response",
+        "source" : "90cf09a90ed9d1b3.txt",
+        "type" : "text/plain",
+        "size" : 953
+      }, {
+        "uid" : "294aa220b9180382",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment]: on IUV: [257225539311835] - Received response",
+        "source" : "294aa220b9180382.txt",
+        "type" : "text/plain",
+        "size" : 122570
+      }, {
+        "uid" : "42c33b30d171d922",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment]: on IUV: [446705177496619] - Received response",
+        "source" : "42c33b30d171d922.txt",
+        "type" : "text/plain",
+        "size" : 122570
+      }, {
+        "uid" : "6d69e482a4863343",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment] - Sent request",
+        "source" : "6d69e482a4863343.txt",
+        "type" : "text/plain",
+        "size" : 1291
+      }, {
+        "uid" : "ca56f2251295f612",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment] - Received response",
+        "source" : "ca56f2251295f612.txt",
+        "type" : "text/plain",
+        "size" : 104
+      }, {
+        "uid" : "449659c0732a086a",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment]: on IUV: [257225539311835] - Received response",
+        "source" : "449659c0732a086a.txt",
+        "type" : "text/plain",
+        "size" : 151732
+      }, {
+        "uid" : "1e8cf5f122a574b2",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment]: on IUV: [446705177496619] - Received response",
+        "source" : "1e8cf5f122a574b2.txt",
+        "type" : "text/plain",
+        "size" : 151732
+      }, {
+        "uid" : "7cd1a9b1cb3a74d1",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment] on IUV: [257225539311835] - Received response",
+        "source" : "7cd1a9b1cb3a74d1.txt",
+        "type" : "text/plain",
+        "size" : 2121
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 16,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 8,
+    "attachmentsCount" : 33,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "tag",
+    "value" : "happy_path"
+  }, {
+    "name" : "tag",
+    "value" : "nodo_invia_carrello_rpt"
+  }, {
+    "name" : "tag",
+    "value" : "runnable"
+  }, {
+    "name" : "feature",
+    "value" : "User pays a payment carts without stamps on nodoInviaCarrelloRPT"
+  }, {
+    "name" : "framework",
+    "value" : "behave"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "history" : {
+      "statistic" : {
+        "failed" : 36,
+        "broken" : 0,
+        "skipped" : 0,
+        "passed" : 84,
+        "unknown" : 0,
+        "total" : 120
+      },
+      "items" : [ {
+        "uid" : "cdd49fcfb6422618",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/429//#testresult/cdd49fcfb6422618",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745718217928,
+          "stop" : 1745718272302,
+          "duration" : 54374
+        }
+      }, {
+        "uid" : "d7b3744698fb6e4",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/424//#testresult/d7b3744698fb6e4",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745631817803,
+          "stop" : 1745631875965,
+          "duration" : 58162
+        }
+      }, {
+        "uid" : "90f008eb55f0d5f7",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/423//#testresult/90f008eb55f0d5f7",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745545383034,
+          "stop" : 1745545433706,
+          "duration" : 50672
+        }
+      }, {
+        "uid" : "c67798224195227c",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/422//#testresult/c67798224195227c",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745458980568,
+          "stop" : 1745459031247,
+          "duration" : 50679
+        }
+      }, {
+        "uid" : "6ae1fbacdc45b590",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/421//#testresult/6ae1fbacdc45b590",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745372661808,
+          "stop" : 1745372718559,
+          "duration" : 56751
+        }
+      }, {
+        "uid" : "9951be988419e6d9",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/420//#testresult/9951be988419e6d9",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745286187033,
+          "stop" : 1745286237364,
+          "duration" : 50331
+        }
+      }, {
+        "uid" : "272fa7a94d3d5060",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/419//#testresult/272fa7a94d3d5060",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745199873295,
+          "stop" : 1745199930253,
+          "duration" : 56958
+        }
+      }, {
+        "uid" : "9a02fcc88908ddff",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/418//#testresult/9a02fcc88908ddff",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745113341051,
+          "stop" : 1745113389532,
+          "duration" : 48481
+        }
+      }, {
+        "uid" : "b0be4de889395427",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/417//#testresult/b0be4de889395427",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745027020988,
+          "stop" : 1745027077634,
+          "duration" : 56646
+        }
+      }, {
+        "uid" : "b14458c1282c655d",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/416//#testresult/b14458c1282c655d",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744940542570,
+          "stop" : 1744940591194,
+          "duration" : 48624
+        }
+      }, {
+        "uid" : "9570709e6b54c1c6",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/415//#testresult/9570709e6b54c1c6",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744854156960,
+          "stop" : 1744854207125,
+          "duration" : 50165
+        }
+      }, {
+        "uid" : "e8f250d71350f282",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/414//#testresult/e8f250d71350f282",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744806953423,
+          "stop" : 1744807001781,
+          "duration" : 48358
+        }
+      }, {
+        "uid" : "7f9cdd8abde7856a",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/413//#testresult/7f9cdd8abde7856a",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744767796218,
+          "stop" : 1744767846997,
+          "duration" : 50779
+        }
+      }, {
+        "uid" : "3053f4657be25bbc",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/412//#testresult/3053f4657be25bbc",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744681464877,
+          "stop" : 1744681525008,
+          "duration" : 60131
+        }
+      }, {
+        "uid" : "fb06d5aeb01d9ec8",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/411//#testresult/fb06d5aeb01d9ec8",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744594977176,
+          "stop" : 1744595027584,
+          "duration" : 50408
+        }
+      }, {
+        "uid" : "c6e89d1468e98596",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/410//#testresult/c6e89d1468e98596",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744509673305,
+          "stop" : 1744509723872,
+          "duration" : 50567
+        }
+      }, {
+        "uid" : "95a56b9f2debabee",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/409//#testresult/95a56b9f2debabee",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744422097665,
+          "stop" : 1744422146422,
+          "duration" : 48757
+        }
+      }, {
+        "uid" : "d119a2bbed4c46bf",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/408//#testresult/d119a2bbed4c46bf",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744335767255,
+          "stop" : 1744335817871,
+          "duration" : 50616
+        }
+      }, {
+        "uid" : "51be409b89c2c05a",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/407//#testresult/51be409b89c2c05a",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744249343831,
+          "stop" : 1744249392519,
+          "duration" : 48688
+        }
+      }, {
+        "uid" : "8dd4f5bb75fffd0",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/406//#testresult/8dd4f5bb75fffd0",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744162919178,
+          "stop" : 1744162967702,
+          "duration" : 48524
+        }
+      } ]
+    },
+    "tags" : [ "runnable", "nodo_invia_carrello_rpt", "happy_path" ]
+  },
+  "source" : "2bcd97dabee3cc3b.json",
+  "parameterValues" : [ ]
+}

@@ -1,0 +1,107 @@
+{
+  "uid" : "4b4757e66a1912dae1a509f688f20b0f",
+  "children" : [ {
+    "name" : "Product defects",
+    "children" : [ {
+      "name" : "AssertionError: There is no error matching the one searched in the field_name: operation_error_code\n",
+      "children" : [ {
+        "name" : "User tries to pay a cart with two RPTs that exists already in GPD in invalid state",
+        "uid" : "b456314593a19764",
+        "parentUid" : "c34f761947312ef357592351fc466a64",
+        "status" : "failed",
+        "time" : {
+          "start" : 1745762957241,
+          "stop" : 1745762962699,
+          "duration" : 5458
+        },
+        "flaky" : false,
+        "newFailed" : false,
+        "parameters" : [ ]
+      }, {
+        "name" : "User tries to pay a cart with two RPTs that was inserted from ACA and is in invalid state",
+        "uid" : "1594f594735a24bf",
+        "parentUid" : "c34f761947312ef357592351fc466a64",
+        "status" : "failed",
+        "time" : {
+          "start" : 1745762967609,
+          "stop" : 1745762972932,
+          "duration" : 5323
+        },
+        "flaky" : false,
+        "newFailed" : false,
+        "parameters" : [ ]
+      } ],
+      "uid" : "c34f761947312ef357592351fc466a64"
+    }, {
+      "name" : "AssertionError: The status code is not 200. Current value: 302.\n",
+      "children" : [ {
+        "name" : "User pays a multibeneficiary cart that exists already in GPD",
+        "uid" : "86a69dbf063e75aa",
+        "parentUid" : "135abf0d608ffaa14d9006e060e46a05",
+        "status" : "failed",
+        "time" : {
+          "start" : 1745762988030,
+          "stop" : 1745762990311,
+          "duration" : 2281
+        },
+        "flaky" : false,
+        "newFailed" : false,
+        "parameters" : [ ]
+      } ],
+      "uid" : "135abf0d608ffaa14d9006e060e46a05"
+    }, {
+      "name" : "AssertionError: There are not events with business process receipt-ok.\n",
+      "children" : [ {
+        "name" : "User pays a cart with single RPT with four transfers",
+        "uid" : "a53080f135acc5b6",
+        "parentUid" : "432fa99e1018e61938ce507846a1763c",
+        "status" : "failed",
+        "time" : {
+          "start" : 1745763152311,
+          "stop" : 1745763174611,
+          "duration" : 22300
+        },
+        "flaky" : true,
+        "newFailed" : true,
+        "parameters" : [ ]
+      } ],
+      "uid" : "432fa99e1018e61938ce507846a1763c"
+    }, {
+      "name" : "AssertionError: The field 'redirect_url' in response doesn't exists.\n",
+      "children" : [ {
+        "name" : "User pays a cart with two RPTs on WFESP flow",
+        "uid" : "b81973273d2f3f0d",
+        "parentUid" : "95f796dd0811f28a7e47454ee129a242",
+        "status" : "failed",
+        "time" : {
+          "start" : 1745763358863,
+          "stop" : 1745763360046,
+          "duration" : 1183
+        },
+        "flaky" : false,
+        "newFailed" : false,
+        "parameters" : [ ]
+      } ],
+      "uid" : "95f796dd0811f28a7e47454ee129a242"
+    }, {
+      "name" : "AssertionError: The status code is not 302. Current value: 200.\n",
+      "children" : [ {
+        "name" : "User executes a first redirect, then execute the redirection again and complete the payment flow",
+        "uid" : "1e6d2aad8b4318d0",
+        "parentUid" : "262f9e05423a1bf032f1d0ca4e250b2f",
+        "status" : "failed",
+        "time" : {
+          "start" : 1745763807090,
+          "stop" : 1745763809271,
+          "duration" : 2181
+        },
+        "flaky" : false,
+        "newFailed" : false,
+        "parameters" : [ ]
+      } ],
+      "uid" : "262f9e05423a1bf032f1d0ca4e250b2f"
+    } ],
+    "uid" : "8fb3a91ba5aaf9de24cc8a92edc82b5d"
+  } ],
+  "name" : "categories"
+}
