@@ -16,6 +16,7 @@ jobs:
       - name: Checkout source branch (landing page + templates)
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.ref }}
           path: source
 
       - name: Download WISP report artifact
