@@ -96,21 +96,21 @@ jobs:
           }
 
           # List of applications
-          apps=("wisp-tests" "fdr-tests" "aca-tests" "pm-tests")
+          apps=("wisp" "fdr")
 
           for app in "${apps[@]}"; do
             artifact_folder="artifacts/allure-report-${app}"
             if [ -d "$artifact_folder" ]; then
               echo "Processing $app..."
-              mkdir -p "public/$app/${{ env.timestamp }}"
-              cp -r "$artifact_folder/." "public/$app/${{ env.timestamp }}/"
+              mkdir -p "public/${app}-tests/${{ env.timestamp }}"
+              cp -r "$artifact_folder/." "public/${app}-tests/${{ env.timestamp }}/"
 
-              if [ -f "public/$app/${{ env.timestamp }}/widgets/summary.json" ]; then
-                extract_stats "public/$app/${{ env.timestamp }}" "public/$app/${{ env.timestamp }}/stats.json"
+              if [ -f "public/${app}-tests/${{ env.timestamp }}/widgets/summary.json" ]; then
+                extract_stats "public/${app}-tests/${{ env.timestamp }}" "public/${app}-tests/${{ env.timestamp }}/stats.json"
               fi
 
-              cleanup_old_reports "public/$app"
-              generate_index_page "public/$app"
+              cleanup_old_reports "public/${app}-tests"
+              generate_index_page "public/${app}-tests"
             else
               echo "No artifact found for $app, skipping."
             fi
