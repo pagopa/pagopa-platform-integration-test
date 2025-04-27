@@ -52,43 +52,47 @@ jobs:
       - name: Cleanup old WISP reports
         run: |
           cd public/wisp-tests
-          keep=$(ls -dt */ | grep -v 'last-history/' | head -n 30)
-          all=$(ls -d */)
 
-          for dir in $all; do
-            skip=false
-            for k in $keep; do
+          valid_dirs=$(ls -dt */ | grep -E '^[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}h[0-9]{2}/$' | head -n 30)
+          keep_dirs="$valid_dirs last-history/"
+
+          for dir in */; do
+            keep=false
+            for k in $keep_dirs; do
               if [[ "$dir" == "$k" ]]; then
-                skip=true
+                keep=true
                 break
               fi
             done
-            if [[ "$skip" == "false" ]]; then
-              echo "Elimino WISP report vecchio: $dir"
+            if [[ "$keep" == "false" ]]; then
+              echo "Elimino cartella WISP non valida o vecchia: $dir"
               rm -rf "$dir"
             fi
           done
+
           cd -
 
       - name: Cleanup old FdR reports
         run: |
           cd public/fdr-tests
-          keep=$(ls -dt */ | grep -v 'last-history/' | head -n 30)
-          all=$(ls -d */)
 
-          for dir in $all; do
-            skip=false
-            for k in $keep; do
+          valid_dirs=$(ls -dt */ | grep -E '^[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}h[0-9]{2}/$' | head -n 30)
+          keep_dirs="$valid_dirs last-history/"
+
+          for dir in */; do
+            keep=false
+            for k in $keep_dirs; do
               if [[ "$dir" == "$k" ]]; then
-                skip=true
+                keep=true
                 break
               fi
             done
-            if [[ "$skip" == "false" ]]; then
-              echo "Elimino FdR report vecchio: $dir"
+            if [[ "$keep" == "false" ]]; then
+              echo "Elimino cartella FdR non valida o vecchia: $dir"
               rm -rf "$dir"
             fi
           done
+
           cd -
 
       - name: Generate WISP history page
