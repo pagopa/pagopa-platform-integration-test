@@ -1,0 +1,135 @@
+{
+  "uid" : "b9bf3a1e9e422426",
+  "name" : "User pays a single payment as PO type with two transfer and no stamp",
+  "fullName" : "User pays a single payment without stamps via nodoInviaRPT: User pays a single payment as PO type with two transfer and no stamp",
+  "historyId" : "9fe7c98c3542fab0a8bf8a36868f5b00",
+  "time" : {
+    "start" : 1745766445013,
+    "stop" : 1745766446966,
+    "duration" : 1953
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "Given systems up",
+      "time" : {
+        "start" : 1745766445014,
+        "stop" : 1745766446265,
+        "duration" : 1251
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Given a single RPT of type PO with 2 transfers of which 0 are stamps",
+      "time" : {
+        "start" : 1745766446265,
+        "stop" : 1745766446265,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "When the user tries to pay the RPT on EC website but fails",
+      "time" : {
+        "start" : 1745766446266,
+        "stop" : 1745766446966,
+        "duration" : 700
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "1be974c2676b7e65",
+        "name" : "Step: [the user tries to pay the RPT on EC website but fails] - Sent request",
+        "source" : "1be974c2676b7e65.txt",
+        "type" : "text/plain",
+        "size" : 8892
+      }, {
+        "uid" : "4ed7fb0200af4169",
+        "name" : "Step: [the user tries to pay the RPT on EC website but fails] - Received response",
+        "source" : "4ed7fb0200af4169.txt",
+        "type" : "text/plain",
+        "size" : 506
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "Then fails having invalid semantic validation due to incorrect RPT structure and getting the error PPT_SEMANTICA",
+      "time" : {
+        "start" : 1745766446966,
+        "stop" : 1745766446966,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 4,
+    "attachmentsCount" : 2,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "tag",
+    "value" : "nodo_invia_rpt"
+  }, {
+    "name" : "tag",
+    "value" : "runnable"
+  }, {
+    "name" : "tag",
+    "value" : "unhappy_path"
+  }, {
+    "name" : "feature",
+    "value" : "User pays a single payment without stamps via nodoInviaRPT"
+  }, {
+    "name" : "framework",
+    "value" : "behave"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ "runnable", "nodo_invia_rpt", "unhappy_path" ]
+  },
+  "source" : "b9bf3a1e9e422426.json",
+  "parameterValues" : [ ]
+}
