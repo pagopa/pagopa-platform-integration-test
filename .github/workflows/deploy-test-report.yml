@@ -1,0 +1,84 @@
+name: Deploy Integration Reports
+
+on:
+  workflow_call:
+
+jobs:
+  deploy_site:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: public
+
+      - name: Checkout source branch
+        uses: actions/checkout@v4
+        with:
+          path: landing-page
+
+      - name: Download WISP report artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-report-wisp
+          path: allure-report-wisp
+        continue-on-error: true
+
+      - name: Download FdR report artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-report-fdr
+          path: allure-report-fdr
+        continue-on-error: true
+
+      - name: Create timestamp
+        id: vars
+        run: echo "timestamp=$(date +'%Y-%m-%d-%Hh%M')" >> $GITHUB_ENV
+
+      - name: Copy WISP report
+        if: success() || failure()
+        run: |
+          mkdir -p public/wisp-tests/${{ env.timestamp }}
+          cp -r allure-report-wisp/. public/wisp-tests/${{ env.timestamp }}/ || true
+
+      - name: Copy FdR report
+        if: success() || failure()
+        run: |
+          mkdir -p public/fdr-tests/${{ env.timestamp }}
+          cp -r allure-report-fdr/. public/fdr-tests/${{ env.timestamp }}/ || true
+
+      - name: Update WISP index
+        run: |
+          mkdir -p public/wisp-tests
+          echo '<html><body><h1>Storico WISP</h1><ul>' > public/wisp-tests/index.html
+          for dir in $(ls -dt public/wisp-tests/*/ | grep -v '/index.html' | head -n 30); do
+            d=$(basename $dir)
+            echo "<li><a href=\"./$d/index.html\">$d</a></li>" >> public/wisp-tests/index.html
+          done
+          echo '</ul></body></html>' >> public/wisp-tests/index.html
+
+      - name: Update FdR index
+        run: |
+          mkdir -p public/fdr-tests
+          echo '<html><body><h1>Storico FdR</h1><ul>' > public/fdr-tests/index.html
+          for dir in $(ls -dt public/fdr-tests/*/ | grep -v '/index.html' | head -n 30); do
+            d=$(basename $dir)
+            echo "<li><a href=\"./$d/index.html\">$d</a></li>" >> public/fdr-tests/index.html
+          done
+          echo '</ul></body></html>' >> public/fdr-tests/index.html
+
+      - name: Copy Landing Page
+        run: |
+          cp landing-page/landing-page/index.html public/index.html
+          touch public/.nojekyll
+
+      - name: Replace last update date in landing page
+        run: |
+          sed -i "s/{{LAST_UPDATE_DATE}}/$(date +'%Y-%m-%d')/" public/index.html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: public

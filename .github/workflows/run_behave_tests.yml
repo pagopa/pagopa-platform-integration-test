@@ -1,9 +1,9 @@
-name: Run Behave Tests
+name: Run Integration Tests and Publish Reports
 
 on:
   schedule:
-    - cron: '0 1 * * *' # Scheduled every day at 01:00 UTC
-  workflow_dispatch: # Allows manual run
+    - cron: '0 1 * * *' # Eseguito ogni giorno alle 01:00 UTC
+  workflow_dispatch:
     inputs:
       environment:
         description: "Select the target environment"
@@ -27,18 +27,17 @@ on:
 jobs:
   WISP_integration_tests:
     runs-on: ubuntu-latest
-    name: Run WISP dismantling Integration Tests
-    if: github.event.inputs.WISP  == 'true' || !github.event.inputs.WISP
-    env:
-      TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'uat' }}
+    if: github.event.inputs.WISP == 'true' || !github.event.inputs.WISP
+    outputs:
+      wisp_success: ${{ steps.run_tests.outcome }}
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 #v4.2.0
+      - uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3 #v5.2.0
+        uses: actions/setup-python@v5
         with:
           python-version: 3.x
       - name: Set up JDK
-        uses: actions/setup-java@b36c23c0d998641eff861008f374ee103c25ac73
+        uses: actions/setup-java@v4
         with:
           distribution: zulu
           java-version: 17
@@ -47,67 +46,48 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
           sudo apt-get install -y jq
-      - name: 'Load secrets'
+      - name: Load secrets
         run: echo "$SECRETS" >> ./config/.secrets.yaml
         env:
           SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS }}
-        id: load_secrets
-
-      - name: 'Run tests with Behave'
-        run: |
-          echo "Running tests in $TARGET_ENV environment"
-          behave src/bdd/wisp --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
-        env:
-          TARGET_ENV: ${{ env.TARGET_ENVIRONMENT }}
-      - name: Load test report history
-        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 #v4.2.0
-        if: always()
+      - name: Run tests with Behave (WISP)
+        id: run_tests
         continue-on-error: true
+        run: |
+          behave src/bdd/wisp --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+      - name: Load previous allure history
+        uses: actions/checkout@v4
         with:
           ref: gh-pages
           path: gh-pages
-      - name: Build test report
-        uses: simple-elf/allure-report-action@91e6ff976a8b2303f2551ca36c39ba5256952c08
-        if: always()
-        continue-on-error: true
+      - name: Build WISP Allure report
+        uses: simple-elf/allure-report-action@v1
         with:
           gh_pages: gh-pages
           allure_results: allure-results
-          allure_report: allure-report
+          allure_report: allure-report-wisp
           allure_history: allure-history
           subfolder: wisp-tests
           keep_reports: 30
-      - name: Publish test report
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e
-        if: always()
+      - name: Upload WISP report artifact
+        uses: actions/upload-artifact@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-history
-  ExtractFailRateWisp:
-    needs: WISP_integration_tests
-    if: always()
-    uses: ./.github/workflows/extract_allure_fail_rate.yml
-    with:
-      THRESHOLD: 80
-      ALLURE_FOLDER: wisp-tests
-    secrets: inherit
-
+          name: allure-report-wisp
+          path: allure-report-wisp
 
   FdR_integration_tests:
     runs-on: ubuntu-latest
-    name: Run Flussi di Rendicontazione Integration Tests
-    if: github.event.inputs.FdR  == 'true' || !github.event.inputs.FdR
-    env:
-      TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'uat' }}
+    if: github.event.inputs.FdR == 'true' || !github.event.inputs.FdR
+    outputs:
+      fdr_success: ${{ steps.run_tests.outcome }}
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 #v4.2.0
+      - uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3 #v5.2.0
+        uses: actions/setup-python@v5
         with:
           python-version: 3.x
       - name: Set up JDK
-        uses: actions/setup-java@b36c23c0d998641eff861008f374ee103c25ac73
+        uses: actions/setup-java@v4
         with:
           distribution: zulu
           java-version: 17
@@ -116,40 +96,100 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
           sudo apt-get install -y jq
-      - name: 'Run tests with Behave'
+      - name: Run tests with Behave (FdR)
+        id: run_tests
+        continue-on-error: true
         run: |
           behave src/bdd/fdr --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
-      - name: Load test report history
-        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 #v4.2.0
-        if: always()
-        continue-on-error: true
+      - name: Load previous allure history
+        uses: actions/checkout@v4
         with:
           ref: gh-pages
           path: gh-pages
-      - name: Build test report
-        uses: simple-elf/allure-report-action@91e6ff976a8b2303f2551ca36c39ba5256952c08
-        if: always()
-        continue-on-error: true
+      - name: Build FdR Allure report
+        uses: simple-elf/allure-report-action@v1
         with:
           gh_pages: gh-pages
           allure_results: allure-results
-          allure_report: allure-report
+          allure_report: allure-report-fdr
           allure_history: allure-history
           subfolder: fdr-tests
           keep_reports: 30
-      - name: Publish test report
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e
-        if: always()
+      - name: Upload FdR report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report-fdr
+          path: allure-report-fdr
+
+  deploy:
+    needs: [ WISP_integration_tests, FdR_integration_tests ]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: public
+
+      - name: Checkout source branch (current branch)
+        uses: actions/checkout@v4
+        with:
+          path: landing-page
+
+      - name: Download WISP report artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-report-wisp
+          path: allure-report-wisp
+
+      - name: Download FdR report artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-report-fdr
+          path: allure-report-fdr
+
+      - name: Create timestamp
+        id: vars
+        run: echo "timestamp=$(date +'%Y-%m-%d-%Hh%M')" >> $GITHUB_ENV
+
+      - name: Copy WISP report
+        run: |
+          mkdir -p public/wisp-tests/${{ env.timestamp }}
+          cp -r allure-report-wisp/. public/wisp-tests/${{ env.timestamp }}/
+
+      - name: Copy FdR report
+        run: |
+          mkdir -p public/fdr-tests/${{ env.timestamp }}
+          cp -r allure-report-fdr/. public/fdr-tests/${{ env.timestamp }}/
+
+      - name: Update WISP index
+        run: |
+          mkdir -p public/wisp-tests
+          echo '<html><body><h1>Storico WISP</h1><ul>' > public/wisp-tests/index.html
+          for dir in $(ls -dt public/wisp-tests/*/ | grep -v '/index.html' | head -n 30); do
+            d=$(basename $dir)
+            echo "<li><a href=\"./$d/index.html\">$d</a></li>" >> public/wisp-tests/index.html
+          done
+          echo '</ul></body></html>' >> public/wisp-tests/index.html
+
+      - name: Update FdR index
+        run: |
+          mkdir -p public/fdr-tests
+          echo '<html><body><h1>Storico FdR</h1><ul>' > public/fdr-tests/index.html
+          for dir in $(ls -dt public/fdr-tests/*/ | grep -v '/index.html' | head -n 30); do
+            d=$(basename $dir)
+            echo "<li><a href=\"./$d/index.html\">$d</a></li>" >> public/fdr-tests/index.html
+          done
+          echo '</ul></body></html>' >> public/fdr-tests/index.html
+
+      - name: Copy Landing Page
+        run: |
+          cp landing-page/landing-page/index.html public/index.html
+          touch public/.nojekyll
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-history
-
-#  ExtractFailRateFdr:
-#    needs: FdR_integration_tests
-#    if: always()
-#    uses: ./.github/workflows/extract_allure_fail_rate.yml
-#    with:
-#      THRESHOLD: 80
-#      ALLURE_FOLDER: fdr-tests
-#    secrets: inherit
+          publish_dir: public
