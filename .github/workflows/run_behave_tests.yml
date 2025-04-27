@@ -126,6 +126,17 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     steps:
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: public
+
+      - name: Checkout source branch (current branch)
+        uses: actions/checkout@v4
+        with:
+          path: landing-page
+
       - name: Download WISP report artifact
         uses: actions/download-artifact@v4
         with:
@@ -137,12 +148,6 @@ jobs:
         with:
           name: allure-report-fdr
           path: allure-report-fdr
-
-      - name: Checkout gh-pages
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          path: public
 
       - name: Create timestamp
         id: vars
@@ -180,7 +185,7 @@ jobs:
 
       - name: Copy Landing Page
         run: |
-          cp landing-page/index.html public/index.html
+          cp landing-page/landing-page/index.html public/index.html
           touch public/.nojekyll
 
       - name: Deploy to GitHub Pages
