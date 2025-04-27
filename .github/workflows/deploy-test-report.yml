@@ -18,6 +18,11 @@ jobs:
         with:
           path: landing-page
 
+      - name: Checkout templates
+        uses: actions/checkout@v4
+        with:
+          path: templates
+
       - name: Download WISP report artifact
         uses: actions/download-artifact@v4
         with:
@@ -48,25 +53,31 @@ jobs:
           mkdir -p public/fdr-tests/${{ env.timestamp }}
           cp -r allure-report-fdr/. public/fdr-tests/${{ env.timestamp }}/ || true
 
-      - name: Update WISP index
+      - name: Generate WISP history page
         run: |
           mkdir -p public/wisp-tests
-          echo '<html><body><h1>Storico WISP</h1><ul>' > public/wisp-tests/index.html
-          for dir in $(ls -dt public/wisp-tests/*/ | grep -v '/index.html' | head -n 30); do
-            d=$(basename $dir)
-            echo "<li><a href=\"./$d/index.html\">$d</a></li>" >> public/wisp-tests/index.html
-          done
-          echo '</ul></body></html>' >> public/wisp-tests/index.html
+          cp templates/history-index-template.html public/wisp-tests/index.html
 
-      - name: Update FdR index
+          reports_html=""
+          for dir in $(ls -dt public/wisp-tests/*/ | grep -v '/index.html' | head -n 30); do
+            d=$(basename "$dir")
+            reports_html+="<div class=\"col-md-4\"><div class=\"card\"><div class=\"card-body text-center\"><h5 class=\"card-title\">$d</h5><a href=\"./$d/index.html\" class=\"btn btn-primary mt-2\">Visualizza Report</a></div></div></div>"
+          done
+
+          sed -i "s|{{ REPORTS }}|$reports_html|" public/wisp-tests/index.html
+
+      - name: Generate FdR history page
         run: |
           mkdir -p public/fdr-tests
-          echo '<html><body><h1>Storico FdR</h1><ul>' > public/fdr-tests/index.html
+          cp templates/history-index-template.html public/fdr-tests/index.html
+
+          reports_html=""
           for dir in $(ls -dt public/fdr-tests/*/ | grep -v '/index.html' | head -n 30); do
-            d=$(basename $dir)
-            echo "<li><a href=\"./$d/index.html\">$d</a></li>" >> public/fdr-tests/index.html
+            d=$(basename "$dir")
+            reports_html+="<div class=\"col-md-4\"><div class=\"card\"><div class=\"card-body text-center\"><h5 class=\"card-title\">$d</h5><a href=\"./$d/index.html\" class=\"btn btn-primary mt-2\">Visualizza Report</a></div></div></div>"
           done
-          echo '</ul></body></html>' >> public/fdr-tests/index.html
+
+          sed -i "s|{{ REPORTS }}|$reports_html|" public/fdr-tests/index.html
 
       - name: Copy Landing Page
         run: |
@@ -80,5 +91,4 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: public
+          github_token: ${{ secrets.G_
