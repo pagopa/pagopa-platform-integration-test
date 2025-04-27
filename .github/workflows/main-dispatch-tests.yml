@@ -1,0 +1,26 @@
+name: Main Dispatch Integration Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      services:
+        description: "Select which services to test"
+        required: true
+        type: choice
+        options:
+          - wisp
+          - fdr
+          - all
+
+jobs:
+  trigger_wisp:
+    if: ${{ github.event.inputs.services == 'wisp' || github.event.inputs.services == 'all' }}
+    uses: ./.github/workflows/wisp-tests.yml
+
+  trigger_fdr:
+    if: ${{ github.event.inputs.services == 'fdr' || github.event.inputs.services == 'all' }}
+    uses: ./.github/workflows/fdr-tests.yml
+
+  deploy:
+    needs: [trigger_wisp, trigger_fdr]
+    uses: ./.github/workflows/deploy-test-report.yml

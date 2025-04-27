@@ -1,0 +1,55 @@
+name: Run FdR Integration Tests
+
+on:
+  workflow_call:
+
+jobs:
+  fdr_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 17
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          sudo apt-get install -y jq
+
+      - name: Run FdR tests
+        id: run_tests
+        continue-on-error: true
+        run: |
+          behave src/bdd/fdr --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+
+      - name: Load previous allure history
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Build FdR Allure report
+        uses: simple-elf/allure-report-action@v1
+        with:
+          gh_pages: gh-pages
+          allure_results: allure-results
+          allure_report: allure-report-fdr
+          allure_history: allure-history
+          subfolder: fdr-tests
+          keep_reports: 30
+
+      - name: Upload FdR report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report-fdr
+          path: allure-report-fdr

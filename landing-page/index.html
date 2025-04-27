@@ -14,13 +14,16 @@
       color: white;
       padding: 4rem 2rem;
       text-align: center;
+      animation: fadeIn 1s ease-in;
     }
     .btn-custom {
       background-color: #0073e6;
       border: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
     }
     .btn-custom:hover {
       background-color: #005bb5;
+      transform: scale(1.05);
     }
     footer {
       margin-top: 4rem;
@@ -30,6 +33,10 @@
     }
     .badges img {
       margin: 0.5rem;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
   </style>
 </head>
@@ -45,15 +52,15 @@
     <div class="col-md-4 d-flex flex-column align-items-center">
       <a href="./wisp-tests/index.html" class="btn btn-custom btn-lg w-100 mb-3">🔗 WISP Tests</a>
       <div class="badges text-center">
-        <img src="https://img.shields.io/github/workflow/status/pagopa/pagopa-platform-integration-test/WISP%20Integration%20Tests?label=WISP%20Build" alt="WISP Build Status">
-        <img src="https://img.shields.io/badge/last%20update-{{ site.time | date: '%Y-%m-%d' }}-blue" alt="Last Update">
+        <img src="https://img.shields.io/github/actions/workflow/status/pagopa/pagopa-platform-integration-test/wisp-integration-tests.yml?label=WISP%20Build&style=flat-square" alt="WISP Build Status">
+        <img src="https://img.shields.io/badge/last%20update-{{LAST_UPDATE_DATE}}-blue?style=flat-square" alt="Last Update">
       </div>
     </div>
     <div class="col-md-4 d-flex flex-column align-items-center">
       <a href="./fdr-tests/index.html" class="btn btn-custom btn-lg w-100 mb-3">🔗 FdR Tests</a>
       <div class="badges text-center">
-        <img src="https://img.shields.io/github/workflow/status/pagopa/pagopa-platform-integration-test/FdR%20Integration%20Tests?label=FdR%20Build" alt="FdR Build Status">
-        <img src="https://img.shields.io/badge/last%20update-{{ site.time | date: '%Y-%m-%d' }}-blue" alt="Last Update">
+        <img src="https://img.shields.io/github/actions/workflow/status/pagopa/pagopa-platform-integration-test/fdr-integration-tests.yml?label=FdR%20Build&style=flat-square" alt="FdR Build Status">
+        <img src="https://img.shields.io/badge/last%20update-{{LAST_UPDATE_DATE}}-blue?style=flat-square" alt="Last Update">
       </div>
     </div>
   </div>
