@@ -49,13 +49,55 @@ jobs:
           mkdir -p public/fdr-tests/${{ env.timestamp }}
           cp -r allure-report-fdr/. public/fdr-tests/${{ env.timestamp }}/ || true
 
+      - name: Cleanup old WISP reports
+        run: |
+          cd public/wisp-tests
+          keep=$(ls -dt */ | grep -v 'last-history/' | head -n 30)
+          all=$(ls -d */)
+
+          for dir in $all; do
+            skip=false
+            for k in $keep; do
+              if [[ "$dir" == "$k" ]]; then
+                skip=true
+                break
+              fi
+            done
+            if [[ "$skip" == "false" ]]; then
+              echo "Elimino WISP report vecchio: $dir"
+              rm -rf "$dir"
+            fi
+          done
+          cd -
+
+      - name: Cleanup old FdR reports
+        run: |
+          cd public/fdr-tests
+          keep=$(ls -dt */ | grep -v 'last-history/' | head -n 30)
+          all=$(ls -d */)
+
+          for dir in $all; do
+            skip=false
+            for k in $keep; do
+              if [[ "$dir" == "$k" ]]; then
+                skip=true
+                break
+              fi
+            done
+            if [[ "$skip" == "false" ]]; then
+              echo "Elimino FdR report vecchio: $dir"
+              rm -rf "$dir"
+            fi
+          done
+          cd -
+
       - name: Generate WISP history page
         run: |
           mkdir -p public/wisp-tests
           cp source/templates/history-index-template.html public/wisp-tests/index.html
 
           reports_html=""
-          for dir in $(ls -dt public/wisp-tests/*/ | grep -v '/index.html' | head -n 30); do
+          for dir in $(ls -dt public/wisp-tests/*/ | grep -v '/last-history/' | grep -v '/index.html' | head -n 30); do
             d=$(basename "$dir")
             reports_html+="<div class=\"col-md-4\"><div class=\"card\"><div class=\"card-body text-center\"><h5 class=\"card-title\">$d</h5><a href=\"./$d/index.html\" class=\"btn btn-primary mt-2\">Visualizza Report</a></div></div></div>"
           done
@@ -68,7 +110,7 @@ jobs:
           cp source/templates/history-index-template.html public/fdr-tests/index.html
 
           reports_html=""
-          for dir in $(ls -dt public/fdr-tests/*/ | grep -v '/index.html' | head -n 30); do
+          for dir in $(ls -dt public/fdr-tests/*/ | grep -v '/last-history/' | grep -v '/index.html' | head -n 30); do
             d=$(basename "$dir")
             reports_html+="<div class=\"col-md-4\"><div class=\"card\"><div class=\"card-body text-center\"><h5 class=\"card-title\">$d</h5><a href=\"./$d/index.html\" class=\"btn btn-primary mt-2\">Visualizza Report</a></div></div></div>"
           done
