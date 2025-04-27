@@ -41,9 +41,9 @@ jobs:
               skipped=$(jq '.statistic.skipped' "$report_dir/widgets/summary.json")
 
               echo "{\"passed\": $passed, \"failed\": $failed, \"skipped\": $skipped}" > "$output_json"
-              echo "Created $output_json with data: passed=$passed failed=$failed skipped=$skipped"
+              echo "[INFO] Created $output_json with passed=$passed failed=$failed skipped=$skipped"
             else
-              echo "Summary not found for $report_dir"
+              echo "[WARN] Summary not found for $report_dir"
             fi
           }
 
@@ -64,7 +64,7 @@ jobs:
                 fi
               done
               if [[ "$keep" == "false" ]]; then
-                echo "Deleting old folder: $dir"
+                echo "[INFO] Deleting old folder: $dir"
                 rm -rf "$dir"
               fi
             done
@@ -108,9 +108,15 @@ jobs:
           for app in "${apps[@]}"; do
             artifact_folder="artifacts/allure-report-${app}"
             if [ -d "$artifact_folder" ]; then
-              echo "Processing $app..."
+              echo "[INFO] Processing $app..."
               mkdir -p "public/${app}-tests/${{ env.timestamp }}"
               cp -r "$artifact_folder/." "public/${app}-tests/${{ env.timestamp }}/"
+
+              # Create last-history from latest timestamp
+              rm -rf "public/${app}-tests/last-history"
+              mkdir -p "public/${app}-tests/last-history"
+              cp -r "public/${app}-tests/${{ env.timestamp }}/." "public/${app}-tests/last-history/"
+              echo "[INFO] Updated last-history for $app"
 
               if [ -f "public/${app}-tests/${{ env.timestamp }}/widgets/summary.json" ]; then
                 extract_stats "public/${app}-tests/${{ env.timestamp }}" "public/${app}-tests/${{ env.timestamp }}/stats.json"
@@ -119,7 +125,7 @@ jobs:
               cleanup_old_reports "public/${app}-tests"
               generate_index_page "public/${app}-tests"
             else
-              echo "No artifact found for $app, skipping."
+              echo "[WARN] No artifact found for $app, skipping."
             fi
           done
 
