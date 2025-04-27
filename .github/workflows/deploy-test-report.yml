@@ -13,15 +13,10 @@ jobs:
           ref: gh-pages
           path: public
 
-      - name: Checkout source branch
+      - name: Checkout source branch (landing page + templates)
         uses: actions/checkout@v4
         with:
-          path: landing-page
-
-      - name: Checkout templates
-        uses: actions/checkout@v4
-        with:
-          path: templates
+          path: source
 
       - name: Download WISP report artifact
         uses: actions/download-artifact@v4
@@ -56,7 +51,7 @@ jobs:
       - name: Generate WISP history page
         run: |
           mkdir -p public/wisp-tests
-          cp templates/history-index-template.html public/wisp-tests/index.html
+          cp source/templates/history-index-template.html public/wisp-tests/index.html
 
           reports_html=""
           for dir in $(ls -dt public/wisp-tests/*/ | grep -v '/index.html' | head -n 30); do
@@ -69,7 +64,7 @@ jobs:
       - name: Generate FdR history page
         run: |
           mkdir -p public/fdr-tests
-          cp templates/history-index-template.html public/fdr-tests/index.html
+          cp source/templates/history-index-template.html public/fdr-tests/index.html
 
           reports_html=""
           for dir in $(ls -dt public/fdr-tests/*/ | grep -v '/index.html' | head -n 30); do
@@ -81,7 +76,7 @@ jobs:
 
       - name: Copy Landing Page
         run: |
-          cp landing-page/landing-page/index.html public/index.html
+          cp source/landing-page/index.html public/index.html
           touch public/.nojekyll
 
       - name: Replace last update date in landing page
