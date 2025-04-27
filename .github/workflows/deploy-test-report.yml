@@ -30,7 +30,6 @@ jobs:
 
       - name: Process reports
         run: |
-          # Function to extract stats from summary.json
           extract_stats() {
             local report_dir=$1
             local output_json=$2
@@ -47,7 +46,6 @@ jobs:
             fi
           }
 
-          # Function to clean up old reports, keeping only the latest 30 + last-history
           cleanup_old_reports() {
             local base_path=$1
 
@@ -72,7 +70,6 @@ jobs:
             cd -
           }
 
-          # Function to generate the index page for the history
           generate_index_page() {
             local base_path=$1
 
@@ -102,7 +99,6 @@ jobs:
             rm -f reports_content.txt
           }
 
-          # List of applications
           apps=("wisp" "fdr")
 
           for app in "${apps[@]}"; do
@@ -120,6 +116,7 @@ jobs:
 
               if [ -f "public/${app}-tests/${{ env.timestamp }}/widgets/summary.json" ]; then
                 extract_stats "public/${app}-tests/${{ env.timestamp }}" "public/${app}-tests/${{ env.timestamp }}/stats.json"
+                extract_stats "public/${app}-tests/last-history" "public/${app}-tests/last-history/stats.json"
               fi
 
               cleanup_old_reports "public/${app}-tests"
