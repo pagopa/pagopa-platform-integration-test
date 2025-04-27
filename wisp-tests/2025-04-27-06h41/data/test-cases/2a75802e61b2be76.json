@@ -1,0 +1,410 @@
+{
+  "uid" : "2a75802e61b2be76",
+  "name" : "User tries to pay a multibeneficiary cart that was inserted from ACA and is in invalid state",
+  "fullName" : "User pays a payment carts from existing payment position via nodoInviaCarrelloRPT: User tries to pay a multibeneficiary cart that was inserted from ACA and is in invalid state",
+  "historyId" : "73ef8eb069cbd5c15175f7c98b73d8a0",
+  "time" : {
+    "start" : 1745735131972,
+    "stop" : 1745735136922,
+    "duration" : 4950
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "Given systems up",
+      "time" : {
+        "start" : 1745735131972,
+        "stop" : 1745735132720,
+        "duration" : 748
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Given a cart of RPTs for multibeneficiary",
+      "time" : {
+        "start" : 1745735132720,
+        "stop" : 1745735132720,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 1 transfers of which none are stamps",
+      "time" : {
+        "start" : 1745735132720,
+        "stop" : 1745735132721,
+        "duration" : 1
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 1 transfers of which none are stamps",
+      "time" : {
+        "start" : 1745735132721,
+        "stop" : 1745735132721,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT",
+      "time" : {
+        "start" : 1745735132721,
+        "stop" : 1745735133116,
+        "duration" : 395
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "ae263f0082a7698f",
+        "name" : "Step: [an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT] - Sent request",
+        "source" : "ae263f0082a7698f.txt",
+        "type" : "text/plain",
+        "size" : 1269
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 1,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "When the user tries to pay a cart of RPTs on EC website",
+      "time" : {
+        "start" : 1745735133116,
+        "stop" : 1745735133662,
+        "duration" : 546
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "914a775fdbc9de1",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Sent request",
+        "source" : "914a775fdbc9de1.txt",
+        "type" : "text/plain",
+        "size" : 15225
+      }, {
+        "uid" : "fdd954f44dfe8c49",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Received response",
+        "source" : "fdd954f44dfe8c49.txt",
+        "type" : "text/plain",
+        "size" : 409
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "Then conversion to new model fails in wisp-converter",
+      "time" : {
+        "start" : 1745735133662,
+        "stop" : 1745735134366,
+        "duration" : 704
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "7b0f5f565bb2c8d2",
+        "name" : "Step: [conversion to new model fails in wisp-converter]: on sessionId: [4a19cb5c-eb09-4b34-a9df-3baf8580c788] - Received response",
+        "source" : "7b0f5f565bb2c8d2.txt",
+        "type" : "text/plain",
+        "size" : 5807
+      }, {
+        "uid" : "f98430636ba382f9",
+        "name" : "Received response",
+        "source" : "f98430636ba382f9.attach",
+        "type" : "text/html",
+        "size" : 5677
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "And the KO receipt is sent",
+      "time" : {
+        "start" : 1745735134366,
+        "stop" : 1745735136922,
+        "duration" : 2556
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "f9d1e561780a6312",
+        "name" : "Step: [the KO receipt is sent]: on IUV: [348242972729595579] - Received response",
+        "source" : "f9d1e561780a6312.txt",
+        "type" : "text/plain",
+        "size" : 54760
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 1,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 8,
+    "attachmentsCount" : 6,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "tag",
+    "value" : "nodo_invia_carrello_rpt"
+  }, {
+    "name" : "tag",
+    "value" : "runnable"
+  }, {
+    "name" : "tag",
+    "value" : "unhappy_path"
+  }, {
+    "name" : "feature",
+    "value" : "User pays a payment carts from existing payment position via nodoInviaCarrelloRPT"
+  }, {
+    "name" : "framework",
+    "value" : "behave"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "history" : {
+      "statistic" : {
+        "failed" : 34,
+        "broken" : 0,
+        "skipped" : 0,
+        "passed" : 86,
+        "unknown" : 0,
+        "total" : 120
+      },
+      "items" : [ {
+        "uid" : "693135458a0689ac",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/429//#testresult/693135458a0689ac",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745717788783,
+          "stop" : 1745717795834,
+          "duration" : 7051
+        }
+      }, {
+        "uid" : "fba8b87ac9bf3444",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/424//#testresult/fba8b87ac9bf3444",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745631367218,
+          "stop" : 1745631374546,
+          "duration" : 7328
+        }
+      }, {
+        "uid" : "aaeb381323aa5eae",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/423//#testresult/aaeb381323aa5eae",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745544987322,
+          "stop" : 1745544992975,
+          "duration" : 5653
+        }
+      }, {
+        "uid" : "faf4237bfd9b295f",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/422//#testresult/faf4237bfd9b295f",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745458588163,
+          "stop" : 1745458593981,
+          "duration" : 5818
+        }
+      }, {
+        "uid" : "2146652807ba91c0",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/421//#testresult/2146652807ba91c0",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745372213167,
+          "stop" : 1745372219840,
+          "duration" : 6673
+        }
+      }, {
+        "uid" : "560cdb075927a238",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/420//#testresult/560cdb075927a238",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745285792612,
+          "stop" : 1745285798460,
+          "duration" : 5848
+        }
+      }, {
+        "uid" : "603d37306eb38238",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/419//#testresult/603d37306eb38238",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745199424728,
+          "stop" : 1745199431454,
+          "duration" : 6726
+        }
+      }, {
+        "uid" : "6cbe076ef32bf4ce",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/418//#testresult/6cbe076ef32bf4ce",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745112963791,
+          "stop" : 1745112968729,
+          "duration" : 4938
+        }
+      }, {
+        "uid" : "990afee28593b023",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/417//#testresult/990afee28593b023",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745026573262,
+          "stop" : 1745026579946,
+          "duration" : 6684
+        }
+      }, {
+        "uid" : "ed1b2439df750ae3",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/416//#testresult/ed1b2439df750ae3",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744940163157,
+          "stop" : 1744940168235,
+          "duration" : 5078
+        }
+      }, {
+        "uid" : "764fbbc5a6dadc2e",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/415//#testresult/764fbbc5a6dadc2e",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744853765428,
+          "stop" : 1744853770752,
+          "duration" : 5324
+        }
+      }, {
+        "uid" : "91f8f9512b4d7b60",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/414//#testresult/91f8f9512b4d7b60",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744806575209,
+          "stop" : 1744806580613,
+          "duration" : 5404
+        }
+      }, {
+        "uid" : "73b5af0b90fedeb7",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/413//#testresult/73b5af0b90fedeb7",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744767400978,
+          "stop" : 1744767406334,
+          "duration" : 5356
+        }
+      }, {
+        "uid" : "486baee8055c6bb2",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/412//#testresult/486baee8055c6bb2",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744681014870,
+          "stop" : 1744681022084,
+          "duration" : 7214
+        }
+      }, {
+        "uid" : "f7e2c0cb606e08a1",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/411//#testresult/f7e2c0cb606e08a1",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744594583041,
+          "stop" : 1744594588979,
+          "duration" : 5938
+        }
+      }, {
+        "uid" : "beb1848854482ec3",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/410//#testresult/beb1848854482ec3",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744509277298,
+          "stop" : 1744509283229,
+          "duration" : 5931
+        }
+      }, {
+        "uid" : "b284caa3e3c8f41e",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/409//#testresult/b284caa3e3c8f41e",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744421722940,
+          "stop" : 1744421727925,
+          "duration" : 4985
+        }
+      }, {
+        "uid" : "4914f30b58983a2c",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/408//#testresult/4914f30b58983a2c",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744335372963,
+          "stop" : 1744335378259,
+          "duration" : 5296
+        }
+      }, {
+        "uid" : "949370f5ff8772f8",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/407//#testresult/949370f5ff8772f8",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744248957141,
+          "stop" : 1744248962088,
+          "duration" : 4947
+        }
+      }, {
+        "uid" : "dda53ff9b8f9e766",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/406//#testresult/dda53ff9b8f9e766",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744162542936,
+          "stop" : 1744162548252,
+          "duration" : 5316
+        }
+      } ]
+    },
+    "tags" : [ "runnable", "nodo_invia_carrello_rpt", "unhappy_path" ]
+  },
+  "source" : "2a75802e61b2be76.json",
+  "parameterValues" : [ ]
+}

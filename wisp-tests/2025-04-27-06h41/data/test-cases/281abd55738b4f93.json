@@ -1,0 +1,458 @@
+{
+  "uid" : "281abd55738b4f93",
+  "name" : "Scenario: User pays a cart with single RPT with one stamp that exists already in GPD",
+  "fullName" : "User pays a payment carts from existing payment position via nodoInviaCarrelloRPT: Scenario: User pays a cart with single RPT with one stamp that exists already in GPD",
+  "historyId" : "45edd8d9564ca836a31fbab586c8fde7",
+  "time" : {
+    "start" : 1745734981119,
+    "stop" : 1745735006678,
+    "duration" : 25559
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "Given systems up",
+      "time" : {
+        "start" : 1745734981119,
+        "stop" : 1745734981879,
+        "duration" : 760
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Given a cart of RPTs non-multibeneficiary",
+      "time" : {
+        "start" : 1745734981879,
+        "stop" : 1745734981879,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 2 transfers of which 1 are stamps",
+      "time" : {
+        "start" : 1745734981879,
+        "stop" : 1745734981880,
+        "duration" : 1
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID",
+      "time" : {
+        "start" : 1745734981880,
+        "stop" : 1745734982293,
+        "duration" : 413
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "1da255f0f0b0a26e",
+        "name" : "Step: [an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID] - Sent request",
+        "source" : "1da255f0f0b0a26e.txt",
+        "type" : "text/plain",
+        "size" : 1696
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 1,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "When the user tries to pay a cart of RPTs on EC website",
+      "time" : {
+        "start" : 1745734982293,
+        "stop" : 1745734982759,
+        "duration" : 466
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "9e3339d240d14990",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Sent request",
+        "source" : "9e3339d240d14990.txt",
+        "type" : "text/plain",
+        "size" : 9082
+      }, {
+        "uid" : "25d3dcf53adda076",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Received response",
+        "source" : "25d3dcf53adda076.txt",
+        "type" : "text/plain",
+        "size" : 409
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "Then the user is redirected on Checkout completing the payment",
+      "time" : {
+        "start" : 1745734982759,
+        "stop" : 1745735004119,
+        "duration" : 21360
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "a02d9af56b4fa51f",
+        "name" : "Received response",
+        "source" : "a02d9af56b4fa51f.attach",
+        "type" : "text/plain",
+        "size" : 131
+      }, {
+        "uid" : "ba47345b80a0440",
+        "name" : "Step: [the user is redirected on Checkout completing the payment]: on IUV: [629000019056282] - Received response",
+        "source" : "ba47345b80a0440.txt",
+        "type" : "text/plain",
+        "size" : 31623
+      }, {
+        "uid" : "87750d8d61823296",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Sent request",
+        "source" : "87750d8d61823296.txt",
+        "type" : "text/plain",
+        "size" : 167
+      }, {
+        "uid" : "850d3459eae85c4e",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Received response",
+        "source" : "850d3459eae85c4e.txt",
+        "type" : "text/plain",
+        "size" : 242
+      }, {
+        "uid" : "2bd2087814da8fd1",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Sent request",
+        "source" : "2bd2087814da8fd1.txt",
+        "type" : "text/plain",
+        "size" : 821
+      }, {
+        "uid" : "5952a3a3aacbe876",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Received response",
+        "source" : "5952a3a3aacbe876.txt",
+        "type" : "text/plain",
+        "size" : 1461
+      }, {
+        "uid" : "855b3f921bf24efe",
+        "name" : "Step: [the user is redirected on Checkout completing the payment]: on IUV: [629000019056282] - Received response",
+        "source" : "855b3f921bf24efe.txt",
+        "type" : "text/plain",
+        "size" : 33969
+      }, {
+        "uid" : "535f56ce7d571834",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Sent request",
+        "source" : "535f56ce7d571834.txt",
+        "type" : "text/plain",
+        "size" : 1253
+      }, {
+        "uid" : "ca49e43c78f71d68",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Received response",
+        "source" : "ca49e43c78f71d68.txt",
+        "type" : "text/plain",
+        "size" : 104
+      }, {
+        "uid" : "7182ee8707fd2927",
+        "name" : "Step: [the user is redirected on Checkout completing the payment]: on IUV: [629000019056282] - Received response",
+        "source" : "7182ee8707fd2927.txt",
+        "type" : "text/plain",
+        "size" : 64495
+      }, {
+        "uid" : "9576491b28a33cac",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] on IUV: [629000019056282] - Received response",
+        "source" : "9576491b28a33cac.txt",
+        "type" : "text/plain",
+        "size" : 2989
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 11,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "And the debt position is closed",
+      "time" : {
+        "start" : 1745735004119,
+        "stop" : 1745735006678,
+        "duration" : 2559
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "f2f9746125b4577d",
+        "name" : "Step: [the debt position is closed]: on IUV: [629000019056282] - Received response",
+        "source" : "f2f9746125b4577d.txt",
+        "type" : "text/plain",
+        "size" : 64495
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 1,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 7,
+    "attachmentsCount" : 15,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "tag",
+    "value" : "happy_path"
+  }, {
+    "name" : "tag",
+    "value" : "nodo_invia_carrello_rpt"
+  }, {
+    "name" : "tag",
+    "value" : "runnable"
+  }, {
+    "name" : "feature",
+    "value" : "User pays a payment carts from existing payment position via nodoInviaCarrelloRPT"
+  }, {
+    "name" : "framework",
+    "value" : "behave"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "history" : {
+      "statistic" : {
+        "failed" : 51,
+        "broken" : 0,
+        "skipped" : 0,
+        "passed" : 69,
+        "unknown" : 0,
+        "total" : 120
+      },
+      "items" : [ {
+        "uid" : "2fbe619c978fa9ae",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/429//#testresult/2fbe619c978fa9ae",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745717620877,
+          "stop" : 1745717648816,
+          "duration" : 27939
+        }
+      }, {
+        "uid" : "abd6323bcbb3ab48",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/424//#testresult/abd6323bcbb3ab48",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: There are not events with business process receipt-ok.\n",
+        "time" : {
+          "start" : 1745631202807,
+          "stop" : 1745631228677,
+          "duration" : 25870
+        }
+      }, {
+        "uid" : "2410e8ec5241d181",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/423//#testresult/2410e8ec5241d181",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745544836435,
+          "stop" : 1745544862746,
+          "duration" : 26311
+        }
+      }, {
+        "uid" : "1df9309eb896e44c",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/422//#testresult/1df9309eb896e44c",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745458430990,
+          "stop" : 1745458457070,
+          "duration" : 26080
+        }
+      }, {
+        "uid" : "aee6aa31a70a2281",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/421//#testresult/aee6aa31a70a2281",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745372029790,
+          "stop" : 1745372058993,
+          "duration" : 29203
+        }
+      }, {
+        "uid" : "af580ff745d0c123",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/420//#testresult/af580ff745d0c123",
+        "status" : "passed",
+        "time" : {
+          "start" : 1745285635277,
+          "stop" : 1745285661411,
+          "duration" : 26134
+        }
+      }, {
+        "uid" : "b36bb0e8cccb2790",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/419//#testresult/b36bb0e8cccb2790",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: There are not events with business process receipt-ok.\n",
+        "time" : {
+          "start" : 1745199249579,
+          "stop" : 1745199280160,
+          "duration" : 30581
+        }
+      }, {
+        "uid" : "5034a9ef952fcdd7",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/418//#testresult/5034a9ef952fcdd7",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: There are not events with business process receipt-ok.\n",
+        "time" : {
+          "start" : 1745112819887,
+          "stop" : 1745112842448,
+          "duration" : 22561
+        }
+      }, {
+        "uid" : "3e8080285d52ad4e",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/417//#testresult/3e8080285d52ad4e",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: There are not events with business process receipt-ok.\n",
+        "time" : {
+          "start" : 1745026400133,
+          "stop" : 1745026426111,
+          "duration" : 25978
+        }
+      }, {
+        "uid" : "fbd3533873248c63",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/416//#testresult/fbd3533873248c63",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: There are not events with business process receipt-ok.\n",
+        "time" : {
+          "start" : 1744940015960,
+          "stop" : 1744940038571,
+          "duration" : 22611
+        }
+      }, {
+        "uid" : "5fb0f2ff7dc1ee38",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/415//#testresult/5fb0f2ff7dc1ee38",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: There are not events with business process receipt-ok.\n",
+        "time" : {
+          "start" : 1744853615610,
+          "stop" : 1744853638493,
+          "duration" : 22883
+        }
+      }, {
+        "uid" : "12a2e8335e099cbe",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/414//#testresult/12a2e8335e099cbe",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744806421036,
+          "stop" : 1744806446447,
+          "duration" : 25411
+        }
+      }, {
+        "uid" : "92e81c11bc3c19b4",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/413//#testresult/92e81c11bc3c19b4",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: There are not events with business process receipt-ok.\n",
+        "time" : {
+          "start" : 1744767245558,
+          "stop" : 1744767268624,
+          "duration" : 23066
+        }
+      }, {
+        "uid" : "ced454eaf70805a7",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/412//#testresult/ced454eaf70805a7",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: There are not events with business process receipt-ok.\n",
+        "time" : {
+          "start" : 1744680834057,
+          "stop" : 1744680859561,
+          "duration" : 25504
+        }
+      }, {
+        "uid" : "88f2b4b450f91918",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/411//#testresult/88f2b4b450f91918",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744594429952,
+          "stop" : 1744594456153,
+          "duration" : 26201
+        }
+      }, {
+        "uid" : "fcfef62eb7205597",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/410//#testresult/fcfef62eb7205597",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744509124091,
+          "stop" : 1744509150218,
+          "duration" : 26127
+        }
+      }, {
+        "uid" : "85aff1c001b7f3d5",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/409//#testresult/85aff1c001b7f3d5",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744421578374,
+          "stop" : 1744421603586,
+          "duration" : 25212
+        }
+      }, {
+        "uid" : "bd6dd90832ef08d8",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/408//#testresult/bd6dd90832ef08d8",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744335219946,
+          "stop" : 1744335246362,
+          "duration" : 26416
+        }
+      }, {
+        "uid" : "3448610774c92ba8",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/407//#testresult/3448610774c92ba8",
+        "status" : "passed",
+        "time" : {
+          "start" : 1744248806321,
+          "stop" : 1744248831741,
+          "duration" : 25420
+        }
+      }, {
+        "uid" : "d99a626ef22d4d2a",
+        "reportUrl" : "https://pagopa.github.io/pagopa-platform-integration-test/wisp-tests/406//#testresult/d99a626ef22d4d2a",
+        "status" : "failed",
+        "statusDetails" : "AssertionError: There are not events with business process receipt-ok.\n",
+        "time" : {
+          "start" : 1744162404885,
+          "stop" : 1744162427166,
+          "duration" : 22281
+        }
+      } ]
+    },
+    "tags" : [ "runnable", "nodo_invia_carrello_rpt", "happy_path" ]
+  },
+  "source" : "281abd55738b4f93.json",
+  "parameterValues" : [ ]
+}
