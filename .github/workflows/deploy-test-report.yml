@@ -20,24 +20,17 @@ jobs:
           path: source
 
       - name: Download all report artifacts
-        run: |
-          # Lista delle applicazioni sotto test
-          apps=("wisp-tests" "fdr-tests" "aca-tests" "pm-tests")
-
-          for app in "${apps[@]}"; do
-            artifact_name="allure-report-${app}"
-            echo "Provando a scaricare $artifact_name..."
-            gh run download --name "$artifact_name" --dir "$artifact_name" || echo "Artifact $artifact_name non trovato, continuo..."
-          done
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
 
       - name: Create timestamp
         id: vars
-        run: echo "timestamp=$(date +'%Y-%m-%d-%Hh%M')" >> $GITHUB_ENV
+        run: echo "timestamp=$(date +'%Y-%m-%d-%Hh%M%S')" >> $GITHUB_ENV
 
       - name: Process reports
         run: |
+          # Function to extract stats from summary.json
           extract_stats() {
             local report_dir=$1
             local output_json=$2
@@ -48,17 +41,18 @@ jobs:
               skipped=$(jq '.statistic.skipped' "$report_dir/widgets/summary.json")
 
               echo "{\"passed\": $passed, \"failed\": $failed, \"skipped\": $skipped}" > "$output_json"
-              echo "Creato $output_json con dati: passed=$passed failed=$failed skipped=$skipped"
+              echo "Created $output_json with data: passed=$passed failed=$failed skipped=$skipped"
             else
-              echo "Summary non trovato per $report_dir"
+              echo "Summary not found for $report_dir"
             fi
           }
 
+          # Function to clean up old reports, keeping only the latest 30 + last-history
           cleanup_old_reports() {
             local base_path=$1
 
             cd "$base_path"
-            valid_dirs=$(ls -dt */ | grep -E '^[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}h[0-9]{2}/$' | head -n 30)
+            valid_dirs=$(ls -dt */ | grep -E '^[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}h[0-9]{2}[0-9]{2}/$' | head -n 30)
             keep_dirs="$valid_dirs last-history/"
 
             for dir in */; do
@@ -70,7 +64,7 @@ jobs:
                 fi
               done
               if [[ "$keep" == "false" ]]; then
-                echo "Elimino cartella vecchia: $dir"
+                echo "Deleting old folder: $dir"
                 rm -rf "$dir"
               fi
             done
@@ -78,6 +72,7 @@ jobs:
             cd -
           }
 
+          # Function to generate the index page for the history
           generate_index_page() {
             local base_path=$1
 
@@ -94,20 +89,21 @@ jobs:
                 stats="<p class='mt-2'>✅ Passed: $passed | ❌ Failed: $failed</p>"
               fi
 
-              reports_html+="<div class=\"col-md-4\"><div class=\"card\"><div class=\"card-body text-center\"><h5 class=\"card-title\">$d</h5>$stats<a href=\"./$d/index.html\" class=\"btn btn-primary mt-2'>Visualizza Report</a></div></div></div>"
+              reports_html+="<div class=\"col-md-4\"><div class=\"card\"><div class=\"card-body text-center\"><h5 class=\"card-title\">$d</h5>$stats<a href=\"./$d/index.html\" class=\"btn btn-primary mt-2\">View Report</a></div></div></div>"
             done
 
             sed -i "s|{{ REPORTS }}|$reports_html|" "$base_path/index.html"
           }
 
-          # LISTA APPLICAZIONI
+          # List of applications
           apps=("wisp-tests" "fdr-tests" "aca-tests" "pm-tests")
 
           for app in "${apps[@]}"; do
-            if [ -d "allure-report-${app}" ]; then
+            artifact_folder="artifacts/allure-report-${app}"
+            if [ -d "$artifact_folder" ]; then
               echo "Processing $app..."
               mkdir -p "public/$app/${{ env.timestamp }}"
-              cp -r "allure-report-${app}/." "public/$app/${{ env.timestamp }}/"
+              cp -r "$artifact_folder/." "public/$app/${{ env.timestamp }}/"
 
               if [ -f "public/$app/${{ env.timestamp }}/widgets/summary.json" ]; then
                 extract_stats "public/$app/${{ env.timestamp }}" "public/$app/${{ env.timestamp }}/stats.json"
@@ -116,7 +112,7 @@ jobs:
               cleanup_old_reports "public/$app"
               generate_index_page "public/$app"
             else
-              echo "No report for $app, skipping."
+              echo "No artifact found for $app, skipping."
             fi
           done
 
