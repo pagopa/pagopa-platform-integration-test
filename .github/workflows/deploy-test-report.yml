@@ -48,6 +48,7 @@ jobs:
               skipped=$(jq '.statistic.skipped' "$report_dir/widgets/summary.json")
 
               echo "{\"passed\": $passed, \"failed\": $failed, \"skipped\": $skipped}" > "$output_json"
+              echo "Creato $output_json con dati: passed=$passed failed=$failed skipped=$skipped"
             else
               echo "Summary non trovato per $report_dir"
             fi
@@ -99,7 +100,8 @@ jobs:
             sed -i "s|{{ REPORTS }}|$reports_html|" "$base_path/index.html"
           }
 
-          apps=("wisp-tests" "fdr-tests")
+          # LISTA APPLICAZIONI
+          apps=("wisp-tests" "fdr-tests" "aca-tests" "pm-tests")
 
           for app in "${apps[@]}"; do
             if [ -d "allure-report-${app}" ]; then
