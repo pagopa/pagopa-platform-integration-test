@@ -73,7 +73,7 @@ jobs:
             local base_path=$1
 
             mkdir -p "$base_path"
-            cp source/templates/history-index-template.html "$base_path/index.html"
+            cp templates/history-index-template.html "$base_path/index.html"
 
             reports_html=""
             for dir in $(ls -dt $base_path/*/ | grep -v '/last-history/' | grep -v '/index.html' | head -n 30); do
@@ -126,7 +126,7 @@ jobs:
 
       - name: Copy Landing Page
         run: |
-          cp source/landing-page/index.html public/index.html
+          cp landing-page/index.html public/index.html
           touch public/.nojekyll
 
       - name: Replace last update date in landing page
