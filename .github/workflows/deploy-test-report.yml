@@ -7,17 +7,16 @@ jobs:
   deploy_site:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout gh-pages branch
+      - name: Checkout full repository (default branch)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout gh-pages branch in subfolder
         uses: actions/checkout@v4
         with:
           ref: gh-pages
           path: public
-
-      - name: Checkout source branch
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref }}
-          path: source
 
       - name: Download all report artifacts
         uses: actions/download-artifact@v4
@@ -108,7 +107,6 @@ jobs:
               mkdir -p "public/${app}-tests/${{ env.timestamp }}"
               cp -r "$artifact_folder/." "public/${app}-tests/${{ env.timestamp }}/"
 
-              # Create last-history from latest timestamp
               rm -rf "public/${app}-tests/last-history"
               mkdir -p "public/${app}-tests/last-history"
               cp -r "public/${app}-tests/${{ env.timestamp }}/." "public/${app}-tests/last-history/"
@@ -143,7 +141,7 @@ jobs:
 
       - name: Notify Slack with Integration Test Results
         run: |
-            pip install requests
-            python3 .github/scripts/notify_slack.py
+          pip install requests
+          python3 .github/scripts/notify_slack.py
         env:
-            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
