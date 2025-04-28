@@ -50,6 +50,17 @@ def send_slack_notification():
             })
             blocks.append({"type": "divider"})
 
+    # ➡️ Aggiungiamo il link ai report dettagliati
+    blocks.append({
+        "type": "context",
+        "elements": [
+            {
+                "type": "mrkdwn",
+                "text": "📄 *For detailed reports* 👉 <https://pagopa.github.io/pagopa-platform-integration-test/>"
+            }
+        ]
+    })
+
     payload = {"blocks": blocks}
     headers = {"Content-Type": "application/json"}
     response = requests.post(webhook_url, headers=headers, data=json.dumps(payload))
