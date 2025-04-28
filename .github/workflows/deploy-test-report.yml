@@ -140,3 +140,10 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: public
+
+      - name: Notify Slack with Integration Test Results
+        run: |
+            pip install requests
+            python3 .github/scripts/notify_slack.py
+          env:
+            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
