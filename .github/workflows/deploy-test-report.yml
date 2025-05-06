@@ -3,7 +3,12 @@ name: Deploy Integration Reports
 on:
   workflow_call:
   workflow_dispatch:
-
+  
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  
 jobs:
   deploy_site:
     runs-on: ubuntu-latest
