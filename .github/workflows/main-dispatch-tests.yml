@@ -1,6 +1,9 @@
 name: Main Dispatch Integration Tests
 
 on:
+  schedule:
+    - cron: '0 8 * * *'
+    
   workflow_dispatch:
     inputs:
       services:
