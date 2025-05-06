@@ -2,13 +2,7 @@ name: Deploy Integration Reports
 
 on:
   workflow_call:
-  workflow_dispatch:
-  
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-  
+
 jobs:
   deploy_site:
     runs-on: ubuntu-latest
@@ -19,6 +13,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Checkout gh-pages branch in subfolder
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: public
 
       - name: Download all report artifacts
         uses: actions/download-artifact@v4
@@ -102,8 +102,6 @@ jobs:
 
           apps=("wisp" "fdr")
 
-          mkdir -p public
-
           for app in "${apps[@]}"; do
             artifact_folder="artifacts/allure-report-${app}"
             if [ -d "$artifact_folder" ]; then
@@ -137,14 +135,11 @@ jobs:
         run: |
           sed -i "s/{{LAST_UPDATE_DATE}}/$(date +'%Y-%m-%d')/" public/index.html
 
-      - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./public
-
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: public
 
       - name: Notify Slack with Integration Test Results
         run: |
