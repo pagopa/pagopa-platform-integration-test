@@ -6,6 +6,8 @@ on:
 jobs:
   deploy_site:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
     steps:
       - name: Checkout full repository (default branch)
         uses: actions/checkout@v4
