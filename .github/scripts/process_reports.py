@@ -12,20 +12,19 @@ TEMPLATE_PATH = Path("templates/history-index-template.html")
 TIMESTAMP = os.getenv("TIMESTAMP")
 SKIP_ARTIFACTS = os.getenv("SKIP_ARTIFACTS", "false").lower() == "true"
 
-
 def extract_stats(summary_path):
     try:
         with open(summary_path) as f:
             data = json.load(f)
+            statistic = data.get("statistic", {})
             return {
-                "passed": data["statistic"].get("passed", 0),
-                "failed": data["statistic"].get("failed", 0),
-                "skipped": data["statistic"].get("skipped", 0),
+                "passed": statistic.get("passed", 0),
+                "failed": statistic.get("failed", 0),
+                "skipped": statistic.get("skipped", 0),
             }
-    except FileNotFoundError:
-        print(f"[WARN] Summary not found at {summary_path}")
+    except Exception as e:
+        print(f"[ERROR] While reading {summary_path}: {e}")
         return {}
-
 
 def cleanup_old_reports(base_path):
     dirs = sorted(
@@ -36,7 +35,6 @@ def cleanup_old_reports(base_path):
     for old_dir in dirs[30:]:
         print(f"[INFO] Deleting old folder: {old_dir}")
         shutil.rmtree(old_dir)
-
 
 def generate_index_page(base_path):
     env = Environment(loader=FileSystemLoader("."))
@@ -59,7 +57,6 @@ def generate_index_page(base_path):
     index_path = base_path / "index.html"
     index_path.write_text(output)
     print(f"[INFO] Wrote index page to {index_path}")
-
 
 def process_app(app):
     artifact_folder = ARTIFACTS_DIR / f"allure-report-{app}"
@@ -84,7 +81,6 @@ def process_app(app):
 
     cleanup_old_reports(PUBLIC_DIR / f"{app}-tests")
     generate_index_page(PUBLIC_DIR / f"{app}-tests")
-
 
 if __name__ == "__main__":
     if not SKIP_ARTIFACTS:
