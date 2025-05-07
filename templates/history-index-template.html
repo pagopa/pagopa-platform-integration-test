@@ -56,7 +56,19 @@
 
 <div class="container">
   <div class="row" id="report-cards">
-    {{ REPORTS }}
+    {% for report in reports %}
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body text-center">
+            <h5 class="card-title">{{ report.name }}</h5>
+            <p class="mt-2">
+              ✅ Passed: {{ report.passed }} | ❌ Failed: {{ report.failed }}
+            </p>
+            <a href="{{ report.link }}" class="btn btn-primary mt-2">View Report</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
   </div>
 </div>
 

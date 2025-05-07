@@ -2,6 +2,17 @@ name: Deploy Integration Reports
 
 on:
   workflow_call:
+  workflow_dispatch:
+    inputs:
+      skipArtifacts:
+        description: 'Skip test report artifacts and regenerate only the landing page'
+        required: false
+        type: boolean
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   deploy_site:
@@ -21,6 +32,7 @@ jobs:
           path: public
 
       - name: Download all report artifacts
+        if: github.event.inputs.skipArtifacts != 'true'
         uses: actions/download-artifact@v4
         with:
           path: artifacts
@@ -29,102 +41,13 @@ jobs:
         id: vars
         run: echo "timestamp=$(date +'%Y-%m-%d-%Hh%M%S')" >> $GITHUB_ENV
 
-      - name: Process reports
+      - name: Process reports with Python
         run: |
-          extract_stats() {
-            local report_dir=$1
-            local output_json=$2
-
-            if [ -f "$report_dir/widgets/summary.json" ]; then
-              passed=$(jq '.statistic.passed' "$report_dir/widgets/summary.json")
-              failed=$(jq '.statistic.failed' "$report_dir/widgets/summary.json")
-              skipped=$(jq '.statistic.skipped' "$report_dir/widgets/summary.json")
-
-              echo "{\"passed\": $passed, \"failed\": $failed, \"skipped\": $skipped}" > "$output_json"
-              echo "[INFO] Created $output_json with passed=$passed failed=$failed skipped=$skipped"
-            else
-              echo "[WARN] Summary not found for $report_dir"
-            fi
-          }
-
-          cleanup_old_reports() {
-            local base_path=$1
-
-            cd "$base_path"
-            valid_dirs=$(ls -dt */ | grep -E '^[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}h[0-9]{2}[0-9]{2}/$' | head -n 30)
-            keep_dirs="$valid_dirs last-history/"
-
-            for dir in */; do
-              keep=false
-              for k in $keep_dirs; do
-                if [[ "$dir" == "$k" ]]; then
-                  keep=true
-                  break
-                fi
-              done
-              if [[ "$keep" == "false" ]]; then
-                echo "[INFO] Deleting old folder: $dir"
-                rm -rf "$dir"
-              fi
-            done
-
-            cd -
-          }
-
-          generate_index_page() {
-            local base_path=$1
-
-            mkdir -p "$base_path"
-            cp templates/history-index-template.html "$base_path/index.html"
-
-            reports_html=""
-            for dir in $(ls -dt $base_path/*/ | grep -v '/last-history/' | grep -v '/index.html' | head -n 30); do
-              d=$(basename "$dir")
-              stats=""
-              if [ -f "$dir/stats.json" ]; then
-                passed=$(jq '.passed' "$dir/stats.json")
-                failed=$(jq '.failed' "$dir/stats.json")
-                stats="<p class='mt-2'>✅ Passed: $passed | ❌ Failed: $failed</p>"
-              fi
-
-              reports_html+="<div class=\"col-md-4\"><div class=\"card\"><div class=\"card-body text-center\"><h5 class=\"card-title\">$d</h5>$stats<a href=\"./$d/index.html\" class=\"btn btn-primary mt-2\">View Report</a></div></div></div>"
-            done
-
-            echo "$reports_html" > reports_content.txt
-
-            sed -i -e "/{{ REPORTS }}/ {
-              r reports_content.txt
-              d
-            }" "$base_path/index.html"
-
-            rm -f reports_content.txt
-          }
-
-          apps=("wisp" "fdr")
-
-          for app in "${apps[@]}"; do
-            artifact_folder="artifacts/allure-report-${app}"
-            if [ -d "$artifact_folder" ]; then
-              echo "[INFO] Processing $app..."
-              mkdir -p "public/${app}-tests/${{ env.timestamp }}"
-              cp -r "$artifact_folder/." "public/${app}-tests/${{ env.timestamp }}/"
-
-              rm -rf "public/${app}-tests/last-history"
-              mkdir -p "public/${app}-tests/last-history"
-              cp -r "public/${app}-tests/${{ env.timestamp }}/." "public/${app}-tests/last-history/"
-              echo "[INFO] Updated last-history for $app"
-
-              if [ -f "public/${app}-tests/${{ env.timestamp }}/widgets/summary.json" ]; then
-                extract_stats "public/${app}-tests/${{ env.timestamp }}" "public/${app}-tests/${{ env.timestamp }}/stats.json"
-                extract_stats "public/${app}-tests/last-history" "public/${app}-tests/last-history/stats.json"
-              fi
-
-              cleanup_old_reports "public/${app}-tests"
-              generate_index_page "public/${app}-tests"
-            else
-              echo "[WARN] No artifact found for $app, skipping."
-            fi
-          done
+          pip install jinja2
+          python3 .github/scripts/process_reports.py
+        env:
+          SKIP_ARTIFACTS: ${{ github.event.inputs.skipArtifacts }}
+          TIMESTAMP: ${{ env.timestamp }}
 
       - name: Copy Landing Page
         run: |
@@ -135,11 +58,14 @@ jobs:
         run: |
           sed -i "s/{{LAST_UPDATE_DATE}}/$(date +'%Y-%m-%d')/" public/index.html
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: public
+          path: ./public
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
       - name: Notify Slack with Integration Test Results
         run: |
