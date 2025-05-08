@@ -21,19 +21,19 @@ jobs:
       name: github-pages
     steps:
       - name: Checkout full repository (default branch)
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           fetch-depth: 0
 
       - name: Checkout gh-pages branch in subfolder
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           ref: gh-pages
           path: public
 
       - name: Download all report artifacts
         if: github.event.inputs.skipArtifacts != 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           path: artifacts
 
@@ -59,13 +59,13 @@ jobs:
           sed -i "s/{{LAST_UPDATE_DATE}}/$(date +'%Y-%m-%d')/" public/index.html
 
       - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: ./public
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
 
       - name: Notify Slack with Integration Test Results
         run: |
