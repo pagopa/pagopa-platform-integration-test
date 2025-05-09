@@ -18,12 +18,16 @@ on:
 
 jobs:
   trigger_wisp:
-    if: ${{ github.event.inputs.services == 'wisp' || github.event.inputs.services == 'all' }}
+    if: |
+      github.event_name == 'schedule' ||
+      github.event.inputs.services == 'wisp' || github.event.inputs.services == 'all'
     uses: ./.github/workflows/wisp-tests.yml
     secrets: inherit
 
   trigger_fdr:
-    if: ${{ github.event.inputs.services == 'fdr' || github.event.inputs.services == 'all' }}
+    if: |
+      github.event_name == 'schedule' ||
+      github.event.inputs.services == 'fdr' || github.event.inputs.services == 'all'
     uses: ./.github/workflows/fdr-tests.yml
     secrets: inherit
 
