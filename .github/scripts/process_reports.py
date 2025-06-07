@@ -2,7 +2,6 @@ import os
 import json
 import shutil
 from pathlib import Path
-from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
 
 APPS = ["wisp", "fdr"]
@@ -28,7 +27,7 @@ def extract_stats(summary_path):
 
 def cleanup_old_reports(base_path):
     dirs = sorted(
-        [d for d in base_path.iterdir() if d.is_dir() and d.name != "last-history"],
+        [d for d in base_path.iterdir() if d.is_dir() and d.name not in ("last-history", "index.html")],
         key=lambda d: d.name,
         reverse=True,
     )
@@ -79,12 +78,21 @@ def process_app(app):
         with open(folder / "stats.json", "w") as f:
             json.dump(stats, f)
 
-    cleanup_old_reports(PUBLIC_DIR / f"{app}-tests")
-    generate_index_page(PUBLIC_DIR / f"{app}-tests")
+    # ✅ Nuova parte: regenerates stats.json per for all historical data (only if summary is present)
+    base_path = PUBLIC_DIR / f"{app}-tests"
+    for report_dir in sorted(base_path.iterdir()):
+        if report_dir.is_dir() and report_dir.name not in ("last-history", "index.html"):
+            summary_path = report_dir / "widgets/summary.json"
+            if summary_path.exists():
+                stats = extract_stats(summary_path)
+                with open(report_dir / "stats.json", "w") as f:
+                    json.dump(stats, f)
 
-if __name__ == "__main__":
-    if not SKIP_ARTIFACTS:
-        for app in APPS:
-            process_app(app)
-    else:
-        print("[INFO] Skipping artifact processing (skipArtifacts=true)")
+    cleanup_old_reports(base_path)
+    generate_index_page(base_path)
+
+if not SKIP_ARTIFACTS:
+    for app in APPS:
+        process_app(app)
+else:
+    print("[INFO] Skipping artifact processing (skipArtifacts=true)")
