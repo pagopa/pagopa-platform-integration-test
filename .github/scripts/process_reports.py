@@ -75,21 +75,32 @@ def process_app(app):
         shutil.rmtree(last_history_dir)
     shutil.copytree(dest_dir, last_history_dir)
 
+    # Write stats.json for the current run and last-history
     for folder in [dest_dir, last_history_dir]:
         summary_path = folder / "widgets/summary.json"
+        stats_path = folder / "stats.json"
         stats = extract_stats(summary_path)
-        with open(folder / "stats.json", "w") as f:
-            json.dump(stats, f)
+        if stats:
+            with open(stats_path, "w") as f:
+                json.dump(stats, f)
+            print(f"[INFO] Created {stats_path} with stats: {stats}")
+        else:
+            print(f"[WARN] Skipped writing empty stats to {stats_path}")
 
-    # ✅ Nuova parte: regenerates stats.json per for all historical data (only if summary is present)
+    # 🔁 Regenerates stats.json only if summary.json exists and is valid
     base_path = PUBLIC_DIR / f"{app}-tests"
     for report_dir in sorted(base_path.iterdir()):
         if report_dir.is_dir() and report_dir.name not in ("last-history", "index.html"):
             summary_path = report_dir / "widgets/summary.json"
+            stats_path = report_dir / "stats.json"
             if summary_path.exists():
                 stats = extract_stats(summary_path)
-                with open(report_dir / "stats.json", "w") as f:
-                    json.dump(stats, f)
+                if stats:
+                    with open(stats_path, "w") as f:
+                        json.dump(stats, f)
+                    print(f"[INFO] Updated {stats_path} with stats: {stats}")
+                else:
+                    print(f"[WARN] Skipped writing empty stats to {stats_path}")
 
     cleanup_old_reports(base_path)
     generate_index_page(base_path)
