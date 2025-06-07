@@ -41,16 +41,28 @@ def generate_index_page(base_path):
 
     reports = []
     for dir in sorted(base_path.iterdir(), reverse=True):
-        if not dir.is_dir() or dir.name in ("last-history", "index.html"):
+        if not dir.is_dir():
             continue
+        if dir.name in ("last-history",):
+            continue
+
         stats_path = dir / "stats.json"
-        stats = extract_stats(stats_path)
-        reports.append({
-            "name": dir.name,
-            "passed": stats.get("passed", 0),
-            "failed": stats.get("failed", 0),
-            "link": f"./{dir.name}/index.html"
-        })
+        if not stats_path.exists():
+            print(f"[WARN] Skipping {dir.name}, no stats.json found.")
+            continue
+
+        try:
+            with open(stats_path) as f:
+                stats = json.load(f)
+            reports.append({
+                "name": dir.name,
+                "passed": stats.get("passed", 0),
+                "failed": stats.get("failed", 0),
+                "link": f"./{dir.name}/index.html"
+            })
+        except Exception as e:
+            print(f"[ERROR] Failed to load stats from {stats_path}: {e}")
+            continue
 
     output = template.render(reports=reports)
     index_path = base_path / "index.html"
