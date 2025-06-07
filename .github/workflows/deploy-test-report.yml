@@ -9,18 +9,12 @@ on:
         required: false
         type: boolean
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 jobs:
   deploy_site:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
+
     steps:
-      - name: Checkout full repository (default branch)
+      - name: Checkout default branch (source)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -37,14 +31,20 @@ jobs:
         with:
           path: artifacts
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+
+      - name: Install Python dependencies
+        run: pip install jinja2 requests
+
       - name: Create timestamp
         id: vars
         run: echo "timestamp=$(date +'%Y-%m-%d-%Hh%M%S')" >> $GITHUB_ENV
 
       - name: Process reports with Python
-        run: |
-          pip install jinja2
-          python3 .github/scripts/process_reports.py
+        run: python3 .github/scripts/process_reports.py
         env:
           SKIP_ARTIFACTS: ${{ github.event.inputs.skipArtifacts }}
           TIMESTAMP: ${{ env.timestamp }}
@@ -55,21 +55,17 @@ jobs:
           touch public/.nojekyll
 
       - name: Replace last update date in landing page
-        run: |
-          sed -i "s/{{LAST_UPDATE_DATE}}/$(date +'%Y-%m-%d')/" public/index.html
+        run: sed -i "s/{{LAST_UPDATE_DATE}}/$(date +'%Y-%m-%d')/" public/index.html
 
-      - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Deploy to GitHub Pages using peaceiris
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: ./public
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
 
       - name: Notify Slack with Integration Test Results
-        run: |
-          pip install requests
-          python3 .github/scripts/notify_slack.py
+        run: python3 .github/scripts/notify_slack.py
         env:
           SLACK_QA_WEBHOOK_URL: ${{ secrets.SLACK_QA_WEBHOOK_URL }}
+          TIMESTAMP: ${{ env.timestamp }}
