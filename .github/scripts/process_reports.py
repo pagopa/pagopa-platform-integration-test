@@ -1,13 +1,14 @@
 import json
 import os
 from jinja2 import Environment, FileSystemLoader
+import re
+from datetime import datetime
 
 def extract_stats(summary_path):
     try:
         with open(summary_path) as f:
             data = json.load(f)
             statistic_raw = data.get("statistic", {})
-            # Se è una lista (come nel tuo caso), prendiamo il primo elemento
             statistic = statistic_raw[0] if isinstance(statistic_raw, list) else statistic_raw
             print(f"[DEBUG] Stats from {summary_path}: {statistic}")
             return {
@@ -37,31 +38,39 @@ def process_report_dir(report_dir):
 
     if os.path.exists(widgets_summary):
         stats = extract_stats(widgets_summary)
-        if os.path.exists(stats_json):
-            print(f"[INFO] Updated {stats_json} with stats: {stats}")
-        else:
-            print(f"[INFO] Created {stats_json} with stats: {stats}")
         with open(stats_json, "w") as f:
             json.dump(stats, f)
+        print(f"[INFO] {'Created' if not os.path.exists(stats_json) else 'Updated'} {stats_json} with stats: {stats}")
         return True
     return False
 
+def format_display_name(name):
+    # From "2025-04-27-18h5636" to "2025-04-27_18:56:36"
+    match = re.match(r"(\d{4}-\d{2}-\d{2})-(\d{2})h(\d{2})(\d{2})", name)
+    if match:
+        date, hour, minute, second = match.groups()
+        return f"{date}_{hour}:{minute}:{second}"
+    return name  # fallback se non matcha
+
 def build_index_page(root_dir):
     reports = []
-    for name in sorted(os.listdir(root_dir)):
+    for name in os.listdir(root_dir):
         report_dir = os.path.join(root_dir, name)
         stats_json = os.path.join(report_dir, "stats.json")
-        if os.path.isdir(report_dir) and os.path.exists(stats_json):
+        if os.path.isdir(report_dir) and os.path.exists(stats_json) and name not in ("last-history", "index.html"):
             stats = extract_stats_from_stats_file(stats_json)
-            print(f"[DEBUG] Stats from {stats_json}: {stats}")
             report_entry = {
-                "name": name,
+                "name": format_display_name(name),
                 "passed": stats["passed"],
                 "failed": stats["failed"],
-                "link": f"./{name}/index.html"
+                "link": f"./{name}/index.html",
+                "sort_key": name
             }
             print(f"[DEBUG] Adding report entry: {report_entry}")
             reports.append(report_entry)
+
+    # Order by timestamp desc
+    reports.sort(key=lambda r: r["sort_key"], reverse=True)
 
     env = Environment(loader=FileSystemLoader(".github/templates"))
     template = env.get_template("history-index-template.html")
