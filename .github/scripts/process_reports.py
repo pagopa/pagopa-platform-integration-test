@@ -2,15 +2,22 @@ import json
 import os
 from jinja2 import Environment, FileSystemLoader
 
-def extract_stats(summary_json_path):
-    with open(summary_json_path) as f:
-        summary_data = json.load(f)
-
-    return {
-        'passed': summary_data.get('passed', 0),
-        'failed': summary_data.get('failed', 0),
-        'skipped': summary_data.get('skipped', 0)
-    }
+def extract_stats(summary_path):
+    try:
+        with open(summary_path) as f:
+            data = json.load(f)
+            statistic_raw = data.get("statistic", {})
+            # Se è una lista (come nel tuo caso), prendiamo il primo elemento
+            statistic = statistic_raw[0] if isinstance(statistic_raw, list) else statistic_raw
+            print(f"[DEBUG] Stats from {summary_path}: {statistic}")
+            return {
+                "passed": statistic.get("passed", 0),
+                "failed": statistic.get("failed", 0),
+                "skipped": statistic.get("skipped", 0),
+            }
+    except Exception as e:
+        print(f"[ERROR] While reading {summary_path}: {e}")
+        return {}
 
 def extract_stats_from_stats_file(stats_json_path):
     if os.path.exists(stats_json_path):
