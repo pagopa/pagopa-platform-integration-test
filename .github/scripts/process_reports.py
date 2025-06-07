@@ -16,6 +16,7 @@ def extract_stats(summary_path):
         with open(summary_path) as f:
             data = json.load(f)
             statistic = data.get("statistic", {})
+            print(f"[DEBUG] Stats from {summary_path}: {statistic}")  # DEBUG
             return {
                 "passed": statistic.get("passed", 0),
                 "failed": statistic.get("failed", 0),
@@ -24,6 +25,30 @@ def extract_stats(summary_path):
     except Exception as e:
         print(f"[ERROR] While reading {summary_path}: {e}")
         return {}
+
+def generate_index_page(base_path):
+    env = Environment(loader=FileSystemLoader("."))
+    template = env.get_template(str(TEMPLATE_PATH))
+
+    reports = []
+    for dir in sorted(base_path.iterdir(), reverse=True):
+        if not dir.is_dir() or dir.name in ("last-history", "index.html"):
+            continue
+        stats_path = dir / "stats.json"
+        stats = extract_stats(stats_path)
+        report = {
+            "name": dir.name,
+            "passed": stats.get("passed", 0),
+            "failed": stats.get("failed", 0),
+            "link": f"./{dir.name}/index.html"
+        }
+        print(f"[DEBUG] Adding report entry: {report}")  # DEBUG
+        reports.append(report)
+
+    output = template.render(reports=reports)
+    index_path = base_path / "index.html"
+    index_path.write_text(output)
+    print(f"[INFO] Wrote index page to {index_path}")
 
 def cleanup_old_reports(base_path):
     dirs = sorted(
@@ -34,40 +59,6 @@ def cleanup_old_reports(base_path):
     for old_dir in dirs[30:]:
         print(f"[INFO] Deleting old folder: {old_dir}")
         shutil.rmtree(old_dir)
-
-def generate_index_page(base_path):
-    env = Environment(loader=FileSystemLoader("."))
-    template = env.get_template(str(TEMPLATE_PATH))
-
-    reports = []
-    for dir in sorted(base_path.iterdir(), reverse=True):
-        if not dir.is_dir():
-            continue
-        if dir.name in ("last-history",):
-            continue
-
-        stats_path = dir / "stats.json"
-        if not stats_path.exists():
-            print(f"[WARN] Skipping {dir.name}, no stats.json found.")
-            continue
-
-        try:
-            with open(stats_path) as f:
-                stats = json.load(f)
-            reports.append({
-                "name": dir.name,
-                "passed": stats.get("passed", 0),
-                "failed": stats.get("failed", 0),
-                "link": f"./{dir.name}/index.html"
-            })
-        except Exception as e:
-            print(f"[ERROR] Failed to load stats from {stats_path}: {e}")
-            continue
-
-    output = template.render(reports=reports)
-    index_path = base_path / "index.html"
-    index_path.write_text(output)
-    print(f"[INFO] Wrote index page to {index_path}")
 
 def process_app(app):
     artifact_folder = ARTIFACTS_DIR / f"allure-report-{app}"
