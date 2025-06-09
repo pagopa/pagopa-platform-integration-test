@@ -1,8 +1,5 @@
 Feature: Retrieve a debt position
 
-  Background: 
-    Given GPD running
-
   Scenario: Get Debt Position by IUV
     # Remove dirty data -> create Payment Positions -> Get Payment Position by IUV
     Given the debt position with IUPD 77777777777_GET_PP_BY_IUV is deleted
