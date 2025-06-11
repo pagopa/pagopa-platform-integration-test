@@ -86,6 +86,8 @@ def main():
     artifact_dir = os.path.join("artifacts")
     if os.path.isdir(artifact_dir):
         print(f"[INFO] artifacts dir {artifact_dir} exists!")
+        for artifact in os.listdir(artifact_dir):
+            print(f"[INFO] subfolder {artifact}")
     else:
         print(f"[INFO] artifacts dir {artifact_dir} does not exist...")
     for app in apps:
