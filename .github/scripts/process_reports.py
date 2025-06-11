@@ -83,11 +83,11 @@ def build_index_page(root_dir):
 
 def main():
     apps = ["wisp", "fdr"]
-    artifact_dir = os.path.join("artifact")
+    artifact_dir = os.path.join("artifacts")
     if os.path.isdir(artifact_dir):
-        print(f"[INFO] artifact dir {artifact_dir} exists!")
+        print(f"[INFO] artifacts dir {artifact_dir} exists!")
     else:
-        print(f"[INFO] artifact dir {artifact_dir} does not exist...")
+        print(f"[INFO] artifacts dir {artifact_dir} does not exist...")
     for app in apps:
         root_dir = f"public/{app}-tests"
         for name in os.listdir(root_dir):
