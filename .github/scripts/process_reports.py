@@ -77,16 +77,21 @@ def build_index_page(root_dir):
 
     output_path = os.path.join(root_dir, "index.html")
     with open(output_path, "w") as f:
+        print(f"[INFO] Writing index page to {output_path} ...")
         f.write(template.render(reports=reports))
     print(f"[INFO] Wrote index page to {output_path}")
 
 def main():
     apps = ["wisp", "fdr"]
+    artifact_dir = os.path.join("artifact")
+    if os.path.isdir(artifact_dir):
+        print(f"[INFO] artifact dir {artifact_dir} exists!")
+    else:
+        print(f"[INFO] artifact dir {artifact_dir} does not exist...")
     for app in apps:
         root_dir = f"public/{app}-tests"
         for name in os.listdir(root_dir):
-            # report_dir = os.path.join(root_dir, name)
-            report_dir = os.path.join(root_dir)
+            report_dir = os.path.join(root_dir, name)
             if os.path.isdir(report_dir):
                 print(f"[INFO] is valid directory  {report_dir} ")
                 summary_path = os.path.join(report_dir, "widgets", "summary.json")
