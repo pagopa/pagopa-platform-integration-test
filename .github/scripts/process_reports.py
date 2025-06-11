@@ -85,8 +85,10 @@ def main():
     for app in apps:
         root_dir = f"public/{app}-tests"
         for name in os.listdir(root_dir):
-            report_dir = os.path.join(root_dir, name)
+            # report_dir = os.path.join(root_dir, name)
+            report_dir = os.path.join(root_dir)
             if os.path.isdir(report_dir):
+                print(f"[INFO] is valid directory  {report_dir} ")
                 summary_path = os.path.join(report_dir, "widgets", "summary.json")
                 if os.path.exists(summary_path):
                     stats = extract_stats(summary_path)
