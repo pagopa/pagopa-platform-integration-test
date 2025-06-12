@@ -131,7 +131,7 @@ def main():
         stats = extract_stats(artifact_app_dir)
 
         # create directory with pattern yyyy-mm-dd_hh:mm:ss
-        run_dir = os.path.join(root_dir) + "/" + stats.get("start") + "_" + stats.get("duration")
+        run_dir = os.path.join(root_dir + "/" + stats.get("start"))
         os.makedirs(run_dir)
         print(f"[INFO][main] run_dir {run_dir} has been created")
 
