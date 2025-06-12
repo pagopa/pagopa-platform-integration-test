@@ -51,7 +51,7 @@ jobs:
 
       - name: Copy Landing Page
         run: |
-          cp landing-page/index.html public/index.html
+          cp .github/html/index.html public/index.html
           touch public/.nojekyll
 
       - name: Replace last update date in landing page
@@ -67,5 +67,5 @@ jobs:
       - name: Notify Slack with Integration Test Results
         run: python3 .github/scripts/notify_slack.py
         env:
-          SLACK_QA_WEBHOOK_URL: ${{ secrets.SLACK_QA_WEBHOOK_URL }}
+          SLACK_QA_WEBHOOK_URL: ${{ secrets.SLACK_TEAM_MAINTENANCE_WEBHOOK_URL }}
           TIMESTAMP: ${{ env.timestamp }}

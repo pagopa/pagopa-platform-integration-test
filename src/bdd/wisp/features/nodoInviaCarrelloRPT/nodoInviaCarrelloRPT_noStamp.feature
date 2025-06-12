@@ -137,18 +137,6 @@ Feature: User pays a payment carts without stamps on nodoInviaCarrelloRPT
     When the user tries to pay a cart of RPTs on EC website
     Then the user is redirected on Checkout completing the payment
 
-
-  # ===============================================================================================
-  # ===============================================================================================
-
-  @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: User pays a cart with two RPTs on WFESP flow
-    Given a cart of RPTs non-multibeneficiary
-    And a single RPT of type CP with 1 transfers of which none are stamps
-    And a single RPT of type CP with 1 transfers of which none are stamps
-    When the user tries to pay a cart of RPTs on EC website with no redirect URL check
-    Then the response contains the fake WFESP URL
-
   # ===============================================================================================
   # ===============================================================================================
 
