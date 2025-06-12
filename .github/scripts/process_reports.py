@@ -128,15 +128,12 @@ def main():
             print(f"[INFO][main] artifact_app_dir {artifact_app_dir} does not exist, skipping it")
             continue
 
+        # retrieve stats
         stats = extract_stats(artifact_app_dir)
-
-        # create directory with pattern yyyy-mm-dd_hh:mm:ss
-        run_dir = os.path.join(root_dir + "/" + stats.get("start"))
-        os.makedirs(run_dir)
-        print(f"[INFO][main] run_dir {run_dir} has been created")
 
         # copy content from /artifacts/allure-report-<app> inside the new directory run_dir
         source_dir = Path(artifact_app_dir)
+        run_dir = os.path.join(root_dir + "/" + stats.get("start")) # pattern yyyy-mm-dd_hh:mm:ss
         destination_dir = Path(run_dir)
         print(f"[INFO][main] destination_dir {destination_dir}")
 
