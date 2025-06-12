@@ -9,6 +9,7 @@ from pathlib import Path
 def extract_stats(artifact_app_dir):
     try:
         artifact_summary_file = os.path.join(artifact_app_dir, "widgets").join("summary.json")
+        print(f"[INFO][extract_stats] artifact_summary_file {artifact_summary_file}")
         with open(artifact_summary_file) as f:
 
             # load summary.json file
