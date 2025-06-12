@@ -122,7 +122,7 @@ def main():
         # extract stats form allure reports inside artifacts
         artifact_app_dir = os.path.join(artifact_dir, "allure-report-" + app) # /artifacts/allure-report-<app>
         print(f"[INFO][main] artifact_app_dir {artifact_app_dir}")
-        if os.path.isdir(artifact_app_dir): # in case not all app have been selected for running test
+        if not os.path.isdir(artifact_app_dir): # in case not all app have been selected for running test
             print(f"[INFO][main] artifact_app_dir {artifact_app_dir} does not exist, skipping it")
             continue
 
