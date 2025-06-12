@@ -67,5 +67,5 @@ jobs:
       - name: Notify Slack with Integration Test Results
         run: python3 .github/scripts/notify_slack.py
         env:
-          SLACK_QA_WEBHOOK_URL: ${{ secrets.SLACK_TEAM_MAINTENANCE_WEBHOOK_URL }}
+          SLACK_QA_WEBHOOK_URL: ${{ secrets.SLACK_INTEGRATION_TEST_WEBHOOK_URL }}
           TIMESTAMP: ${{ env.timestamp }}
