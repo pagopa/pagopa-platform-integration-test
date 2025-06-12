@@ -142,10 +142,11 @@ def main():
 
         # copy everything from source to run dir and last-history dir
         last_history_dir = os.path.join(root_dir, "last-history")
+        last_history_dir = Path(last_history_dir)
         print(f"[INFO][main] last_history_dir {last_history_dir}")
-        if destination_dir.exists(): # delete dir if already exists
-            print(f"[INFO][main] deleting {destination_dir} content")
-            shutil.rmtree(destination_dir)
+        if last_history_dir.exists(): # delete dir if already exists
+            print(f"[INFO][main] deleting {last_history_dir} content")
+            shutil.rmtree(last_history_dir)
 
         print(f"[INFO][main] copy everything from {source_dir} to {destination_dir}")
         shutil.copytree(source_dir, destination_dir)
