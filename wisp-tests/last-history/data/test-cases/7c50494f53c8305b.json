@@ -1,0 +1,181 @@
+{
+  "uid" : "7c50494f53c8305b",
+  "name" : "User executes a first redirect, then execute the redirection again and complete the payment flow",
+  "fullName" : "User pays a single payment without stamps via nodoInviaRPT: User executes a first redirect, then execute the redirection again and complete the payment flow",
+  "historyId" : "94893d7db42355eb4294e72011a62865",
+  "time" : {
+    "start" : 1750058748455,
+    "stop" : 1750058751008,
+    "duration" : 2553
+  },
+  "status" : "failed",
+  "statusMessage" : "AssertionError: The status code is not 302. Current value: 200.\n",
+  "statusTrace" : "  File \"/opt/hostedtoolcache/Python/3.13.4/x64/lib/python3.13/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.13.4/x64/lib/python3.13/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/bdd/wisp/steps/steps.py\", line 189, in user_redirected_to_checkout\n    steputils.exec_nm1_to_nmu(context, actor)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/wisp/steps_utils.py\", line 835, in exec_nm1_to_nmu\n    check_status_code(context, actor, '302')\n    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/wisp/steps_utils.py\", line 18, in check_status_code\n    assert int(\n           ^^^^\n        expected_status_code) == actual_status_code, f'The status code is not {expected_status_code}. Current value: {actual_status_code}.'\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "failed",
+    "statusMessage" : "AssertionError: The status code is not 302. Current value: 200.\n",
+    "statusTrace" : "  File \"/opt/hostedtoolcache/Python/3.13.4/x64/lib/python3.13/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.13.4/x64/lib/python3.13/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/bdd/wisp/steps/steps.py\", line 189, in user_redirected_to_checkout\n    steputils.exec_nm1_to_nmu(context, actor)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/wisp/steps_utils.py\", line 835, in exec_nm1_to_nmu\n    check_status_code(context, actor, '302')\n    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/wisp/steps_utils.py\", line 18, in check_status_code\n    assert int(\n           ^^^^\n        expected_status_code) == actual_status_code, f'The status code is not {expected_status_code}. Current value: {actual_status_code}.'\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "steps" : [ {
+      "name" : "Given systems up",
+      "time" : {
+        "start" : 1750058748456,
+        "stop" : 1750058749295,
+        "duration" : 839
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Given a single RPT of type BBT with 1 transfers of which 0 are stamps",
+      "time" : {
+        "start" : 1750058749295,
+        "stop" : 1750058749296,
+        "duration" : 1
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "When the user tries to pay the RPT on EC website",
+      "time" : {
+        "start" : 1750058749296,
+        "stop" : 1750058749799,
+        "duration" : 503
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "148d06d395d05456",
+        "name" : "Step: [the user tries to pay the RPT on EC website] - Sent request",
+        "source" : "148d06d395d05456.txt",
+        "type" : "text/plain",
+        "size" : 7852
+      }, {
+        "uid" : "f09bb1a56ed274c0",
+        "name" : "Step: [the user tries to pay the RPT on EC website] - Received response",
+        "source" : "f09bb1a56ed274c0.txt",
+        "type" : "text/plain",
+        "size" : 373
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "Then the conversion to new model succeeds in wisp-converter",
+      "time" : {
+        "start" : 1750058749799,
+        "stop" : 1750058750566,
+        "duration" : 767
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "47b6d08eebccd9d8",
+        "name" : "Received response",
+        "source" : "47b6d08eebccd9d8.attach",
+        "type" : "text/plain",
+        "size" : 131
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 1,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "And the user is redirected on Checkout completing the payment",
+      "time" : {
+        "start" : 1750058750567,
+        "stop" : 1750058751007,
+        "duration" : 440
+      },
+      "status" : "failed",
+      "statusMessage" : "AssertionError: The status code is not 302. Current value: 200.\n",
+      "statusTrace" : "  File \"/opt/hostedtoolcache/Python/3.13.4/x64/lib/python3.13/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.13.4/x64/lib/python3.13/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/bdd/wisp/steps/steps.py\", line 189, in user_redirected_to_checkout\n    steputils.exec_nm1_to_nmu(context, actor)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/wisp/steps_utils.py\", line 835, in exec_nm1_to_nmu\n    check_status_code(context, actor, '302')\n    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/wisp/steps_utils.py\", line 18, in check_status_code\n    assert int(\n           ^^^^\n        expected_status_code) == actual_status_code, f'The status code is not {expected_status_code}. Current value: {actual_status_code}.'\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "cf81d3c86d8cf569",
+        "name" : "Step: [the user is redirected on Checkout completing the payment]: on sessionId: [464b4edf-280f-4ed5-9848-d81da81c6621] - Received response",
+        "source" : "cf81d3c86d8cf569.txt",
+        "type" : "text/plain",
+        "size" : 5807
+      }, {
+        "uid" : "4a9fd0ba8b4d8d6d",
+        "name" : "Received response",
+        "source" : "4a9fd0ba8b4d8d6d.attach",
+        "type" : "text/html",
+        "size" : 5677
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : true,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 5,
+    "attachmentsCount" : 5,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "tag",
+    "value" : "happy_path"
+  }, {
+    "name" : "tag",
+    "value" : "nodo_invia_rpt"
+  }, {
+    "name" : "tag",
+    "value" : "runnable"
+  }, {
+    "name" : "tag",
+    "value" : "to_fix"
+  }, {
+    "name" : "feature",
+    "value" : "User pays a single payment without stamps via nodoInviaRPT"
+  }, {
+    "name" : "framework",
+    "value" : "behave"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ {
+      "name" : "Product defects",
+      "matchedStatuses" : [ ],
+      "flaky" : false
+    } ],
+    "tags" : [ "runnable", "nodo_invia_rpt", "to_fix", "happy_path" ]
+  },
+  "source" : "7c50494f53c8305b.json",
+  "parameterValues" : [ ]
+}
