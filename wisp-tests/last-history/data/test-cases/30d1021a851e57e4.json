@@ -1,0 +1,150 @@
+{
+  "uid" : "30d1021a851e57e4",
+  "name" : "User tries to pay a cart with one RPT that has a quantity of transfers above the limit",
+  "fullName" : "User pays a payment carts without stamps on nodoInviaCarrelloRPT: User tries to pay a cart with one RPT that has a quantity of transfers above the limit",
+  "historyId" : "092b36a48c568afdd9bf908163d3a1bb",
+  "time" : {
+    "start" : 1750231085087,
+    "stop" : 1750231087097,
+    "duration" : 2010
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "Given systems up",
+      "time" : {
+        "start" : 1750231085088,
+        "stop" : 1750231086311,
+        "duration" : 1223
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Given a cart of RPTs non-multibeneficiary",
+      "time" : {
+        "start" : 1750231086311,
+        "stop" : 1750231086311,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 6 transfers of which none are stamps",
+      "time" : {
+        "start" : 1750231086311,
+        "stop" : 1750231086312,
+        "duration" : 1
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "When the user tries to pay a cart of RPTs on EC website with no redirect URL check",
+      "time" : {
+        "start" : 1750231086312,
+        "stop" : 1750231087096,
+        "duration" : 784
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "df48db3a02f9fb44",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website with no redirect URL check] - Sent request",
+        "source" : "df48db3a02f9fb44.txt",
+        "type" : "text/plain",
+        "size" : 13406
+      }, {
+        "uid" : "2fbeabf39e65518a",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website with no redirect URL check] - Received response",
+        "source" : "2fbeabf39e65518a.txt",
+        "type" : "text/plain",
+        "size" : 821
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "Then fails having a quantity of transfers above the limit and getting the error PPT_SINTASSI_XSD",
+      "time" : {
+        "start" : 1750231087097,
+        "stop" : 1750231087097,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 5,
+    "attachmentsCount" : 2,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "tag",
+    "value" : "nodo_invia_carrello_rpt"
+  }, {
+    "name" : "tag",
+    "value" : "runnable"
+  }, {
+    "name" : "tag",
+    "value" : "unhappy_path"
+  }, {
+    "name" : "feature",
+    "value" : "User pays a payment carts without stamps on nodoInviaCarrelloRPT"
+  }, {
+    "name" : "framework",
+    "value" : "behave"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ "runnable", "nodo_invia_carrello_rpt", "unhappy_path" ]
+  },
+  "source" : "30d1021a851e57e4.json",
+  "parameterValues" : [ ]
+}

@@ -1,0 +1,180 @@
+{
+  "uid" : "841e42f2e65665f3",
+  "name" : "User tries to pay a cart with two RPT that has a quantity of transfers above the limit",
+  "fullName" : "User pays a payment carts without stamps on nodoInviaCarrelloRPT: User tries to pay a cart with two RPT that has a quantity of transfers above the limit",
+  "historyId" : "af532abc47cacddaee7004082410bea7",
+  "time" : {
+    "start" : 1750231087097,
+    "stop" : 1750231089096,
+    "duration" : 1999
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "Given systems up",
+      "time" : {
+        "start" : 1750231087098,
+        "stop" : 1750231088319,
+        "duration" : 1221
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Given a cart of RPTs non-multibeneficiary",
+      "time" : {
+        "start" : 1750231088319,
+        "stop" : 1750231088319,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 2 transfers of which none are stamps",
+      "time" : {
+        "start" : 1750231088319,
+        "stop" : 1750231088319,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 6 transfers of which none are stamps",
+      "time" : {
+        "start" : 1750231088319,
+        "stop" : 1750231088320,
+        "duration" : 1
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 6 transfers of which none are stamps",
+      "time" : {
+        "start" : 1750231088320,
+        "stop" : 1750231088320,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "When the user tries to pay a cart of RPTs on EC website with no redirect URL check",
+      "time" : {
+        "start" : 1750231088320,
+        "stop" : 1750231089096,
+        "duration" : 776
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "2ff5bccb89c4c2c6",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website with no redirect URL check] - Sent request",
+        "source" : "2ff5bccb89c4c2c6.txt",
+        "type" : "text/plain",
+        "size" : 33512
+      }, {
+        "uid" : "f6fbb39ef73a8ec1",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website with no redirect URL check] - Received response",
+        "source" : "f6fbb39ef73a8ec1.txt",
+        "type" : "text/plain",
+        "size" : 1325
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "Then fails having a quantity of transfers above the limit and getting the error PPT_SINTASSI_XSD",
+      "time" : {
+        "start" : 1750231089096,
+        "stop" : 1750231089096,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 7,
+    "attachmentsCount" : 2,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "tag",
+    "value" : "nodo_invia_carrello_rpt"
+  }, {
+    "name" : "tag",
+    "value" : "runnable"
+  }, {
+    "name" : "tag",
+    "value" : "unhappy_path"
+  }, {
+    "name" : "feature",
+    "value" : "User pays a payment carts without stamps on nodoInviaCarrelloRPT"
+  }, {
+    "name" : "framework",
+    "value" : "behave"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ "runnable", "nodo_invia_carrello_rpt", "unhappy_path" ]
+  },
+  "source" : "841e42f2e65665f3.json",
+  "parameterValues" : [ ]
+}
