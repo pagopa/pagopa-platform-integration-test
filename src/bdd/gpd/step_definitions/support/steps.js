@@ -57,16 +57,16 @@ BeforeAll(async function() {
     await executeDebtPositionDeletion(gpdSessionBundle, idOrg, iupdKO);
  });
 
-/*
- *  'Given' precondition for health checks on various services.
- */
-Given('GPD running', () => executeHealthCheckForGPD());
+///*
+// *  'Given' precondition for health checks on various services.
+// */
+//Given('GPD running', () => executeHealthCheckForGPD());
 
 /*
  *  Debt position creation
  */
 Given('a random iupd', async function () {
-    iupd = randomIupd();
+    iupd = randomIupd();    
     // precondition -> deletion possible dirty data
     await executeDebtPositionDeletion(gpdSessionBundle, idOrg, iupd);
 });

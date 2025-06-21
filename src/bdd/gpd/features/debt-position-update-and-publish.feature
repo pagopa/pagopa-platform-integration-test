@@ -1,8 +1,5 @@
 Feature: Managing a debt position
-
-  Background:
-    Given GPD running
-
+  
   Scenario: Debt position creation
     Given a random iupd
     When the debt position is created
@@ -11,6 +8,8 @@ Feature: Managing a debt position
     And the debt position gets status "VALID"
 
   Scenario: Update IBAN on all Organization's Transfers of updatable debt position
+
+  #             METHODS NOT YET IMPLEMENTED IN UAT V3
     When the updateTransferIbanMassive is called with oldIban "testIban" and newIban "testIban"
     Then the updateTransferIbanMassive gets the status code 200
     And the updateTransferIbanMassive response includes number of updates

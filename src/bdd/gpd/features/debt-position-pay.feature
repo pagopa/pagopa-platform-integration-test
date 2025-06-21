@@ -1,8 +1,5 @@
 Feature: Paying a debt position
 
- Background:
-   Given GPD running
-
  Scenario: Pay Debt Position
    Given a random iupd
    When the debt position is created
@@ -17,7 +14,7 @@ Feature: Paying a debt position
    # Reporting the Transfer
    When the transfer is reported
    Then the transfer gets the status code 200
-
+ 
  Scenario: Debt Position Payability with a near validity date
    # Create Debt Position
    Given a random iupd
@@ -25,6 +22,8 @@ Feature: Paying a debt position
    Then the debt position gets the status code 201
    # Check Payability
    When system wait 10 seconds
+
+   #             METHODS NOT YET IMPLEMENTED IN UAT V3
    And we get the payment option by iuv
    Then the debt position is in the status "VALID"
    # Delete Debt position

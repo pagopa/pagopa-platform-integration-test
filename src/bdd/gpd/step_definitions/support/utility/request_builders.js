@@ -31,46 +31,115 @@ function buildDebtPositionDynamicData(gpdSessionBundle, iupdIn, iuv = makeidNumb
 function buildCreateDebtPositionRequest(debtPosition, payer) {
     return {
         iupd: debtPosition.iupd,
-        type: "F",
-        fiscalCode: payer.fiscalCode,
-        fullName: payer.name,
-        streetName: payer.streetName,
-        civicNumber: payer.civicNumber,
-        postalCode: payer.postalCode,
-        city: payer.city,
-        province: payer.province,
-        region: payer.region,
-        country: payer.country,
-        email: payer.email,
-        phone: payer.phone,
+        payStandIn: true,
         companyName: payer.companyName,
         officeName: payer.officeName,
-        validityDate: debtPosition.validityDate,
-        switchToExpired: false,
         paymentOption: [
             {
-                iuv: debtPosition.iuv1,
-                amount: debtPosition.amount * 100,
-                description: "Canone Unico Patrimoniale - SkyLab Inc.",
-                isPartialPayment: false,
-                dueDate: debtPosition.dueDate,
-                retentionDate: debtPosition.retentionDate,
-                fee: 0,
-                transfer: [
+                "description": "description payment option",
+                "retentionDate": debtPosition.retentionDate,
+                "switchToExpired": false,
+                "debtor": {
+                    type: "F",
+                    fiscalCode: payer.fiscalCode,
+                    fullName: payer.name,
+                    streetName: payer.streetName,
+                    civicNumber: payer.civicNumber,
+                    postalCode: payer.postalCode,
+                    city: payer.city,
+                    province: payer.province,
+                    region: payer.region,
+                    country: payer.country,
+                    email: payer.email,
+                    phone: payer.phone,
+                },
+                "installments": [
                     {
-                        idTransfer: debtPosition.transferId1,
-                        amount: (debtPosition.amount * 100 / 3),
-                        remittanceInformation: "Rata 1",
-                        category: "9/0101108TS/",
-                        iban: debtPosition.iban,
-                    },
+                        "iuv": debtPosition.iuv1,
+                        "amount": debtPosition.amount * 100,
+                        "description": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                        "dueDate": debtPosition.dueDate,
+                        "transfer": [
+                            {
+                                "idTransfer": debtPosition.transferId1,
+                                "amount": (debtPosition.amount * 100),
+                                //"organizationFiscalCode": debtPosition.organizationFiscalCode,
+                                "organizationFiscalCode": "77777777777",
+                                "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                                "category": "9/0301109AP",
+                                "postalIban": null,
+                                "stamp": null,
+                                "companyName": debtPosition.companyName,
+                                //"iban": debtPosition.iban,
+                                "iban": "IT76P0306909790100000300089",
+                                "transferMetadata": [
+                                    {
+                                        "key": "DatiSpecificiRiscossione",
+                                        "value": "9/0301109AP"
+                                    }
+                                ]
+                            }
+                        ],
+                        "installmentMetadata": [
+                            {
+                                "key": "key1",
+                                "value": "value1"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "description": "description payment option",
+                "retentionDate": debtPosition.retentionDate,
+                "switchToExpired": false,
+                "debtor": {
+                    type: "F",
+                    fiscalCode: payer.fiscalCode,
+                    fullName: payer.name,
+                    streetName: payer.streetName,
+                    civicNumber: payer.civicNumber,
+                    postalCode: payer.postalCode,
+                    city: payer.city,
+                    province: payer.province,
+                    region: payer.region,
+                    country: payer.country,
+                    email: payer.email,
+                    phone: payer.phone,
+                },
+                "installments": [
                     {
-                        idTransfer: debtPosition.transferId2,
-                        organizationFiscalCode: debtPosition.transferOtherCIFiscalCode,
-                        amount: (debtPosition.amount * 100 / 3) * 2,
-                        remittanceInformation: "Rata 2",
-                        category: "9/0101108TS/",
-                        iban: debtPosition.iban,
+                        "iuv": debtPosition.iuv2,
+                        "amount": debtPosition.amount * 100,
+                        "description": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                        "dueDate": debtPosition.dueDate,
+                        "transfer": [
+                            {
+                                "idTransfer": debtPosition.transferId1,
+                                "amount": (debtPosition.amount * 100),
+                                //"organizationFiscalCode": debtPosition.organizationFiscalCode,
+                                "organizationFiscalCode": "77777777777",
+                                "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                                "category": "9/0301109AP",
+                                "postalIban": null,
+                                "stamp": null,
+                                "companyName": debtPosition.companyName,
+                                //"iban": debtPosition.iban,
+                                "iban": "IT76P0306909790100000300089",
+                                "transferMetadata": [
+                                    {
+                                        "key": "DatiSpecificiRiscossione",
+                                        "value": "9/0301109AP"
+                                    }
+                                ]
+                            }
+                        ],
+                        "installmentMetadata": [
+                            {
+                                "key": "key1",
+                                "value": "value1"
+                            }
+                        ]
                     }
                 ]
             }
@@ -138,45 +207,61 @@ function buildCreateOK_KODebtPositionRequest(bundle, action) {
     let payer = bundle.payer;
     return {
         iupd: debtPosition.iupd,
-        type: "F",
-        fiscalCode: payer.fiscalCode,
-        fullName: payer.name,
-        streetName: payer.streetName,
-        civicNumber: payer.civicNumber,
-        postalCode: payer.postalCode,
-        city: payer.city,
-        province: payer.province,
-        region: payer.region,
-        country: payer.country,
-        email: payer.email,
-        phone: payer.phone,
+        payStandIn: true,
         companyName: payer.companyName,
         officeName: payer.officeName,
-        switchToExpired: false,
         paymentOption: [
             {
-                iuv: action == "OK" ? debtPosition.iuvOK : debtPosition.iuvKO,
-                amount: debtPosition.amount * 100,
-                description: "Canone Unico Patrimoniale - SkyLab Inc.",
-                isPartialPayment: false,
-                dueDate: debtPosition.dueDate,
-                retentionDate: debtPosition.retentionDate,
-                fee: 0,
-                transfer: [
+                "description": "description payment option",
+                "retentionDate": debtPosition.retentionDate,
+                "switchToExpired": false,
+                "debtor": {
+                    type: "F",
+                    fiscalCode: payer.fiscalCode,
+                    fullName: payer.name,
+                    streetName: payer.streetName,
+                    civicNumber: payer.civicNumber,
+                    postalCode: payer.postalCode,
+                    city: payer.city,
+                    province: payer.province,
+                    region: payer.region,
+                    country: payer.country,
+                    email: payer.email,
+                    phone: payer.phone,
+                },
+                "installments": [
                     {
-                        idTransfer: debtPosition.transferId1,
-                        amount: (debtPosition.amount * 100 / 3),
-                        remittanceInformation: "Rata 1",
-                        category: "9/0101108TS/",
-                        iban: debtPosition.iban,
-                    },
-                    {
-                        idTransfer: debtPosition.transferId2,
-                        organizationFiscalCode: bundle.organizationCode,
-                        amount: (debtPosition.amount * 100 / 3) * 2,
-                        remittanceInformation: "Rata 2",
-                        category: "9/0101108TS/",
-                        iban: debtPosition.iban,
+                        "iuv": action == "OK" ? debtPosition.iuvOK : debtPosition.iuvKO,
+                        "amount": debtPosition.amount * 100,
+                        "description": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                        "dueDate": debtPosition.dueDate,
+                        "transfer": [
+                            {
+                                "idTransfer": debtPosition.transferId1,
+                                "amount": (debtPosition.amount * 100),
+                                //"organizationFiscalCode": debtPosition.organizationFiscalCode,
+                                "organizationFiscalCode": "77777777777",
+                                "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                                "category": "9/0301109AP",
+                                "postalIban": null,
+                                "stamp": null,
+                                "companyName": debtPosition.companyName,
+                                //"iban": debtPosition.iban,
+                                "iban": "IT76P0306909790100000300089",
+                                "transferMetadata": [
+                                    {
+                                        "key": "DatiSpecificiRiscossione",
+                                        "value": "9/0301109AP"
+                                    }
+                                ]
+                            }
+                        ],
+                        "installmentMetadata": [
+                            {
+                                "key": "key1",
+                                "value": "value1"
+                            }
+                        ]
                     }
                 ]
             }
@@ -187,45 +272,115 @@ function buildCreateOK_KODebtPositionRequest(bundle, action) {
 function buildUpdateDebtPositionRequest(debtPosition, payer) {
     return {
         iupd: debtPosition.iupd,
-        type: "F",
-        fiscalCode: payer.fiscalCode,
-        fullName: payer.name,
-        streetName: payer.streetName,
-        civicNumber: payer.civicNumber,
-        postalCode: payer.postalCode,
-        city: payer.city,
-        province: payer.province,
-        region: payer.region,
-        country: payer.country,
-        email: payer.email,
-        phone: payer.phone,
-        companyName: payer.companyName + " - Edit",
-        officeName: payer.officeName + " - Edit",
-        switchToExpired: false,
+        payStandIn: true,
+        companyName: payer.companyName,
+        officeName: payer.officeName,
         paymentOption: [
             {
-                iuv: debtPosition.iuv1,
-                amount: debtPosition.amount * 100,
-                description: "Canone Unico Patrimoniale - SkyLab Inc. - Edit",
-                isPartialPayment: false,
-                dueDate: debtPosition.dueDate,
-                retentionDate: debtPosition.retentionDate,
-                fee: 0,
-                transfer: [
+                "description": "description payment option",
+                "retentionDate": debtPosition.retentionDate,
+                "switchToExpired": false,
+                "debtor": {
+                    type: "F",
+                    fiscalCode: payer.fiscalCode,
+                    fullName: payer.name,
+                    streetName: payer.streetName,
+                    civicNumber: payer.civicNumber,
+                    postalCode: payer.postalCode,
+                    city: payer.city,
+                    province: payer.province,
+                    region: payer.region,
+                    country: payer.country,
+                    email: payer.email,
+                    phone: payer.phone,
+                },
+                "installments": [
                     {
-                        idTransfer: debtPosition.transferId1,
-                        amount: (debtPosition.amount * 100 / 3),
-                        remittanceInformation: "Rata 1 Edit",
-                        category: "9/0101108TS/",
-                        iban: debtPosition.iban,
-                    },
+                        "iuv": debtPosition.iuv1,
+                        "amount": debtPosition.amount * 100,
+                        "description": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                        "dueDate": debtPosition.dueDate,
+                        "transfer": [
+                            {
+                                "idTransfer": debtPosition.transferId1,
+                                "amount": (debtPosition.amount * 100),
+                                //"organizationFiscalCode": debtPosition.organizationFiscalCode,
+                                "organizationFiscalCode": "77777777777",
+                                "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                                "category": "9/0301109AP",
+                                "postalIban": null,
+                                "stamp": null,
+                                "companyName": debtPosition.companyName,
+                                //"iban": debtPosition.iban,
+                                "iban": "IT76P0306909790100000300089",
+                                "transferMetadata": [
+                                    {
+                                        "key": "DatiSpecificiRiscossione",
+                                        "value": "9/0301109AP"
+                                    }
+                                ]
+                            }
+                        ],
+                        "installmentMetadata": [
+                            {
+                                "key": "key1",
+                                "value": "value1"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "description": "description payment option",
+                "retentionDate": debtPosition.retentionDate,
+                "switchToExpired": false,
+                "debtor": {
+                    type: "F",
+                    fiscalCode: payer.fiscalCode,
+                    fullName: payer.name,
+                    streetName: payer.streetName,
+                    civicNumber: payer.civicNumber,
+                    postalCode: payer.postalCode,
+                    city: payer.city,
+                    province: payer.province,
+                    region: payer.region,
+                    country: payer.country,
+                    email: payer.email,
+                    phone: payer.phone,
+                },
+                "installments": [
                     {
-                        idTransfer: debtPosition.transferId2,
-                        organizationFiscalCode: debtPosition.transferOtherCIFiscalCode,
-                        amount: (debtPosition.amount * 100 / 3) * 2,
-                        remittanceInformation: "Rata 2 Edit",
-                        category: "9/0101108TS/",
-                        iban: debtPosition.iban,
+                        "iuv": debtPosition.iuv2,
+                        "amount": debtPosition.amount * 100,
+                        "description": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                        "dueDate": debtPosition.dueDate,
+                        "transfer": [
+                            {
+                                "idTransfer": debtPosition.transferId1,
+                                "amount": (debtPosition.amount * 100),
+                                //"organizationFiscalCode": debtPosition.organizationFiscalCode,
+                                "organizationFiscalCode": "77777777777",
+                                "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                                "category": "9/0301109AP",
+                                "postalIban": null,
+                                "stamp": null,
+                                "companyName": debtPosition.companyName,
+                                //"iban": debtPosition.iban,
+                                "iban": "IT76P0306909790100000300089",
+                                "transferMetadata": [
+                                    {
+                                        "key": "DatiSpecificiRiscossione",
+                                        "value": "9/0301109AP"
+                                    }
+                                ]
+                            }
+                        ],
+                        "installmentMetadata": [
+                            {
+                                "key": "key1",
+                                "value": "value1"
+                            }
+                        ]
                     }
                 ]
             }
@@ -236,45 +391,115 @@ function buildUpdateDebtPositionRequest(debtPosition, payer) {
 function buildUpdateDebtPositionInfoRequest(debtPosition, payer) {
     return {
         iupd: debtPosition.iupd,
-        type: "F",
-        fiscalCode: payer.fiscalCode,
-        fullName: payer.fullName,
-        streetName: payer.streetName,
-        civicNumber: payer.civicNumber,
-        postalCode: payer.postalCode,
-        city: payer.city,
-        province: payer.province,
-        region: payer.region,
-        country: payer.country,
-        email: payer.email,
-        phone: payer.phone,
+        payStandIn: true,
         companyName: payer.companyName,
         officeName: payer.officeName,
-        switchToExpired: false,
         paymentOption: [
             {
-                iuv: debtPosition.paymentOption[0].iuv,
-                amount: debtPosition.paymentOption[0].amount * 100,
-                description: "Canone Unico Patrimoniale - SkyLab Inc. - Edit",
-                isPartialPayment: false,
-                dueDate: debtPosition.paymentOption[0].dueDate,
-                retentionDate: debtPosition.paymentOption[0].retentionDate,
-                fee: 0,
-                transfer: [
+                "description": "description payment option",
+                "retentionDate": debtPosition.retentionDate,
+                "switchToExpired": false,
+                "debtor": {
+                    type: "F",
+                    fiscalCode: payer.fiscalCode,
+                    fullName: payer.name,
+                    streetName: payer.streetName,
+                    civicNumber: payer.civicNumber,
+                    postalCode: payer.postalCode,
+                    city: payer.city,
+                    province: payer.province,
+                    region: payer.region,
+                    country: payer.country,
+                    email: payer.email,
+                    phone: payer.phone,
+                },
+                "installments": [
                     {
-                        idTransfer: debtPosition.paymentOption[0].transfer[0].idTransfer,
-                        amount: (debtPosition.paymentOption[0].amount * 100 / 3),
-                        remittanceInformation: "Rata 1 Edit",
-                        category: "9/0101108TS/",
-                        iban: debtPosition.paymentOption[0].transfer[0].iban,
-                    },
+                        "iuv": debtPosition.paymentOption[0].installments[0].iuv,
+                        "amount": debtPosition.paymentOption[0].installments[0].amount * 100,
+                        "description": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                        "dueDate": debtPosition.paymentOption[0].installments[0].dueDate,
+                        "transfer": [
+                            {
+                                "idTransfer": debtPosition.transferId1,
+                                "amount": (debtPosition.amount * 100),
+                                //"organizationFiscalCode": debtPosition.organizationFiscalCode,
+                                "organizationFiscalCode": "77777777777",
+                                "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                                "category": "9/0301109AP",
+                                "postalIban": null,
+                                "stamp": null,
+                                "companyName": debtPosition.companyName,
+                                //"iban": debtPosition.iban,
+                                "iban": "IT76P0306909790100000300089",
+                                "transferMetadata": [
+                                    {
+                                        "key": "DatiSpecificiRiscossione",
+                                        "value": "9/0301109AP"
+                                    }
+                                ]
+                            }
+                        ],
+                        "installmentMetadata": [
+                            {
+                                "key": "key1",
+                                "value": "value1"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "description": "description payment option",
+                "retentionDate": debtPosition.paymentOption[0].retentionDate,
+                "switchToExpired": false,
+                "debtor": {
+                    type: "F",
+                    fiscalCode: payer.fiscalCode,
+                    fullName: payer.name,
+                    streetName: payer.streetName,
+                    civicNumber: payer.civicNumber,
+                    postalCode: payer.postalCode,
+                    city: payer.city,
+                    province: payer.province,
+                    region: payer.region,
+                    country: payer.country,
+                    email: payer.email,
+                    phone: payer.phone,
+                },
+                "installments": [
                     {
-                        idTransfer: debtPosition.paymentOption[0].transfer[1].idTransfer,
-                        organizationFiscalCode: debtPosition.transferOtherCIFiscalCode,
-                        amount: (debtPosition.paymentOption[0].amount * 100 / 3) * 2,
-                        remittanceInformation: "Rata 2 Edit",
-                        category: "9/0101108TS/",
-                        iban: debtPosition.paymentOption[0].transfer[1].iban,
+                        "iuv": debtPosition.paymentOption[0].installments[1].iuv,
+                        "amount": debtPosition.paymentOption[0].installments[1].amount * 100,
+                        "description": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                        "dueDate": debtPosition.paymentOption[0].installments[1].dueDate,
+                        "transfer": [
+                            {
+                                "idTransfer": debtPosition.paymentOption[0].installments[1].transferId1,
+                                "amount": (debtPosition.paymentOption[0].installments[1].amount * 100),
+                                //"organizationFiscalCode": debtPosition.organizationFiscalCode,
+                                "organizationFiscalCode": "77777777777",
+                                "remittanceInformation": "/RFB/022268434640608/332.25/TXT/DEBITORE/" + payer.fiscalCode,
+                                "category": "9/0301109AP",
+                                "postalIban": null,
+                                "stamp": null,
+                                "companyName": debtPosition.companyName,
+                                //"iban": debtPosition.iban,
+                                "iban": "IT76P0306909790100000300089",
+                                "transferMetadata": [
+                                    {
+                                        "key": "DatiSpecificiRiscossione",
+                                        "value": "9/0301109AP"
+                                    }
+                                ]
+                            }
+                        ],
+                        "installmentMetadata": [
+                            {
+                                "key": "key1",
+                                "value": "value1"
+                            }
+                        ]
                     }
                 ]
             }
