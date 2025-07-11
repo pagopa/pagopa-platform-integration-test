@@ -1,0 +1,189 @@
+{
+  "uid" : "e288e67148f1da7b",
+  "name" : "User tries to pay a single payment that was inserted from ACA and is in invalid state",
+  "fullName" : "User pays a single payment from existing payment position via nodoInviaRPT: User tries to pay a single payment that was inserted from ACA and is in invalid state",
+  "historyId" : "f9152b0bbd0cc901d3a8cfd2b343f312",
+  "time" : {
+    "start" : 1752218814034,
+    "stop" : 1752218827043,
+    "duration" : 13009
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "Given systems up",
+      "time" : {
+        "start" : 1752218814035,
+        "stop" : 1752218815025,
+        "duration" : 990
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Given a single RPT of type BBT with 1 transfers of which 0 are stamps",
+      "time" : {
+        "start" : 1752218815026,
+        "stop" : 1752218815026,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT",
+      "time" : {
+        "start" : 1752218815026,
+        "stop" : 1752218815498,
+        "duration" : 472
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "f043d9cac01ff5f2",
+        "name" : "Step: [an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT] - Sent request",
+        "source" : "f043d9cac01ff5f2.txt",
+        "type" : "text/plain",
+        "size" : 1260
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 1,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "When the user tries to pay the RPT on EC website",
+      "time" : {
+        "start" : 1752218815498,
+        "stop" : 1752218816997,
+        "duration" : 1499
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "1644e309ba52055c",
+        "name" : "Step: [the user tries to pay the RPT on EC website] - Sent request",
+        "source" : "1644e309ba52055c.txt",
+        "type" : "text/plain",
+        "size" : 7852
+      }, {
+        "uid" : "f3ad9f44bfecf612",
+        "name" : "Step: [the user tries to pay the RPT on EC website] - Received response",
+        "source" : "f3ad9f44bfecf612.txt",
+        "type" : "text/plain",
+        "size" : 373
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "Then conversion to new model fails in wisp-converter",
+      "time" : {
+        "start" : 1752218816997,
+        "stop" : 1752218824490,
+        "duration" : 7493
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "35ec89c7f72590ef",
+        "name" : "Step: [conversion to new model fails in wisp-converter]: on sessionId: [bfe9782a-97e9-407e-bdf1-7d5b2017bed9] - Received response",
+        "source" : "35ec89c7f72590ef.txt",
+        "type" : "text/plain",
+        "size" : 5807
+      }, {
+        "uid" : "a8de17f500f7dcc",
+        "name" : "Received response",
+        "source" : "a8de17f500f7dcc.attach",
+        "type" : "text/html",
+        "size" : 5677
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "And the KO receipt is sent",
+      "time" : {
+        "start" : 1752218824490,
+        "stop" : 1752218827043,
+        "duration" : 2553
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "5521bd7334746eef",
+        "name" : "Step: [the KO receipt is sent]: on IUV: [899390732994244] - Received response",
+        "source" : "5521bd7334746eef.txt",
+        "type" : "text/plain",
+        "size" : 36200
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 1,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 6,
+    "attachmentsCount" : 6,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "tag",
+    "value" : "nodo_invia_rpt"
+  }, {
+    "name" : "tag",
+    "value" : "runnable"
+  }, {
+    "name" : "tag",
+    "value" : "unhappy_path"
+  }, {
+    "name" : "feature",
+    "value" : "User pays a single payment from existing payment position via nodoInviaRPT"
+  }, {
+    "name" : "framework",
+    "value" : "behave"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ "runnable", "nodo_invia_rpt", "unhappy_path" ]
+  },
+  "source" : "e288e67148f1da7b.json",
+  "parameterValues" : [ ]
+}
