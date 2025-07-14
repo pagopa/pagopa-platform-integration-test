@@ -1,0 +1,150 @@
+{
+  "uid" : "fd148556350a533a",
+  "name" : "User pays a single payment as PO type with one transfer and no stamp",
+  "fullName" : "User pays a single payment without stamps via nodoInviaRPT: User pays a single payment as PO type with one transfer and no stamp",
+  "historyId" : "0c2889062799a2d1404d03d4c97f5449",
+  "time" : {
+    "start" : 1752478040064,
+    "stop" : 1752478042190,
+    "duration" : 2126
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "Given systems up",
+      "time" : {
+        "start" : 1752478040064,
+        "stop" : 1752478041330,
+        "duration" : 1266
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "Given a single RPT of type PO with 1 transfers of which 0 are stamps",
+      "time" : {
+        "start" : 1752478041331,
+        "stop" : 1752478041331,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "When the user sends a nodoInviaRPT request",
+      "time" : {
+        "start" : 1752478041331,
+        "stop" : 1752478042190,
+        "duration" : 859
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "eeeb5d5e7004e2b",
+        "name" : "Step: [the user sends a nodoInviaRPT request] - Sent request",
+        "source" : "eeeb5d5e7004e2b.txt",
+        "type" : "text/plain",
+        "size" : 7848
+      }, {
+        "uid" : "386a87b8a0549ae1",
+        "name" : "Step: [the user sends a nodoInviaRPT request] - Received response",
+        "source" : "386a87b8a0549ae1.txt",
+        "type" : "text/plain",
+        "size" : 352
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true,
+      "attachmentsCount" : 2
+    }, {
+      "name" : "Then the user receives a successful response",
+      "time" : {
+        "start" : 1752478042190,
+        "stop" : 1752478042190,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "And the response contains the old WISP URL",
+      "time" : {
+        "start" : 1752478042190,
+        "stop" : 1752478042190,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "attachmentsCount" : 0
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 5,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true,
+    "attachmentsCount" : 2
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "tag",
+    "value" : "happy_path"
+  }, {
+    "name" : "tag",
+    "value" : "nodo_invia_rpt"
+  }, {
+    "name" : "tag",
+    "value" : "runnable"
+  }, {
+    "name" : "feature",
+    "value" : "User pays a single payment without stamps via nodoInviaRPT"
+  }, {
+    "name" : "framework",
+    "value" : "behave"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ "runnable", "nodo_invia_rpt", "happy_path" ]
+  },
+  "source" : "fd148556350a533a.json",
+  "parameterValues" : [ ]
+}
