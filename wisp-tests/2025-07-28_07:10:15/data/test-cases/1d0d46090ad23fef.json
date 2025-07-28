@@ -1,0 +1,201 @@
+{
+  "uid" : "1d0d46090ad23fef",
+  "name" : "User tries the payment, then retries again the flow but fails",
+  "fullName" : "User pays a single payment without stamps via nodoInviaRPT: User tries the payment, then retries again the flow but fails",
+  "historyId" : "b04b9cb2c280ca9b4f0c8aa05d3ed651",
+  "time" : {
+    "start" : 1753687759854,
+    "stop" : 1753687766477,
+    "duration" : 6623
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "Given systems up",
+      "time" : {
+        "start" : 1753687759855,
+        "stop" : 1753687760776,
+        "duration" : 921
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Given a single RPT of type BBT with 1 transfers of which 0 are stamps",
+      "time" : {
+        "start" : 1753687760777,
+        "stop" : 1753687760777,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And the user tried to pay the RPT on EC website",
+      "time" : {
+        "start" : 1753687760777,
+        "stop" : 1753687765268,
+        "duration" : 4491
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "3606b8b83d3d4126",
+        "name" : "Step: [the user tried to pay the RPT on EC website] - Sent request",
+        "source" : "3606b8b83d3d4126.txt",
+        "type" : "text/plain",
+        "size" : 7852
+      }, {
+        "uid" : "91c566b8d1a24fe9",
+        "name" : "Step: [the user tried to pay the RPT on EC website] - Received response",
+        "source" : "91c566b8d1a24fe9.txt",
+        "type" : "text/plain",
+        "size" : 373
+      }, {
+        "uid" : "603fb92c8d87a998",
+        "name" : "Received response",
+        "source" : "603fb92c8d87a998.attach",
+        "type" : "text/plain",
+        "size" : 131
+      }, {
+        "uid" : "3473d74b5bb447eb",
+        "name" : "Step: [the user tried to pay the RPT on EC website]: on IUV: [251232852404151] - Received response",
+        "source" : "3473d74b5bb447eb.txt",
+        "type" : "text/plain",
+        "size" : 27450
+      }, {
+        "uid" : "8a5cdaf0def42af9",
+        "name" : "Step: [the user tried to pay the RPT on EC website] - Sent request",
+        "source" : "8a5cdaf0def42af9.txt",
+        "type" : "text/plain",
+        "size" : 167
+      }, {
+        "uid" : "483cc0d37fa9bc31",
+        "name" : "Step: [the user tried to pay the RPT on EC website] - Received response",
+        "source" : "483cc0d37fa9bc31.txt",
+        "type" : "text/plain",
+        "size" : 242
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 6,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "When send activatePaymentNoticeV2 requests",
+      "time" : {
+        "start" : 1753687765268,
+        "stop" : 1753687765991,
+        "duration" : 723
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "fd01d147b503709a",
+        "name" : "Step: [send activatePaymentNoticeV2 requests] - Sent request",
+        "source" : "fd01d147b503709a.txt",
+        "type" : "text/plain",
+        "size" : 821
+      }, {
+        "uid" : "4f34682779b15aa7",
+        "name" : "Step: [send activatePaymentNoticeV2 requests] - Received response",
+        "source" : "4f34682779b15aa7.txt",
+        "type" : "text/plain",
+        "size" : 953
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "Then conversion to new model fails in wisp-converter",
+      "time" : {
+        "start" : 1753687765991,
+        "stop" : 1753687766477,
+        "duration" : 486
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "ef6fe6a61e214a34",
+        "name" : "Step: [conversion to new model fails in wisp-converter]: on sessionId: [2f20cec2-a71e-4d2f-b3d6-6f93cad97724] - Received response",
+        "source" : "ef6fe6a61e214a34.txt",
+        "type" : "text/plain",
+        "size" : 5807
+      }, {
+        "uid" : "99b8b1fc13386dd8",
+        "name" : "Received response",
+        "source" : "99b8b1fc13386dd8.attach",
+        "type" : "text/html",
+        "size" : 5677
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 5,
+    "attachmentsCount" : 10,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "tag",
+    "value" : "nodo_invia_rpt"
+  }, {
+    "name" : "tag",
+    "value" : "runnable"
+  }, {
+    "name" : "tag",
+    "value" : "to_fix"
+  }, {
+    "name" : "tag",
+    "value" : "unhappy_path"
+  }, {
+    "name" : "feature",
+    "value" : "User pays a single payment without stamps via nodoInviaRPT"
+  }, {
+    "name" : "framework",
+    "value" : "behave"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ "runnable", "nodo_invia_rpt", "to_fix", "unhappy_path" ]
+  },
+  "source" : "1d0d46090ad23fef.json",
+  "parameterValues" : [ ]
+}
