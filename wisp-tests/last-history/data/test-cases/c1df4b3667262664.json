@@ -1,0 +1,381 @@
+{
+  "uid" : "c1df4b3667262664",
+  "name" : "User tries to pay a cart with two RPTs but the payment closure fails, then tries again successfully",
+  "fullName" : "User pays a payment carts without stamps on nodoInviaCarrelloRPT: User tries to pay a cart with two RPTs but the payment closure fails, then tries again successfully",
+  "historyId" : "8f7bec8e2290f1fed21601114f61a466",
+  "time" : {
+    "start" : 1754205503747,
+    "stop" : 1754205561605,
+    "duration" : 57858
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "Given systems up",
+      "time" : {
+        "start" : 1754205503748,
+        "stop" : 1754205505007,
+        "duration" : 1259
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Given a cart of RPTs non-multibeneficiary",
+      "time" : {
+        "start" : 1754205505007,
+        "stop" : 1754205505007,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 1 transfers of which none are stamps",
+      "time" : {
+        "start" : 1754205505007,
+        "stop" : 1754205505008,
+        "duration" : 1
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 1 transfers of which none are stamps",
+      "time" : {
+        "start" : 1754205505008,
+        "stop" : 1754205505008,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And the user tries to pay a cart of RPTs on EC website",
+      "time" : {
+        "start" : 1754205505008,
+        "stop" : 1754205505877,
+        "duration" : 869
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "99493117c75149f3",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Sent request",
+        "source" : "99493117c75149f3.txt",
+        "type" : "text/plain",
+        "size" : 15119
+      }, {
+        "uid" : "53319308a2687ac1",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Received response",
+        "source" : "53319308a2687ac1.txt",
+        "type" : "text/plain",
+        "size" : 409
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "And the user is redirected on Checkout not completing the multibeneficiary payment",
+      "time" : {
+        "start" : 1754205505878,
+        "stop" : 1754205531470,
+        "duration" : 25592
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "f755a223ae044f97",
+        "name" : "Received response",
+        "source" : "f755a223ae044f97.attach",
+        "type" : "text/plain",
+        "size" : 131
+      }, {
+        "uid" : "466d0822e502e6e4",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment]: on IUV: [401887846693960] - Received response",
+        "source" : "466d0822e502e6e4.txt",
+        "type" : "text/plain",
+        "size" : 41219
+      }, {
+        "uid" : "55f30756b2d5e5f4",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment] - Sent request",
+        "source" : "55f30756b2d5e5f4.txt",
+        "type" : "text/plain",
+        "size" : 232
+      }, {
+        "uid" : "933fbfcb2521d4f1",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment] - Received response",
+        "source" : "933fbfcb2521d4f1.txt",
+        "type" : "text/plain",
+        "size" : 354
+      }, {
+        "uid" : "7220feb432e4ce3b",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment] - Sent request",
+        "source" : "7220feb432e4ce3b.txt",
+        "type" : "text/plain",
+        "size" : 820
+      }, {
+        "uid" : "fabad2d01e982fca",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment] - Received response",
+        "source" : "fabad2d01e982fca.txt",
+        "type" : "text/plain",
+        "size" : 949
+      }, {
+        "uid" : "1b52284975bdcd99",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment] - Sent request",
+        "source" : "1b52284975bdcd99.txt",
+        "type" : "text/plain",
+        "size" : 821
+      }, {
+        "uid" : "6ab4b12b46ce145b",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment] - Received response",
+        "source" : "6ab4b12b46ce145b.txt",
+        "type" : "text/plain",
+        "size" : 953
+      }, {
+        "uid" : "ae71b23b83e5369",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment]: on IUV: [401887846693960] - Received response",
+        "source" : "ae71b23b83e5369.txt",
+        "type" : "text/plain",
+        "size" : 45909
+      }, {
+        "uid" : "fa2699b78b15e832",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment] - Sent request",
+        "source" : "fa2699b78b15e832.txt",
+        "type" : "text/plain",
+        "size" : 1288
+      }, {
+        "uid" : "876e69fee6c44482",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment] - Received response",
+        "source" : "876e69fee6c44482.txt",
+        "type" : "text/plain",
+        "size" : 104
+      }, {
+        "uid" : "d62d1917a6ae6a69",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment]: on IUV: [401887846693960] - Received response",
+        "source" : "d62d1917a6ae6a69.txt",
+        "type" : "text/plain",
+        "size" : 72875
+      }, {
+        "uid" : "f430cfa66bdcbfd3",
+        "name" : "Step: [the user is redirected on Checkout not completing the multibeneficiary payment]: on IUV: [224947023508812] - Received response",
+        "source" : "f430cfa66bdcbfd3.txt",
+        "type" : "text/plain",
+        "size" : 72875
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 13,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "When the user tries to pay a cart of RPTs on EC website",
+      "time" : {
+        "start" : 1754205531471,
+        "stop" : 1754205532795,
+        "duration" : 1324
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "6578490d39ad29aa",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Sent request",
+        "source" : "6578490d39ad29aa.txt",
+        "type" : "text/plain",
+        "size" : 15119
+      }, {
+        "uid" : "3e417814d7da7647",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Received response",
+        "source" : "3e417814d7da7647.txt",
+        "type" : "text/plain",
+        "size" : 409
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "Then the user is redirected on Checkout completing the multibeneficiary payment",
+      "time" : {
+        "start" : 1754205532795,
+        "stop" : 1754205561605,
+        "duration" : 28810
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "93eeb000a341019f",
+        "name" : "Received response",
+        "source" : "93eeb000a341019f.attach",
+        "type" : "text/plain",
+        "size" : 131
+      }, {
+        "uid" : "eec9e71e8bc7aa1e",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment]: on IUV: [401887846693960] - Received response",
+        "source" : "eec9e71e8bc7aa1e.txt",
+        "type" : "text/plain",
+        "size" : 117832
+      }, {
+        "uid" : "a26f4822aaabeff6",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment]: on IUV: [224947023508812] - Received response",
+        "source" : "a26f4822aaabeff6.txt",
+        "type" : "text/plain",
+        "size" : 117832
+      }, {
+        "uid" : "9962f90826ae4a66",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment] - Sent request",
+        "source" : "9962f90826ae4a66.txt",
+        "type" : "text/plain",
+        "size" : 232
+      }, {
+        "uid" : "6085863fa8f8891e",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment] - Received response",
+        "source" : "6085863fa8f8891e.txt",
+        "type" : "text/plain",
+        "size" : 354
+      }, {
+        "uid" : "67738a706defb2d4",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment] - Sent request",
+        "source" : "67738a706defb2d4.txt",
+        "type" : "text/plain",
+        "size" : 820
+      }, {
+        "uid" : "b18714fea6d000df",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment] - Received response",
+        "source" : "b18714fea6d000df.txt",
+        "type" : "text/plain",
+        "size" : 949
+      }, {
+        "uid" : "f5e7575e1e2fc893",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment] - Sent request",
+        "source" : "f5e7575e1e2fc893.txt",
+        "type" : "text/plain",
+        "size" : 821
+      }, {
+        "uid" : "368cd001f66cd93d",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment] - Received response",
+        "source" : "368cd001f66cd93d.txt",
+        "type" : "text/plain",
+        "size" : 953
+      }, {
+        "uid" : "10c8e9b86b35f83d",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment]: on IUV: [401887846693960] - Received response",
+        "source" : "10c8e9b86b35f83d.txt",
+        "type" : "text/plain",
+        "size" : 122522
+      }, {
+        "uid" : "b8f2ab4ebcd20e34",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment]: on IUV: [224947023508812] - Received response",
+        "source" : "b8f2ab4ebcd20e34.txt",
+        "type" : "text/plain",
+        "size" : 122522
+      }, {
+        "uid" : "759adebfd95edada",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment] - Sent request",
+        "source" : "759adebfd95edada.txt",
+        "type" : "text/plain",
+        "size" : 1288
+      }, {
+        "uid" : "41454dba2488fa42",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment] - Received response",
+        "source" : "41454dba2488fa42.txt",
+        "type" : "text/plain",
+        "size" : 104
+      }, {
+        "uid" : "baeb79643264c922",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment]: on IUV: [401887846693960] - Received response",
+        "source" : "baeb79643264c922.txt",
+        "type" : "text/plain",
+        "size" : 158451
+      }, {
+        "uid" : "a8f37985e0b3b1c1",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment]: on IUV: [224947023508812] - Received response",
+        "source" : "a8f37985e0b3b1c1.txt",
+        "type" : "text/plain",
+        "size" : 158451
+      }, {
+        "uid" : "8bbc1808fcc3cdbe",
+        "name" : "Step: [the user is redirected on Checkout completing the multibeneficiary payment] on IUV: [224947023508812] - Received response",
+        "source" : "8bbc1808fcc3cdbe.txt",
+        "type" : "text/plain",
+        "size" : 2122
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 16,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 8,
+    "attachmentsCount" : 33,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "tag",
+    "value" : "happy_path"
+  }, {
+    "name" : "tag",
+    "value" : "nodo_invia_carrello_rpt"
+  }, {
+    "name" : "tag",
+    "value" : "runnable"
+  }, {
+    "name" : "feature",
+    "value" : "User pays a payment carts without stamps on nodoInviaCarrelloRPT"
+  }, {
+    "name" : "framework",
+    "value" : "behave"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ "runnable", "nodo_invia_carrello_rpt", "happy_path" ]
+  },
+  "source" : "c1df4b3667262664.json",
+  "parameterValues" : [ ]
+}
