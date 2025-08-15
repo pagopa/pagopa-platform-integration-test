@@ -1,0 +1,180 @@
+{
+  "uid" : "8c66efaf90c5b8a1",
+  "name" : "User tries to pay a multibeneficiary cart with two RPTs, on which the second has two transfers, but the second RPT contains more than one transfers",
+  "fullName" : "User pays a multibeneficiary payment carts on nodoInviaCarrelloRPT: User tries to pay a multibeneficiary cart with two RPTs, on which the second has two transfers, but the second RPT contains more than one transfers",
+  "historyId" : "9f4afb413c3985ac9f236b74b39edbb0",
+  "time" : {
+    "start" : 1755241952288,
+    "stop" : 1755241953720,
+    "duration" : 1432
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "Given systems up",
+      "time" : {
+        "start" : 1755241952289,
+        "stop" : 1755241953156,
+        "duration" : 867
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Given a cart of RPTs for multibeneficiary",
+      "time" : {
+        "start" : 1755241953156,
+        "stop" : 1755241953156,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 3 transfers of which none are stamps",
+      "time" : {
+        "start" : 1755241953156,
+        "stop" : 1755241953156,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 2 transfers of which none are stamps",
+      "time" : {
+        "start" : 1755241953156,
+        "stop" : 1755241953157,
+        "duration" : 1
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "When the user tries to pay a cart of RPTs on EC website with no redirect URL check",
+      "time" : {
+        "start" : 1755241953157,
+        "stop" : 1755241953720,
+        "duration" : 563
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "a091da4308856af0",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website with no redirect URL check] - Sent request",
+        "source" : "a091da4308856af0.txt",
+        "type" : "text/plain",
+        "size" : 18365
+      }, {
+        "uid" : "db055dab8cc1b57d",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website with no redirect URL check] - Received response",
+        "source" : "db055dab8cc1b57d.txt",
+        "type" : "text/plain",
+        "size" : 578
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "And fails trying to pay",
+      "time" : {
+        "start" : 1755241953720,
+        "stop" : 1755241953720,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Then the response contains the field description with value 'La seconda RPT non contiene solo 1 versamento'",
+      "time" : {
+        "start" : 1755241953720,
+        "stop" : 1755241953720,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 7,
+    "attachmentsCount" : 2,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "tag",
+    "value" : "nodo_invia_carrello_rpt"
+  }, {
+    "name" : "tag",
+    "value" : "runnable"
+  }, {
+    "name" : "tag",
+    "value" : "unhappy_path"
+  }, {
+    "name" : "feature",
+    "value" : "User pays a multibeneficiary payment carts on nodoInviaCarrelloRPT"
+  }, {
+    "name" : "framework",
+    "value" : "behave"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ "runnable", "nodo_invia_carrello_rpt", "unhappy_path" ]
+  },
+  "source" : "8c66efaf90c5b8a1.json",
+  "parameterValues" : [ ]
+}
