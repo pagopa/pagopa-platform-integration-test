@@ -1,0 +1,319 @@
+{
+  "uid" : "50ad413587330a55",
+  "name" : "User pays a cart with four RPTs with one transfer each one",
+  "fullName" : "User pays a payment carts without stamps on nodoInviaCarrelloRPT: User pays a cart with four RPTs with one transfer each one",
+  "historyId" : "00b76bb8e711c8edaf5c5e2c805a312c",
+  "time" : {
+    "start" : 1758785269353,
+    "stop" : 1758785296027,
+    "duration" : 26674
+  },
+  "status" : "failed",
+  "statusMessage" : "AssertionError: There are not events with business process receipt-ok.\n",
+  "statusTrace" : "  File \"/opt/hostedtoolcache/Python/3.13.7/x64/lib/python3.13/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.13.7/x64/lib/python3.13/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/bdd/wisp/steps/steps.py\", line 195, in user_redirected_to_checkout\n    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/wisp/steps_utils.py\", line 894, in check_wisp_session_timers_del_and_rts_were_sent\n    check_event(context, 'receipt-ok', 'status', 'RT_SEND_SUCCESS')\n    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/wisp/steps_utils.py\", line 400, in check_event\n    utils.assert_show_message(len(needed_process_events) > 0,\n    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                              f'There are not events with business process {business_process}.')\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/wisp/utils.py\", line 133, in assert_show_message\n    assert assertion_value, message\n           ^^^^^^^^^^^^^^^\n",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "failed",
+    "statusMessage" : "AssertionError: There are not events with business process receipt-ok.\n",
+    "statusTrace" : "  File \"/opt/hostedtoolcache/Python/3.13.7/x64/lib/python3.13/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.13.7/x64/lib/python3.13/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/bdd/wisp/steps/steps.py\", line 195, in user_redirected_to_checkout\n    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/wisp/steps_utils.py\", line 894, in check_wisp_session_timers_del_and_rts_were_sent\n    check_event(context, 'receipt-ok', 'status', 'RT_SEND_SUCCESS')\n    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/wisp/steps_utils.py\", line 400, in check_event\n    utils.assert_show_message(len(needed_process_events) > 0,\n    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                              f'There are not events with business process {business_process}.')\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/wisp/utils.py\", line 133, in assert_show_message\n    assert assertion_value, message\n           ^^^^^^^^^^^^^^^\n",
+    "steps" : [ {
+      "name" : "Given systems up",
+      "time" : {
+        "start" : 1758785269353,
+        "stop" : 1758785270069,
+        "duration" : 716
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Given a cart of RPTs non-multibeneficiary",
+      "time" : {
+        "start" : 1758785270069,
+        "stop" : 1758785270070,
+        "duration" : 1
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 1 transfers of which none are stamps",
+      "time" : {
+        "start" : 1758785270070,
+        "stop" : 1758785270070,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 1 transfers of which none are stamps",
+      "time" : {
+        "start" : 1758785270070,
+        "stop" : 1758785270070,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 1 transfers of which none are stamps",
+      "time" : {
+        "start" : 1758785270070,
+        "stop" : 1758785270070,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 1 transfers of which none are stamps",
+      "time" : {
+        "start" : 1758785270071,
+        "stop" : 1758785270071,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "When the user tries to pay a cart of RPTs on EC website",
+      "time" : {
+        "start" : 1758785270071,
+        "stop" : 1758785270628,
+        "duration" : 557
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "17bc3c33bb413f93",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Sent request",
+        "source" : "17bc3c33bb413f93.txt",
+        "type" : "text/plain",
+        "size" : 28969
+      }, {
+        "uid" : "33656cb380fdad31",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Received response",
+        "source" : "33656cb380fdad31.txt",
+        "type" : "text/plain",
+        "size" : 409
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "Then the user is redirected on Checkout completing the payment",
+      "time" : {
+        "start" : 1758785270629,
+        "stop" : 1758785296026,
+        "duration" : 25397
+      },
+      "status" : "failed",
+      "statusMessage" : "AssertionError: There are not events with business process receipt-ok.\n",
+      "statusTrace" : "  File \"/opt/hostedtoolcache/Python/3.13.7/x64/lib/python3.13/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.13.7/x64/lib/python3.13/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/bdd/wisp/steps/steps.py\", line 195, in user_redirected_to_checkout\n    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/wisp/steps_utils.py\", line 894, in check_wisp_session_timers_del_and_rts_were_sent\n    check_event(context, 'receipt-ok', 'status', 'RT_SEND_SUCCESS')\n    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/wisp/steps_utils.py\", line 400, in check_event\n    utils.assert_show_message(len(needed_process_events) > 0,\n    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                              f'There are not events with business process {business_process}.')\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/wisp/utils.py\", line 133, in assert_show_message\n    assert assertion_value, message\n           ^^^^^^^^^^^^^^^\n",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "d57d56a22d142deb",
+        "name" : "Received response",
+        "source" : "d57d56a22d142deb.attach",
+        "type" : "text/plain",
+        "size" : 131
+      }, {
+        "uid" : "b532d44640d4eaa8",
+        "name" : "Step: [the user is redirected on Checkout completing the payment]: on IUV: [806431310075945] - Received response",
+        "source" : "b532d44640d4eaa8.txt",
+        "type" : "text/plain",
+        "size" : 67994
+      }, {
+        "uid" : "2542b6315de42a39",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Sent request",
+        "source" : "2542b6315de42a39.txt",
+        "type" : "text/plain",
+        "size" : 362
+      }, {
+        "uid" : "3be1bd5b7dbb3f",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Received response",
+        "source" : "3be1bd5b7dbb3f.txt",
+        "type" : "text/plain",
+        "size" : 578
+      }, {
+        "uid" : "549aaa1e54db9c60",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Sent request",
+        "source" : "549aaa1e54db9c60.txt",
+        "type" : "text/plain",
+        "size" : 821
+      }, {
+        "uid" : "334c7158e16aa0ef",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Received response",
+        "source" : "334c7158e16aa0ef.txt",
+        "type" : "text/plain",
+        "size" : 953
+      }, {
+        "uid" : "8c5ea7651c53a234",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Sent request",
+        "source" : "8c5ea7651c53a234.txt",
+        "type" : "text/plain",
+        "size" : 820
+      }, {
+        "uid" : "297f4c5b91c29f60",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Received response",
+        "source" : "297f4c5b91c29f60.txt",
+        "type" : "text/plain",
+        "size" : 949
+      }, {
+        "uid" : "d05d9579bddf5027",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Sent request",
+        "source" : "d05d9579bddf5027.txt",
+        "type" : "text/plain",
+        "size" : 821
+      }, {
+        "uid" : "a5d3e59f241268a7",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Received response",
+        "source" : "a5d3e59f241268a7.txt",
+        "type" : "text/plain",
+        "size" : 953
+      }, {
+        "uid" : "720b3a9b88de08cb",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Sent request",
+        "source" : "720b3a9b88de08cb.txt",
+        "type" : "text/plain",
+        "size" : 821
+      }, {
+        "uid" : "be34de2c9feb9097",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Received response",
+        "source" : "be34de2c9feb9097.txt",
+        "type" : "text/plain",
+        "size" : 953
+      }, {
+        "uid" : "47fa1ed92615e17b",
+        "name" : "Step: [the user is redirected on Checkout completing the payment]: on IUV: [806431310075945] - Received response",
+        "source" : "47fa1ed92615e17b.txt",
+        "type" : "text/plain",
+        "size" : 77374
+      }, {
+        "uid" : "283d1668e46b12dd",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Sent request",
+        "source" : "283d1668e46b12dd.txt",
+        "type" : "text/plain",
+        "size" : 1357
+      }, {
+        "uid" : "5b87ade4fa1ccd4a",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Received response",
+        "source" : "5b87ade4fa1ccd4a.txt",
+        "type" : "text/plain",
+        "size" : 104
+      }, {
+        "uid" : "13596ea9cff259e7",
+        "name" : "Step: [the user is redirected on Checkout completing the payment]: on IUV: [806431310075945] - Received response",
+        "source" : "13596ea9cff259e7.txt",
+        "type" : "text/plain",
+        "size" : 129799
+      }, {
+        "uid" : "d08cd305f0d666dc",
+        "name" : "Step: [the user is redirected on Checkout completing the payment]: on IUV: [378620763305156] - Received response",
+        "source" : "d08cd305f0d666dc.txt",
+        "type" : "text/plain",
+        "size" : 129799
+      }, {
+        "uid" : "7df7a4744c1509ec",
+        "name" : "Step: [the user is redirected on Checkout completing the payment]: on IUV: [114024271663240] - Received response",
+        "source" : "7df7a4744c1509ec.txt",
+        "type" : "text/plain",
+        "size" : 129799
+      }, {
+        "uid" : "6f98af65e384aa9c",
+        "name" : "Step: [the user is redirected on Checkout completing the payment]: on IUV: [493294787076809] - Received response",
+        "source" : "6f98af65e384aa9c.txt",
+        "type" : "text/plain",
+        "size" : 129799
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 19,
+      "shouldDisplayMessage" : true,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 8,
+    "attachmentsCount" : 21,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "tag",
+    "value" : "happy_path"
+  }, {
+    "name" : "tag",
+    "value" : "nodo_invia_carrello_rpt"
+  }, {
+    "name" : "tag",
+    "value" : "runnable"
+  }, {
+    "name" : "feature",
+    "value" : "User pays a payment carts without stamps on nodoInviaCarrelloRPT"
+  }, {
+    "name" : "framework",
+    "value" : "behave"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ {
+      "name" : "Product defects",
+      "matchedStatuses" : [ ],
+      "flaky" : false
+    } ],
+    "tags" : [ "runnable", "nodo_invia_carrello_rpt", "happy_path" ]
+  },
+  "source" : "50ad413587330a55.json",
+  "parameterValues" : [ ]
+}
