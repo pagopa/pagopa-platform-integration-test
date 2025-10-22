@@ -1,8 +1,5 @@
 Feature: Managing a debt position
 
-  Background:
-    Given GPD running
-
   Scenario: Multiple Debt position creation
     Given a random iupd
     When the debt position items is created
