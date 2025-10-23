@@ -1,0 +1,258 @@
+{
+  "uid" : "3fb9f22bda061ac7",
+  "name" : "Scenario: User pays a cart with single RPT with one stamp that exists already in GPD",
+  "fullName" : "User pays a payment carts from existing payment position via nodoInviaCarrelloRPT: Scenario: User pays a cart with single RPT with one stamp that exists already in GPD",
+  "historyId" : "45edd8d9564ca836a31fbab586c8fde7",
+  "time" : {
+    "start" : 1761204112388,
+    "stop" : 1761204138325,
+    "duration" : 25937
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "Given systems up",
+      "time" : {
+        "start" : 1761204112388,
+        "stop" : 1761204113252,
+        "duration" : 864
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Given a cart of RPTs non-multibeneficiary",
+      "time" : {
+        "start" : 1761204113253,
+        "stop" : 1761204113253,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 2 transfers of which 1 are stamps",
+      "time" : {
+        "start" : 1761204113253,
+        "stop" : 1761204113253,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID",
+      "time" : {
+        "start" : 1761204113253,
+        "stop" : 1761204113780,
+        "duration" : 527
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "1bf7de995ccc1a91",
+        "name" : "Step: [an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID] - Sent request",
+        "source" : "1bf7de995ccc1a91.txt",
+        "type" : "text/plain",
+        "size" : 1696
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 1,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "When the user tries to pay a cart of RPTs on EC website",
+      "time" : {
+        "start" : 1761204113780,
+        "stop" : 1761204114225,
+        "duration" : 445
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "7b3638c05b1cb582",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Sent request",
+        "source" : "7b3638c05b1cb582.txt",
+        "type" : "text/plain",
+        "size" : 9082
+      }, {
+        "uid" : "19aea4fd8aee473f",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Received response",
+        "source" : "19aea4fd8aee473f.txt",
+        "type" : "text/plain",
+        "size" : 409
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "Then the user is redirected on Checkout completing the payment",
+      "time" : {
+        "start" : 1761204114225,
+        "stop" : 1761204135702,
+        "duration" : 21477
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "4876d78d20606c4a",
+        "name" : "Received response",
+        "source" : "4876d78d20606c4a.attach",
+        "type" : "text/plain",
+        "size" : 131
+      }, {
+        "uid" : "8ace1ae975d31e30",
+        "name" : "Step: [the user is redirected on Checkout completing the payment]: on IUV: [867285386500574] - Received response",
+        "source" : "8ace1ae975d31e30.txt",
+        "type" : "text/plain",
+        "size" : 31616
+      }, {
+        "uid" : "d0417e29cf4cff2e",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Sent request",
+        "source" : "d0417e29cf4cff2e.txt",
+        "type" : "text/plain",
+        "size" : 167
+      }, {
+        "uid" : "64b8cffb49efdcc4",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Received response",
+        "source" : "64b8cffb49efdcc4.txt",
+        "type" : "text/plain",
+        "size" : 242
+      }, {
+        "uid" : "d6c3b6bb1ee287ef",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Sent request",
+        "source" : "d6c3b6bb1ee287ef.txt",
+        "type" : "text/plain",
+        "size" : 821
+      }, {
+        "uid" : "9521035a5a323849",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Received response",
+        "source" : "9521035a5a323849.txt",
+        "type" : "text/plain",
+        "size" : 1461
+      }, {
+        "uid" : "5e7baa04d3c050db",
+        "name" : "Step: [the user is redirected on Checkout completing the payment]: on IUV: [867285386500574] - Received response",
+        "source" : "5e7baa04d3c050db.txt",
+        "type" : "text/plain",
+        "size" : 33961
+      }, {
+        "uid" : "f666bd1fe5db1552",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Sent request",
+        "source" : "f666bd1fe5db1552.txt",
+        "type" : "text/plain",
+        "size" : 1252
+      }, {
+        "uid" : "8a8ba46f346a7087",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] - Received response",
+        "source" : "8a8ba46f346a7087.txt",
+        "type" : "text/plain",
+        "size" : 104
+      }, {
+        "uid" : "19a7861d1173309d",
+        "name" : "Step: [the user is redirected on Checkout completing the payment]: on IUV: [867285386500574] - Received response",
+        "source" : "19a7861d1173309d.txt",
+        "type" : "text/plain",
+        "size" : 73245
+      }, {
+        "uid" : "899b68efe854d9be",
+        "name" : "Step: [the user is redirected on Checkout completing the payment] on IUV: [867285386500574] - Received response",
+        "source" : "899b68efe854d9be.txt",
+        "type" : "text/plain",
+        "size" : 2989
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 11,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "And the debt position is closed",
+      "time" : {
+        "start" : 1761204135702,
+        "stop" : 1761204138325,
+        "duration" : 2623
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "306644c539ae283e",
+        "name" : "Step: [the debt position is closed]: on IUV: [867285386500574] - Received response",
+        "source" : "306644c539ae283e.txt",
+        "type" : "text/plain",
+        "size" : 73245
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 1,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 7,
+    "attachmentsCount" : 15,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "tag",
+    "value" : "happy_path"
+  }, {
+    "name" : "tag",
+    "value" : "nodo_invia_carrello_rpt"
+  }, {
+    "name" : "tag",
+    "value" : "runnable"
+  }, {
+    "name" : "feature",
+    "value" : "User pays a payment carts from existing payment position via nodoInviaCarrelloRPT"
+  }, {
+    "name" : "framework",
+    "value" : "behave"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ "runnable", "nodo_invia_carrello_rpt", "happy_path" ]
+  },
+  "source" : "3fb9f22bda061ac7.json",
+  "parameterValues" : [ ]
+}
