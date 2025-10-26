@@ -1,0 +1,219 @@
+{
+  "uid" : "bf191e46a6579098",
+  "name" : "User tries to pay a cart with two RPTs that was inserted from ACA and is in valid state",
+  "fullName" : "User pays a payment carts from existing payment position via nodoInviaCarrelloRPT: User tries to pay a cart with two RPTs that was inserted from ACA and is in valid state",
+  "historyId" : "b6304a8ae53c27dca5eaa74122558cfe",
+  "time" : {
+    "start" : 1761463277071,
+    "stop" : 1761463283094,
+    "duration" : 6023
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "Given systems up",
+      "time" : {
+        "start" : 1761463277072,
+        "stop" : 1761463277971,
+        "duration" : 899
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Given a cart of RPTs non-multibeneficiary",
+      "time" : {
+        "start" : 1761463277971,
+        "stop" : 1761463277971,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 1 transfers of which none are stamps",
+      "time" : {
+        "start" : 1761463277971,
+        "stop" : 1761463277972,
+        "duration" : 1
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 1 transfers of which none are stamps",
+      "time" : {
+        "start" : 1761463277972,
+        "stop" : 1761463277972,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And an existing payment position related to first RPT with segregation code equals to 01 and state equals to VALID",
+      "time" : {
+        "start" : 1761463277972,
+        "stop" : 1761463278457,
+        "duration" : 485
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "574e7f2065af27b9",
+        "name" : "Step: [an existing payment position related to first RPT with segregation code equals to 01 and state equals to VALID] - Sent request",
+        "source" : "574e7f2065af27b9.txt",
+        "type" : "text/plain",
+        "size" : 1259
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 1,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "When the user tries to pay a cart of RPTs on EC website",
+      "time" : {
+        "start" : 1761463278457,
+        "stop" : 1761463279128,
+        "duration" : 671
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "af9923b8f40ed7ba",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Sent request",
+        "source" : "af9923b8f40ed7ba.txt",
+        "type" : "text/plain",
+        "size" : 15123
+      }, {
+        "uid" : "cfd40695e758f5f1",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Received response",
+        "source" : "cfd40695e758f5f1.txt",
+        "type" : "text/plain",
+        "size" : 409
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "Then conversion to new model fails in wisp-converter",
+      "time" : {
+        "start" : 1761463279128,
+        "stop" : 1761463280429,
+        "duration" : 1301
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "23e3779dd01b3d5e",
+        "name" : "Step: [conversion to new model fails in wisp-converter]: on sessionId: [7e84c5b8-46a7-4518-916d-4bc95558acd4] - Received response",
+        "source" : "23e3779dd01b3d5e.txt",
+        "type" : "text/plain",
+        "size" : 5807
+      }, {
+        "uid" : "889f68e477ec69cf",
+        "name" : "Received response",
+        "source" : "889f68e477ec69cf.attach",
+        "type" : "text/html",
+        "size" : 5677
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "And the KO receipt is sent",
+      "time" : {
+        "start" : 1761463280430,
+        "stop" : 1761463283094,
+        "duration" : 2664
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "5766ef16a7d5b9eb",
+        "name" : "Step: [the KO receipt is sent]: on IUV: [803750664462867] - Received response",
+        "source" : "5766ef16a7d5b9eb.txt",
+        "type" : "text/plain",
+        "size" : 53265
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 1,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 8,
+    "attachmentsCount" : 6,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "tag",
+    "value" : "nodo_invia_carrello_rpt"
+  }, {
+    "name" : "tag",
+    "value" : "runnable"
+  }, {
+    "name" : "tag",
+    "value" : "unhappy_path"
+  }, {
+    "name" : "feature",
+    "value" : "User pays a payment carts from existing payment position via nodoInviaCarrelloRPT"
+  }, {
+    "name" : "framework",
+    "value" : "behave"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ "runnable", "nodo_invia_carrello_rpt", "unhappy_path" ]
+  },
+  "source" : "bf191e46a6579098.json",
+  "parameterValues" : [ ]
+}
