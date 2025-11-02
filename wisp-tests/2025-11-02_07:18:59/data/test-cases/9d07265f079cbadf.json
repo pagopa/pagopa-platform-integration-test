@@ -1,0 +1,229 @@
+{
+  "uid" : "9d07265f079cbadf",
+  "name" : "User tries to pay a cart with two RPTs that was inserted from ACA and is in invalid state",
+  "fullName" : "User pays a payment carts from existing payment position via nodoInviaCarrelloRPT: User tries to pay a cart with two RPTs that was inserted from ACA and is in invalid state",
+  "historyId" : "70b512270710566c12efcc799c2d1fda",
+  "time" : {
+    "start" : 1762068136724,
+    "stop" : 1762068142520,
+    "duration" : 5796
+  },
+  "status" : "failed",
+  "statusMessage" : "AssertionError: There is no error matching the one searched in the field_name: operation_error_code\n",
+  "statusTrace" : "  File \"/opt/hostedtoolcache/Python/3.14.0/x64/lib/python3.14/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.14.0/x64/lib/python3.14/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/bdd/wisp/steps/steps.py\", line 235, in debt_position_invalid\n    steputils.check_debt_position_invalid_and_sent_ko_receipt(context)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/wisp/steps_utils.py\", line 959, in check_debt_position_invalid_and_sent_ko_receipt\n    raise AssertionError('There is no error matching the one searched in the field_name: operation_error_code')\n",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "failed",
+    "statusMessage" : "AssertionError: There is no error matching the one searched in the field_name: operation_error_code\n",
+    "statusTrace" : "  File \"/opt/hostedtoolcache/Python/3.14.0/x64/lib/python3.14/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.14.0/x64/lib/python3.14/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/bdd/wisp/steps/steps.py\", line 235, in debt_position_invalid\n    steputils.check_debt_position_invalid_and_sent_ko_receipt(context)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/wisp/steps_utils.py\", line 959, in check_debt_position_invalid_and_sent_ko_receipt\n    raise AssertionError('There is no error matching the one searched in the field_name: operation_error_code')\n",
+    "steps" : [ {
+      "name" : "Given systems up",
+      "time" : {
+        "start" : 1762068136724,
+        "stop" : 1762068137592,
+        "duration" : 868
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Given a cart of RPTs non-multibeneficiary",
+      "time" : {
+        "start" : 1762068137592,
+        "stop" : 1762068137592,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 1 transfers of which none are stamps",
+      "time" : {
+        "start" : 1762068137592,
+        "stop" : 1762068137593,
+        "duration" : 1
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And a single RPT of type BBT with 1 transfers of which none are stamps",
+      "time" : {
+        "start" : 1762068137593,
+        "stop" : 1762068137593,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT",
+      "time" : {
+        "start" : 1762068137593,
+        "stop" : 1762068138040,
+        "duration" : 447
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "babd265b3441b9ed",
+        "name" : "Step: [an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT] - Sent request",
+        "source" : "babd265b3441b9ed.txt",
+        "type" : "text/plain",
+        "size" : 1256
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 1,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "When the user tries to pay a cart of RPTs on EC website",
+      "time" : {
+        "start" : 1762068138040,
+        "stop" : 1762068138655,
+        "duration" : 615
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "fd0232c4cc8b9acd",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Sent request",
+        "source" : "fd0232c4cc8b9acd.txt",
+        "type" : "text/plain",
+        "size" : 15119
+      }, {
+        "uid" : "ce5bdd19770ef891",
+        "name" : "Step: [the user tries to pay a cart of RPTs on EC website] - Received response",
+        "source" : "ce5bdd19770ef891.txt",
+        "type" : "text/plain",
+        "size" : 409
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "Then conversion to new model fails in wisp-converter",
+      "time" : {
+        "start" : 1762068138656,
+        "stop" : 1762068139880,
+        "duration" : 1224
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "5867e018fd0bd551",
+        "name" : "Step: [conversion to new model fails in wisp-converter]: on sessionId: [e897de8a-0986-4e26-9a54-127202434825] - Received response",
+        "source" : "5867e018fd0bd551.txt",
+        "type" : "text/plain",
+        "size" : 5807
+      }, {
+        "uid" : "97c3ec9384e47d99",
+        "name" : "Received response",
+        "source" : "97c3ec9384e47d99.attach",
+        "type" : "text/html",
+        "size" : 5677
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 2,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "And the KO receipt is sent",
+      "time" : {
+        "start" : 1762068139880,
+        "stop" : 1762068142520,
+        "duration" : 2640
+      },
+      "status" : "failed",
+      "statusMessage" : "AssertionError: There is no error matching the one searched in the field_name: operation_error_code\n",
+      "statusTrace" : "  File \"/opt/hostedtoolcache/Python/3.14.0/x64/lib/python3.14/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.14.0/x64/lib/python3.14/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/bdd/wisp/steps/steps.py\", line 235, in debt_position_invalid\n    steputils.check_debt_position_invalid_and_sent_ko_receipt(context)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/wisp/steps_utils.py\", line 959, in check_debt_position_invalid_and_sent_ko_receipt\n    raise AssertionError('There is no error matching the one searched in the field_name: operation_error_code')\n",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "fa55728ca67dfe8e",
+        "name" : "Step: [the KO receipt is sent]: on IUV: [193356377810614] - Received response",
+        "source" : "fa55728ca67dfe8e.txt",
+        "type" : "text/plain",
+        "size" : 55769
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 1,
+      "shouldDisplayMessage" : true,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 8,
+    "attachmentsCount" : 6,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "tag",
+    "value" : "nodo_invia_carrello_rpt"
+  }, {
+    "name" : "tag",
+    "value" : "runnable"
+  }, {
+    "name" : "tag",
+    "value" : "unhappy_path"
+  }, {
+    "name" : "feature",
+    "value" : "User pays a payment carts from existing payment position via nodoInviaCarrelloRPT"
+  }, {
+    "name" : "framework",
+    "value" : "behave"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ {
+      "name" : "Product defects",
+      "matchedStatuses" : [ ],
+      "flaky" : false
+    } ],
+    "tags" : [ "runnable", "nodo_invia_carrello_rpt", "unhappy_path" ]
+  },
+  "source" : "9d07265f079cbadf.json",
+  "parameterValues" : [ ]
+}
