@@ -49,3 +49,7 @@ def before_all(context):
 def before_scenario(context, scenario):
     """Reset dello stato condiviso prima di ogni scenario."""
     context.response = None
+    context.cart_id = None
+    context.notice_code = None
+    context.fiscal_code = None
+    context.location = None
