@@ -59,8 +59,7 @@ I test si lanciano dalla **root del repository** (`pagopa-platform-integration-t
 ### Solo output a terminale
 
 ```bash
-behave src/bdd/cart -D env=dev --no-capture --format progress
-behave src/bdd/cart -D env=uat --no-capture --format progress
+behave src/bdd/cart -D env=<environment> -f allure_behave.formatter:AllureFormatter -o reports\allure-results\<suite>-tests-<environment> -f progress
 ```
 
 ### Con Allure (consigliata)
@@ -86,14 +85,14 @@ behave src/bdd/cart -D env=dev -f allure_behave.formatter:AllureFormatter -o rep
 
 Il comando da usare dipende dalla versione di Allure CLI installata:
 
-```bash
+```powershell
 allure --version   # verifica la versione
 ```
 
 | Versione Allure CLI | Comando                                                                   |
 |---------------------|---------------------------------------------------------------------------|
 | **2.x** (legacy)    | `allure serve reports/allure-results/cart-dev --port 5300`                |
-| **3.x** (corrente)  | `allure serve reports/allure-results/cart-dev --port 5300`                |
+| **3.x** (corrente)  | `allure open reports/allure-results/cart-dev --port 5300`                |
 
 > In Allure 3.x i comandi `allure serve` e `allure open` sono equivalenti.
 > Entrambi generano il report HTML in una directory temporanea, avviano un server locale
