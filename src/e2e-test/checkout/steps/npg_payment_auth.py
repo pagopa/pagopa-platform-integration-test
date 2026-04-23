@@ -1,5 +1,4 @@
 import logging
-import json
 from behave import given, when, then
 from helper import _get_page, _get_required_env, _generate_random_notice_code, _perform_mock_login, _locate_and_click, _get_required_json_env
 
@@ -175,7 +174,7 @@ def _fill_card_data_form(page, card_data):
 
     # Select PSP radio button
     logger.info("Selecting PSP with id: %s", psp_id)
-    _locate_and_click(page,f"#psp-radio-{psp_id}")
+    _locate_and_click(page,f"#{psp_id}")
 
     # Click PSP list continue button
     _locate_and_click(page,"#paymentPspListPageButtonContinue")

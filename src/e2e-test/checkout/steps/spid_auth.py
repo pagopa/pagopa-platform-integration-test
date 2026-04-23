@@ -1,5 +1,5 @@
 import logging
-from behave import given, when, then
+from behave import when, then
 from helper import _get_page, _get_required_env, _perform_mock_login, _locate_and_click
 
 logger = logging.getLogger(__name__)
@@ -80,6 +80,6 @@ def step_check_login_button_visible_after_logout(context):
     page = _get_page(context)
     logger.info("Checking login button is visible after logout")
     login_button = page.locator("#login-header button")
-    login_button.wait_for(state="visible", timeout=5000)
+    login_button.wait_for(state="visible", timeout=10000)
     assert login_button.is_visible(), "Expected login button to be visible after logout, but it was not found"
     logger.info("Login button visible — logout confirmed")

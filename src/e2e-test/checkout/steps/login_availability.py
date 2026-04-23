@@ -1,6 +1,5 @@
-import os
 import logging
-from behave import given, when, then
+from behave import when, then
 from helper import _get_page, _get_required_env, _generate_random_notice_code, _locate_and_click
 
 logger = logging.getLogger(__name__)

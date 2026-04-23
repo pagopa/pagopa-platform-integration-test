@@ -2,7 +2,6 @@ import os
 import random
 import logging
 import json
-from pydoc import cli
 
 logger = logging.getLogger(__name__)
 

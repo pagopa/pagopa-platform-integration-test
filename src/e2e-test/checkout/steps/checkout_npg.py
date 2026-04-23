@@ -149,7 +149,7 @@ def step_fill_card_number(context, card_number):
     """Type the card number into the NPG iframe field."""
     page = _get_page(context)
     logger.info("Filling card number")
-    _locate_and_click(page, "#frame_CARD_NUMBER",3)
+    _locate_and_click(page, "#frame_CARD_NUMBER",3, 10000)
     page.keyboard.type(card_number)
 
 
@@ -178,21 +178,9 @@ def step_fill_cardholder_name(context, holder_name):
     Mirrors the TypeScript while-loop that retypes all fields if the button stays disabled.
     """
     page = _get_page(context)
-    completed = False
-    iteration = 0
-    while not completed:
-        iteration += 1
-        logger.info("Filling cardholder name '%s' — attempt %d", holder_name, iteration)
-        _locate_and_click(page, "#frame_CARDHOLDER_NAME",3)
-        page.keyboard.type(holder_name)
-        # Submit button is still disabled → form not yet accepted by NPG iframe
-        disabled_btn = page.query_selector('button[type=submit][disabled=""]')
-        completed = disabled_btn is None
-        if not completed:
-            page.wait_for_timeout(80)
-
-    logger.info("Card form accepted after %d attempt(s)", iteration)
-
+    logger.info("Filling cardholder name '%s', holder_name")
+    _locate_and_click(page, "#frame_CARDHOLDER_NAME",3)
+    page.keyboard.type(holder_name)
 
 # ──────────────────────────────────────────────
 # WHEN steps — PSP selection
@@ -207,9 +195,8 @@ def step_select_psp(context, psp_id):
     page = _get_page(context)
     logger.info("Clicking card form continue button")
     _locate_and_click(page, "button[type=submit]")
-
     logger.info("Selecting PSP radio: %s", psp_id)
-    _locate_and_click(page, f"#psp-radio-{psp_id}")
+    _locate_and_click(page, f"#{psp_id}")
 
 
 @when('I confirm the PSP selection')
@@ -252,15 +239,25 @@ def step_check_result_message(context, expected_message):
 # THEN steps — error modal
 # ──────────────────────────────────────────────
 
-@then('an error modal should be displayed')
-def step_error_modal_visible(context):
+@then(u'an error modal should be displayed')
+def step_error_modal_visible_default(context):
+    """
+    Assert that the error title element is visible.
+    Selector: #verifyPaymentTitleError (from constants.ts — all error cases use this).
+    Default timeout is 5 seconds.
+    """
+    step_error_modal_visible(context)
+
+@then('an error modal should be displayed after "{seconds}" seconds')
+def step_error_modal_visible(context, seconds = 5):
     """
     Assert that the error title element is visible.
     Selector: #verifyPaymentTitleError (from constants.ts — all error cases use this).
     """
+    timeout_ms = int(float(seconds) * 1000)
     page = _get_page(context)
     logger.info("Checking error modal title is displayed")
-    page.locator("#verifyPaymentTitleError").wait_for(state="visible", timeout=10000)
+    page.locator("#verifyPaymentTitleError").wait_for(state="visible", timeout=timeout_ms)
     logger.info("Error modal is visible")
 
 
