@@ -1,8 +1,5 @@
 # Analisi Tecnica — API Tests BDD (Python/Behave)
 
-Repository: `pagopa-platform-integration-test`  
-Cartella analizzata: `src/bdd/`
-
 ---
 
 ## 1. Tecnologia e Architettura

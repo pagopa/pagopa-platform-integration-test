@@ -1,8 +1,5 @@
 # Analisi Tecnica — API Tests Checkout (Newman/Postman)
 
-Repository sorgente: `pagopa-checkout-tests`  
-Cartella analizzata: `api-tests/`
-
 ---
 
 ## 1. Tecnologia e Architettura
