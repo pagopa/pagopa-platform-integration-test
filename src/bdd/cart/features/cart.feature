@@ -1,6 +1,6 @@
 # language: en
 Feature: Cart API - Payment cart creation
-  As a content creditor (EC)
+  As an Ente Creditore (EC)
   I want to create a payment cart through the PagoPA Checkout API
   In order to start the payment flow and get a checkout redirect
 
