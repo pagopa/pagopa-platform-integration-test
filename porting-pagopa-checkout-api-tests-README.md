@@ -92,7 +92,7 @@ allure --version   # verifica la versione
 | Versione Allure CLI | Comando                                                                   |
 |---------------------|---------------------------------------------------------------------------|
 | **2.x** (legacy)    | `allure serve reports/allure-results/cart-dev --port 5300`                |
-| **3.x** (corrente)  | `allure open reports/allure-results/cart-dev --port 5300`                |
+| **3.x** (corrente)  | `allure open reports/allure-results/cart-dev --port 5300`                 |
 
 > In Allure 3.x i comandi `allure serve` e `allure open` sono equivalenti.
 > Entrambi generano il report HTML in una directory temporanea, avviano un server locale
