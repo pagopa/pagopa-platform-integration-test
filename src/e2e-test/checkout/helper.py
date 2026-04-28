@@ -2,6 +2,7 @@ import os
 import random
 import logging
 import json
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 logger = logging.getLogger(__name__)
 
@@ -57,5 +58,18 @@ def _perform_mock_login(page):
 
 def _locate_and_click(page, locator, click_count=1, timeout=5000):
     to_click = page.locator(locator)
-    to_click.wait_for(state="visible", timeout=timeout)
-    to_click.click(click_count=click_count)
+    try:
+        to_click.wait_for(state="visible", timeout=timeout)
+        to_click.click(click_count=click_count)
+    except PlaywrightTimeoutError as exc:
+        current_url = ""
+        try:
+            current_url = page.url
+        except Exception :
+            current_url = "<unavailable>"
+
+        logger.error("Timeout waiting for %s after %d ms at page %s", locator, timeout, current_url)
+        raise RuntimeError(
+            f"Timeout on locator '{locator}' after {timeout} ms (url: {current_url})"
+        ) from exc
+
