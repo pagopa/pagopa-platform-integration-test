@@ -1,5 +1,5 @@
 Feature: Auth service
-  Validate the auth-service flows migrated from the legacy checkout api tests.
+  Validate the auth-service flows
 
   Background:
     Given that checkout host is configured through environment variable

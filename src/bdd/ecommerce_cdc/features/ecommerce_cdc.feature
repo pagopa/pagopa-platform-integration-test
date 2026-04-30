@@ -1,13 +1,7 @@
 # language: en
 Feature: eCommerce CDC service
   Validate the eCommerce CDC (Change Data Capture) service by driving the full Checkout
-  payment flow and verifying that each transaction status change is correctly propagated
-  through the CDC pipeline.
-
-  Tests migrated from the Postman collection "eCommerce CDC service".
-
-  The flow polls GET /transactions after each mutating operation to confirm async CDC
-  propagation before moving to the next step.
+  payment flow
 
   Background:
     Given the eCommerce CDC environment variables are configured
