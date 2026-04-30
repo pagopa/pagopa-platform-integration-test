@@ -162,27 +162,27 @@ def step_full_npg_auth_flow(context):
 # Action (When) steps — Payment Verify
 # ---------------------------------------------------------------------------
 
-@when("I verify the payment request for the valid notice code")
+@when("the user verifies the payment for the valid notice code")
 def step_verify_valid_payment(context):
     fiscal_code = get_required_env("VALID_FISCAL_CODE_PA")
     context.response = verify_payment(fiscal_code, context.notice_code)
 
 
-@when("I verify the payment request for the unknown domain notice code")
+@when("the user verifies the payment for the unknown domain notice code")
 def step_verify_unknown_domain(context):
     fiscal_code = get_required_env("UNKNOWN_FISCAL_CODE_PA")
     notice_code = get_required_env("UNKNOWN_NOTICE_CODE")
     context.response = verify_payment(fiscal_code, notice_code)
 
 
-@when("I verify the payment request for the unknown station notice code")
+@when("the user verifies the payment for the unknown station notice code")
 def step_verify_unknown_station(context):
     fiscal_code = get_required_env("UNKNOWN_STAZIONE_FISCAL_CODE_PA")
     notice_code = get_required_env("UNKNOWN_STAZIONE_NOTICE_CODE")
     context.response = verify_payment(fiscal_code, notice_code)
 
 
-@when("I verify the cached payment request")
+@when("the user verifies the cached payment")
 def step_verify_cached_payment(context):
     fiscal_code = get_required_env("VALID_FISCAL_CODE_PA")
     context.response = verify_payment(fiscal_code, context.notice_code)
@@ -192,22 +192,22 @@ def step_verify_cached_payment(context):
 # Action (When) steps — Payment Methods
 # ---------------------------------------------------------------------------
 
-@when("I get all payment methods v1")
+@when("the user retrieves all payment methods v1")
 def step_get_payment_methods_v1(context):
     context.response = get_all_payment_methods_v1()
 
 
-@when("I post all payment methods v2")
+@when("the user retrieves all payment methods v2")
 def step_post_payment_methods_v2(context):
     context.response = get_all_payment_methods_v2()
 
 
-@when("I get the credit card payment method details")
+@when("the user retrieves the credit card payment method details")
 def step_get_payment_method_details(context):
     context.response = get_payment_method_details(context.payment_method_id)
 
 
-@when("I compute the fee for credit card payment")
+@when("the user computes the fee for credit card payment")
 def step_compute_fee(context):
     context.response = compute_fee(
         method_id=context.payment_method_id,
@@ -220,7 +220,7 @@ def step_compute_fee(context):
 # Action (When) steps — Sessions
 # ---------------------------------------------------------------------------
 
-@when('I create an NPG card session with language "{lang}"')
+@when('the user creates an NPG card session with language "{lang}"')
 def step_create_session_with_lang(context, lang):
     context.response = create_session(context.payment_method_id, language=lang)
     if context.response.status_code == 200:
@@ -232,7 +232,7 @@ def step_create_session_with_lang(context, lang):
 # Action (When) steps — Transactions
 # ---------------------------------------------------------------------------
 
-@when("I create a transaction without order id")
+@when("the user creates a transaction without order id")
 def step_create_transaction_without_order_id(context):
     fiscal_code = get_required_env("VALID_FISCAL_CODE_PA")
     context.response = create_transaction_without_order_id(
@@ -242,7 +242,7 @@ def step_create_transaction_without_order_id(context):
     )
 
 
-@when("I create a transaction with mixed case email")
+@when("the user creates a transaction with mixed case email")
 def step_create_transaction_mixed_case_email(context):
     fiscal_code = get_required_env("VALID_FISCAL_CODE_PA")
     context.response = create_transaction(
@@ -256,7 +256,7 @@ def step_create_transaction_mixed_case_email(context):
         _save_transaction_data(context, context.response.json())
 
 
-@when("I create a transaction with standard email")
+@when("the user creates a transaction with standard email")
 def step_create_transaction_standard_email(context):
     fiscal_code = get_required_env("VALID_FISCAL_CODE_PA")
     context.response = create_transaction(
@@ -270,22 +270,22 @@ def step_create_transaction_standard_email(context):
         _save_transaction_data(context, context.response.json())
 
 
-@when("I delete the transaction")
+@when("the user deletes the transaction")
 def step_delete_transaction(context):
     context.response = delete_transaction(context.transaction_id, context.auth_token)
 
 
-@when("I get the transaction by id v1")
+@when("the user retrieves the transaction by id v1")
 def step_get_transaction_v1(context):
     context.response = get_transaction_v1(context.transaction_id, context.auth_token)
 
 
-@when("I get the transaction by id v2")
+@when("the user retrieves the transaction by id v2")
 def step_get_transaction_v2(context):
     context.response = get_transaction_v2(context.transaction_id, context.auth_token)
 
 
-@when("I get the transaction outcomes v1")
+@when("the user retrieves the transaction outcomes v1")
 def step_get_transaction_outcomes(context):
     context.response = get_transaction_outcomes_v1(context.transaction_id, context.auth_token)
 
@@ -294,7 +294,7 @@ def step_get_transaction_outcomes(context):
 # Action (When) steps — Card Data
 # ---------------------------------------------------------------------------
 
-@when("I get the card data for the current session")
+@when("the user retrieves the card data for the current session")
 def step_get_card_data(context):
     context.response = get_card_data(
         payment_method_id=context.payment_method_id,
@@ -304,7 +304,7 @@ def step_get_card_data(context):
     )
 
 
-@when("I get the card data with a wrong order id")
+@when("the user retrieves the card data with a wrong order id")
 def step_get_card_data_wrong_order_id(context):
     context.response = get_card_data(
         payment_method_id=context.payment_method_id,
@@ -314,7 +314,7 @@ def step_get_card_data_wrong_order_id(context):
     )
 
 
-@when("I get the card data with a wrong transaction id")
+@when("the user retrieves the card data with a wrong transaction id")
 def step_get_card_data_wrong_transaction_id(context):
     context.response = get_card_data(
         payment_method_id=context.payment_method_id,
@@ -324,7 +324,7 @@ def step_get_card_data_wrong_transaction_id(context):
     )
 
 
-@when("I get the card data without auth token")
+@when("the user retrieves the card data without auth token")
 def step_get_card_data_no_token(context):
     context.response = get_card_data_without_token(
         payment_method_id=context.payment_method_id,
@@ -337,7 +337,7 @@ def step_get_card_data_no_token(context):
 # Action (When) steps — Authorization
 # ---------------------------------------------------------------------------
 
-@when('I request authorization without JWT token using language "{lang}"')
+@when('the user requests authorization without JWT token using language "{lang}"')
 def step_request_auth_no_token(context, lang):
     context.response = request_authorization_without_token(
         transaction_id=context.transaction_id,
@@ -348,7 +348,7 @@ def step_request_auth_no_token(context, lang):
     )
 
 
-@when('I request authorization with JWT token using language "{lang}"')
+@when('the user requests authorization with JWT token using language "{lang}"')
 def step_request_auth_with_token(context, lang):
     context.response = request_authorization(
         transaction_id=context.transaction_id,

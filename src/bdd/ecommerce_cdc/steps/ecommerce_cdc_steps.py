@@ -175,7 +175,7 @@ def step_cdc_fill_and_validate_card(context):
 # When — Action steps
 # ---------------------------------------------------------------------------
 
-@when("I create a CDC transaction with a static order id")
+@when("the user creates a CDC transaction with a static order id")
 def step_cdc_create_static_order_transaction(context):
     """
     Replica il prerequest del test 'Delete transaction' nella collection Postman:
@@ -193,12 +193,12 @@ def step_cdc_create_static_order_transaction(context):
     print(f"  -> Create transaction for delete: HTTP {context.response.status_code}")
 
 
-@when("I delete the CDC transaction")
+@when("the user deletes the CDC transaction")
 def step_cdc_delete_transaction(context):
     context.response = delete_transaction(context.transaction_id, context.auth_token)
 
 
-@when("I create a CDC NPG card session")
+@when("the user creates a CDC NPG card session")
 def step_cdc_create_session(context):
     context.response = create_session(context.payment_method_id, language="it")
     if context.response.status_code == 200:
@@ -206,7 +206,7 @@ def step_cdc_create_session(context):
         _save_session_data(context, session_data)
 
 
-@when("I create a CDC transaction for the current session")
+@when("the user creates a CDC transaction for the current session")
 def step_cdc_create_transaction_when(context):
     fiscal_code = get_required_env("VALID_FISCAL_CODE_PA")
     context.response = create_transaction(
@@ -219,12 +219,12 @@ def step_cdc_create_transaction_when(context):
         _save_transaction_data(context, context.response.json())
 
 
-@when("I get the CDC payment method details")
+@when("the user retrieves the CDC payment method details")
 def step_cdc_get_payment_method_details(context):
     context.response = get_payment_method_details(context.payment_method_id)
 
 
-@when("I compute the CDC fee for credit card payment")
+@when("the user computes the CDC fee for credit card payment")
 def step_cdc_compute_fee(context):
     context.response = compute_fee(
         method_id=context.payment_method_id,
@@ -233,12 +233,12 @@ def step_cdc_compute_fee(context):
     )
 
 
-@when("I get all CDC payment methods v1")
+@when("the user retrieves all CDC payment methods v1")
 def step_cdc_get_all_payment_methods(context):
     context.response = get_all_payment_methods_v1()
 
 
-@when("I request CDC authorization for the transaction")
+@when("the user requests CDC authorization for the transaction")
 def step_cdc_request_authorization(context):
     context.response = request_authorization(
         transaction_id=context.transaction_id,

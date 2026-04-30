@@ -40,21 +40,24 @@ def step_codice_fiscale(context, cod_fis: str):
 # When — Actions
 # ---------------------------------------------------------------------------
 
-@when('I send a POST to "{endpoint}" with cart data and email "{email}"')
-def step_post_cart_ok(context, endpoint: str, email: str):
+CART_ENDPOINT = "/checkout/ec/v1/carts"
+
+
+@when('the user submits a cart with email "{email}"')
+def step_post_cart_ok(context, email: str):
     body = build_cart_body(context.notice_code, context.fiscal_code, email)
-    context.response = post_cart(endpoint, body)
+    context.response = post_cart(CART_ENDPOINT, body)
 
 
-@when('I send a POST to "{endpoint}" with invalid body')
-def step_post_cart_ko_invalid(context, endpoint: str):
-    context.response = post_cart(endpoint, INVALID_CART_BODY)
+@when('the user submits a cart with an invalid body')
+def step_post_cart_ko_invalid(context):
+    context.response = post_cart(CART_ENDPOINT, INVALID_CART_BODY)
 
 
-@when('I send a POST to "{endpoint}" with {count:d} payment notices')
-def step_post_cart_ko_multiple(context, endpoint: str, count: int):
+@when('the user submits a cart with {count:d} payment notices')
+def step_post_cart_ko_multiple(context, count: int):
     body = build_multiple_notices_body()
-    context.response = post_cart(endpoint, body)
+    context.response = post_cart(CART_ENDPOINT, body)
 
 
 # ---------------------------------------------------------------------------
@@ -77,10 +80,10 @@ def step_verifica_header(context, header_name: str):
     setattr(context, header_name, header_value)
 
 
-@then('the CART_ID is extracted from the header "{header_name}"')
+@then('the cart id is extracted from the header "{header_name}"')
 def step_estrai_cart_id(context, header_name: str):
-    header_value = context.get(header_name)
+    header_value = getattr(context, header_name, None)
     assert header_value, f'Header "{header_name}" not present in response.'
     context.cart_id = header_value[header_value.rfind("/") + 1:]
-    assert context.cart_id, "CART_ID not extracted from Location header"
+    assert context.cart_id, "cart id not extracted from Location header"
     print(f"  → CART_ID extracted: {context.cart_id}")

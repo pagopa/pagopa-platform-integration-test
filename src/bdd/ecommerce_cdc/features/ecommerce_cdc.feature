@@ -1,13 +1,13 @@
 # language: en
-Feature: eCommerce CDC service — Integration tests
-  Validate the eCommerce CDC (Change Data Capture) service integration by driving
-  the full Checkout payment flow and verifying that each transaction status change
-  is correctly propagated through the CDC pipeline.
+Feature: eCommerce CDC service
+  Validate the eCommerce CDC (Change Data Capture) service by driving the full Checkout
+  payment flow and verifying that each transaction status change is correctly propagated
+  through the CDC pipeline.
 
   Tests migrated from the Postman collection "eCommerce CDC service".
 
-  The flow polls GET /transactions after each mutating operation to confirm
-  async CDC propagation before moving to the next step.
+  The flow polls GET /transactions after each mutating operation to confirm async CDC
+  propagation before moving to the next step.
 
   Background:
     Given the eCommerce CDC environment variables are configured
@@ -19,8 +19,8 @@ Feature: eCommerce CDC service — Integration tests
   @cdc @transaction @cancel @positive
   Scenario: ACTIVATED transaction is canceled and reaches CANCELED status
     Given a random CDC notice code is generated
-    When I create a CDC transaction with a static order id
-    And I delete the CDC transaction
+    When the user creates a CDC transaction with a static order id
+    And the user deletes the CDC transaction
     Then the CDC response has status code 202
     And the transaction status reaches "CANCELED" via polling
 
@@ -31,7 +31,7 @@ Feature: eCommerce CDC service — Integration tests
   @cdc @session @positive
   Scenario: NPG card session is created with expected card form fields
     Given the CDC credit card payment method id is resolved
-    When I create a CDC NPG card session
+    When the user creates a CDC NPG card session
     Then the CDC response has status code 200
     And the NPG session contains four card form fields
     And the NPG session has payment method CARDS
@@ -46,7 +46,7 @@ Feature: eCommerce CDC service — Integration tests
     Given the CDC credit card payment method id is resolved
     And a CDC NPG session is prepared
     And a random CDC notice code is generated
-    When I create a CDC transaction for the current session
+    When the user creates a CDC transaction for the current session
     Then the CDC response has status code 200
     And the transaction response has status ACTIVATED
     And the transaction response has a valid transactionId and authToken
@@ -60,7 +60,7 @@ Feature: eCommerce CDC service — Integration tests
   @cdc @payment-methods @positive
   Scenario: Credit card payment method details are correctly retrieved
     Given the CDC credit card payment method id is resolved
-    When I get the CDC payment method details
+    When the user retrieves the CDC payment method details
     Then the CDC response has status code 200
     And the payment method has name "CARDS" and paymentTypeCode "CP"
     And the payment method has a non-empty asset and ranges
@@ -75,7 +75,7 @@ Feature: eCommerce CDC service — Integration tests
     And a CDC NPG session is prepared
     And a random CDC notice code is generated
     And a CDC transaction is created for the current session
-    When I compute the CDC fee for credit card payment
+    When the user computes the CDC fee for credit card payment
     Then the CDC response has status code 200
     And the fee response has paymentMethodStatus "ENABLED"
     And the fee response has belowThreshold false
@@ -87,7 +87,7 @@ Feature: eCommerce CDC service — Integration tests
 
   @cdc @payment-methods @positive
   Scenario: All payment methods v1 include expected brand assets
-    When I get all CDC payment methods v1
+    When the user retrieves all CDC payment methods v1
     Then the CDC response has status code 200
     And the payment methods list is not empty
     And the credit card methods have VISA and Mastercard brand assets
@@ -105,7 +105,7 @@ Feature: eCommerce CDC service — Integration tests
     And a CDC transaction is created for the current session
     And the transaction status reaches "ACTIVATED" via polling
     And the card data matches the test card values after filling NPG fields
-    When I request CDC authorization for the transaction
+    When the user requests CDC authorization for the transaction
     Then the CDC response has status code 200
     And the authorization response has a valid authorizationUrl
     And the authorization requestId matches the current order id

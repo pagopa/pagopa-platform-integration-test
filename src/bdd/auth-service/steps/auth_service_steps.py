@@ -41,7 +41,7 @@ def step_auth_env_configured(context):
         print(f"  -> {name}: {value}")
 
 
-@when("I request the auth login URL")
+@when("the user requests the auth login URL")
 def step_request_auth_login(context):
     context.response = request("GET", build_login_url(), absolute_url=True)
 
@@ -57,7 +57,7 @@ def step_login_response_has_redirect(context):
     print(f"  -> REDIRECT_URL: {context.redirect_url}")
 
 
-@when("I open the auth redirect URL")
+@when("the user opens the auth redirect URL")
 def step_open_auth_redirect(context):
     context.response = request("GET", context.redirect_url, absolute_url=True)
 
@@ -68,13 +68,13 @@ def step_extract_auth_code(context):
     print(f"  -> AUTH_CODE: {context.auth_code}")
 
 
-@when("I exchange the auth code for a session token")
+@when("the user exchanges the auth code for a session token")
 def step_exchange_auth_code(context):
     body = build_auth_token_body(context.state, context.auth_code)
     context.response = request("POST", TOKEN_ENDPOINT, json=body)
 
 
-@when("I exchange an invalid auth code for a session token")
+@when("the user exchanges an invalid auth code for a session token")
 def step_exchange_invalid_auth_code(context):
     body = build_auth_token_body("some-invalid-state", "some-invalid-code")
     context.response = request("POST", TOKEN_ENDPOINT, json=body)
@@ -96,12 +96,12 @@ def step_invalid_auth_session_token(context):
     context.session_token = context.invalid_session_token
 
 
-@when("I request the authenticated user profile with the active session token")
+@when("the user requests the authenticated user profile with the active session token")
 def step_request_user_profile_active_token(context):
     context.response = request("GET", USERS_ENDPOINT, token=context.session_token)
 
 
-@when("I request the authenticated user profile with the invalid session token")
+@when("the user requests the authenticated user profile with the invalid session token")
 def step_request_user_profile_invalid_token(context):
     context.response = request("GET", USERS_ENDPOINT, token=context.invalid_session_token)
 
@@ -120,13 +120,13 @@ def step_verify_user_profile(context):
     context.user_profile = payload
 
 
-@when("I request an authenticated payment request with the invalid session token")
+@when("the user requests an authenticated payment request with the invalid session token")
 def step_request_payment_with_invalid_token(context):
     endpoint = build_payment_requests_endpoint()
     context.response = request("GET", endpoint, token=context.invalid_session_token)
 
 
-@when("I logout from auth service with the active session token")
+@when("the user logs out from auth service with the active session token")
 def step_logout_auth_service(context):
     context.response = request("POST", LOGOUT_ENDPOINT, token=context.session_token)
 
