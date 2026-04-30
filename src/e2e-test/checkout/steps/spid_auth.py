@@ -72,7 +72,7 @@ def step_confirm_logout(context):
 # THEN steps
 # ──────────────────────────────────────────────
 
-@then('AccountCircleRoundedIcon is visible')
+@then('The user is logged in')
 def step_check_account_icon_visible(context):
     """Assert that the user avatar icon is visible after login."""
     page = _get_page(context)
@@ -82,7 +82,7 @@ def step_check_account_icon_visible(context):
     logger.info("AccountCircleRoundedIcon found — login confirmed")
 
 
-@then('The login button is visible after logout')
+@then('The user is succesfully logged out')
 def step_check_login_button_visible_after_logout(context):
     """Assert that the login button reappears after logout."""
     page = _get_page(context)

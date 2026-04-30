@@ -22,9 +22,11 @@ Feature: PSP List Sorting in Checkout
     And The user selects the PSP with radio id "BCITITMM"
     And The user clicks the PSP list continue button
     And The user clicks the PSP edit button on the summary page
+    And The user clicks the "sort by fee" button
+    And The user clicks the "sort by fee" button
     Then The PSP fee list is sorted in ascending order
     And The user cancels the payment
-    
+
   Scenario: The PSP list is sorted by fee in descending order on the summary page
     When The user enters the notice information
     And The user clicks the verify button
@@ -60,6 +62,8 @@ Feature: PSP List Sorting in Checkout
     And The user selects the PSP with radio id "BCITITMM"
     And The user clicks the PSP list continue button
     And The user clicks the PSP edit button on the summary page
+    And The user clicks the "sort by name" button
+    And The user clicks the "sort by name" button
     Then The PSP name list is sorted in ascending alphabetical order
     And The user cancels the payment
   # ──────────────────────────────────────────────

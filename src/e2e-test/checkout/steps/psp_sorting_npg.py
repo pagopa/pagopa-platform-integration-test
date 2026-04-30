@@ -118,7 +118,7 @@ def step_select_psp_radio(context, psp_radio_id):
     """Click the PSP radio button by its id (used on the PSP list page)."""
     page = _get_page(context)
     logger.info("Selecting PSP radio: %s", psp_radio_id)
-    _locate_and_click(page, f"#{psp_radio_id}")
+    _locate_and_click(page, f"#psp-radio-{psp_radio_id}")
 
 
 @when('The user clicks the PSP list continue button')

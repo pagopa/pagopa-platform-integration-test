@@ -36,7 +36,7 @@ def step_set_language_it(context):
 # WHEN steps — notice form
 # ──────────────────────────────────────────────
 
-@when(u'The user enters the notice data with a notice code with fiscal code prefix "{fiscalCodePrefix}"')
+@when(u'The user enters the notice data with a notice code with fiscal code prefix "{fiscal_code_prefix}"')
 def step_enter_notice_random(context, fiscal_code_prefix):
     """
     Click the keyboard icon to open the manual form,
@@ -55,7 +55,7 @@ def step_enter_notice_random(context, fiscal_code_prefix):
     logger.info("Notice code typed: %s", context.notice_code)
 
 
-@when('The user enters the notice data with a notice code in range "{rangeStart}" to "{rangeEnd}')
+@when('The user enters the notice data with a notice code in range "{range_start}" to "{range_end}"')
 def step_enter_notice_in_range(context, range_start, range_end):
     """
     Click the keyboard icon and type a notice code within the given numeric range.
@@ -79,7 +79,7 @@ def step_enter_notice_in_range(context, range_start, range_end):
     page.keyboard.type(context.notice_code)
 
 
-@when(u'The user enters the taxpayer fiscal code "{fiscalCode}"')
+@when(u'The user enters the taxpayer fiscal code "{fiscal_code}"')
 def step_enter_fiscal_code(context, fiscal_code):
     """Type the taxpayer fiscal code into the #cf field."""
     page = _get_page(context)
@@ -195,7 +195,7 @@ def step_select_psp(context, psp_id):
     logger.info("Clicking card form continue button")
     _locate_and_click(page, "button[type=submit]")
     logger.info("Selecting PSP radio: %s", psp_id)
-    _locate_and_click(page, f"#{psp_id}")
+    _locate_and_click(page, f"#psp-radio-{psp_id}")
 
 
 @when('The user confirms the PSP selection')
@@ -237,10 +237,10 @@ def step_error_modal_visible(context):
     Assert that the error title element is visible.
     Selector: #verifyPaymentTitleError (from constants.ts — all error cases use this).
     """
-    step_error_modal_visible(context)
+    step_error_modal_visible(context,5)
 
 
-@then('The error modal header contains "{expectedHeader}"')
+@then('The error modal header contains "{expected_header}"')
 def step_error_modal_header(context, expected_header):
     """
     Assert the error modal header text using the selector from constants.ts.
@@ -257,7 +257,7 @@ def step_error_modal_header(context, expected_header):
     )
 
 
-@then('The error modal body contains "{expectedBody}"')
+@then('The error modal body contains "{expected_body}"')
 def step_error_modal_body(context, expected_body):
     """
     Assert the error modal body text using the selector from constants.ts.
@@ -280,7 +280,7 @@ def step_error_modal_body(context, expected_body):
     )
 
 
-@then('The error code shown contains "{errorCode}"')
+@then('The error code shown contains "{error_code}"')
 def step_error_code_shown(context, error_code):
     """
     Assert the error code in the modal.
