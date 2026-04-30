@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 # GIVEN steps (Background)
 # ──────────────────────────────────────────────
 
-@given('the checkout page is open')
+@given('The checkout page is open')
 def step_checkout_page_open(context):
     """Navigate to the checkout URL."""
     page = _get_page(context)
@@ -22,7 +22,7 @@ def step_checkout_page_open(context):
     context.notice_code = None
     context.fiscal_code = None
 
-@given('the language is set to "it"')
+@given('The language is set to "it"')
 def step_set_language_it(context):
     page = _get_page(context)
     logger.info("Imposto lingua a 'it'")
@@ -36,7 +36,7 @@ def step_set_language_it(context):
 # WHEN steps — notice form
 # ──────────────────────────────────────────────
 
-@when('I enter the notice data with a random notice code for fiscal code prefix "{fiscal_code_prefix}"')
+@when(u'The user enters the notice data with a notice code with fiscal code prefix "{fiscalCodePrefix}"')
 def step_enter_notice_random(context, fiscal_code_prefix):
     """
     Click the keyboard icon to open the manual form,
@@ -55,7 +55,7 @@ def step_enter_notice_random(context, fiscal_code_prefix):
     logger.info("Notice code typed: %s", context.notice_code)
 
 
-@when('I enter the notice data with a notice code in range "{range_start}" to "{range_end}"')
+@when('The user enters the notice data with a notice code in range "{rangeStart}" to "{rangeEnd}')
 def step_enter_notice_in_range(context, range_start, range_end):
     """
     Click the keyboard icon and type a notice code within the given numeric range.
@@ -79,7 +79,7 @@ def step_enter_notice_in_range(context, range_start, range_end):
     page.keyboard.type(context.notice_code)
 
 
-@when('I enter the taxpayer fiscal code "{fiscal_code}"')
+@when(u'The user enters the taxpayer fiscal code "{fiscalCode}"')
 def step_enter_fiscal_code(context, fiscal_code):
     """Type the taxpayer fiscal code into the #cf field."""
     page = _get_page(context)
@@ -89,7 +89,7 @@ def step_enter_fiscal_code(context, fiscal_code):
     page.keyboard.type(fiscal_code)
 
 
-@when('I click the verify button')
+@when('The user clicks the verify button')
 def step_click_verify(context):
     """Click the continue/verify button on the notice form."""
     page = _get_page(context)
@@ -100,7 +100,7 @@ def step_click_verify(context):
 # WHEN steps — summary & email
 # ──────────────────────────────────────────────
 
-@when('I click the pay button')
+@when('The user clicks the pay button')
 def step_click_pay_on_summary(context):
     """Click the pay button on the payment summary page."""
     page = _get_page(context)
@@ -108,7 +108,7 @@ def step_click_pay_on_summary(context):
     _locate_and_click(page, "#paymentSummaryButtonPay")
 
 
-@when('I enter the email "{email}"')
+@when('The user enters the email "{email}"')
 def step_enter_email(context, email):
     """Type the email address into the email field."""
     page = _get_page(context)
@@ -118,7 +118,7 @@ def step_enter_email(context, email):
     page.keyboard.type(email)
 
 
-@when('I confirm the email "{email}"')
+@when('The user confirms the email "{email}"')
 def step_confirm_email(context, email):
     """Type the email into the confirm field and click continue."""
     page = _get_page(context)
@@ -132,7 +132,7 @@ def step_confirm_email(context, email):
 # WHEN steps — payment method
 # ──────────────────────────────────────────────
 
-@when('I select the payment method "{method}"')
+@when('The user selects the payment method "{method}"')
 def step_select_payment_method(context, method):
     """Select the desired payment method by its data-qaid attribute."""
     page = _get_page(context)
@@ -144,7 +144,7 @@ def step_select_payment_method(context, method):
 # WHEN steps — card form (individual fields)
 # ──────────────────────────────────────────────
 
-@when('I fill in the card number "{card_number}"')
+@when(u'The user fills in the card number "{card_number}"')
 def step_fill_card_number(context, card_number):
     """Type the card number into the NPG iframe field."""
     page = _get_page(context)
@@ -153,7 +153,7 @@ def step_fill_card_number(context, card_number):
     page.keyboard.type(card_number)
 
 
-@when('I fill in the expiration date "{expiration_date}"')
+@when(u'The user fills in the expiration date "{expiration_date}"')
 def step_fill_expiration_date(context, expiration_date):
     """Type the expiration date into the NPG iframe field."""
     page = _get_page(context)
@@ -162,7 +162,7 @@ def step_fill_expiration_date(context, expiration_date):
     page.keyboard.type(expiration_date)
 
 
-@when('I fill in the security code "{cvv}"')
+@when(u'The user fills in the security code "{cvv}"')
 def step_fill_security_code(context, cvv):
     """Type the CVV into the NPG iframe field."""
     page = _get_page(context)
@@ -170,8 +170,7 @@ def step_fill_security_code(context, cvv):
     _locate_and_click(page, "#frame_SECURITY_CODE",3)
     page.keyboard.type(cvv)
 
-
-@when('I fill in the cardholder name "{holder_name}"')
+@when(u'The user fills in the cardholder name "{holder_name}"')
 def step_fill_cardholder_name(context, holder_name):
     """
     Type the cardholder name and retry until the submit button becomes enabled.
@@ -186,7 +185,7 @@ def step_fill_cardholder_name(context, holder_name):
 # WHEN steps — PSP selection
 # ──────────────────────────────────────────────
 
-@when('I select the PSP with id "{psp_id}"')
+@when(u'The user selects the PSP with id "{psp_id}"')
 def step_select_psp(context, psp_id):
     """
     Click the card form continue button to reach the PSP list,
@@ -199,7 +198,7 @@ def step_select_psp(context, psp_id):
     _locate_and_click(page, f"#{psp_id}")
 
 
-@when('I confirm the PSP selection')
+@when('The user confirms the PSP selection')
 def step_confirm_psp(context):
     """Click the continue button on the PSP list page."""
     page = _get_page(context)
@@ -207,7 +206,7 @@ def step_confirm_psp(context):
     _locate_and_click(page, "#paymentPspListPageButtonContinue")
 
 
-@when('I click the final pay button')
+@when('The user clicks the final pay button')
 def step_click_final_pay(context):
     """Click the final pay button and wait for the NPG mock auto-authorisation."""
     page = _get_page(context)
@@ -216,39 +215,11 @@ def step_click_final_pay(context):
     logger.info("Final pay button clicked — waiting for load (NPG mock auto-authorises)")
     page.wait_for_load_state("load")
 
-
-# ──────────────────────────────────────────────
-# THEN steps — happy path
-# ──────────────────────────────────────────────
-
-@then('the result page should show "{expected_message}"')
-def step_check_result_message(context, expected_message):
-    """Assert that the result page title contains the expected message (max 120s)."""
-    page = _get_page(context)
-    result_selector = "#responsePageMessageTitle"
-    logger.info("Waiting for result page title (max 120s), expecting: '%s'", expected_message)
-    page.locator(result_selector).wait_for(state="visible", timeout=120000)
-    message_text = page.locator(result_selector).inner_text()
-    logger.info("Result message: %s", message_text)
-    assert expected_message in message_text, (
-        f"Expected result message to contain '{expected_message}', but got: '{message_text}'"
-    )
-
-
 # ──────────────────────────────────────────────
 # THEN steps — error modal
 # ──────────────────────────────────────────────
 
-@then(u'an error modal should be displayed')
-def step_error_modal_visible_default(context):
-    """
-    Assert that the error title element is visible.
-    Selector: #verifyPaymentTitleError (from constants.ts — all error cases use this).
-    Default timeout is 5 seconds.
-    """
-    step_error_modal_visible(context)
-
-@then('an error modal should be displayed after "{seconds}" seconds')
+@then('An error modal is displayed after "{seconds}" seconds')
 def step_error_modal_visible(context, seconds = 5):
     """
     Assert that the error title element is visible.
@@ -260,8 +231,16 @@ def step_error_modal_visible(context, seconds = 5):
     page.locator("#verifyPaymentTitleError").wait_for(state="visible", timeout=timeout_ms)
     logger.info("Error modal is visible")
 
+@then('An error modal is displayed')
+def step_error_modal_visible(context):
+    """
+    Assert that the error title element is visible.
+    Selector: #verifyPaymentTitleError (from constants.ts — all error cases use this).
+    """
+    step_error_modal_visible(context)
 
-@then('the error modal header should contain "{expected_header}"')
+
+@then('The error modal header contains "{expectedHeader}"')
 def step_error_modal_header(context, expected_header):
     """
     Assert the error modal header text using the selector from constants.ts.
@@ -278,7 +257,7 @@ def step_error_modal_header(context, expected_header):
     )
 
 
-@then('the error modal body should contain "{expected_body}"')
+@then('The error modal body contains "{expectedBody}"')
 def step_error_modal_body(context, expected_body):
     """
     Assert the error modal body text using the selector from constants.ts.
@@ -301,7 +280,7 @@ def step_error_modal_body(context, expected_body):
     )
 
 
-@then('the error code shown should contain "{error_code}"')
+@then('The error code shown contains "{errorCode}"')
 def step_error_code_shown(context, error_code):
     """
     Assert the error code in the modal.
@@ -317,7 +296,7 @@ def step_error_code_shown(context, error_code):
         f"Expected error code '{error_code}' in modal, but got: '{error_text}'"
     )
 
-@then('the error modal body should contain ""')
+@then('The error modal body contains ""')
 def step_error_modal_body_empty(context):
     # Per il caso PAA_PAGAMENTO_DUPLICATO il body non è previsto.
     # Quindi questo step è un no-op intenzionale.

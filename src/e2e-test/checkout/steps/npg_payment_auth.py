@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 # GIVEN steps
 # ──────────────────────────────────────────────
 
-@given('the user is logged in')
+@given('The user is logged in')
 def step_logged_in(context):
     page = _get_page(context)
     checkout_url = _get_required_env("CHECKOUT_URL")
@@ -29,7 +29,7 @@ def step_logged_in(context):
 # WHEN steps
 # ──────────────────────────────────────────────
 
-@when('I insert the payment notice details')
+@when('The user insert the payment notice details')
 def step_insert_notice_details(context):
     page = _get_page(context)
 
@@ -60,7 +60,7 @@ def step_insert_notice_details(context):
 # THEN steps
 # ──────────────────────────────────────────────
 
-@then('I should receive a successful payment message')
+@then('A successful payment message is shown')
 def step_check_payment_success(context):
     page = _get_page(context)
     result_title_selector = "#responsePageMessageTitle"

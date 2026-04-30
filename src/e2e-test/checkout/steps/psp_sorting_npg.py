@@ -1,22 +1,22 @@
-import re
 import logging
+import re
+
 from behave import given, when, then
 from helper import _get_page, _get_required_env, _generate_random_notice_code, _locate_and_click
 
 logger = logging.getLogger(__name__)
-
 
 # ──────────────────────────────────────────────
 # Selectors map
 # ──────────────────────────────────────────────
 # Summary page sort buttons
 _SORT_BUTTON_SELECTORS = {
-    "sort by fee":  "#sortByFee",
+    "sort by fee": "#sortByFee",
     "sort by name": "#sortByName",
 }
 # PSP selection page radio options
 _SORT_RADIO_SELECTORS = {
-    "order by name":   "#sort-psp-list-drawer-order-by-name",
+    "order by name": "#sort-psp-list-drawer-order-by-name",
     "order by amount": "#sort-psp-list-drawer-order-by-amount",
 }
 
@@ -25,28 +25,23 @@ _SORT_RADIO_SELECTORS = {
 # GIVEN steps (Background)
 # ──────────────────────────────────────────────
 
-@given('a random notice code with prefix "{prefix}" is generated')
-def step_generate_notice_code(context, prefix):
+@given('The user enters a valid notice code with prefix "30202"')
+def step_generate_notice_code(context):
     """
     Generate a random notice code with the given prefix (e.g. "30202")
     and store it in context for later steps.
     """
-    context.notice_code = _generate_random_notice_code(prefix)
-    logger.info("Generated notice code: %s (prefix: %s)", context.notice_code, prefix)
+    context.notice_code = _generate_random_notice_code("30202")
+    logger.info("Generated notice code: %s (prefix: %s)", context.notice_code, "30202")
 
 
-@given('the taxpayer fiscal code is "{fiscal_code}"')
-def step_store_fiscal_code(context, fiscal_code):
+@given('The user enters a valid taxpayer fiscal code')
+def step_store_fiscal_code(context):
     """
     Store the fiscal code in context.
     If the value is the literal placeholder '<VALID_FISCAL_CODE>', read it from env instead.
     """
-    if fiscal_code.startswith("<") and fiscal_code.endswith(">"):
-        # Gherkin Background placeholder — resolve from env
-        env_key = fiscal_code[1:-1]  # strip < >
-        fiscal_code = _get_required_env(env_key)
-        logger.info("Fiscal code resolved from env (%s): %s", env_key, fiscal_code)
-    context.fiscal_code = fiscal_code
+    context.fiscal_code = _get_required_env("VALID_FISCAL_CODE")
     logger.info("Stored taxpayer fiscal code: %s", context.fiscal_code)
 
 
@@ -54,7 +49,7 @@ def step_store_fiscal_code(context, fiscal_code):
 # WHEN steps — notice form
 # ──────────────────────────────────────────────
 
-@when('I enter the notice data with the generated notice code and the taxpayer fiscal code')
+@when('The user enters the notice information')
 def step_enter_notice_data(context):
     """
     Open the manual keyboard form and fill in the notice code and fiscal code
@@ -86,7 +81,7 @@ def step_enter_notice_data(context):
 # WHEN steps — summary page
 # ──────────────────────────────────────────────
 
-@when('I click the pay button on the summary page')
+@when('The user clicks the pay button on the summary page')
 def step_click_pay_summary(context):
     """Click the pay button on the payment summary page."""
     page = _get_page(context)
@@ -94,7 +89,7 @@ def step_click_pay_summary(context):
     _locate_and_click(page, "#paymentSummaryButtonPay")
 
 
-@when('I enter and confirm the email')
+@when('The user enters and confirm the email')
 def step_enter_and_confirm_email(context):
     """
     Fill in the email and confirm email fields using EMAIL from env,
@@ -118,7 +113,7 @@ def step_enter_and_confirm_email(context):
 # WHEN steps — PSP list page (after PPAL selection)
 # ──────────────────────────────────────────────
 
-@when('I select the PSP with radio id "{psp_radio_id}"')
+@when('The user selects the PSP with radio id "{psp_radio_id}"')
 def step_select_psp_radio(context, psp_radio_id):
     """Click the PSP radio button by its id (used on the PSP list page)."""
     page = _get_page(context)
@@ -126,7 +121,7 @@ def step_select_psp_radio(context, psp_radio_id):
     _locate_and_click(page, f"#{psp_radio_id}")
 
 
-@when('I click the PSP list continue button')
+@when('The user clicks the PSP list continue button')
 def step_click_psp_list_continue(context):
     """Click the continue button on the PSP list page."""
     page = _get_page(context)
@@ -138,7 +133,7 @@ def step_click_psp_list_continue(context):
 # WHEN steps — summary page PSP edit
 # ──────────────────────────────────────────────
 
-@when('I click the PSP edit button on the summary page')
+@when('The user clicks the PSP edit button on the summary page')
 def step_click_psp_edit_summary(context):
     """Click the PSP edit/change button on the summary page (#pspEdit)."""
     page = _get_page(context)
@@ -149,7 +144,7 @@ def step_click_psp_edit_summary(context):
     logger.info("PSP fee list loaded")
 
 
-@when('I click the "{sort_type}" button')
+@when('The user clicks the "{sort_type}" button')
 def step_click_sort_button(context, sort_type):
     """
     Click a sort button on the summary page PSP list.
@@ -162,27 +157,13 @@ def step_click_sort_button(context, sort_type):
         raise ValueError(f"Unknown sort type: '{sort_type}'. Known: {list(_SORT_BUTTON_SELECTORS)}")
 
     logger.info("Clicking sort button '%s' (%s)", sort_type, selector)
-    context.last_sort_selector = selector
-    _locate_and_click(page, selector)  # ensure click is registered (sometimes the first doesn't work)
-
-
-@when('I click the "{sort_type}" button again')
-def step_click_sort_button_again(context, sort_type):
-    """Click the same sort button a second time (inverse sort)."""
-    page = _get_page(context)
-    selector = _SORT_BUTTON_SELECTORS.get(sort_type)
-    if not selector:
-        raise ValueError(f"Unknown sort type: '{sort_type}'. Known: {list(_SORT_BUTTON_SELECTORS)}")
-
-    logger.info("Clicking sort button '%s' again (%s) for inverse order", sort_type, selector)
-    _locate_and_click(page, selector)  # ensure click is registered (sometimes the first doesn't work)
-
+    _locate_and_click(page, selector)  # ensure click is registered (sometimes the first doesn'T work)
 
 # ──────────────────────────────────────────────
 # WHEN steps — PSP selection page sorting (drawer)
 # ──────────────────────────────────────────────
 
-@when('the PSP selection page is loaded')
+@when('The PSP selection page is loaded')
 def step_psp_selection_page_loaded(context):
     """Wait for the PSP selection page to render (at least one .pspFeeName visible)."""
     page = _get_page(context)
@@ -191,7 +172,7 @@ def step_psp_selection_page_loaded(context):
     logger.info("PSP selection page loaded")
 
 
-@when('I click the sort PSP list button')
+@when('The user clicks the sort PSP list button')
 def step_click_sort_psp_list_button(context):
     """Click the sort/filter button on the PSP selection page (#sort-psp-list)."""
     page = _get_page(context)
@@ -200,7 +181,7 @@ def step_click_sort_psp_list_button(context):
     logger.info("Sort drawer opened")
 
 
-@when('I select the "{radio_option}" radio option')
+@when('The user selects the "{radio_option}" radio option')
 def step_select_sort_radio(context, radio_option):
     """
     Select a sort radio option inside the sort drawer.
@@ -215,7 +196,7 @@ def step_select_sort_radio(context, radio_option):
     _locate_and_click(page, selector)
 
 
-@when('I click the show results button')
+@when('The user clicks the show results button')
 def step_click_show_results(context):
     """Click the show results / apply sort button (#sort-psp-list-drawer)."""
     page = _get_page(context)
@@ -228,7 +209,7 @@ def step_click_show_results(context):
 # WHEN steps — cancel payment
 # ──────────────────────────────────────────────
 
-@when('I cancel the payment')
+@when('The user cancels the payment')
 def step_cancel_payment(context):
     """
     Cancel the current payment:
@@ -238,7 +219,7 @@ def step_cancel_payment(context):
     page = _get_page(context)
     logger.info("Cancelling payment")
 
-    # Use evaluate() — direct click doesn't work after animation (matches TypeScript page.$eval)
+    # Use evaluate() — direct click doesn'T work after animation (matches TypeScript page.$eval)
     page.evaluate("document.querySelector('#paymentCheckPageButtonCancel').click()")
     logger.info("Cancel button clicked via evaluate")
 
@@ -273,7 +254,7 @@ def _get_fee_values(page) -> list:
     return values
 
 
-@then('the PSP fee list should be sorted in ascending order')
+@then('The PSP fee list is sorted in ascending order')
 def step_fee_list_ascending(context):
     """Assert that all .pspFeeValue elements are in ascending (non-decreasing) order."""
     page = _get_page(context)
@@ -286,7 +267,7 @@ def step_fee_list_ascending(context):
     logger.info("PSP fee list is correctly sorted ascending")
 
 
-@then('the PSP fee list should be sorted in descending order')
+@then('The PSP fee list is sorted in descending order')
 def step_fee_list_descending(context):
     """Assert that all .pspFeeValue elements are in descending (non-increasing) order."""
     page = _get_page(context)
@@ -312,7 +293,7 @@ def _get_name_values(page) -> list:
     return values
 
 
-@then('the PSP name list should be sorted in descending alphabetical order')
+@then('The PSP name list is sorted in descending alphabetical order')
 def step_name_list_descending(context):
     """
     Assert that .pspFeeName elements are in descending alphabetical order.
@@ -329,7 +310,7 @@ def step_name_list_descending(context):
     logger.info("PSP name list is correctly sorted descending")
 
 
-@then('the PSP name list should be sorted in ascending alphabetical order')
+@then('The PSP name list is sorted in ascending alphabetical order')
 def step_name_list_ascending(context):
     """
     Assert that .pspFeeName elements are in ascending alphabetical order.
@@ -345,7 +326,8 @@ def step_name_list_ascending(context):
         )
     logger.info("PSP name list is correctly sorted ascending")
 
-@then('I cancel the payment')
+
+@then('The user cancels the payment')
 def step_cancel_payment(context):
     page = _get_page(context)
 

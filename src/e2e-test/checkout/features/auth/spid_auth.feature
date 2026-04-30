@@ -2,13 +2,16 @@
 Feature: Login with SPID flow
 
   Background:
-    Given the checkout page is open
-    And the language is set to "it"
+    Given The checkout page is open
+    And The language is set to "it"
 
-  Scenario: Should perform login and logout operation successfully
-    When I click on the login button
-    Then AccountCircleRoundedIcon should be visible
-    When I click on user button
-    And I click on exit submenu
-    And I confirm the logout action
-    Then the login button should be visible after logout
+  Scenario: Successful SPID login
+    When The user clicks on the login button
+    Then AccountCircleRoundedIcon is visible
+
+  Scenario: Succesful SPID logout
+    Given The user is logged in with SPID
+    When The user clicks on user button
+    And The user clicks on exit submenu
+    And The user confirm the logout action
+    Then The login button is visible after logout

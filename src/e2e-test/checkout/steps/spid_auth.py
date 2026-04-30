@@ -1,14 +1,22 @@
 import logging
-from behave import when, then
+from behave import given, when, then
 from helper import _get_page, _get_required_env, _perform_mock_login, _locate_and_click
 
 logger = logging.getLogger(__name__)
 
 # ──────────────────────────────────────────────
+# GIVEN steps
+# ──────────────────────────────────────────────
+@given('The user is logged in with SPID')
+def step_login_with_spid(context):
+    step_click_login_button(context)
+    step_check_account_icon_visible(context)
+
+# ──────────────────────────────────────────────
 # WHEN steps
 # ──────────────────────────────────────────────
 
-@when('I click on the login button')
+@when('The user clicks on the login button')
 def step_click_login_button(context):
     """Click the login button in the header and complete the mock/identity login flow."""
     page = _get_page(context)
@@ -25,7 +33,7 @@ def step_click_login_button(context):
         _perform_mock_login(page)
 
 
-@when('I click on user button')
+@when('The user clicks on user button')
 def step_click_user_button(context):
     """
     Click the first button (user avatar) to open the user menu.
@@ -38,7 +46,7 @@ def step_click_user_button(context):
     page.evaluate("document.getElementsByTagName('button')[0].click()")
 
 
-@when('I click on exit submenu')
+@when('The user clicks on exit submenu')
 def step_click_exit_submenu(context):
     """
     Click the first list item (exit/logout submenu entry).
@@ -50,7 +58,7 @@ def step_click_exit_submenu(context):
     page.evaluate("document.getElementsByTagName('li')[0].click()")
 
 
-@when('I confirm the logout action')
+@when('The user confirm the logout action')
 def step_confirm_logout(context):
     """Click the confirm button in the logout modal."""
     page = _get_page(context)
@@ -64,7 +72,7 @@ def step_confirm_logout(context):
 # THEN steps
 # ──────────────────────────────────────────────
 
-@then('AccountCircleRoundedIcon should be visible')
+@then('AccountCircleRoundedIcon is visible')
 def step_check_account_icon_visible(context):
     """Assert that the user avatar icon is visible after login."""
     page = _get_page(context)
@@ -74,7 +82,7 @@ def step_check_account_icon_visible(context):
     logger.info("AccountCircleRoundedIcon found — login confirmed")
 
 
-@then('the login button should be visible after logout')
+@then('The login button is visible after logout')
 def step_check_login_button_visible_after_logout(context):
     """Assert that the login button reappears after logout."""
     page = _get_page(context)

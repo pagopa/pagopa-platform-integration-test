@@ -20,7 +20,7 @@ SELECTORS = {
 
 DEFAULT_TIMEOUT_MS = 5000
 
-@when("I enter the notice data")
+@when('The user enters the notice data')
 def step_enter_notice_data(context):
     page = _get_page(context)
     logger.info("Apro tastiera e porto il focus su campo avviso")
@@ -28,7 +28,7 @@ def step_enter_notice_data(context):
     _locate_and_click(page, SELECTORS["bill_code"])
 
 
-@when("I enter the payment data")
+@when("The user enters the payment data")
 def step_enter_payment_data(context):
     page = _get_page(context)
     notice_code = _generate_random_notice_code("30201")
@@ -42,14 +42,14 @@ def step_enter_payment_data(context):
 
     _locate_and_click(page, SELECTORS["verify_payment"])
 
-@when("I enter the email")
+@when("The user enters the email")
 def step_enter_email(context):
     page = _get_page(context)
     logger.info("Confermo riepilogo e apro step email")
     _locate_and_click(page, SELECTORS["pay_notice"])
 
 
-@when("I select the payment method")
+@when("The user select the payment method")
 def step_select_payment_method(context):
     page = _get_page(context)
     email = _get_required_env("EMAIL")
@@ -64,7 +64,7 @@ def step_select_payment_method(context):
     _locate_and_click(page, SELECTORS["continue_email"])
 
 
-@then("the login button should be visible")
+@then("The login button is visible and enabled")
 def step_login_button_visible(context):
     page = _get_page(context)
     logger.info("Verifico visibilita pulsante login")
@@ -73,7 +73,7 @@ def step_login_button_visible(context):
     )
 
 
-@then('the login button title should be "Accedi"')
+@then('The login button title is “Accedi”')
 def step_login_button_title(context):
     page = _get_page(context)
     title = page.locator(SELECTORS["login_button"]).get_attribute("title")
