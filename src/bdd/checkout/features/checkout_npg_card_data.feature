@@ -21,7 +21,7 @@ Feature: Checkout eCommerce — NPG payment gateway
     And the card data matches the test card values
 
   @checkout @npg @card @negative
-  Scenario: Get card data returns 401 for mismatched order id
+  Scenario: Card data not available for wrong order id
     Given the credit card payment method id is resolved
     And an NPG session is created
     And a random valid notice code is generated
@@ -30,7 +30,7 @@ Feature: Checkout eCommerce — NPG payment gateway
     Then the response has status code 401
 
   @checkout @npg @card @negative
-  Scenario: Get card data returns 401 for mismatched transaction id
+  Scenario: Card data not available for wrong transaction id
     Given the credit card payment method id is resolved
     And an NPG session is created
     And a random valid notice code is generated
@@ -39,7 +39,7 @@ Feature: Checkout eCommerce — NPG payment gateway
     Then the response has status code 401
 
   @checkout @npg @card @negative
-  Scenario: Get card data returns 401 when auth token is missing
+  Scenario: Card data not available when auth token is missing
     Given the credit card payment method id is resolved
     And an NPG session is created
     And a random valid notice code is generated
