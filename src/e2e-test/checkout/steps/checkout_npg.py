@@ -36,15 +36,15 @@ def step_set_language_it(context):
 # WHEN steps — notice form
 # ──────────────────────────────────────────────
 
-@when(u'The user enters the notice data with a notice code with fiscal code prefix "{fiscal_code_prefix}"')
-def step_enter_notice_random(context, fiscal_code_prefix):
+@when(u'The user enters the notice data with a notice code with fiscal code prefix "{notice_code_prefix}"')
+def step_enter_notice_random(context, notice_code_prefix):
     """
     Click the keyboard icon to open the manual form,
     then generate and type a random notice code for the given prefix.
     """
     page = _get_page(context)
-    context.notice_code = _generate_random_notice_code(fiscal_code_prefix)
-    logger.info("Generated notice code: %s (prefix: %s)", context.notice_code, fiscal_code_prefix)
+    context.notice_code = _generate_random_notice_code(notice_code_prefix)
+    logger.info("Generated notice code: %s (prefix: %s)", context.notice_code, notice_code_prefix)
 
     logger.info("Clicking keyboard icon")
     _locate_and_click(page, "[data-testid='KeyboardIcon']")

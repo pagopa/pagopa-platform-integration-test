@@ -1,7 +1,7 @@
 Feature: Checkout Payment Activation
-  As a user of the checkout system
-  The user want to complete a payment using a credit/debit card
-  So that The user can pay a notice through the pagoPA platform
+  A user of the checkout system
+  wants to complete a payment using a credit/debit card
+  so that he can pay a notice through the pagoPA platform
 
   Background:
     Given The checkout page is open
@@ -12,7 +12,7 @@ Feature: Checkout Payment Activation
   # ──────────────────────────────────────────────
 
   Scenario Outline: A payment with card configuration "<testing_psp>" is successfully completed
-    When The user enters the notice data with a notice code with fiscal code prefix "<fiscal_code_prefix>"
+    When The user enters the notice data with a notice code with notice code prefix "<notice_code_prefix>"
     And The user enters the taxpayer fiscal code "<fiscal_code>"
     And The user clicks the verify button
     And The user clicks the pay button
@@ -29,7 +29,7 @@ Feature: Checkout Payment Activation
     Then A successful payment message is shown
 
     Examples:
-      | testing_psp | fiscal_code_prefix | fiscal_code | email                              | pan              | expiration_date | cvv | pspId       |
+      | testing_psp | notice_code_prefix | fiscal_code | email                              | pan              | expiration_date | cvv | pspId       |
       | Postepay    | 30200              | 77777777777 | ecommerce-test-mailgroup@pagopa.it | 5255000260000014 | 12/30           | 123 | PPAYITR1XXX |
       | Wordline    | 30201              | 77777777777 | ecommerce-test-mailgroup@pagopa.it | 5255000260000014 | 12/30           | 123 | BNLIITRR    |
       | Worldpay    | 30201              | 77777777777 | ecommerce-test-mailgroup@pagopa.it | 4242424242424242 | 12/30           | 123 | WOLLNLB1    |

@@ -83,9 +83,9 @@ def step_check_payment_success(context):
 
 def _fill_notice_form(page, card_data):
     """Fill the notice code form: keyboard icon → notice code → fiscal code → continue."""
-    # Generate a random notice code using the card's fiscal code prefix
-    fiscal_code_prefix = str(card_data.get("fiscalCodePrefix", "30201"))
-    notice_code = _generate_random_notice_code(fiscal_code_prefix)
+    # Generate a random notice code using the card's notice code prefix
+    notice_code_prefix = str(card_data.get("noticeCodePrefix", "30201"))
+    notice_code = _generate_random_notice_code(notice_code_prefix)
     fiscal_code = _get_required_env("VALID_FISCAL_CODE")
 
     logger.info("Generated notice code: %s, fiscal code: %s", notice_code, fiscal_code)
