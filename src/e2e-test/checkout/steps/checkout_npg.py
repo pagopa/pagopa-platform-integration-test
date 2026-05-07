@@ -36,7 +36,7 @@ def step_set_language_it(context):
 # WHEN steps — notice form
 # ──────────────────────────────────────────────
 
-@when(u'The user enters the notice data with a notice code with fiscal code prefix "{notice_code_prefix}"')
+@when(u'The user enters the notice data with a notice code with notice code prefix "{notice_code_prefix}"')
 def step_enter_notice_random(context, notice_code_prefix):
     """
     Click the keyboard icon to open the manual form,
@@ -220,7 +220,7 @@ def step_click_final_pay(context):
 # ──────────────────────────────────────────────
 
 @then('An error modal is displayed after "{seconds}" seconds')
-def step_error_modal_visible(context, seconds = 5):
+def step_error_modal_visible_after(context, seconds = 5):
     """
     Assert that the error title element is visible.
     Selector: #verifyPaymentTitleError (from constants.ts — all error cases use this).
@@ -237,7 +237,7 @@ def step_error_modal_visible(context):
     Assert that the error title element is visible.
     Selector: #verifyPaymentTitleError (from constants.ts — all error cases use this).
     """
-    step_error_modal_visible(context,5)
+    step_error_modal_visible_after(context,5)
 
 
 @then('The error modal header contains "{expected_header}"')
@@ -301,3 +301,19 @@ def step_error_modal_body_empty(context):
     # Per il caso PAA_PAGAMENTO_DUPLICATO il body non è previsto.
     # Quindi questo step è un no-op intenzionale.
     logger.debug("Expected empty body for this case (e.g. PAA_PAGAMENTO_DUPLICATO) — skipping body check")
+
+@then('A successful payment message is shown')
+def step_check_payment_success(context):
+    page = _get_page(context)
+    result_title_selector = "#responsePageMessageTitle"
+
+    logger.debug("Waiting for result page title (max 120s)...")
+    page.locator(result_title_selector).wait_for(
+        state="visible", timeout=120000
+    )
+    message_text = page.locator(result_title_selector).inner_text()
+    logger.debug("Result message found: %s", message_text)
+
+    assert "Hai pagato" in message_text, (
+        f"Expected 'Hai pagato' in result message, but got: '{message_text}'"
+    )
