@@ -22,7 +22,7 @@ def _load_env_file(env_file: str) -> None:
 
         # Skip malformed lines without '='
         if "=" not in raw_line:
-            logging.warn("Skipping malformed env line %d: %r", i + 1, raw_line)
+            logging.warning("Skipping malformed env line %d: %r", i + 1, raw_line)
             i += 1
             continue
 
@@ -31,7 +31,7 @@ def _load_env_file(env_file: str) -> None:
         value = value.strip()
 
         if not key:
-            logging.warn("Skipping env line with empty key at %d: %r", i + 1, raw_line)
+            logging.warning("Skipping env line with empty key at %d: %r", i + 1, raw_line)
             i += 1
             continue
 
@@ -79,7 +79,7 @@ def _load_env_file(env_file: str) -> None:
         i += 1
 
 def before_all(context):
-    logging.basicConfig(level=logging.DEBUG,
+    logging.basicConfig(level=logging.INFO,
                         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
                         datefmt="%Y-%m-%d %H:%M:%S",
                         force=True)
