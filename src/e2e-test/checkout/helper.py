@@ -44,13 +44,13 @@ def _generate_random_notice_code(notice_code_prefix: str) -> str:
 def _perform_mock_login(page):
     logger.info("Performing mock login")
 
-    logger.info("Waiting navigation state (networkidle)")
+    logger.debug("Waiting navigation state (networkidle)")
     page.wait_for_load_state("networkidle")
 
-    logger.info("Waiting for visible button")
+    logger.debug("Waiting for visible button")
     page.wait_for_selector("button")
 
-    logger.info("Searching AccountCircleRoundIcon")
+    logger.debug("Searching AccountCircleRoundIcon")
     icon = page.query_selector("[data-testid='AccountCircleRoundedIcon']")
 
     assert icon is not None, "Icon 'AccountCircleRoundedIcon' non trovato"

@@ -23,7 +23,7 @@ DEFAULT_TIMEOUT_MS = 5000
 @when('The user enters the notice data')
 def step_enter_notice_data(context):
     page = _get_page(context)
-    logger.info("Apro tastiera e porto il focus su campo avviso")
+    logger.debug("Apro tastiera e porto il focus su campo avviso")
     _locate_and_click(page, SELECTORS["keyboard_icon"])
     _locate_and_click(page, SELECTORS["bill_code"])
 
@@ -34,7 +34,7 @@ def step_enter_payment_data(context):
     notice_code = _generate_random_notice_code("30201")
     fiscal_code = _get_required_env("VALID_FISCAL_CODE")
 
-    logger.info("Inserisco dati pagamento (notice + fiscal code)")
+    logger.debug("Inserisco dati pagamento (notice + fiscal code)")
     page.keyboard.type(notice_code)
 
     _locate_and_click(page, SELECTORS["fiscal_code"])
@@ -45,7 +45,7 @@ def step_enter_payment_data(context):
 @when("The user enters the email")
 def step_enter_email(context):
     page = _get_page(context)
-    logger.info("Confermo riepilogo e apro step email")
+    logger.debug("Confermo riepilogo e apro step email")
     _locate_and_click(page, SELECTORS["pay_notice"])
 
 
@@ -54,7 +54,7 @@ def step_select_payment_method(context):
     page = _get_page(context)
     email = _get_required_env("EMAIL")
 
-    logger.info("Inserisco email e proseguo al metodo di pagamento")
+    logger.debug("Inserisco email e proseguo al metodo di pagamento")
     _locate_and_click(page, SELECTORS["email"])
     page.keyboard.type(email)
 
@@ -67,7 +67,7 @@ def step_select_payment_method(context):
 @then("The login button is visible and enabled")
 def step_login_button_visible(context):
     page = _get_page(context)
-    logger.info("Verifico visibilita pulsante login")
+    logger.debug("Verifico visibilita pulsante login")
     page.locator(SELECTORS["login_button"]).wait_for(
         state="visible", timeout=DEFAULT_TIMEOUT_MS
     )
@@ -77,5 +77,5 @@ def step_login_button_visible(context):
 def step_login_button_title(context):
     page = _get_page(context)
     title = page.locator(SELECTORS["login_button"]).get_attribute("title")
-    logger.info("Titolo pulsante login trovato: %r", title)
+    logger.debug("Titolo pulsante login trovato: %r", title)
     assert title == "Accedi", f"Titolo atteso 'Accedi', ottenuto: {title!r}"

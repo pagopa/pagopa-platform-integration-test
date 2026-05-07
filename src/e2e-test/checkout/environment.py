@@ -22,7 +22,7 @@ def _load_env_file(env_file: str) -> None:
 
         # Skip malformed lines without '='
         if "=" not in raw_line:
-            logging.debug("Skipping malformed env line %d: %r", i + 1, raw_line)
+            logging.warn("Skipping malformed env line %d: %r", i + 1, raw_line)
             i += 1
             continue
 
@@ -31,7 +31,7 @@ def _load_env_file(env_file: str) -> None:
         value = value.strip()
 
         if not key:
-            logging.debug("Skipping env line with empty key at %d: %r", i + 1, raw_line)
+            logging.warn("Skipping env line with empty key at %d: %r", i + 1, raw_line)
             i += 1
             continue
 
