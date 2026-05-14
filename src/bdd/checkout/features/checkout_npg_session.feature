@@ -1,3 +1,4 @@
+@FEAT_013_Checkout
 Feature: Checkout eCommerce — NPG payment gateway
   Validate the eCommerce checkout API flows for NPG card session creation by language.
 
@@ -10,6 +11,7 @@ Feature: Checkout eCommerce — NPG payment gateway
   # ---------------------------------------------------------------------------
 
   @checkout @npg @session @positive
+  @FEAT_013_Checkout_SCENARIO_01
   Scenario Outline: NPG card session is created successfully for each language
     Given the credit card payment method id is resolved
     When the user creates an NPG card session with language "<lang>"

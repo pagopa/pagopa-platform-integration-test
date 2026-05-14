@@ -1,3 +1,4 @@
+@FEAT_014_Checkout
 Feature: Checkout eCommerce — NPG payment gateway
   Validate the eCommerce checkout API flows for transaction lifecycle management.
 
@@ -10,12 +11,14 @@ Feature: Checkout eCommerce — NPG payment gateway
   # ---------------------------------------------------------------------------
 
   @checkout @npg @transaction @negative
+  @FEAT_014_Checkout_SCENARIO_01
   Scenario: Create transaction fails when order id is missing
     Given a random valid notice code is generated
     When the user creates a transaction without order id
     Then the response has status code 400
 
   @checkout @npg @transaction @positive
+  @FEAT_014_Checkout_SCENARIO_02
   Scenario: Create transaction with mixed case email succeeds
     Given the credit card payment method id is resolved
     And an NPG session is created
@@ -25,6 +28,7 @@ Feature: Checkout eCommerce — NPG payment gateway
     And the transaction response is in ACTIVATED status for checkout client
 
   @checkout @npg @transaction @positive
+  @FEAT_014_Checkout_SCENARIO_03
   Scenario: Create transaction with standard email succeeds and cached payment is still valid
     Given the credit card payment method id is resolved
     And an NPG session is created
@@ -37,6 +41,7 @@ Feature: Checkout eCommerce — NPG payment gateway
     And the cached payment verification returns valid payment data
 
   @checkout @npg @transaction @positive
+  @FEAT_014_Checkout_SCENARIO_04
   Scenario: Transaction in ACTIVATED status is canceled successfully
     Given the credit card payment method id is resolved
     And an NPG session is created
@@ -46,6 +51,7 @@ Feature: Checkout eCommerce — NPG payment gateway
     Then the response has status code 202
 
   @checkout @npg @transaction @positive
+  @FEAT_014_Checkout_SCENARIO_05
   Scenario: Get transaction v1 returns AUTHORIZATION_REQUESTED status
     Given the full NPG authorization flow is executed
     When the user retrieves the transaction by id v1
@@ -54,6 +60,7 @@ Feature: Checkout eCommerce — NPG payment gateway
     And the transaction v1 gateway is NPG
 
   @checkout @npg @transaction @positive
+  @FEAT_014_Checkout_SCENARIO_06
   Scenario: Get transaction outcomes v1 returns a valid outcome code
     Given the full NPG authorization flow is executed
     When the user retrieves the transaction outcomes v1
@@ -61,6 +68,7 @@ Feature: Checkout eCommerce — NPG payment gateway
     And the outcomes response contains a valid outcome code
 
   @checkout @npg @transaction @positive
+  @FEAT_014_Checkout_SCENARIO_07
   Scenario: Get transaction v2 returns AUTHORIZATION_REQUESTED status with gateway info
     Given the full NPG authorization flow is executed
     When the user retrieves the transaction by id v2

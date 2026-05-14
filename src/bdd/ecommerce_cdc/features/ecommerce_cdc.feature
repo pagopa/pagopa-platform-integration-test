@@ -1,4 +1,4 @@
-# language: en
+@FEAT_015_Checkout
 Feature: eCommerce CDC service
   Validate the eCommerce CDC (Change Data Capture) service by driving the full Checkout
   payment flow
@@ -11,6 +11,7 @@ Feature: eCommerce CDC service
   # ---------------------------------------------------------------------------
 
   @cdc @transaction @cancel @positive
+  @FEAT_015_Checkout_SCENARIO_01
   Scenario: ACTIVATED transaction is canceled and reaches CANCELED status
     Given a random CDC notice code is generated
     When the user creates a CDC transaction with a static order id
@@ -23,6 +24,7 @@ Feature: eCommerce CDC service
   # ---------------------------------------------------------------------------
 
   @cdc @session @positive
+  @FEAT_015_Checkout_SCENARIO_02
   Scenario: NPG card session is created with expected card form fields
     Given the CDC credit card payment method id is resolved
     When the user creates a CDC NPG card session

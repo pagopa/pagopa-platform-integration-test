@@ -1,3 +1,4 @@
+@FEAT_009_Checkout
 Feature: Checkout eCommerce — NPG payment gateway
   Validate the eCommerce checkout API flows for authorization requests via NPG.
 
@@ -10,6 +11,7 @@ Feature: Checkout eCommerce — NPG payment gateway
   # ---------------------------------------------------------------------------
 
   @checkout @npg @authorization @negative
+  @FEAT_009_Checkout_SCENARIO_01
   Scenario Outline: Authorization request returns 401 when JWT token is absent
     Given the credit card payment method id is resolved
     And an NPG session is created with language "<lang>"
@@ -27,6 +29,7 @@ Feature: Checkout eCommerce — NPG payment gateway
       | en   |
 
   @checkout @npg @authorization @positive
+  @FEAT_009_Checkout_SCENARIO_02
   Scenario: Authorization request with JWT token returns authorization URL
     Given the credit card payment method id is resolved
     And an NPG session is created with language "it"

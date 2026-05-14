@@ -1,3 +1,4 @@
+@FEAT_008_Checkout
 Feature: Auth service
   Validate the auth-service flows
 
@@ -6,6 +7,7 @@ Feature: Auth service
     And the auth service environment variables are configured
 
   @auth-service @checkout @positive
+  @FEAT_008_Checkout_SCENARIO_01
   Scenario: Successful authentication flow returns a session token and the expected user profile
     When the user requests the auth login URL
     Then the response has status code 200
@@ -23,6 +25,7 @@ Feature: Auth service
     Then the response has status code 204
 
   @auth-service @checkout @negative
+  @FEAT_008_Checkout_SCENARIO_02
   Scenario: Invalid auth code and invalid session token are rejected
     When the user requests the auth login URL
     Then the response has status code 200
