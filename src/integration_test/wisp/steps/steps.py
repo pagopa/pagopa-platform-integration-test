@@ -1,11 +1,11 @@
 import session as session
 from behave import *
 
-import src.utility.wisp.request_generator as requestgen
-import src.utility.wisp.steps_utils as steputils
-from src.utility.wisp import constants
-from src.utility.wisp import routes as router
-from src.utility.wisp import utils
+import src.integration_test.utility.wisp.request_generator as requestgen
+import src.integration_test.utility.wisp.steps_utils as steputils
+from src.integration_test.utility.wisp import constants
+from src.integration_test.utility.wisp import routes as router
+from src.integration_test.utility.wisp import utils
 
 
 @given(

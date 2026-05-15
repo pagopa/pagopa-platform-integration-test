@@ -3,8 +3,8 @@ import logging
 from behave import given
 
 from src.conf.configuration import secrets
-from src.utility.wisp import constants
-from src.utility.wisp import utils
+from src.integration_test.utility.wisp import constants
+from src.integration_test.utility.wisp import utils
 
 
 @given('systems up')

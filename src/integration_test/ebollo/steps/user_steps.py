@@ -1,9 +1,9 @@
 from behave import when
 
 from src.conf.configuration import secrets
-from src.utility.ebollo.api import post_mbd
-from src.utility.ebollo.ui import mbd_checkout_payment
-from src.utility.ebollo.utils import generate_mbd_payload
+from src.integration_test.utility.ebollo.api import post_mbd
+from src.integration_test.utility.ebollo.ui import mbd_checkout_payment
+from src.integration_test.utility.ebollo.utils import generate_mbd_payload
 
 
 @when('the user pays the eBollo on the checkout page')

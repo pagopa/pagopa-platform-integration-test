@@ -6,11 +6,11 @@ from urllib.parse import urlparse
 
 from allure_commons._allure import attach
 
-import src.bdd.wisp.steps.session as session
-import src.utility.wisp.request_generator as requestgen
-from src.utility.wisp import constants
-from src.utility.wisp import routes as router
-from src.utility.wisp import utils
+import src.integration_test.wisp.steps.session as session
+from . import request_generator as requestgen
+from . import constants
+from . import routes as router
+from . import utils
 
 
 def check_status_code(context, actor, expected_status_code):
