@@ -1,7 +1,6 @@
 import logging
-import random
 
-from behave import given, when, then
+from behave import given
 from spid_auth import step_click_login_button
 logger = logging.getLogger(__name__)
 

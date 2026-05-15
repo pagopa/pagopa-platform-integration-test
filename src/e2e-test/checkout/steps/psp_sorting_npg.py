@@ -2,7 +2,7 @@ import logging
 import re
 
 from behave import given, when, then
-from helper import _get_page, _get_required_env, _generate_random_notice_code, _locate_and_click
+from ..helper import _get_page, _get_required_env, _generate_random_notice_code, _locate_and_click
 
 logger = logging.getLogger(__name__)
 

@@ -4,9 +4,10 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 def _load_env_file(env_file: str) -> None:
-    path = Path(env_file)
+    basepath = "src/e2e-test/checkout/"
+    path = Path(basepath + env_file)
     if not path.is_file():
-        raise RuntimeError(f"File env non trovato: {env_file}")
+        raise RuntimeError(f"File env non trovato: {basepath + env_file}")
 
     lines = path.read_text(encoding="utf-8").splitlines()
     i = 0
