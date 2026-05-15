@@ -14,6 +14,8 @@ from urllib.parse import parse_qs, urlparse
 
 import requests
 
+from src.utility.api_test.http_client import request as http_request
+
 
 # ---------------------------------------------------------------------------
 # Endpoints
@@ -100,7 +102,7 @@ def _request(
         headers["Authorization"] = f"Bearer {token}"
     if extra_headers:
         headers.update(extra_headers)
-    return requests.request(
+    return http_request(
         method=method,
         url=url,
         headers=headers,

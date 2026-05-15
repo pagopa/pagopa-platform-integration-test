@@ -6,6 +6,8 @@ from urllib.parse import parse_qs, urlparse
 
 import requests
 
+from src.utility.api_test.http_client import request as http_request
+
 
 LOGIN_ENDPOINT = "/checkout/auth-service/v1/auth/login"
 TOKEN_ENDPOINT = "/checkout/auth-service/v1/auth/token"
@@ -111,7 +113,7 @@ def request(
         headers["Authorization"] = f"Bearer {token}"
 
     url = endpoint if absolute_url else f"{get_checkout_host()}{endpoint}"
-    return requests.request(
+    return http_request(
         method=method,
         url=url,
         headers=headers,

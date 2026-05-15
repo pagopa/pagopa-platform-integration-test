@@ -20,12 +20,11 @@
 ```
 pagopa-platform-integration-test/
 ├── requirements.txt                          ← dipendenze Python
-├── config/
-│   └── api-test/
-│       ├── .env.dev                          ← variabili DEV
-│       └── .env.uat                          ← variabili UAT
 └── src/
-    ├── bdd/
+    ├── api-test/
+    │   ├── config/
+    │   │   ├── .env.dev                          ← variabili DEV
+    │   │   └── .env.uat                          ← variabili UAT
     │   ├── cart/                             ← test modulo cart
     │   │   ├── environment.py
     │   │   ├── features/cart.feature
@@ -34,11 +33,11 @@ pagopa-platform-integration-test/
     │   │   ├── environment.py
     │   │   ├── features/auth_service.feature
     │   │   └── steps/auth_service_steps.py
-    │   ├── checkout/                         ← test checkout NPG
+    │   ├── checkout-npg/                     ← test checkout NPG
     │   │   ├── environment.py
     │   │   ├── features/checkout_npg.feature
     │   │   └── steps/checkout_npg_steps.py
-    │   └── ecommerce_cdc/                    ← test eCommerce CDC
+    │   └── ecommerce-cdc/                    ← test eCommerce CDC
     │       ├── environment.py
     │       ├── features/ecommerce_cdc.feature
     │       └── steps/ecommerce_cdc_steps.py
@@ -50,7 +49,7 @@ pagopa-platform-integration-test/
             ├── auth_service/
             │   └── auth_service_helpers.py
             └── checkout/
-                └── checkout_helpers.py       ← condiviso da checkout e ecommerce_cdc
+                └── checkout_helpers.py       ← condiviso da checkout-npg e ecommerce-cdc
 ```
 
 ### 1.3 Pattern architetturale
@@ -68,11 +67,11 @@ Ogni modulo BDD segue una separazione rigida delle responsabilità:
 ### 1.4 Flusso di esecuzione Behave
 
 ```
-behave src/bdd/<modulo> -D env=dev
+behave src/api-test/<modulo> -D env=dev
     │
     ├─ environment.py → before_all()
     │      └─ api_test_environment.before_all()
-    │             └─ Carica config/api-test/.env.dev via python-dotenv
+    │             └─ Carica src/api-test/config/.env.dev via python-dotenv
     │
     ├─ environment.py → before_scenario()
     │      ├─ api_test_environment.before_scenario() → reset context.response
@@ -94,8 +93,8 @@ behave src/bdd/<modulo> -D env=dev
 
 | File | Ambiente | Percorso |
 |---|---|---|
-| `.env.dev` | DEV | `config/api-test/.env.dev` |
-| `.env.uat` | UAT | `config/api-test/.env.uat` |
+| `.env.dev` | DEV | `src/api-test/config/.env.dev` |
+| `.env.uat` | UAT | `src/api-test/config/.env.uat` |
 
 Il file viene selezionato a runtime tramite il parametro `-D env=<dev|uat>` passato a `behave`.  
 Il caricamento avviene in `api_test_environment.before_all()` tramite `load_dotenv(env_file, override=True)`.
@@ -198,8 +197,8 @@ Queste variabili non sono file `.env` ma vengono propagate tra gli step tramite 
 
 ### 3.1 `cart`
 
-**Feature:** [`src/bdd/cart/features/cart.feature`](src/bdd/cart/features/cart.feature)  
-**Steps:** [`src/bdd/cart/steps/cart_steps.py`](src/bdd/cart/steps/cart_steps.py)  
+**Feature:** [`src/api-test/cart/features/cart.feature`](src/api-test/cart/features/cart.feature)  
+**Steps:** [`src/api-test/cart/steps/cart_steps.py`](src/api-test/cart/steps/cart_steps.py)  
 **Helpers:** [`src/utility/api_test/cart/cart_helpers.py`](src/utility/api_test/cart/cart_helpers.py)
 
 **Endpoint testato:**
@@ -243,8 +242,8 @@ Il client HTTP usa `requests.post(..., allow_redirects=False)` per catturare il 
 
 ### 3.2 `auth-service`
 
-**Feature:** [`src/bdd/auth-service/features/auth_service.feature`](src/bdd/auth-service/features/auth_service.feature)  
-**Steps:** [`src/bdd/auth-service/steps/auth_service_steps.py`](src/bdd/auth-service/steps/auth_service_steps.py)  
+**Feature:** [`src/api-test/auth-service/features/auth_service.feature`](src/api-test/auth-service/features/auth_service.feature)  
+**Steps:** [`src/api-test/auth-service/steps/auth_service_steps.py`](src/api-test/auth-service/steps/auth_service_steps.py)  
 **Helpers:** [`src/utility/api_test/auth_service/auth_service_helpers.py`](src/utility/api_test/auth_service/auth_service_helpers.py)
 
 **Stato context resettato in `before_scenario`:** `login_payload`, `redirect_url`, `auth_code`, `state`, `nonce`, `session_token`, `user_profile`
@@ -289,8 +288,8 @@ Then    401
 
 ### 3.3 `checkout` (NPG)
 
-**Feature:** [`src/bdd/checkout/features/checkout_npg.feature`](src/bdd/checkout/features/checkout_npg.feature)  
-**Steps:** [`src/bdd/checkout/steps/checkout_npg_steps.py`](src/bdd/checkout/steps/checkout_npg_steps.py)  
+**Feature:** [`src/api-test/checkout-npg/features/checkout_npg.feature`](src/api-test/checkout-npg/features/checkout_npg.feature)  
+**Steps:** [`src/api-test/checkout-npg/steps/checkout_npg_steps.py`](src/api-test/checkout-npg/steps/checkout_npg_steps.py)  
 **Helpers:** [`src/utility/api_test/checkout/checkout_helpers.py`](src/utility/api_test/checkout/checkout_helpers.py)
 
 **Stato context resettato in `before_scenario`:** `payment_method_id`, `notice_code`, `order_id`, `correlation_id`, `npg_correlation_id`, `npg_session_id`, `npg_field_id`, `transaction_id`, `auth_token`, `amount`
@@ -391,8 +390,8 @@ def poll_transaction_until_status(transaction_id, auth_token, wanted_status,
 
 ### 3.4 `ecommerce_cdc`
 
-**Feature:** [`src/bdd/ecommerce_cdc/features/ecommerce_cdc.feature`](src/bdd/ecommerce_cdc/features/ecommerce_cdc.feature)  
-**Steps:** [`src/bdd/ecommerce_cdc/steps/ecommerce_cdc_steps.py`](src/bdd/ecommerce_cdc/steps/ecommerce_cdc_steps.py)  
+**Feature:** [`src/api-test/ecommerce-cdc/features/ecommerce_cdc.feature`](src/api-test/ecommerce-cdc/features/ecommerce_cdc.feature)  
+**Steps:** [`src/api-test/ecommerce-cdc/steps/ecommerce_cdc_steps.py`](src/api-test/ecommerce-cdc/steps/ecommerce_cdc_steps.py)  
 **Helpers:** (condivisi con checkout) [`src/utility/api_test/checkout/checkout_helpers.py`](src/utility/api_test/checkout/checkout_helpers.py)
 
 **Note:** Il modulo CDC riusa interamente `checkout_helpers.py` per le chiamate HTTP. La differenza rispetto a `checkout` è nella logica degli scenari: ogni step mutante è seguito da un polling che verifica la propagazione dello stato nel pipeline CDC.
@@ -480,7 +479,7 @@ Copiare e compilare il file `.env` per l'ambiente target:
 
 ```bash
 # Esempio — DEV (i valori di default per test sono già presenti)
-# config/api-test/.env.dev è già incluso nel repository con valori di esempio
+# src/api-test/config/.env.dev è già incluso nel repository con valori di esempio
 ```
 
 I valori sensibili (credenziali reali, token) devono essere inseriti localmente senza committare.
@@ -489,10 +488,10 @@ I valori sensibili (credenziali reali, token) devono essere inseriti localmente 
 
 ```bash
 # Da pagopa-platform-integration-test/
-behave src/bdd/cart -D env=dev -f progress
-behave src/bdd/auth-service -D env=dev -f progress
-behave src/bdd/checkout -D env=dev -f progress
-behave src/bdd/ecommerce_cdc -D env=dev -f progress
+behave src/api-test/cart -D env=dev -f progress
+behave src/api-test/auth-service -D env=dev -f progress
+behave src/api-test/checkout-npg -D env=dev -f progress
+behave src/api-test/ecommerce-cdc -D env=dev -f progress
 ```
 
 Parametro `-D env=<dev|uat>` seleziona il file `.env` corrispondente (default: `dev`).
@@ -508,7 +507,7 @@ Parametro `-D env=<dev|uat>` seleziona il file `.env` corrispondente (default: `
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue reports\allure-results\cart-dev
 New-Item reports\allure-results\cart-dev -ItemType Directory -Force | Out-Null
 
-behave src/bdd/cart `
+behave src/api-test/cart `
     -D env=dev `
     -f allure_behave.formatter:AllureFormatter -o reports/allure-results/cart-dev `
     -f progress
@@ -536,7 +535,7 @@ allure open reports/allure-results/cart-dev --port 5300
 ```powershell
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue reports\allure-results\cart-dev
 New-Item reports\allure-results\cart-dev -ItemType Directory -Force | Out-Null
-behave src/bdd/cart -D env=dev -f allure_behave.formatter:AllureFormatter -o reports/allure-results/cart-dev -f progress
+behave src/api-test/cart -D env=dev -f allure_behave.formatter:AllureFormatter -o reports/allure-results/cart-dev -f progress
 allure serve reports/allure-results/cart-dev --port 5300
 ```
 
@@ -544,7 +543,7 @@ allure serve reports/allure-results/cart-dev --port 5300
 ```powershell
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue reports\allure-results\auth-service-uat
 New-Item reports\allure-results\auth-service-uat -ItemType Directory -Force | Out-Null
-behave src/bdd/auth-service -D env=uat -f allure_behave.formatter:AllureFormatter -o reports/allure-results/auth-service-uat -f progress
+behave src/api-test/auth-service -D env=uat -f allure_behave.formatter:AllureFormatter -o reports/allure-results/auth-service-uat -f progress
 allure serve reports/allure-results/auth-service-uat --port 5300
 ```
 
@@ -552,7 +551,7 @@ allure serve reports/allure-results/auth-service-uat --port 5300
 ```powershell
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue reports\allure-results\checkout-dev
 New-Item reports\allure-results\checkout-dev -ItemType Directory -Force | Out-Null
-behave src/bdd/checkout -D env=dev -f allure_behave.formatter:AllureFormatter -o reports/allure-results/checkout-dev -f progress
+behave src/api-test/checkout-npg -D env=dev -f allure_behave.formatter:AllureFormatter -o reports/allure-results/checkout-dev -f progress
 allure serve reports/allure-results/checkout-dev --port 5300
 ```
 
@@ -560,7 +559,7 @@ allure serve reports/allure-results/checkout-dev --port 5300
 ```powershell
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue reports\allure-results\ecommerce-cdc-dev
 New-Item reports\allure-results\ecommerce-cdc-dev -ItemType Directory -Force | Out-Null
-behave src/bdd/ecommerce_cdc -D env=dev -f allure_behave.formatter:AllureFormatter -o reports/allure-results/ecommerce-cdc-dev -f progress
+behave src/api-test/ecommerce-cdc -D env=dev -f allure_behave.formatter:AllureFormatter -o reports/allure-results/ecommerce-cdc-dev -f progress
 allure serve reports/allure-results/ecommerce-cdc-dev --port 5300
 ```
 

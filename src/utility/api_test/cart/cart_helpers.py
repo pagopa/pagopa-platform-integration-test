@@ -9,6 +9,8 @@ import random
 
 import requests
 
+from src.utility.api_test.http_client import request as http_request
+
 
 # ---------------------------------------------------------------------------
 # Utility — environment readers
@@ -108,4 +110,4 @@ def build_multiple_notices_body() -> dict:
 def post_cart(endpoint: str, body: dict) -> requests.Response:
     """POST senza seguire redirect (allow_redirects=False)."""
     url = f"{get_checkout_host()}{endpoint}"
-    return requests.post(url, json=body, allow_redirects=False, timeout=30)
+    return http_request("POST", url, json=body, allow_redirects=False, timeout=30)

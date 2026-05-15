@@ -2,7 +2,7 @@
 Behave environment hooks comuni a tutti i test di api-test.
 
 Responsabilità:
-- before_all : carica le variabili d'ambiente dal file config/api-test/.env.<env>
+- before_all : carica le variabili d'ambiente dal file config/api-tests/.env.<env>
 - before_scenario_api_test : reset dello stato condiviso tra api-test
 
 I moduli specifici (es. cart) possono aggiungere ulteriore logica di setup/teardown
@@ -16,9 +16,9 @@ from dotenv import load_dotenv
 def _resolve_env_file(env: str) -> str:
     """
     Restituisce il percorso assoluto del file .env per l'ambiente richiesto.
-    I file sono in <repo_root>/config/api-test/.env.<env>.
+    I file sono in <repo_root>/config/api-tests/.env.<env>.
     """
-    # src/utility/api-test/api_test_environment.py → 4 dirname = repo root
+    # src/utility/api_test/api_test_environment.py → 4 dirname = repo root
     repo_root = os.path.dirname(
         os.path.dirname(
             os.path.dirname(
@@ -26,7 +26,7 @@ def _resolve_env_file(env: str) -> str:
             )
         )
     )
-    return os.path.join(repo_root, "config", "api-test", f".env.{env}")
+    return os.path.join(repo_root, "config", "api-tests", f".env.{env}")
 
 
 def before_all(context):
