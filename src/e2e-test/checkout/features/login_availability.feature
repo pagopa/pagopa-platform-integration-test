@@ -1,4 +1,5 @@
 # language: en
+@FEAT_01_Checkout @e2e @checkout @ui
 Feature: Login option availability at all stages of the payment flow.
   As a checkout user
   I want to verify that the login option is available at various stages of the payment flow
@@ -7,17 +8,23 @@ Feature: Login option availability at all stages of the payment flow.
     Given The checkout page is open
     And The language is set to "it"
 
+  @positive
+  @FEAT_01_Checkout_scenario_01
   Scenario: Login option available when entering notice data
     When The user enters the notice data
     Then The login button is visible and enabled
     And The login button title is “Accedi”
 
+  @positive
+  @FEAT_01_Checkout_scenario_02
   Scenario: Login option available when entering payment data
     When The user enters the notice data
     And The user enters the payment data
     Then The login button is visible and enabled
     And The login button title is “Accedi”
 
+  @positive
+  @FEAT_01_Checkout_scenario_03
   Scenario: Login option available when entering entering email
     When The user enters the notice data
     And The user enters the payment data
@@ -25,6 +32,8 @@ Feature: Login option availability at all stages of the payment flow.
     Then The login button is visible and enabled
     And The login button title is “Accedi”
 
+  @positive
+  @FEAT_01_Checkout_scenario_04
   Scenario: login option available when selecting payment method
     When The user enters the notice data
     And The user enters the payment data

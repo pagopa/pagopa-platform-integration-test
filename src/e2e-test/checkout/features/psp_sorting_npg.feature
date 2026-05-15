@@ -1,3 +1,4 @@
+@FEAT_005_Checkout @e2e @checkout @ui
 Feature: PSP List Sorting in Checkout
   As a checkout user
   I want the PSP (Payment Service Provider) list to be sortable
@@ -13,6 +14,8 @@ Feature: PSP List Sorting in Checkout
   # Summary Page sorting
   # ──────────────────────────────────────────────
 
+  @positive
+  @FEAT_005_Checkout_scenario_01
   Scenario: The PSP list is sorted by fee in ascending order on the summary page
     When The user enters the notice information
     And The user clicks the verify button
@@ -27,6 +30,8 @@ Feature: PSP List Sorting in Checkout
     Then The PSP fee list is sorted in ascending order
     And The user cancels the payment
 
+  @positive
+  @FEAT_005_Checkout_scenario_02
   Scenario: The PSP list is sorted by fee in descending order on the summary page
     When The user enters the notice information
     And The user clicks the verify button
@@ -40,6 +45,8 @@ Feature: PSP List Sorting in Checkout
     Then The PSP fee list is sorted in descending order
     And The user cancels the payment
 
+  @positive
+  @FEAT_005_Checkout_scenario_03
   Scenario: The PSP list is sorted by name in descending order on the summary page
     When The user enters the notice information
     And The user clicks the verify button
@@ -53,6 +60,8 @@ Feature: PSP List Sorting in Checkout
     Then The PSP name list is sorted in descending alphabetical order
     And The user cancels the payment
 
+  @positive
+  @FEAT_005_Checkout_scenario_04
   Scenario: The PSP list is sorted by name in ascending order on the summary page
     When The user enters the notice information
     And The user clicks the verify button
@@ -70,6 +79,8 @@ Feature: PSP List Sorting in Checkout
   # PSP Selection Page sorting
   # ──────────────────────────────────────────────
 
+  @positive
+  @FEAT_005_Checkout_scenario_05
   Scenario: The PSP list is sorted by name on the PSP selection page
     When The user enters the notice information
     And The user clicks the verify button
@@ -82,6 +93,8 @@ Feature: PSP List Sorting in Checkout
     And The user clicks the show results button
     Then The PSP name list is sorted in ascending alphabetical order
 
+  @positive
+  @FEAT_005_Checkout_scenario_06
   Scenario: The PSP list is sorted by fee on the PSP selection page
     When The user enters the notice information
     And The user clicks the verify button

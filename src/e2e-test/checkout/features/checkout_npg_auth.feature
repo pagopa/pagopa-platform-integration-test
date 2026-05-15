@@ -1,3 +1,4 @@
+@FEAT_004_Checkout @e2e @checkout @ui
 Feature: Checkout Payment Activation Authenticated
   A user of the checkout system
   wants to complete a payment using a credit/debit card
@@ -11,7 +12,8 @@ Feature: Checkout Payment Activation Authenticated
   # ──────────────────────────────────────────────
   # Happy path: full payment flow
   # ──────────────────────────────────────────────
-
+  @positive
+  @FEAT_004_Checkout_scenario_01
   Scenario Outline: A payment with card configuration "<testing_psp>" is successfully completed
     When The user enters the notice data with a notice code with notice code prefix "<notice_code_prefix>"
     And The user enters the taxpayer fiscal code "<fiscal_code>"
@@ -39,6 +41,8 @@ Feature: Checkout Payment Activation Authenticated
   # Error cases: verify/activate payment errors
   # ──────────────────────────────────────────────
 
+  @negative
+  @FEAT_004_Checkout_scenario_02
   Scenario Outline: Error <error_code> for invalid notice code in range <range_start>-<range_end> is shown on verify
     When The user enters the notice data with a notice code in range "<range_start>" to "<range_end>"
     And The user enters the taxpayer fiscal code "<fiscal_code>"
@@ -54,6 +58,8 @@ Feature: Checkout Payment Activation Authenticated
       | PPT_STAZIONE_INT_PA_TIMEOUT | 302980000000000000 | 302989999999999999 | 77777777777 | 60      | Si è verificato un errore imprevisto             | Riprova, oppure contatta l’assistenza                                                          |
       | PAA_PAGAMENTO_DUPLICATO     | 302950100443009424 | 302950100443009424 | 77777777777 | 5       | Questo avviso è stato già pagato!                |                                                                                                |
 
+  @negative
+  @FEAT_004_Checkout_scenario_03
   Scenario Outline: Error code for unreachable creditor institution is shown on verify
     When The user enters the notice data with a notice code in range "<range_start>" to "<range_end>"
     And The user enters the taxpayer fiscal code "<fiscal_code>"
