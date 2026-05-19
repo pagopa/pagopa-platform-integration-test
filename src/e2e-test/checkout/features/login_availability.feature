@@ -1,8 +1,7 @@
 # language: en
 @FEAT_01_Checkout @e2e @checkout @ui
 Feature: Login option availability at all stages of the payment flow.
-  As a checkout user
-  I want to verify that the login option is available at various stages of the payment flow
+  The checkout user wants to verify that the login option is available at various stages of the payment flow
 
   Background:
     Given The checkout page is open
