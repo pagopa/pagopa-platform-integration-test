@@ -4,8 +4,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 def _load_env_file(env_file: str) -> None:
-    basepath = "src/e2e-test/checkout/"
-    path = Path(basepath + env_file)
+    path = Path(env_file)
     if not path.is_file():
         raise RuntimeError(f"File env non trovato: {basepath + env_file}")
 
