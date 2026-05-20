@@ -58,7 +58,7 @@ def parse_feature_files(feat_files):
 
     return feature_scenarios
 
-root_directory = 'src/bdd'
+root_directory = 'src/integration'
 feature_files = []
 folder_links = []
 component_features = {}

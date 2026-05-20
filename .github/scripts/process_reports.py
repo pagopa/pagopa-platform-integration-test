@@ -114,7 +114,7 @@ def build_index_page(root_dir):
     print(f"[INFO][build_index_page] written index page to {output_path}")
 
 def main():
-    apps = ["wisp"] #, "fdr"] --- IGNORE ---
+    apps = ["wisp"]
     artifact_dir = os.path.join("artifacts") # /artifacts
     print(f"[INFO][main] artifact_dir {artifact_dir}")
     for app in apps:
