@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 
 from allure_commons._allure import attach
 
-import src.integration_test.wisp.steps.session as session
+import src.integration.wisp.steps.session as session
 from . import request_generator as requestgen
 from . import constants
 from . import routes as router

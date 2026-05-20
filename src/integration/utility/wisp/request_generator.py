@@ -2,7 +2,7 @@ import base64
 import json
 import uuid
 
-from src.integration_test.wisp.steps import session as session
+from src.integration.wisp.steps import session as session
 from . import constants
 from . import utils
 

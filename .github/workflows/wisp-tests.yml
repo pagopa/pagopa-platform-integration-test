@@ -35,7 +35,7 @@ jobs:
         id: run_tests
         continue-on-error: true
         run: |
-          behave src/integration_test/wisp --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+          behave src/integration/wisp --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
 
       - name: Load previous allure history
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
