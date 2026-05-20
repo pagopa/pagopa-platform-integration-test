@@ -1,107 +1,107 @@
 @FEAT_005_Checkout @e2e @checkout @ui
-Feature: PSP List Sorting in Checkout
-  The checkout user wants the PSP (Payment Service Provider) list to be sortable
-  So that he can choose the most convenient provider by fee or name
+Feature: Ordinamento lista PSP in Checkout
+  L'utente checkout vuole poter ordinare la lista PSP (Payment Service Provider)
+  cosi da poter scegliere il prestatore piu conveniente per commissione o nome
 
   Background:
-    Given The checkout page is open
-    And The language is set to "it"
-    And The user enters a valid notice code with prefix "30202"
-    And The user enters a valid taxpayer fiscal code
+    Given La pagina di checkout e aperta
+    And La lingua e impostata su "it"
+    And L'utente inserisce un codice avviso valido con prefisso "30202"
+    And L'utente inserisce un codice fiscale valido del pagatore
 
   # ──────────────────────────────────────────────
-  # Summary Page sorting
+  # Ordinamento pagina di riepilogo
   # ──────────────────────────────────────────────
 
   @positive
   @FEAT_005_Checkout_scenario_01
-  Scenario: The PSP list is sorted by fee in ascending order on the summary page
-    When The user enters the notice information
-    And The user clicks the verify button
-    And The user clicks the pay button on the summary page
-    And The user enters and confirm the email
-    And The user selects the payment method "PPAL"
-    And The user selects the PSP with radio id "BCITITMM"
-    And The user clicks the PSP list continue button
-    And The user clicks the PSP edit button on the summary page
-    And The user clicks the "sort by fee" button
-    And The user clicks the "sort by fee" button
-    Then The PSP fee list is sorted in ascending order
-    And The user cancels the payment
+  Scenario: La lista PSP e ordinata per commissione in ordine crescente nella pagina di riepilogo
+    When L'utente inserisce le informazioni dell'avviso
+    And L'utente clicca il pulsante verifica
+    And L'utente clicca il pulsante paga nella pagina di riepilogo
+    And L'utente inserisce e conferma l'email
+    And L'utente seleziona il metodo di pagamento "PPAL"
+    And L'utente seleziona il PSP con id radio "BCITITMM"
+    And L'utente clicca il pulsante continua della lista PSP
+    And L'utente clicca il pulsante modifica PSP nella pagina di riepilogo
+    And L'utente clicca il pulsante "ordina per commissione"
+    And L'utente clicca il pulsante "ordina per commissione"
+    Then La lista delle commissioni PSP e ordinata in ordine crescente
+    And L'utente annulla il pagamento
 
   @positive
   @FEAT_005_Checkout_scenario_02
-  Scenario: The PSP list is sorted by fee in descending order on the summary page
-    When The user enters the notice information
-    And The user clicks the verify button
-    And The user clicks the pay button on the summary page
-    And The user enters and confirm the email
-    And The user selects the payment method "PPAL"
-    And The user selects the PSP with radio id "BCITITMM"
-    And The user clicks the PSP list continue button
-    And The user clicks the PSP edit button on the summary page
-    And The user clicks the "sort by fee" button
-    Then The PSP fee list is sorted in descending order
-    And The user cancels the payment
+  Scenario: La lista PSP e ordinata per commissione in ordine decrescente nella pagina di riepilogo
+    When L'utente inserisce le informazioni dell'avviso
+    And L'utente clicca il pulsante verifica
+    And L'utente clicca il pulsante paga nella pagina di riepilogo
+    And L'utente inserisce e conferma l'email
+    And L'utente seleziona il metodo di pagamento "PPAL"
+    And L'utente seleziona il PSP con id radio "BCITITMM"
+    And L'utente clicca il pulsante continua della lista PSP
+    And L'utente clicca il pulsante modifica PSP nella pagina di riepilogo
+    And L'utente clicca il pulsante "ordina per commissione"
+    Then La lista delle commissioni PSP e ordinata in ordine decrescente
+    And L'utente annulla il pagamento
 
   @positive
   @FEAT_005_Checkout_scenario_03
-  Scenario: The PSP list is sorted by name in descending order on the summary page
-    When The user enters the notice information
-    And The user clicks the verify button
-    And The user clicks the pay button on the summary page
-    And The user enters and confirm the email
-    And The user selects the payment method "PPAL"
-    And The user selects the PSP with radio id "BCITITMM"
-    And The user clicks the PSP list continue button
-    And The user clicks the PSP edit button on the summary page
-    And The user clicks the "sort by name" button
-    Then The PSP name list is sorted in descending alphabetical order
-    And The user cancels the payment
+  Scenario: La lista PSP e ordinata per nome in ordine decrescente nella pagina di riepilogo
+    When L'utente inserisce le informazioni dell'avviso
+    And L'utente clicca il pulsante verifica
+    And L'utente clicca il pulsante paga nella pagina di riepilogo
+    And L'utente inserisce e conferma l'email
+    And L'utente seleziona il metodo di pagamento "PPAL"
+    And L'utente seleziona il PSP con id radio "BCITITMM"
+    And L'utente clicca il pulsante continua della lista PSP
+    And L'utente clicca il pulsante modifica PSP nella pagina di riepilogo
+    And L'utente clicca il pulsante "ordina per nome"
+    Then La lista dei nomi PSP e ordinata in ordine alfabetico decrescente
+    And L'utente annulla il pagamento
 
   @positive
   @FEAT_005_Checkout_scenario_04
-  Scenario: The PSP list is sorted by name in ascending order on the summary page
-    When The user enters the notice information
-    And The user clicks the verify button
-    And The user clicks the pay button on the summary page
-    And The user enters and confirm the email
-    And The user selects the payment method "PPAL"
-    And The user selects the PSP with radio id "BCITITMM"
-    And The user clicks the PSP list continue button
-    And The user clicks the PSP edit button on the summary page
-    And The user clicks the "sort by name" button
-    And The user clicks the "sort by name" button
-    Then The PSP name list is sorted in ascending alphabetical order
-    And The user cancels the payment
+  Scenario: La lista PSP e ordinata per nome in ordine crescente nella pagina di riepilogo
+    When L'utente inserisce le informazioni dell'avviso
+    And L'utente clicca il pulsante verifica
+    And L'utente clicca il pulsante paga nella pagina di riepilogo
+    And L'utente inserisce e conferma l'email
+    And L'utente seleziona il metodo di pagamento "PPAL"
+    And L'utente seleziona il PSP con id radio "BCITITMM"
+    And L'utente clicca il pulsante continua della lista PSP
+    And L'utente clicca il pulsante modifica PSP nella pagina di riepilogo
+    And L'utente clicca il pulsante "ordina per nome"
+    And L'utente clicca il pulsante "ordina per nome"
+    Then La lista dei nomi PSP e ordinata in ordine alfabetico crescente
+    And L'utente annulla il pagamento
   # ──────────────────────────────────────────────
-  # PSP Selection Page sorting
+  # Ordinamento pagina di selezione PSP
   # ──────────────────────────────────────────────
 
   @positive
   @FEAT_005_Checkout_scenario_05
-  Scenario: The PSP list is sorted by name on the PSP selection page
-    When The user enters the notice information
-    And The user clicks the verify button
-    And The user clicks the pay button on the summary page
-    And The user enters and confirm the email
-    And The user selects the payment method "PPAL"
-    And The PSP selection page is loaded
-    And The user clicks the sort PSP list button
-    And The user selects the "order by name" radio option
-    And The user clicks the show results button
-    Then The PSP name list is sorted in ascending alphabetical order
+  Scenario: La lista PSP e ordinata per nome nella pagina di selezione PSP
+    When L'utente inserisce le informazioni dell'avviso
+    And L'utente clicca il pulsante verifica
+    And L'utente clicca il pulsante paga nella pagina di riepilogo
+    And L'utente inserisce e conferma l'email
+    And L'utente seleziona il metodo di pagamento "PPAL"
+    And La pagina di selezione PSP e caricata
+    And L'utente clicca il pulsante ordina lista PSP
+    And L'utente seleziona l'opzione radio "ordina per nome"
+    And L'utente clicca il pulsante mostra risultati
+    Then La lista dei nomi PSP e ordinata in ordine alfabetico crescente
 
   @positive
   @FEAT_005_Checkout_scenario_06
-  Scenario: The PSP list is sorted by fee on the PSP selection page
-    When The user enters the notice information
-    And The user clicks the verify button
-    And The user clicks the pay button on the summary page
-    And The user enters and confirm the email
-    And The user selects the payment method "PPAL"
-    And The PSP selection page is loaded
-    And The user clicks the sort PSP list button
-    And The user selects the "order by amount" radio option
-    And The user clicks the show results button
-    Then The PSP fee list is sorted in ascending order
+  Scenario: La lista PSP e ordinata per commissione nella pagina di selezione PSP
+    When L'utente inserisce le informazioni dell'avviso
+    And L'utente clicca il pulsante verifica
+    And L'utente clicca il pulsante paga nella pagina di riepilogo
+    And L'utente inserisce e conferma l'email
+    And L'utente seleziona il metodo di pagamento "PPAL"
+    And La pagina di selezione PSP e caricata
+    And L'utente clicca il pulsante ordina lista PSP
+    And L'utente seleziona l'opzione radio "ordina per importo"
+    And L'utente clicca il pulsante mostra risultati
+    Then La lista delle commissioni PSP e ordinata in ordine crescente

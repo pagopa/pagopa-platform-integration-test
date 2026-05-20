@@ -8,6 +8,6 @@ logger = logging.getLogger(__name__)
 # ──────────────────────────────────────────────
 # GIVEN steps (Background)
 # ──────────────────────────────────────────────
-@given(u'The user is authenticated')
+@given(u'L\'utente e autenticato')
 def step_impl(context):
     step_click_login_button(context)

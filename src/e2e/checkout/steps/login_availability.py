@@ -1,6 +1,6 @@
 import logging
 from behave import when, then
-from ..helper import _get_page, _get_required_env, _generate_random_notice_code, _locate_and_click
+from helper import _get_page, _get_required_env, _generate_random_notice_code, _locate_and_click
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ SELECTORS = {
 
 DEFAULT_TIMEOUT_MS = 5000
 
-@when('The user enters the notice data')
+@when('L\'utente inserisce i dati dell\'avviso')
 def step_enter_notice_data(context):
     page = _get_page(context)
     logger.debug("Apro tastiera e porto il focus su campo avviso")
@@ -28,7 +28,7 @@ def step_enter_notice_data(context):
     _locate_and_click(page, SELECTORS["bill_code"])
 
 
-@when("The user enters the payment data")
+@when("L'utente inserisce i dati di pagamento")
 def step_enter_payment_data(context):
     page = _get_page(context)
     notice_code = _generate_random_notice_code("30201")
@@ -42,14 +42,14 @@ def step_enter_payment_data(context):
 
     _locate_and_click(page, SELECTORS["verify_payment"])
 
-@when("The user enters the email")
+@when("L'utente inserisce l'email")
 def step_enter_email(context):
     page = _get_page(context)
     logger.debug("Confermo riepilogo e apro step email")
     _locate_and_click(page, SELECTORS["pay_notice"])
 
 
-@when("The user select the payment method")
+@when("L'utente seleziona il metodo di pagamento")
 def step_select_payment_method(context):
     page = _get_page(context)
     email = _get_required_env("EMAIL")
@@ -64,7 +64,7 @@ def step_select_payment_method(context):
     _locate_and_click(page, SELECTORS["continue_email"])
 
 
-@then("The login button is visible and enabled")
+@then("Il pulsante di login e visibile e abilitato")
 def step_login_button_visible(context):
     page = _get_page(context)
     logger.debug("Verifico visibilita pulsante login")
@@ -73,7 +73,7 @@ def step_login_button_visible(context):
     )
 
 
-@then('The login button title is “Accedi”')
+@then('Il titolo del pulsante di login e "Accedi"')
 def step_login_button_title(context):
     page = _get_page(context)
     title = page.locator(SELECTORS["login_button"]).get_attribute("title")

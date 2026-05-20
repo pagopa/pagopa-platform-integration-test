@@ -1,42 +1,42 @@
 # language: en
 @FEAT_01_Checkout @e2e @checkout @ui
-Feature: Login option availability at all stages of the payment flow.
-  The checkout user wants to verify that the login option is available at various stages of the payment flow
+Feature: Disponibilita opzione login in tutte le fasi del flusso di pagamento
+  L'utente checkout vuole verificare che l'opzione di login sia disponibile nelle varie fasi del flusso di pagamento
 
   Background:
-    Given The checkout page is open
-    And The language is set to "it"
+    Given La pagina di checkout e aperta
+    And La lingua e impostata su "it"
 
   @positive
   @FEAT_01_Checkout_scenario_01
-  Scenario: Login option available when entering notice data
-    When The user enters the notice data
-    Then The login button is visible and enabled
-    And The login button title is “Accedi”
+  Scenario: Opzione login disponibile durante l'inserimento dei dati avviso
+    When L'utente inserisce i dati dell'avviso
+    Then Il pulsante di login e visibile e abilitato
+    And Il titolo del pulsante di login e "Accedi"
 
   @positive
   @FEAT_01_Checkout_scenario_02
-  Scenario: Login option available when entering payment data
-    When The user enters the notice data
-    And The user enters the payment data
-    Then The login button is visible and enabled
-    And The login button title is “Accedi”
+  Scenario: Opzione login disponibile durante l'inserimento dei dati di pagamento
+    When L'utente inserisce i dati dell'avviso
+    And L'utente inserisce i dati di pagamento
+    Then Il pulsante di login e visibile e abilitato
+    And Il titolo del pulsante di login e "Accedi"
 
   @positive
   @FEAT_01_Checkout_scenario_03
-  Scenario: Login option available when entering entering email
-    When The user enters the notice data
-    And The user enters the payment data
-    And The user enters the email
-    Then The login button is visible and enabled
-    And The login button title is “Accedi”
+  Scenario: Opzione login disponibile durante l'inserimento dell'email
+    When L'utente inserisce i dati dell'avviso
+    And L'utente inserisce i dati di pagamento
+    And L'utente inserisce l'email
+    Then Il pulsante di login e visibile e abilitato
+    And Il titolo del pulsante di login e "Accedi"
 
   @positive
   @FEAT_01_Checkout_scenario_04
-  Scenario: login option available when selecting payment method
-    When The user enters the notice data
-    And The user enters the payment data
-    And The user enters the email
-    And The user select the payment method
-    Then The login button is visible and enabled
-    And The login button title is “Accedi”
+  Scenario: Opzione login disponibile durante la selezione del metodo di pagamento
+    When L'utente inserisce i dati dell'avviso
+    And L'utente inserisce i dati di pagamento
+    And L'utente inserisce l'email
+    And L'utente seleziona il metodo di pagamento
+    Then Il pulsante di login e visibile e abilitato
+    And Il titolo del pulsante di login e "Accedi"

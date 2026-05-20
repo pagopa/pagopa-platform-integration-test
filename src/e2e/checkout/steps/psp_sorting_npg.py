@@ -2,7 +2,7 @@ import logging
 import re
 
 from behave import given, when, then
-from ..helper import _get_page, _get_required_env, _generate_random_notice_code, _locate_and_click
+from helper import _get_page, _get_required_env, _generate_random_notice_code, _locate_and_click
 
 logger = logging.getLogger(__name__)
 
@@ -11,13 +11,13 @@ logger = logging.getLogger(__name__)
 # ──────────────────────────────────────────────
 # Summary page sort buttons
 _SORT_BUTTON_SELECTORS = {
-    "sort by fee": "#sortByFee",
-    "sort by name": "#sortByName",
+    "ordina per commissione": "#sortByFee",
+    "ordina per nome": "#sortByName",
 }
 # PSP selection page radio options
 _SORT_RADIO_SELECTORS = {
-    "order by name": "#sort-psp-list-drawer-order-by-name",
-    "order by amount": "#sort-psp-list-drawer-order-by-amount",
+    "ordina per nome": "#sort-psp-list-drawer-order-by-name",
+    "ordina per importo": "#sort-psp-list-drawer-order-by-amount",
 }
 
 
@@ -25,7 +25,7 @@ _SORT_RADIO_SELECTORS = {
 # GIVEN steps (Background)
 # ──────────────────────────────────────────────
 
-@given('The user enters a valid notice code with prefix "30202"')
+@given('L\'utente inserisce un codice avviso valido con prefisso "30202"')
 def step_generate_notice_code(context):
     """
     Generate a random notice code with the given prefix (e.g. "30202")
@@ -35,7 +35,7 @@ def step_generate_notice_code(context):
     logger.debug("Generated notice code: %s (prefix: %s)", context.notice_code, "30202")
 
 
-@given('The user enters a valid taxpayer fiscal code')
+@given('L\'utente inserisce un codice fiscale valido del pagatore')
 def step_store_fiscal_code(context):
     """
     Store the fiscal code in context.
@@ -49,7 +49,7 @@ def step_store_fiscal_code(context):
 # WHEN steps — notice form
 # ──────────────────────────────────────────────
 
-@when('The user enters the notice information')
+@when('L\'utente inserisce le informazioni dell\'avviso')
 def step_enter_notice_data(context):
     """
     Open the manual keyboard form and fill in the notice code and fiscal code
@@ -81,7 +81,7 @@ def step_enter_notice_data(context):
 # WHEN steps — summary page
 # ──────────────────────────────────────────────
 
-@when('The user clicks the pay button on the summary page')
+@when('L\'utente clicca il pulsante paga nella pagina di riepilogo')
 def step_click_pay_summary(context):
     """Click the pay button on the payment summary page."""
     page = _get_page(context)
@@ -89,7 +89,7 @@ def step_click_pay_summary(context):
     _locate_and_click(page, "#paymentSummaryButtonPay")
 
 
-@when('The user enters and confirm the email')
+@when('L\'utente inserisce e conferma l\'email')
 def step_enter_and_confirm_email(context):
     """
     Fill in the email and confirm email fields using EMAIL from env,
@@ -113,7 +113,7 @@ def step_enter_and_confirm_email(context):
 # WHEN steps — PSP list page (after PPAL selection)
 # ──────────────────────────────────────────────
 
-@when('The user selects the PSP with radio id "{psp_radio_id}"')
+@when('L\'utente seleziona il PSP con id radio "{psp_radio_id}"')
 def step_select_psp_radio(context, psp_radio_id):
     """Click the PSP radio button by its id (used on the PSP list page)."""
     page = _get_page(context)
@@ -121,7 +121,7 @@ def step_select_psp_radio(context, psp_radio_id):
     _locate_and_click(page, f"#psp-radio-{psp_radio_id}")
 
 
-@when('The user clicks the PSP list continue button')
+@when('L\'utente clicca il pulsante continua della lista PSP')
 def step_click_psp_list_continue(context):
     """Click the continue button on the PSP list page."""
     page = _get_page(context)
@@ -133,7 +133,7 @@ def step_click_psp_list_continue(context):
 # WHEN steps — summary page PSP edit
 # ──────────────────────────────────────────────
 
-@when('The user clicks the PSP edit button on the summary page')
+@when('L\'utente clicca il pulsante modifica PSP nella pagina di riepilogo')
 def step_click_psp_edit_summary(context):
     """Click the PSP edit/change button on the summary page (#pspEdit)."""
     page = _get_page(context)
@@ -144,7 +144,7 @@ def step_click_psp_edit_summary(context):
     logger.debug("PSP fee list loaded")
 
 
-@when('The user clicks the "{sort_type}" button')
+@when('L\'utente clicca il pulsante "{sort_type}"')
 def step_click_sort_button(context, sort_type):
     """
     Click a sort button on the summary page PSP list.
@@ -163,7 +163,7 @@ def step_click_sort_button(context, sort_type):
 # WHEN steps — PSP selection page sorting (drawer)
 # ──────────────────────────────────────────────
 
-@when('The PSP selection page is loaded')
+@when('La pagina di selezione PSP e caricata')
 def step_psp_selection_page_loaded(context):
     """Wait for the PSP selection page to render (at least one .pspFeeName visible)."""
     page = _get_page(context)
@@ -172,7 +172,7 @@ def step_psp_selection_page_loaded(context):
     logger.debug("PSP selection page loaded")
 
 
-@when('The user clicks the sort PSP list button')
+@when('L\'utente clicca il pulsante ordina lista PSP')
 def step_click_sort_psp_list_button(context):
     """Click the sort/filter button on the PSP selection page (#sort-psp-list)."""
     page = _get_page(context)
@@ -181,7 +181,7 @@ def step_click_sort_psp_list_button(context):
     logger.debug("Sort drawer opened")
 
 
-@when('The user selects the "{radio_option}" radio option')
+@when('L\'utente seleziona l\'opzione radio "{radio_option}"')
 def step_select_sort_radio(context, radio_option):
     """
     Select a sort radio option inside the sort drawer.
@@ -196,7 +196,7 @@ def step_select_sort_radio(context, radio_option):
     _locate_and_click(page, selector)
 
 
-@when('The user clicks the show results button')
+@when('L\'utente clicca il pulsante mostra risultati')
 def step_click_show_results(context):
     """Click the show results / apply sort button (#sort-psp-list-drawer)."""
     page = _get_page(context)
@@ -209,7 +209,7 @@ def step_click_show_results(context):
 # WHEN steps — cancel payment
 # ──────────────────────────────────────────────
 
-@when('The user cancels the payment')
+@when('L\'utente annulla il pagamento')
 def step_cancel_payment(context):
     """
     Cancel the current payment:
@@ -254,7 +254,7 @@ def _get_fee_values(page) -> list:
     return values
 
 
-@then('The PSP fee list is sorted in ascending order')
+@then('La lista delle commissioni PSP e ordinata in ordine crescente')
 def step_fee_list_ascending(context):
     """Assert that all .pspFeeValue elements are in ascending (non-decreasing) order."""
     page = _get_page(context)
@@ -267,7 +267,7 @@ def step_fee_list_ascending(context):
     logger.debug("PSP fee list is correctly sorted ascending")
 
 
-@then('The PSP fee list is sorted in descending order')
+@then('La lista delle commissioni PSP e ordinata in ordine decrescente')
 def step_fee_list_descending(context):
     """Assert that all .pspFeeValue elements are in descending (non-increasing) order."""
     page = _get_page(context)
@@ -293,7 +293,7 @@ def _get_name_values(page) -> list:
     return values
 
 
-@then('The PSP name list is sorted in descending alphabetical order')
+@then('La lista dei nomi PSP e ordinata in ordine alfabetico decrescente')
 def step_name_list_descending(context):
     """
     Assert that .pspFeeName elements are in descending alphabetical order.
@@ -310,7 +310,7 @@ def step_name_list_descending(context):
     logger.debug("PSP name list is correctly sorted descending")
 
 
-@then('The PSP name list is sorted in ascending alphabetical order')
+@then('La lista dei nomi PSP e ordinata in ordine alfabetico crescente')
 def step_name_list_ascending(context):
     """
     Assert that .pspFeeName elements are in ascending alphabetical order.
@@ -327,7 +327,7 @@ def step_name_list_ascending(context):
     logger.debug("PSP name list is correctly sorted ascending")
 
 
-@then('The user cancels the payment')
+@then('L\'utente annulla il pagamento')
 def step_cancel_payment(context):
     page = _get_page(context)
 

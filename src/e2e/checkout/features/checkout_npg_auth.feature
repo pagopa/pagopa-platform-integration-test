@@ -1,35 +1,35 @@
 @FEAT_004_Checkout @e2e @checkout @ui
-Feature: Checkout Payment Activation Authenticated
-  A user of the checkout system
-  wants to complete a payment using a credit/debit card
-  so that he can pay a notice through the pagoPA platform
+Feature: Attivazione pagamento Checkout autenticato
+  Un utente del sistema checkout
+  vuole completare un pagamento con carta di credito/debito
+  cosi da poter pagare un avviso tramite la piattaforma pagoPA
 
   Background:
-    Given The checkout page is open
-    And The language is set to "it"
-    And The user is authenticated
+    Given La pagina di checkout e aperta
+    And La lingua e impostata su "it"
+    And L'utente e autenticato
 
   # ──────────────────────────────────────────────
-  # Happy path: full payment flow
+  # Happy path: flusso di pagamento completo
   # ──────────────────────────────────────────────
   @positive
   @FEAT_004_Checkout_scenario_01
-  Scenario Outline: A payment with card configuration "<testing_psp>" is successfully completed
-    When The user enters the notice data with a notice code with notice code prefix "<notice_code_prefix>"
-    And The user enters the taxpayer fiscal code "<fiscal_code>"
-    And The user clicks the verify button
-    And The user clicks the pay button
-    And The user enters the email "<email>"
-    And The user confirms the email "<email>"
-    And The user selects the payment method "CP"
-    And The user fills in the card number "<pan>"
-    And The user fills in the expiration date "<expiration_date>"
-    And The user fills in the security code "<cvv>"
-    And The user fills in the cardholder name "Test test"
-    And The user selects the PSP with id "<pspId>"
-    And The user confirms the PSP selection
-    And The user clicks the final pay button
-    Then A successful payment message is shown
+  Scenario Outline: Un pagamento con configurazione carta "<testing_psp>" viene completato con successo
+    When L'utente inserisce i dati dell'avviso con un codice avviso con prefisso "<notice_code_prefix>"
+    And L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"
+    And L'utente clicca il pulsante verifica
+    And L'utente clicca il pulsante paga
+    And L'utente inserisce l'email "<email>"
+    And L'utente conferma l'email "<email>"
+    And L'utente seleziona il metodo di pagamento "CP"
+    And L'utente inserisce il numero carta "<pan>"
+    And L'utente inserisce la data di scadenza "<expiration_date>"
+    And L'utente inserisce il codice di sicurezza "<cvv>"
+    And L'utente inserisce il nome dell'intestatario carta "Test test"
+    And L'utente seleziona il PSP con id "<pspId>"
+    And L'utente conferma la selezione del PSP
+    And L'utente clicca il pulsante paga finale
+    Then Viene mostrato un messaggio di pagamento completato con successo
 
     Examples:
       | testing_psp | notice_code_prefix | fiscal_code | email                              | pan              | expiration_date | cvv | pspId       |
@@ -38,18 +38,18 @@ Feature: Checkout Payment Activation Authenticated
       | Worldpay    | 30201              | 77777777777 | ecommerce-test-mailgroup@pagopa.it | 4242424242424242 | 12/30           | 123 | WOLLNLB1    |
 
   # ──────────────────────────────────────────────
-  # Error cases: verify/activate payment errors
+  # Casi di errore: errori di verifica/attivazione pagamento
   # ──────────────────────────────────────────────
 
   @negative
   @FEAT_004_Checkout_scenario_02
-  Scenario Outline: Error <error_code> for invalid notice code in range <range_start>-<range_end> is shown on verify
-    When The user enters the notice data with a notice code in range "<range_start>" to "<range_end>"
-    And The user enters the taxpayer fiscal code "<fiscal_code>"
-    And The user clicks the verify button
-    Then An error modal is displayed after "<seconds>" seconds
-    And The error modal header contains "<expected_header>"
-    And The error modal body contains "<expected_body>"
+  Scenario Outline: Viene mostrato l'errore <error_code> per codice avviso non valido nell'intervallo <range_start>-<range_end>
+    When L'utente inserisce i dati dell'avviso con un codice avviso nell'intervallo "<range_start>" a "<range_end>"
+    And L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"
+    And L'utente clicca il pulsante verifica
+    Then Viene mostrata una modale di errore dopo "<seconds>" secondi
+    And L'intestazione della modale di errore contiene "<expected_header>"
+    And Il corpo della modale di errore contiene "<expected_body>"
 
     Examples:
       | error_code                  | range_start        | range_end          | fiscal_code | seconds | expected_header                                  | expected_body                                                                                  |
@@ -60,14 +60,14 @@ Feature: Checkout Payment Activation Authenticated
 
   @negative
   @FEAT_004_Checkout_scenario_03
-  Scenario Outline: Error code for unreachable creditor institution is shown on verify
-    When The user enters the notice data with a notice code in range "<range_start>" to "<range_end>"
-    And The user enters the taxpayer fiscal code "<fiscal_code>"
-    And The user clicks the verify button
-    Then An error modal is displayed
-    And The error modal header contains "<expected_header>"
-    And The error modal body contains "<expected_body>"
-    And The error code shown contains "<error_code>"
+  Scenario Outline: Viene mostrato il codice di errore per ente creditore non raggiungibile
+    When L'utente inserisce i dati dell'avviso con un codice avviso nell'intervallo "<range_start>" a "<range_end>"
+    And L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"
+    And L'utente clicca il pulsante verifica
+    Then Viene mostrata una modale di errore
+    And L'intestazione della modale di errore contiene "<expected_header>"
+    And Il corpo della modale di errore contiene "<expected_body>"
+    And Il codice di errore mostrato contiene "<error_code>"
 
     Examples:
       | error_code                          | range_start        | range_end          | fiscal_code | expected_header                                     | expected_body                     |
