@@ -1,4 +1,4 @@
-import src.utility.wisp.constants as constants
+from . import constants as constants
 
 
 # The method permits to retrieve the SOAP URL starting from request primitive

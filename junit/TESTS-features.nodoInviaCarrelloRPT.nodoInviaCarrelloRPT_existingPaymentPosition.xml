@@ -1,0 +1,317 @@
+<testsuite name="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.User pays a payment carts from existing payment position via nodoInviaCarrelloRPT" tests="16" errors="0" failures="3" skipped="0" time="186.962737" timestamp="2026-05-19T16:18:24.094619" hostname="2SQDFS3-A081"><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.User pays a payment carts from existing payment position via nodoInviaCarrelloRPT" name="User pays a cart with single RPT without stamp that exists already in GPD" status="passed" time="22.941422"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path
+  Scenario: User pays a cart with single RPT without stamp that exists already in GPD
+    Given systems up ... passed in 0.513s
+    Given a cart of RPTs non-multibeneficiary ... passed in 0.000s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.003s
+    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID ... passed in 0.235s
+    When the user tries to pay a cart of RPTs on EC website ... passed in 0.285s
+    Then the user is redirected on Checkout completing the payment ... passed in 19.552s
+    And the debt position is closed ... passed in 2.353s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.User pays a payment carts from existing payment position via nodoInviaCarrelloRPT" name="User pays a cart with single RPT with multiple transfers that exists already in GPD" status="passed" time="23.073779"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path
+  Scenario: User pays a cart with single RPT with multiple transfers that exists already in GPD
+    Given systems up ... passed in 0.415s
+    Given a cart of RPTs non-multibeneficiary ... passed in 0.000s
+    And a single RPT of type BBT with 3 transfers of which none are stamps ... passed in 0.000s
+    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID ... passed in 0.270s
+    When the user tries to pay a cart of RPTs on EC website ... passed in 0.455s
+    Then the user is redirected on Checkout completing the payment ... passed in 19.594s
+    And the debt position is closed ... passed in 2.339s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.User pays a payment carts from existing payment position via nodoInviaCarrelloRPT" name="Scenario: User pays a cart with single RPT with one stamp that exists already in GPD" status="passed" time="23.420228"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path
+  Scenario: Scenario: User pays a cart with single RPT with one stamp that exists already in GPD
+    Given systems up ... passed in 0.462s
+    Given a cart of RPTs non-multibeneficiary ... passed in 0.000s
+    And a single RPT of type BBT with 2 transfers of which 1 are stamps ... passed in 0.000s
+    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID ... passed in 0.309s
+    When the user tries to pay a cart of RPTs on EC website ... passed in 0.832s
+    Then the user is redirected on Checkout completing the payment ... passed in 19.529s
+    And the debt position is closed ... passed in 2.287s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.User pays a payment carts from existing payment position via nodoInviaCarrelloRPT" name="User pays a cart with two RPTs without stamp of which one already exists in GPD" status="passed" time="24.822313"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path
+  Scenario: User pays a cart with two RPTs without stamp of which one already exists in GPD
+    Given systems up ... passed in 0.408s
+    Given a cart of RPTs non-multibeneficiary ... passed in 0.000s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.000s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.000s
+    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID ... passed in 0.257s
+    When the user tries to pay a cart of RPTs on EC website ... passed in 0.632s
+    Then the user is redirected on Checkout completing the payment ... passed in 20.922s
+    And the debt position is closed ... passed in 2.603s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.User pays a payment carts from existing payment position via nodoInviaCarrelloRPT" name="User pays a cart with two RPTs with multiple transfers that exists already in GPD" status="passed" time="24.599121"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path
+  Scenario: User pays a cart with two RPTs with multiple transfers that exists already in GPD
+    Given systems up ... passed in 0.392s
+    Given a cart of RPTs non-multibeneficiary ... passed in 0.000s
+    And a single RPT of type BBT with 3 transfers of which none are stamps ... passed in 0.000s
+    And a single RPT of type BBT with 3 transfers of which none are stamps ... passed in 0.000s
+    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID ... passed in 0.249s
+    When the user tries to pay a cart of RPTs on EC website ... passed in 0.443s
+    Then the user is redirected on Checkout completing the payment ... passed in 20.885s
+    And the debt position is closed ... passed in 2.628s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.User pays a payment carts from existing payment position via nodoInviaCarrelloRPT" name="Scenario: User pays a cart with two RPTs with at least on stamp that exists already in GPD" status="passed" time="25.227225"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path
+  Scenario: Scenario: User pays a cart with two RPTs with at least on stamp that exists already in GPD
+    Given systems up ... passed in 0.599s
+    Given a cart of RPTs non-multibeneficiary ... passed in 0.000s
+    And a single RPT of type BBT with 2 transfers of which 1 are stamps ... passed in 0.001s
+    And a single RPT of type BBT with 3 transfers of which 1 are stamps ... passed in 0.001s
+    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID ... passed in 0.331s
+    When the user tries to pay a cart of RPTs on EC website ... passed in 0.386s
+    Then the user is redirected on Checkout completing the payment ... passed in 21.221s
+    And the debt position is closed ... passed in 2.689s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.User pays a payment carts from existing payment position via nodoInviaCarrelloRPT" name="User tries to pay a cart with single RPT that exists already in GPD in invalid state" status="passed" time="3.84691"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path
+  Scenario: User tries to pay a cart with single RPT that exists already in GPD in invalid state
+    Given systems up ... passed in 0.395s
+    Given a cart of RPTs non-multibeneficiary ... passed in 0.000s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.000s
+    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to DRAFT ... passed in 0.253s
+    When the user tries to pay a cart of RPTs on EC website ... passed in 0.360s
+    Then conversion to new model fails in wisp-converter ... passed in 0.506s
+    And the KO receipt is sent ... passed in 2.334s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.User pays a payment carts from existing payment position via nodoInviaCarrelloRPT" name="User tries to pay a cart with single RPT that was inserted from ACA and is in valid state" status="passed" time="3.865972"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path
+  Scenario: User tries to pay a cart with single RPT that was inserted from ACA and is in valid state
+    Given systems up ... passed in 0.460s
+    Given a cart of RPTs non-multibeneficiary ... passed in 0.000s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.000s
+    And an existing payment position related to first RPT with segregation code equals to 01 and state equals to VALID ... passed in 0.322s
+    When the user tries to pay a cart of RPTs on EC website ... passed in 0.277s
+    Then conversion to new model fails in wisp-converter ... passed in 0.444s
+    And the KO receipt is sent ... passed in 2.363s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.User pays a payment carts from existing payment position via nodoInviaCarrelloRPT" name="User tries to pay a cart with single RPT that was inserted from ACA and is in invalid state" status="passed" time="4.432994"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path
+  Scenario: User tries to pay a cart with single RPT that was inserted from ACA and is in invalid state
+    Given systems up ... passed in 0.437s
+    Given a cart of RPTs non-multibeneficiary ... passed in 0.000s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.000s
+    And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT ... passed in 0.288s
+    When the user tries to pay a cart of RPTs on EC website ... passed in 0.380s
+    Then conversion to new model fails in wisp-converter ... passed in 1.077s
+    And the KO receipt is sent ... passed in 2.251s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.User pays a payment carts from existing payment position via nodoInviaCarrelloRPT" name="User tries to pay a cart with two RPTs that exists already in GPD in invalid state" status="failed" time="4.406468"><failure type="AssertionError" message="There is no error matching the one searched in the field_name: operation_error_code">
+<![CDATA[
+Failing step: And the KO receipt is sent ... failed in 2.337s
+Location: src/bdd/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_existingPaymentPosition.feature:128
+Assertion Failed: There is no error matching the one searched in the field_name: operation_error_code
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x000001F8F25B3E70>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+ERROR:root:[Assert Error] There are no events with business process redirect and field operation_error_code containing value [WIC-1300].
+ERROR:root:[Assert Error] There are no events with business process redirect and field operation_error_code containing value [WIC-1205].
+ERROR:root:[Assert Error] There are no events with business process redirect and field operation_error_code containing value [3001].]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path
+  Scenario: User tries to pay a cart with two RPTs that exists already in GPD in invalid state
+    Given systems up ... passed in 0.416s
+    Given a cart of RPTs non-multibeneficiary ... passed in 0.000s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.000s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.000s
+    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to DRAFT ... passed in 0.236s
+    When the user tries to pay a cart of RPTs on EC website ... passed in 0.354s
+    Then conversion to new model fails in wisp-converter ... passed in 1.063s
+    And the KO receipt is sent ... failed in 2.337s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.User pays a payment carts from existing payment position via nodoInviaCarrelloRPT" name="User tries to pay a cart with two RPTs that was inserted from ACA and is in valid state" status="passed" time="4.360658"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path
+  Scenario: User tries to pay a cart with two RPTs that was inserted from ACA and is in valid state
+    Given systems up ... passed in 0.453s
+    Given a cart of RPTs non-multibeneficiary ... passed in 0.000s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.000s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.000s
+    And an existing payment position related to first RPT with segregation code equals to 01 and state equals to VALID ... passed in 0.220s
+    When the user tries to pay a cart of RPTs on EC website ... passed in 0.338s
+    Then conversion to new model fails in wisp-converter ... passed in 1.060s
+    And the KO receipt is sent ... passed in 2.288s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.User pays a payment carts from existing payment position via nodoInviaCarrelloRPT" name="User tries to pay a cart with two RPTs that was inserted from ACA and is in invalid state" status="failed" time="4.887503"><failure type="AssertionError" message="There is no error matching the one searched in the field_name: operation_error_code">
+<![CDATA[
+Failing step: And the KO receipt is sent ... failed in 2.464s
+Location: src/bdd/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_existingPaymentPosition.feature:154
+Assertion Failed: There is no error matching the one searched in the field_name: operation_error_code
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x000001F8F25B28E0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+ERROR:root:[Assert Error] There are no events with business process redirect and field operation_error_code containing value [WIC-1300].
+ERROR:root:[Assert Error] There are no events with business process redirect and field operation_error_code containing value [WIC-1205].
+ERROR:root:[Assert Error] There are no events with business process redirect and field operation_error_code containing value [3001].]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path
+  Scenario: User tries to pay a cart with two RPTs that was inserted from ACA and is in invalid state
+    Given systems up ... passed in 0.416s
+    Given a cart of RPTs non-multibeneficiary ... passed in 0.000s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.000s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.000s
+    And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT ... passed in 0.275s
+    When the user tries to pay a cart of RPTs on EC website ... passed in 0.452s
+    Then conversion to new model fails in wisp-converter ... passed in 1.279s
+    And the KO receipt is sent ... failed in 2.464s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.User pays a payment carts from existing payment position via nodoInviaCarrelloRPT" name="User tries to pay a multibeneficiary cart that exists already in GPD in invalid state" status="passed" time="4.332114"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path
+  Scenario: User tries to pay a multibeneficiary cart that exists already in GPD in invalid state
+    Given systems up ... passed in 0.606s
+    Given a cart of RPTs for multibeneficiary ... passed in 0.000s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.000s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.000s
+    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to DRAFT ... passed in 0.351s
+    When the user tries to pay a cart of RPTs on EC website ... passed in 0.460s
+    Then conversion to new model fails in wisp-converter ... passed in 0.604s
+    And the KO receipt is sent ... passed in 2.310s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.User pays a payment carts from existing payment position via nodoInviaCarrelloRPT" name="User tries to pay a multibeneficiary cart that was inserted from ACA and is in valid state" status="passed" time="6.408206"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path
+  Scenario: User tries to pay a multibeneficiary cart that was inserted from ACA and is in valid state
+    Given systems up ... passed in 0.839s
+    Given a cart of RPTs for multibeneficiary ... passed in 0.000s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.000s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.000s
+    And an existing payment position related to first RPT with segregation code equals to 01 and state equals to VALID ... passed in 0.597s
+    When the user tries to pay a cart of RPTs on EC website ... passed in 0.805s
+    Then conversion to new model fails in wisp-converter ... passed in 1.770s
+    And the KO receipt is sent ... passed in 2.397s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.User pays a payment carts from existing payment position via nodoInviaCarrelloRPT" name="User tries to pay a multibeneficiary cart that was inserted from ACA and is in invalid state" status="passed" time="4.163318"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path
+  Scenario: User tries to pay a multibeneficiary cart that was inserted from ACA and is in invalid state
+    Given systems up ... passed in 0.512s
+    Given a cart of RPTs for multibeneficiary ... passed in 0.000s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.000s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.000s
+    And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT ... passed in 0.263s
+    When the user tries to pay a cart of RPTs on EC website ... passed in 0.367s
+    Then conversion to new model fails in wisp-converter ... passed in 0.698s
+    And the KO receipt is sent ... passed in 2.323s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.User pays a payment carts from existing payment position via nodoInviaCarrelloRPT" name="User pays a multibeneficiary cart that exists already in GPD" status="failed" time="2.174505"><failure type="AssertionError" message="The status code is not 200. Current value: 302.">
+<![CDATA[
+Failing step: Then conversion to new model fails in wisp-converter ... failed in 0.629s
+Location: src/bdd/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_existingPaymentPosition.feature:205
+Assertion Failed: The status code is not 200. Current value: 302.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x000001F8F2934220>]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path
+  Scenario: User pays a multibeneficiary cart that exists already in GPD
+    Given systems up ... passed in 0.937s
+    Given a cart of RPTs for multibeneficiary ... passed in 0.000s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.001s
+    And a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.000s
+    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID ... passed in 0.237s
+    When the user tries to pay a cart of RPTs on EC website ... passed in 0.370s
+    Then conversion to new model fails in wisp-converter ... failed in 0.629s
+    And the KO receipt is sent ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

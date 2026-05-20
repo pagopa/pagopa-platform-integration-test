@@ -1,0 +1,153 @@
+<testsuite name="features.nodoInviaRPT.nodoInviaRPT_noStamp.User pays a single payment without stamps via nodoInviaRPT" tests="10" errors="0" failures="1" skipped="0" time="133.910345" timestamp="2026-05-19T16:31:11.633211" hostname="2SQDFS3-A081"><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.User pays a single payment without stamps via nodoInviaRPT" name="User pays a single payment with single transfer and no stamp" status="passed" time="20.562782"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path
+  Scenario: User pays a single payment with single transfer and no stamp
+    Given systems up ... passed in 0.428s
+    Given a single RPT of type BBT with 1 transfers of which none are stamps ... passed in 0.000s
+    When the user tries to pay the RPT on EC website ... passed in 0.409s
+    Then the user is redirected on Checkout completing the payment ... passed in 19.725s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.User pays a single payment without stamps via nodoInviaRPT" name="User pays a single payment with two transfers and no stamp" status="passed" time="20.361901"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path
+  Scenario: User pays a single payment with two transfers and no stamp
+    Given systems up ... passed in 0.407s
+    Given a single RPT of type BBT with 2 transfers of which none are stamps ... passed in 0.000s
+    When the user tries to pay the RPT on EC website ... passed in 0.325s
+    Then the user is redirected on Checkout completing the payment ... passed in 19.629s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.User pays a single payment without stamps via nodoInviaRPT" name="User pays a single payment with three transfers and no stamp" status="passed" time="21.14333"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path
+  Scenario: User pays a single payment with three transfers and no stamp
+    Given systems up ... passed in 0.411s
+    Given a single RPT of type BBT with 3 transfers of which none are stamps ... passed in 0.000s
+    When the user tries to pay the RPT on EC website ... passed in 0.308s
+    Then the user is redirected on Checkout completing the payment ... passed in 20.424s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.User pays a single payment without stamps via nodoInviaRPT" name="User pays a single payment with four transfers and no stamp" status="passed" time="22.096887"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path
+  Scenario: User pays a single payment with four transfers and no stamp
+    Given systems up ... passed in 0.849s
+    Given a single RPT of type BBT with 4 transfers of which none are stamps ... passed in 0.000s
+    When the user tries to pay the RPT on EC website ... passed in 1.567s
+    Then the user is redirected on Checkout completing the payment ... passed in 19.680s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.User pays a single payment without stamps via nodoInviaRPT" name="User pays a single payment with five transfers and no stamp" status="passed" time="20.454097"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path
+  Scenario: User pays a single payment with five transfers and no stamp
+    Given systems up ... passed in 0.427s
+    Given a single RPT of type BBT with 5 transfers of which none are stamps ... passed in 0.000s
+    When the user tries to pay the RPT on EC website ... passed in 0.329s
+    Then the user is redirected on Checkout completing the payment ... passed in 19.698s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.User pays a single payment without stamps via nodoInviaRPT" name="User pays a single payment as PO type with one transfer and no stamp" status="passed" time="0.811712"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path
+  Scenario: User pays a single payment as PO type with one transfer and no stamp
+    Given systems up ... passed in 0.425s
+    Given a single RPT of type PO with 1 transfers of which 0 are stamps ... passed in 0.000s
+    When the user sends a nodoInviaRPT request ... passed in 0.386s
+    Then the user receives a successful response ... passed in 0.000s
+    And the response contains the old WISP URL ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.User pays a single payment without stamps via nodoInviaRPT" name="User pays a single payment as PO type with two transfer and no stamp" status="passed" time="0.732621"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @unhappy_path
+  Scenario: User pays a single payment as PO type with two transfer and no stamp
+    Given systems up ... passed in 0.412s
+    Given a single RPT of type PO with 2 transfers of which 0 are stamps ... passed in 0.000s
+    When the user tries to pay the RPT on EC website but fails ... passed in 0.320s
+    Then fails having invalid semantic validation due to incorrect RPT structure and getting the error PPT_SEMANTICA ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.User pays a single payment without stamps via nodoInviaRPT" name="User executes a first redirect, then execute the redirection again and complete the payment flow" status="failed" time="1.966196"><failure type="AssertionError" message="The status code is not 302. Current value: 200.">
+<![CDATA[
+Failing step: And the user is redirected on Checkout completing the payment ... failed in 0.372s
+Location: src/bdd/wisp/features/nodoInviaRPT/nodoInviaRPT_noStamp.feature:78
+Assertion Failed: The status code is not 302. Current value: 200.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x000001F8F25B1A30>]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path @to_fix
+  Scenario: User executes a first redirect, then execute the redirection again and complete the payment flow
+    Given systems up ... passed in 0.418s
+    Given a single RPT of type BBT with 1 transfers of which 0 are stamps ... passed in 0.001s
+    When the user tries to pay the RPT on EC website ... passed in 0.629s
+    Then the conversion to new model succeeds in wisp-converter ... passed in 0.546s
+    And the user is redirected on Checkout completing the payment ... failed in 0.372s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.User pays a single payment without stamps via nodoInviaRPT" name="User tries two time to pay the same RPT but the conversion to the new model fails" status="passed" time="21.294915"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @unhappy_path
+  Scenario: User tries two time to pay the same RPT but the conversion to the new model fails
+    Given systems up ... passed in 0.428s
+    Given a single RPT of type BBT with 1 transfers of which 0 are stamps ... passed in 0.000s
+    When the user tries to pay the RPT on EC website ... passed in 0.399s
+    Then the user is redirected on Checkout completing the payment ... passed in 20.238s
+    And conversion to new model fails in wisp-converter ... passed in 0.229s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.User pays a single payment without stamps via nodoInviaRPT" name="User tries the payment, then retries again the flow but fails" status="passed" time="4.485905"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @unhappy_path @to_fix
+  Scenario: User tries the payment, then retries again the flow but fails
+    Given systems up ... passed in 0.422s
+    Given a single RPT of type BBT with 1 transfers of which 0 are stamps ... passed in 0.001s
+    And the user tried to pay the RPT on EC website ... passed in 3.385s
+    When send activatePaymentNoticeV2 requests ... passed in 0.468s
+    Then conversion to new model fails in wisp-converter ... passed in 0.211s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
