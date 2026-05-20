@@ -1,8 +1,7 @@
 @FEAT_005_Checkout @e2e @checkout @ui
 Feature: PSP List Sorting in Checkout
-  As a checkout user
-  I want the PSP (Payment Service Provider) list to be sortable
-  So that I can choose the most convenient provider by fee or name
+  The checkout user wants the PSP (Payment Service Provider) list to be sortable
+  So that he can choose the most convenient provider by fee or name
 
   Background:
     Given The checkout page is open
