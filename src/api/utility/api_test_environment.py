@@ -18,7 +18,7 @@ def _resolve_env_file(env: str) -> str:
     Restituisce il percorso assoluto del file .env per l'ambiente richiesto.
     I file sono in <repo_root>/config/api-tests/.env.<env>.
     """
-    # src/utility/api_test/api_test_environment.py → 4 dirname = repo root
+    # src/api/utility/api_test_environment.py → 4 dirname = repo root
     repo_root = os.path.dirname(
         os.path.dirname(
             os.path.dirname(

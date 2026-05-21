@@ -6,7 +6,7 @@ from urllib.parse import parse_qs, urlparse
 
 import requests
 
-from src.utility.api_test.http_client import request as http_request
+from src.api.utility.http_client import request as http_request
 
 
 LOGIN_ENDPOINT = "/checkout/auth-service/v1/auth/login"

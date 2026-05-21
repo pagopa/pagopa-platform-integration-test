@@ -2,7 +2,7 @@ import os
 
 from behave import given, when, then
 
-from src.utility.api_test.cart.cart_helpers import (
+from src.api.utility.cart.cart_helpers import (
     get_checkout_host,
     generate_notice_code,
     build_cart_body,

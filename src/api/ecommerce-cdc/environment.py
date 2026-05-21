@@ -4,7 +4,7 @@ Behave environment hooks per gli eCommerce CDC api tests.
 Delega il caricamento delle variabili d'ambiente agli hook comuni degli api-test,
 aggiungendo il reset dello stato condiviso usato dagli scenari CDC.
 """
-from src.utility.api_test.api_test_environment import (
+from src.api.utility.api_test_environment import (
     before_all,
     before_scenario as _before_scenario_common,
 )
