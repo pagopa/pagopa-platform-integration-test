@@ -552,7 +552,7 @@ def search_paymentposition_by_iuv(context, index):
                                                           description=req_description)
 
     # update context setting all information about response
-    context.flow_data['action']['response'][status_code] = status_code
+    context.flow_data['action']['response']['status_code'] = status_code
 
     context.flow_data['action']['response']['body'] = body_response
 
