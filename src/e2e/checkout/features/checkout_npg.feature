@@ -1,12 +1,14 @@
+# language: it
+
 @FEAT_003_checkout @e2e @checkout @ui
-Feature: Attivazione pagamento Checkout
+Funzionalità: Attivazione pagamento Checkout
   Un utente del sistema checkout
   vuole completare un pagamento con carta di credito/debito
   cosi da poter pagare un avviso tramite la piattaforma pagoPA
 
-  Background:
-    Given La pagina di checkout e aperta
-    And La lingua e impostata su "it"
+  Contesto:
+    Dato La pagina di checkout e aperta
+    E La lingua e impostata su "it"
 
   # ──────────────────────────────────────────────
   # Happy path: flusso di pagamento completo
@@ -14,24 +16,24 @@ Feature: Attivazione pagamento Checkout
 
   @positive
   @FEAT_003_checkout_scenario_01
-  Scenario Outline: Un pagamento con configurazione carta "<testing_psp>" viene completato con successo
-    When L'utente inserisce i dati dell'avviso con un codice avviso con prefisso "<notice_code_prefix>"
-    And L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"
-    And L'utente clicca il pulsante verifica
-    And L'utente clicca il pulsante paga
-    And L'utente inserisce l'email "<email>"
-    And L'utente conferma l'email "<email>"
-    And L'utente seleziona il metodo di pagamento "CP"
-    And L'utente inserisce il numero carta "<pan>"
-    And L'utente inserisce la data di scadenza "<expiration_date>"
-    And L'utente inserisce il codice di sicurezza "<cvv>"
-    And L'utente inserisce il nome dell'intestatario carta "Test test"
-    And L'utente seleziona il PSP con id "<pspId>"
-    And L'utente conferma la selezione del PSP
-    And L'utente clicca il pulsante paga finale
-    Then Viene mostrato un messaggio di pagamento completato con successo
+  Schema dello scenario: Un pagamento con configurazione carta "<testing_psp>" viene completato con successo
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso con prefisso "<notice_code_prefix>"
+    E L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"
+    E L'utente clicca il pulsante verifica
+    E L'utente clicca il pulsante paga
+    E L'utente inserisce l'email "<email>"
+    E L'utente conferma l'email "<email>"
+    E L'utente seleziona il metodo di pagamento "CP"
+    E L'utente inserisce il numero carta "<pan>"
+    E L'utente inserisce la data di scadenza "<expiration_date>"
+    E L'utente inserisce il codice di sicurezza "<cvv>"
+    E L'utente inserisce il nome dell'intestatario carta "Test test"
+    E L'utente seleziona il PSP con id "<pspId>"
+    E L'utente conferma la selezione del PSP
+    E L'utente clicca il pulsante paga finale
+    Allora Viene mostrato un messaggio di pagamento completato con successo
 
-    Examples:
+    Esempi:
       | testing_psp | notice_code_prefix | fiscal_code | email                              | pan              | expiration_date | cvv | pspId       |
       | Postepay    | 30200              | 77777777777 | ecommerce-test-mailgroup@pagopa.it | 5255000260000014 | 12/30           | 123 | PPAYITR1XXX |
       | Wordline    | 30201              | 77777777777 | ecommerce-test-mailgroup@pagopa.it | 5255000260000014 | 12/30           | 123 | BNLIITRR    |
@@ -43,15 +45,15 @@ Feature: Attivazione pagamento Checkout
 
   @negative
   @FEAT_003_checkout_scenario_02
-  Scenario Outline: Viene mostrato l'errore <error_code> per codice avviso non valido nell'intervallo <range_start>-<range_end>
-    When L'utente inserisce i dati dell'avviso con un codice avviso nell'intervallo "<range_start>" a "<range_end>"
-    And L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"
-    And L'utente clicca il pulsante verifica
-    Then Viene mostrata una modale di errore dopo "<seconds>" secondi
-    And L'intestazione della modale di errore contiene "<expected_header>"
-    And Il corpo della modale di errore contiene "<expected_body>"
+  Schema dello scenario: Viene mostrato l'errore <error_code> per codice avviso non valido nell'intervallo <range_start>-<range_end>
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso nell'intervallo "<range_start>" a "<range_end>"
+    E L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"
+    E L'utente clicca il pulsante verifica
+    Allora Viene mostrata una modale di errore dopo "<seconds>" secondi
+    E L'intestazione della modale di errore contiene "<expected_header>"
+    E Il corpo della modale di errore contiene "<expected_body>"
 
-    Examples:
+    Esempi:
       | error_code                  | range_start        | range_end          | fiscal_code | seconds | expected_header                                  | expected_body                                                                                  |
       | PAA_PAGAMENTO_SCONOSCIUTO   | 302400000000000000 | 302409999999999999 | 77777777777 | 5       | Non riusciamo a trovare l’avviso                 | L'avviso potrebbe essere stato già pagato. Per ricevere assistenza, contatta l’Ente Creditore. |
       | PAA_PAGAMENTO_SCADUTO       | 302990000000000000 | 302999999999999999 | 77777777777 | 60      | L’avviso è scaduto e non è più possibile pagarlo | Contatta l’Ente per maggiori informazioni.                                                     |
@@ -60,15 +62,15 @@ Feature: Attivazione pagamento Checkout
 
   @negative
   @FEAT_003_checkout_scenario_03
-  Scenario Outline: Viene mostrato il codice di errore per ente creditore non raggiungibile
-    When L'utente inserisce i dati dell'avviso con un codice avviso nell'intervallo "<range_start>" a "<range_end>"
-    And L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"
-    And L'utente clicca il pulsante verifica
-    Then Viene mostrata una modale di errore
-    And L'intestazione della modale di errore contiene "<expected_header>"
-    And Il corpo della modale di errore contiene "<expected_body>"
-    And Il codice di errore mostrato contiene "<error_code>"
+  Schema dello scenario: Viene mostrato il codice di errore per ente creditore non raggiungibile
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso nell'intervallo "<range_start>" a "<range_end>"
+    E L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"
+    E L'utente clicca il pulsante verifica
+    Allora Viene mostrata una modale di errore
+    E L'intestazione della modale di errore contiene "<expected_header>"
+    E Il corpo della modale di errore contiene "<expected_body>"
+    E Il codice di errore mostrato contiene "<error_code>"
 
-    Examples:
+    Esempi:
       | error_code                          | range_start        | range_end          | fiscal_code | expected_header                                     | expected_body                     |
       | PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE | 302970000000000000 | 302979999999999999 | 77777777777 | L’Ente Creditore sta avendo problemi nella risposta | Codice di errore per l'assistenza |
