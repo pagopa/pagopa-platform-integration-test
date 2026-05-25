@@ -4,7 +4,7 @@ from pathlib import Path
 
 from behave import given, then, when
 
-HELPERS_DIR = Path(__file__).resolve().parents[3] / "utility" / "checkout"
+HELPERS_DIR = Path(__file__).resolve().parents[2] / "utility" / "checkout"
 if str(HELPERS_DIR) not in sys.path:
     sys.path.insert(0, str(HELPERS_DIR))
 
@@ -38,14 +38,14 @@ from checkout_helpers import (  # noqa: E402
 # Environment / Background steps
 # ---------------------------------------------------------------------------
 
-@given("that checkout host is configured through environment variable")
+@given("che l'host di checkout e configurato tramite variabile d'ambiente")
 def step_checkout_host_configured(context):
     from checkout_helpers import get_checkout_host
     host = get_checkout_host()
     print(f"  -> CHECKOUT_HOST: {host}")
 
 
-@given("the checkout NPG environment variables are configured")
+@given("le variabili d'ambiente NPG di checkout sono configurate")
 def step_npg_env_configured(context):
     required = [
         "NOTICE_CODE_PREFIX",
@@ -70,19 +70,19 @@ def step_npg_env_configured(context):
 # Setup (Given) steps
 # ---------------------------------------------------------------------------
 
-@given("a random valid notice code is generated")
+@given("viene generato un codice avviso valido casuale")
 def step_generate_notice_code(context):
     context.notice_code = generate_notice_code()
     print(f"  -> VALID_NOTICE_CODE: {context.notice_code}")
 
 
-@given("the credit card payment method id is resolved")
+@given("l'id del metodo di pagamento carta di credito e risolto")
 def step_resolve_payment_method_id(context):
     context.payment_method_id = resolve_credit_card_payment_method_id()
     print(f"  -> PAYMENT_METHOD_ID: {context.payment_method_id}")
 
 
-@given("an NPG session is created")
+@given("viene creata una sessione NPG")
 def step_create_npg_session(context):
     response = create_session(context.payment_method_id, language="it")
     response.raise_for_status()
@@ -91,7 +91,7 @@ def step_create_npg_session(context):
     print(f"  -> ORDER_ID: {context.order_id}")
 
 
-@given('an NPG session is created with language "{lang}"')
+@given('viene creata una sessione NPG con lingua "{lang}"')
 def step_create_npg_session_with_lang(context, lang):
     response = create_session(context.payment_method_id, language=lang)
     response.raise_for_status()
@@ -100,7 +100,7 @@ def step_create_npg_session_with_lang(context, lang):
     print(f"  -> ORDER_ID: {context.order_id} (lang: {lang})")
 
 
-@given("a transaction is created for the current session")
+@given("viene creata una transazione per la sessione corrente")
 def step_create_transaction(context):
     fiscal_code = get_required_env("VALID_FISCAL_CODE_PA")
     response = create_transaction(
@@ -114,13 +114,13 @@ def step_create_transaction(context):
     print(f"  -> TRANSACTION_ID: {context.transaction_id}")
 
 
-@given("the NPG card fields are filled with test card data")
+@given("i campi carta NPG sono compilati con dati carta di test")
 def step_fill_npg_card_fields(context):
     response = fill_npg_card_fields(context.npg_correlation_id, context.npg_session_id)
     print(f"  -> NPG fill card fields status: {response.status_code}")
 
 
-@given("the full NPG authorization flow is executed")
+@given("il flusso completo di autorizzazione NPG e eseguito")
 def step_full_npg_auth_flow(context):
     """Esegue il flusso completo: session → transaction → fill card → authorization → polling."""
     context.payment_method_id = resolve_credit_card_payment_method_id()
@@ -162,27 +162,27 @@ def step_full_npg_auth_flow(context):
 # Action (When) steps — Payment Verify
 # ---------------------------------------------------------------------------
 
-@when("the user verifies the payment for the valid notice code")
+@when("l'utente verifica il pagamento per il codice avviso valido")
 def step_verify_valid_payment(context):
     fiscal_code = get_required_env("VALID_FISCAL_CODE_PA")
     context.response = verify_payment(fiscal_code, context.notice_code)
 
 
-@when("the user verifies the payment for the unknown domain notice code")
+@when("l'utente verifica il pagamento per il codice avviso con dominio sconosciuto")
 def step_verify_unknown_domain(context):
     fiscal_code = get_required_env("UNKNOWN_FISCAL_CODE_PA")
     notice_code = get_required_env("UNKNOWN_NOTICE_CODE")
     context.response = verify_payment(fiscal_code, notice_code)
 
 
-@when("the user verifies the payment for the unknown station notice code")
+@when("l'utente verifica il pagamento per il codice avviso con stazione sconosciuta")
 def step_verify_unknown_station(context):
     fiscal_code = get_required_env("UNKNOWN_STAZIONE_FISCAL_CODE_PA")
     notice_code = get_required_env("UNKNOWN_STAZIONE_NOTICE_CODE")
     context.response = verify_payment(fiscal_code, notice_code)
 
 
-@when("the user verifies the cached payment")
+@when("l'utente verifica il pagamento in cache")
 def step_verify_cached_payment(context):
     fiscal_code = get_required_env("VALID_FISCAL_CODE_PA")
     context.response = verify_payment(fiscal_code, context.notice_code)
@@ -192,22 +192,22 @@ def step_verify_cached_payment(context):
 # Action (When) steps — Payment Methods
 # ---------------------------------------------------------------------------
 
-@when("the user retrieves all payment methods v1")
+@when("l'utente recupera tutti i metodi di pagamento v1")
 def step_get_payment_methods_v1(context):
     context.response = get_all_payment_methods_v1()
 
 
-@when("the user retrieves all payment methods v2")
+@when("l'utente recupera tutti i metodi di pagamento v2")
 def step_post_payment_methods_v2(context):
     context.response = get_all_payment_methods_v2()
 
 
-@when("the user retrieves the credit card payment method details")
+@when("l'utente recupera i dettagli del metodo di pagamento carta di credito")
 def step_get_payment_method_details(context):
     context.response = get_payment_method_details(context.payment_method_id)
 
 
-@when("the user computes the fee for credit card payment")
+@when("l'utente calcola la commissione per il pagamento con carta di credito")
 def step_compute_fee(context):
     context.response = compute_fee(
         method_id=context.payment_method_id,
@@ -220,7 +220,7 @@ def step_compute_fee(context):
 # Action (When) steps — Sessions
 # ---------------------------------------------------------------------------
 
-@when('the user creates an NPG card session with language "{lang}"')
+@when('l\'utente crea una sessione carta NPG con lingua "{lang}"')
 def step_create_session_with_lang(context, lang):
     context.response = create_session(context.payment_method_id, language=lang)
     if context.response.status_code == 200:
@@ -232,7 +232,7 @@ def step_create_session_with_lang(context, lang):
 # Action (When) steps — Transactions
 # ---------------------------------------------------------------------------
 
-@when("the user creates a transaction without order id")
+@when("l'utente crea una transazione senza order id")
 def step_create_transaction_without_order_id(context):
     fiscal_code = get_required_env("VALID_FISCAL_CODE_PA")
     context.response = create_transaction_without_order_id(
@@ -242,7 +242,7 @@ def step_create_transaction_without_order_id(context):
     )
 
 
-@when("the user creates a transaction with mixed case email")
+@when("l'utente crea una transazione con email mista maiuscola/minuscola")
 def step_create_transaction_mixed_case_email(context):
     fiscal_code = get_required_env("VALID_FISCAL_CODE_PA")
     context.response = create_transaction(
@@ -256,7 +256,7 @@ def step_create_transaction_mixed_case_email(context):
         _save_transaction_data(context, context.response.json())
 
 
-@when("the user creates a transaction with standard email")
+@when("l'utente crea una transazione con email standard")
 def step_create_transaction_standard_email(context):
     fiscal_code = get_required_env("VALID_FISCAL_CODE_PA")
     context.response = create_transaction(
@@ -270,22 +270,22 @@ def step_create_transaction_standard_email(context):
         _save_transaction_data(context, context.response.json())
 
 
-@when("the user deletes the transaction")
+@when("l'utente elimina la transazione")
 def step_delete_transaction(context):
     context.response = delete_transaction(context.transaction_id, context.auth_token)
 
 
-@when("the user retrieves the transaction by id v1")
+@when("l'utente recupera la transazione per id v1")
 def step_get_transaction_v1(context):
     context.response = get_transaction_v1(context.transaction_id, context.auth_token)
 
 
-@when("the user retrieves the transaction by id v2")
+@when("l'utente recupera la transazione per id v2")
 def step_get_transaction_v2(context):
     context.response = get_transaction_v2(context.transaction_id, context.auth_token)
 
 
-@when("the user retrieves the transaction outcomes v1")
+@when("l'utente recupera gli esiti della transazione v1")
 def step_get_transaction_outcomes(context):
     context.response = get_transaction_outcomes_v1(context.transaction_id, context.auth_token)
 
@@ -294,7 +294,7 @@ def step_get_transaction_outcomes(context):
 # Action (When) steps — Card Data
 # ---------------------------------------------------------------------------
 
-@when("the user retrieves the card data for the current session")
+@when("l'utente recupera i dati carta per la sessione corrente")
 def step_get_card_data(context):
     context.response = get_card_data(
         payment_method_id=context.payment_method_id,
@@ -304,7 +304,7 @@ def step_get_card_data(context):
     )
 
 
-@when("the user retrieves the card data with a wrong order id")
+@when("l'utente recupera i dati carta con un order id errato")
 def step_get_card_data_wrong_order_id(context):
     context.response = get_card_data(
         payment_method_id=context.payment_method_id,
@@ -314,7 +314,7 @@ def step_get_card_data_wrong_order_id(context):
     )
 
 
-@when("the user retrieves the card data with a wrong transaction id")
+@when("l'utente recupera i dati carta con un transaction id errato")
 def step_get_card_data_wrong_transaction_id(context):
     context.response = get_card_data(
         payment_method_id=context.payment_method_id,
@@ -324,7 +324,7 @@ def step_get_card_data_wrong_transaction_id(context):
     )
 
 
-@when("the user retrieves the card data without auth token")
+@when("l'utente recupera i dati carta senza auth token")
 def step_get_card_data_no_token(context):
     context.response = get_card_data_without_token(
         payment_method_id=context.payment_method_id,
@@ -337,7 +337,7 @@ def step_get_card_data_no_token(context):
 # Action (When) steps — Authorization
 # ---------------------------------------------------------------------------
 
-@when('the user requests authorization without JWT token using language "{lang}"')
+@when('l\'utente richiede l\'autorizzazione senza token JWT usando la lingua "{lang}"')
 def step_request_auth_no_token(context, lang):
     context.response = request_authorization_without_token(
         transaction_id=context.transaction_id,
@@ -348,7 +348,7 @@ def step_request_auth_no_token(context, lang):
     )
 
 
-@when('the user requests authorization with JWT token using language "{lang}"')
+@when('l\'utente richiede l\'autorizzazione con token JWT usando la lingua "{lang}"')
 def step_request_auth_with_token(context, lang):
     context.response = request_authorization(
         transaction_id=context.transaction_id,
@@ -364,7 +364,7 @@ def step_request_auth_with_token(context, lang):
 # Assertion (Then) steps — HTTP status
 # ---------------------------------------------------------------------------
 
-@then("the response has status code {expected_code:d}")
+@then("la risposta ha codice di stato {expected_code:d}")
 def step_check_status_code(context, expected_code):
     actual = context.response.status_code
     assert actual == expected_code, (
@@ -377,7 +377,7 @@ def step_check_status_code(context, expected_code):
 # Assertion (Then) steps — Payment Verify
 # ---------------------------------------------------------------------------
 
-@then("the payment verification response contains valid payment data")
+@then("la risposta di verifica pagamento contiene dati di pagamento validi")
 def step_payment_verify_positive(context):
     body = context.response.json()
     fiscal_code = get_required_env("VALID_FISCAL_CODE_PA")
@@ -395,7 +395,7 @@ def step_payment_verify_positive(context):
     print(f"  -> Payment verified: amount={body['amount']}, rptId={body['rptId']}")
 
 
-@then('the fault code detail contains "{expected_detail}"')
+@then('il dettaglio fault code contiene "{expected_detail}"')
 def step_fault_code_contains(context, expected_detail):
     body = context.response.json()
     fault_code = body.get("faultCodeDetail", "")
@@ -404,7 +404,7 @@ def step_fault_code_contains(context, expected_detail):
     )
 
 
-@then('the fault code detail equals "{expected_detail}"')
+@then('il dettaglio fault code e uguale a "{expected_detail}"')
 def step_fault_code_equals(context, expected_detail):
     body = context.response.json()
     fault_code = body.get("faultCodeDetail", "")
@@ -413,7 +413,7 @@ def step_fault_code_equals(context, expected_detail):
     )
 
 
-@then("the cached payment verification returns valid payment data")
+@then("la verifica del pagamento in cache restituisce dati di pagamento validi")
 def step_cached_payment_verify(context):
     step_payment_verify_positive(context)
 
@@ -436,7 +436,7 @@ _BRAND_ASSET_URL_VISA = "https://assets.cdn.platform.pagopa.it/creditcard/visa.p
 _BRAND_ASSET_URL_MC = "https://assets.cdn.platform.pagopa.it/creditcard/mastercard.png"
 
 
-@then("the payment methods v1 response contains expected fields and brand assets")
+@then("la risposta dei metodi di pagamento v1 contiene i campi attesi e gli asset brand")
 def step_payment_methods_v1_fields(context):
     body = context.response.json()
     methods = body.get("paymentMethods", [])
@@ -464,7 +464,7 @@ def step_payment_methods_v1_fields(context):
     print(f"  -> Payment methods v1: {len(methods)} methods found")
 
 
-@then("the payment methods v2 response contains expected fields")
+@then("la risposta dei metodi di pagamento v2 contiene i campi attesi")
 def step_payment_methods_v2_fields(context):
     body = context.response.json()
     methods = body.get("paymentMethods", [])
@@ -489,7 +489,7 @@ def step_payment_methods_v2_fields(context):
     print(f"  -> Payment methods v2: {len(methods)} methods found")
 
 
-@then("the payment method is CARDS with paymentTypeCode CP")
+@then("il metodo di pagamento e CARDS con paymentTypeCode CP")
 def step_payment_method_is_cards(context):
     body = context.response.json()
     assert body.get("name") == "CARDS", (
@@ -509,7 +509,7 @@ def step_payment_method_is_cards(context):
     print(f"  -> Payment method: {body['name']} ({body['paymentTypeCode']})")
 
 
-@then("the fee response contains an enabled method with bundles")
+@then("la risposta della commissione contiene un metodo abilitato con bundles")
 def step_fee_response(context):
     body = context.response.json()
     assert body.get("paymentMethodStatus") == "ENABLED", (
@@ -534,7 +534,7 @@ _EXPECTED_FORM_FIELDS = [
 ]
 
 
-@then("the NPG session response contains valid card form fields with payment method CARDS")
+@then("la risposta della sessione NPG contiene campi form carta validi con metodo di pagamento CARDS")
 def step_npg_session_form_fields(context):
     body = context.response.json()
     assert isinstance(body.get("orderId"), str) and body.get("orderId"), (
@@ -561,7 +561,7 @@ _EXPECTED_PAYMENT_TOKEN_KEYS = {"rptId", "reason", "amount", "isAllCCP"}
 _EXPECTED_TRANSFER_LIST_KEYS = {"paFiscalCode", "digitalStamp", "transferAmount", "transferCategory"}
 
 
-@then("the transaction response is in ACTIVATED status for checkout client")
+@then("la risposta della transazione e in stato ACTIVATED per il client checkout")
 def step_transaction_activated(context):
     body = context.response.json()
     assert body.get("status") == "ACTIVATED", (
@@ -602,7 +602,7 @@ def step_transaction_activated(context):
     print(f"  -> Transaction ACTIVATED: id={body['transactionId']}")
 
 
-@then("the transaction v1 status is AUTHORIZATION_REQUESTED")
+@then("lo stato della transazione v1 e AUTHORIZATION_REQUESTED")
 def step_transaction_v1_status(context):
     body = context.response.json()
     assert body.get("status") == "AUTHORIZATION_REQUESTED", (
@@ -614,7 +614,7 @@ def step_transaction_v1_status(context):
     assert len(body.get("payments", [])) == 1, "Atteso 1 payment"
 
 
-@then("the transaction v1 gateway is NPG")
+@then("il gateway della transazione v1 e NPG")
 def step_transaction_v1_gateway(context):
     body = context.response.json()
     assert body.get("gateway") == "NPG", (
@@ -622,7 +622,7 @@ def step_transaction_v1_gateway(context):
     )
 
 
-@then("the outcomes response contains a valid outcome code")
+@then("la risposta degli esiti contiene un codice esito valido")
 def step_outcomes_valid(context):
     valid_outcomes = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 17, 18, 25, 99, 116, 117, 121}
     body = context.response.json()
@@ -638,7 +638,7 @@ def step_outcomes_valid(context):
     print(f"  -> Transaction outcome: {outcome}, isFinalStatus={body['isFinalStatus']}")
 
 
-@then("the transaction v2 status is AUTHORIZATION_REQUESTED")
+@then("lo stato della transazione v2 e AUTHORIZATION_REQUESTED")
 def step_transaction_v2_status(context):
     body = context.response.json()
     assert body.get("status") == "AUTHORIZATION_REQUESTED", (
@@ -650,7 +650,7 @@ def step_transaction_v2_status(context):
     assert len(body.get("payments", [])) == 1, "Atteso 1 payment"
 
 
-@then("the transaction v2 gatewayInfo is NPG")
+@then("il gatewayInfo della transazione v2 e NPG")
 def step_transaction_v2_gateway_info(context):
     body = context.response.json()
     gateway_info = body.get("gatewayInfo", {})
@@ -663,7 +663,7 @@ def step_transaction_v2_gateway_info(context):
 # Assertion (Then) steps — Card Data
 # ---------------------------------------------------------------------------
 
-@then("the card data matches the test card values")
+@then("i dati carta corrispondono ai valori della carta di test")
 def step_card_data_matches(context):
     body = context.response.json()
     card_pan = get_required_env("NPG_TEST_CARD_PAN")
@@ -699,7 +699,7 @@ def step_card_data_matches(context):
 # Assertion (Then) steps — Authorization
 # ---------------------------------------------------------------------------
 
-@then("the authorization response contains a valid authorization URL")
+@then("la risposta di autorizzazione contiene un URL di autorizzazione valido")
 def step_auth_response_url(context):
     body = context.response.json()
     auth_url = body.get("authorizationUrl")
@@ -709,7 +709,7 @@ def step_auth_response_url(context):
     print(f"  -> Authorization URL: {auth_url[:80]}...")
 
 
-@then("the authorization request id matches the order id")
+@then("l'id della richiesta di autorizzazione corrisponde all'order id")
 def step_auth_request_id_matches_order(context):
     body = context.response.json()
     auth_request_id = body.get("authorizationRequestId")

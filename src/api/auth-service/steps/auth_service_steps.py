@@ -4,7 +4,7 @@ from pathlib import Path
 
 from behave import given, then, when
 
-HELPERS_DIR = Path(__file__).resolve().parents[3] / "utility" / "auth_service"
+HELPERS_DIR = Path(__file__).resolve().parents[2] / "utility" / "auth_service"
 if str(HELPERS_DIR) not in sys.path:
     sys.path.insert(0, str(HELPERS_DIR))
 
@@ -23,13 +23,13 @@ from auth_service_helpers import (  # noqa: E402
 )
 
 
-@given("that checkout host is configured through environment variable")
+@given("che l'host di checkout e configurato tramite variabile d'ambiente")
 def step_checkout_host_configured(context):
     host = get_checkout_host()
     print(f"  -> CHECKOUT_HOST: {host}")
 
 
-@given("the auth service environment variables are configured")
+@given("le variabili d'ambiente del servizio auth sono configurate")
 def step_auth_env_configured(context):
     required_names = [
         "FAKE_RECAPTCHA_NOT_VALIDATED",
@@ -41,12 +41,12 @@ def step_auth_env_configured(context):
         print(f"  -> {name}: {value}")
 
 
-@when("the user requests the auth login URL")
+@when("l'utente richiede l'URL di login auth")
 def step_request_auth_login(context):
     context.response = request("GET", build_login_url(), absolute_url=True)
 
 
-@then("the auth login response exposes a valid redirect URL")
+@then("la risposta di login auth espone un URL di reindirizzamento valido")
 def step_login_response_has_redirect(context):
     payload = context.response.json()
     redirect_data = parse_login_redirect_payload(payload)
@@ -57,30 +57,30 @@ def step_login_response_has_redirect(context):
     print(f"  -> REDIRECT_URL: {context.redirect_url}")
 
 
-@when("the user opens the auth redirect URL")
+@when("l'utente apre l'URL di reindirizzamento auth")
 def step_open_auth_redirect(context):
     context.response = request("GET", context.redirect_url, absolute_url=True)
 
 
-@then("the auth code is extracted from the redirect response")
+@then("il codice auth viene estratto dalla risposta di reindirizzamento")
 def step_extract_auth_code(context):
     context.auth_code = extract_auth_code_from_html(context.response.text)
     print(f"  -> AUTH_CODE: {context.auth_code}")
 
 
-@when("the user exchanges the auth code for a session token")
+@when("l'utente scambia il codice auth con un token di sessione")
 def step_exchange_auth_code(context):
     body = build_auth_token_body(context.state, context.auth_code)
     context.response = request("POST", TOKEN_ENDPOINT, json=body)
 
 
-@when("the user exchanges an invalid auth code for a session token")
+@when("l'utente scambia un codice auth non valido con un token di sessione")
 def step_exchange_invalid_auth_code(context):
     body = build_auth_token_body("some-invalid-state", "some-invalid-code")
     context.response = request("POST", TOKEN_ENDPOINT, json=body)
 
 
-@then("the auth token is returned in the response")
+@then("il token auth viene restituito nella risposta")
 def step_auth_token_returned(context):
     payload = context.response.json()
     auth_token = payload.get("authToken")
@@ -91,22 +91,22 @@ def step_auth_token_returned(context):
     print("  -> SESSION_TOKEN acquired")
 
 
-@given("an invalid auth session token")
+@given("un token di sessione auth non valido")
 def step_invalid_auth_session_token(context):
     context.session_token = context.invalid_session_token
 
 
-@when("the user requests the authenticated user profile with the active session token")
+@when("l'utente richiede il profilo utente autenticato con il token di sessione attivo")
 def step_request_user_profile_active_token(context):
     context.response = request("GET", USERS_ENDPOINT, token=context.session_token)
 
 
-@when("the user requests the authenticated user profile with the invalid session token")
+@when("l'utente richiede il profilo utente autenticato con il token di sessione non valido")
 def step_request_user_profile_invalid_token(context):
     context.response = request("GET", USERS_ENDPOINT, token=context.invalid_session_token)
 
 
-@then("the authenticated user profile matches the configured auth user")
+@then("il profilo utente autenticato corrisponde all'utente auth configurato")
 def step_verify_user_profile(context):
     payload = context.response.json()
     expected_name = get_required_env("AUTH_USER_EXPECT_NAME")
@@ -120,18 +120,18 @@ def step_verify_user_profile(context):
     context.user_profile = payload
 
 
-@when("the user requests an authenticated payment request with the invalid session token")
+@when("l'utente richiede una richiesta di pagamento autenticata con il token di sessione non valido")
 def step_request_payment_with_invalid_token(context):
     endpoint = build_payment_requests_endpoint()
     context.response = request("GET", endpoint, token=context.invalid_session_token)
 
 
-@when("the user logs out from auth service with the active session token")
+@when("l'utente esegue il logout dal servizio auth con il token di sessione attivo")
 def step_logout_auth_service(context):
     context.response = request("POST", LOGOUT_ENDPOINT, token=context.session_token)
 
 
-@then("the response has status code {status_code:d}")
+@then("la risposta ha codice di stato {status_code:d}")
 def step_response_status_code(context, status_code):
     actual = context.response.status_code
     assert actual == status_code, (

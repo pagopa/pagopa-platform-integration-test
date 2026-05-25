@@ -1,33 +1,34 @@
+# language: it
 @FEAT_012_Checkout
-Feature: Checkout eCommerce — NPG payment gateway
-  Validate the eCommerce checkout API flows for payment verification.
+Funzionalità: Checkout eCommerce - gateway di pagamento NPG
+  Valida i flussi API di checkout eCommerce per la verifica del pagamento.
 
-  Background:
-    Given that checkout host is configured through environment variable
-    And the checkout NPG environment variables are configured
+  Contesto:
+    Dato che l'host di checkout e configurato tramite variabile d'ambiente
+    E le variabili d'ambiente NPG di checkout sono configurate
 
   # ---------------------------------------------------------------------------
-  # Payment Verification
+  # Verifica pagamento
   # ---------------------------------------------------------------------------
 
   @checkout @npg @payment-verify @positive
   @FEAT_012_Checkout_SCENARIO_01
-  Scenario: Successful payment verification returns payment data
-    Given a random valid notice code is generated
-    When the user verifies the payment for the valid notice code
-    Then the response has status code 200
-    And the payment verification response contains valid payment data
+  Scenario: La verifica pagamento riuscita restituisce dati di pagamento
+    Dato viene generato un codice avviso valido casuale
+    Quando l'utente verifica il pagamento per il codice avviso valido
+    Allora la risposta ha codice di stato 200
+    E la risposta di verifica pagamento contiene dati di pagamento validi
 
   @checkout @npg @payment-verify @negative
   @FEAT_012_Checkout_SCENARIO_02
-  Scenario: Payment verification returns 404 for unknown PA domain
-    When the user verifies the payment for the unknown domain notice code
-    Then the response has status code 404
-    And the fault code detail contains "PPT_DOMINIO_SCONOSCIUTO"
+  Scenario: La verifica pagamento restituisce 404 per dominio PA sconosciuto
+    Quando l'utente verifica il pagamento per il codice avviso con dominio sconosciuto
+    Allora la risposta ha codice di stato 404
+    E il dettaglio fault code contiene "PPT_DOMINIO_SCONOSCIUTO"
 
   @checkout @npg @payment-verify @negative
   @FEAT_012_Checkout_SCENARIO_03
-  Scenario: Payment verification returns 404 for unknown station
-    When the user verifies the payment for the unknown station notice code
-    Then the response has status code 404
-    And the fault code detail equals "PPT_STAZIONE_INT_PA_SCONOSCIUTA"
+  Scenario: La verifica pagamento restituisce 404 per stazione sconosciuta
+    Quando l'utente verifica il pagamento per il codice avviso con stazione sconosciuta
+    Allora la risposta ha codice di stato 404
+    E il dettaglio fault code e uguale a "PPT_STAZIONE_INT_PA_SCONOSCIUTA"

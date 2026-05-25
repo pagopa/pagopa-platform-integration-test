@@ -1,41 +1,42 @@
+# language: it
 @FEAT_008_Checkout
-Feature: Auth service
-  Validate the auth-service flows
+Funzionalità: Servizio auth
+  Valida i flussi del servizio auth
 
-  Background:
-    Given that checkout host is configured through environment variable
-    And the auth service environment variables are configured
+  Contesto:
+    Dato che l'host di checkout e configurato tramite variabile d'ambiente
+    E le variabili d'ambiente del servizio auth sono configurate
 
   @auth-service @checkout @positive
   @FEAT_008_Checkout_SCENARIO_01
-  Scenario: Successful authentication flow returns a session token and the expected user profile
-    When the user requests the auth login URL
-    Then the response has status code 200
-    And the auth login response exposes a valid redirect URL
-    When the user opens the auth redirect URL
-    Then the response has status code 200
-    And the auth code is extracted from the redirect response
-    When the user exchanges the auth code for a session token
-    Then the response has status code 200
-    And the auth token is returned in the response
-    When the user requests the authenticated user profile with the active session token
-    Then the response has status code 200
-    And the authenticated user profile matches the configured auth user
-    When the user logs out from auth service with the active session token
-    Then the response has status code 204
+  Scenario: Il flusso di autenticazione riuscito restituisce un token di sessione e il profilo utente atteso
+    Quando l'utente richiede l'URL di login auth
+    Allora la risposta ha codice di stato 200
+    E la risposta di login auth espone un URL di reindirizzamento valido
+    Quando l'utente apre l'URL di reindirizzamento auth
+    Allora la risposta ha codice di stato 200
+    E il codice auth viene estratto dalla risposta di reindirizzamento
+    Quando l'utente scambia il codice auth con un token di sessione
+    Allora la risposta ha codice di stato 200
+    E il token auth viene restituito nella risposta
+    Quando l'utente richiede il profilo utente autenticato con il token di sessione attivo
+    Allora la risposta ha codice di stato 200
+    E il profilo utente autenticato corrisponde all'utente auth configurato
+    Quando l'utente esegue il logout dal servizio auth con il token di sessione attivo
+    Allora la risposta ha codice di stato 204
 
   @auth-service @checkout @negative
   @FEAT_008_Checkout_SCENARIO_02
-  Scenario: Invalid auth code and invalid session token are rejected
-    When the user requests the auth login URL
-    Then the response has status code 200
-    And the auth login response exposes a valid redirect URL
-    When the user opens the auth redirect URL
-    Then the response has status code 200
-    When the user exchanges an invalid auth code for a session token
-    Then the response has status code 401
-    Given an invalid auth session token
-    When the user requests an authenticated payment request with the invalid session token
-    Then the response has status code 401
-    When the user requests the authenticated user profile with the invalid session token
-    Then the response has status code 401
+  Scenario: Codice auth non valido e token di sessione non valido vengono rifiutati
+    Quando l'utente richiede l'URL di login auth
+    Allora la risposta ha codice di stato 200
+    E la risposta di login auth espone un URL di reindirizzamento valido
+    Quando l'utente apre l'URL di reindirizzamento auth
+    Allora la risposta ha codice di stato 200
+    Quando l'utente scambia un codice auth non valido con un token di sessione
+    Allora la risposta ha codice di stato 401
+    Dato un token di sessione auth non valido
+    Quando l'utente richiede una richiesta di pagamento autenticata con il token di sessione non valido
+    Allora la risposta ha codice di stato 401
+    Quando l'utente richiede il profilo utente autenticato con il token di sessione non valido
+    Allora la risposta ha codice di stato 401

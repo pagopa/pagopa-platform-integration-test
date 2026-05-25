@@ -1,77 +1,78 @@
+# language: it
 @FEAT_014_Checkout
-Feature: Checkout eCommerce — NPG payment gateway
-  Validate the eCommerce checkout API flows for transaction lifecycle management.
+Funzionalità: Checkout eCommerce - gateway di pagamento NPG
+  Valida i flussi API di checkout eCommerce per la gestione del ciclo di vita della transazione.
 
-  Background:
-    Given that checkout host is configured through environment variable
-    And the checkout NPG environment variables are configured
+  Contesto:
+    Dato che l'host di checkout e configurato tramite variabile d'ambiente
+    E le variabili d'ambiente NPG di checkout sono configurate
 
   # ---------------------------------------------------------------------------
-  # Transactions
+  # Transazioni
   # ---------------------------------------------------------------------------
 
   @checkout @npg @transaction @negative
   @FEAT_014_Checkout_SCENARIO_01
-  Scenario: Create transaction fails when order id is missing
-    Given a random valid notice code is generated
-    When the user creates a transaction without order id
-    Then the response has status code 400
+  Scenario: La creazione della transazione fallisce quando manca l'order id
+    Dato viene generato un codice avviso valido casuale
+    Quando l'utente crea una transazione senza order id
+    Allora la risposta ha codice di stato 400
 
   @checkout @npg @transaction @positive
   @FEAT_014_Checkout_SCENARIO_02
-  Scenario: Create transaction with mixed case email succeeds
-    Given the credit card payment method id is resolved
-    And an NPG session is created
-    And a random valid notice code is generated
-    When the user creates a transaction with mixed case email
-    Then the response has status code 200
-    And the transaction response is in ACTIVATED status for checkout client
+  Scenario: La creazione della transazione con email mista maiuscola/minuscola riesce
+    Dato l'id del metodo di pagamento carta di credito e risolto
+    E viene creata una sessione NPG
+    E viene generato un codice avviso valido casuale
+    Quando l'utente crea una transazione con email mista maiuscola/minuscola
+    Allora la risposta ha codice di stato 200
+    E la risposta della transazione e in stato ACTIVATED per il client checkout
 
   @checkout @npg @transaction @positive
   @FEAT_014_Checkout_SCENARIO_03
-  Scenario: Create transaction with standard email succeeds and cached payment is still valid
-    Given the credit card payment method id is resolved
-    And an NPG session is created
-    And a random valid notice code is generated
-    When the user creates a transaction with standard email
-    Then the response has status code 200
-    And the transaction response is in ACTIVATED status for checkout client
-    When the user verifies the cached payment
-    Then the response has status code 200
-    And the cached payment verification returns valid payment data
+  Scenario: La creazione della transazione con email standard riesce e il pagamento in cache e ancora valido
+    Dato l'id del metodo di pagamento carta di credito e risolto
+    E viene creata una sessione NPG
+    E viene generato un codice avviso valido casuale
+    Quando l'utente crea una transazione con email standard
+    Allora la risposta ha codice di stato 200
+    E la risposta della transazione e in stato ACTIVATED per il client checkout
+    Quando l'utente verifica il pagamento in cache
+    Allora la risposta ha codice di stato 200
+    E la verifica del pagamento in cache restituisce dati di pagamento validi
 
   @checkout @npg @transaction @positive
   @FEAT_014_Checkout_SCENARIO_04
-  Scenario: Transaction in ACTIVATED status is canceled successfully
-    Given the credit card payment method id is resolved
-    And an NPG session is created
-    And a random valid notice code is generated
-    And a transaction is created for the current session
-    When the user deletes the transaction
-    Then the response has status code 202
+  Scenario: La transazione in stato ACTIVATED viene annullata con successo
+    Dato l'id del metodo di pagamento carta di credito e risolto
+    E viene creata una sessione NPG
+    E viene generato un codice avviso valido casuale
+    E viene creata una transazione per la sessione corrente
+    Quando l'utente elimina la transazione
+    Allora la risposta ha codice di stato 202
 
   @checkout @npg @transaction @positive
   @FEAT_014_Checkout_SCENARIO_05
-  Scenario: Get transaction v1 returns AUTHORIZATION_REQUESTED status
-    Given the full NPG authorization flow is executed
-    When the user retrieves the transaction by id v1
-    Then the response has status code 200
-    And the transaction v1 status is AUTHORIZATION_REQUESTED
-    And the transaction v1 gateway is NPG
+  Scenario: Il recupero della transazione v1 restituisce stato AUTHORIZATION_REQUESTED
+    Dato il flusso completo di autorizzazione NPG e eseguito
+    Quando l'utente recupera la transazione per id v1
+    Allora la risposta ha codice di stato 200
+    E lo stato della transazione v1 e AUTHORIZATION_REQUESTED
+    E il gateway della transazione v1 e NPG
 
   @checkout @npg @transaction @positive
   @FEAT_014_Checkout_SCENARIO_06
-  Scenario: Get transaction outcomes v1 returns a valid outcome code
-    Given the full NPG authorization flow is executed
-    When the user retrieves the transaction outcomes v1
-    Then the response has status code 200
-    And the outcomes response contains a valid outcome code
+  Scenario: Il recupero esiti transazione v1 restituisce un codice esito valido
+    Dato il flusso completo di autorizzazione NPG e eseguito
+    Quando l'utente recupera gli esiti della transazione v1
+    Allora la risposta ha codice di stato 200
+    E la risposta degli esiti contiene un codice esito valido
 
   @checkout @npg @transaction @positive
   @FEAT_014_Checkout_SCENARIO_07
-  Scenario: Get transaction v2 returns AUTHORIZATION_REQUESTED status with gateway info
-    Given the full NPG authorization flow is executed
-    When the user retrieves the transaction by id v2
-    Then the response has status code 200
-    And the transaction v2 status is AUTHORIZATION_REQUESTED
-    And the transaction v2 gatewayInfo is NPG
+  Scenario: Il recupero della transazione v2 restituisce stato AUTHORIZATION_REQUESTED con info gateway
+    Dato il flusso completo di autorizzazione NPG e eseguito
+    Quando l'utente recupera la transazione per id v2
+    Allora la risposta ha codice di stato 200
+    E lo stato della transazione v2 e AUTHORIZATION_REQUESTED
+    E il gatewayInfo della transazione v2 e NPG

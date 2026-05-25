@@ -1,108 +1,109 @@
+# language: it
 @FEAT_015_Checkout
-Feature: eCommerce CDC service
-  Validate the eCommerce CDC (Change Data Capture) service by driving the full Checkout
-  payment flow
+Funzionalità: Servizio eCommerce CDC
+  Valida il servizio eCommerce CDC (Change Data Capture) guidando l'intero
+  flusso di pagamento Checkout
 
-  Background:
-    Given the eCommerce CDC environment variables are configured
+  Contesto:
+    Date le variabili d'ambiente eCommerce CDC sono configurate
 
   # ---------------------------------------------------------------------------
-  # Delete transaction — CANCELED status check
+  # Eliminazione transazione - verifica stato CANCELED
   # ---------------------------------------------------------------------------
 
   @cdc @transaction @cancel @positive
   @FEAT_015_Checkout_SCENARIO_01
-  Scenario: ACTIVATED transaction is canceled and reaches CANCELED status
-    Given a random CDC notice code is generated
-    When the user creates a CDC transaction with a static order id
-    And the user deletes the CDC transaction
-    Then the CDC response has status code 202
-    And the transaction status reaches "CANCELED" via polling
+  Scenario: La transazione ACTIVATED viene annullata e raggiunge lo stato CANCELED
+    Dato viene generato un codice avviso CDC casuale
+    Quando l'utente crea una transazione CDC con un order id statico
+    E l'utente elimina la transazione CDC
+    Allora la risposta CDC ha codice di stato 202
+    E lo stato della transazione raggiunge "CANCELED" tramite polling
 
   # ---------------------------------------------------------------------------
-  # NPG session creation
+  # Creazione sessione NPG
   # ---------------------------------------------------------------------------
 
   @cdc @session @positive
   @FEAT_015_Checkout_SCENARIO_02
-  Scenario: NPG card session is created with expected card form fields
-    Given the CDC credit card payment method id is resolved
-    When the user creates a CDC NPG card session
-    Then the CDC response has status code 200
-    And the NPG session contains four card form fields
-    And the NPG session has payment method CARDS
-    And the NPG session has a valid order id
+  Scenario: La sessione carta NPG viene creata con i campi form carta attesi
+    Dato l'id del metodo di pagamento carta di credito CDC e risolto
+    Quando l'utente crea una sessione carta NPG CDC
+    Allora la risposta CDC ha codice di stato 200
+    E la sessione NPG contiene quattro campi del form carta
+    E la sessione NPG ha il metodo di pagamento CARDS
+    E la sessione NPG ha un order id valido
 
   # ---------------------------------------------------------------------------
-  # Transaction creation — ACTIVATED status check
+  # Creazione transazione - verifica stato ACTIVATED
   # ---------------------------------------------------------------------------
 
   @cdc @transaction @activated @positive
-  Scenario: New transaction reaches ACTIVATED status
-    Given the CDC credit card payment method id is resolved
-    And a CDC NPG session is prepared
-    And a random CDC notice code is generated
-    When the user creates a CDC transaction for the current session
-    Then the CDC response has status code 200
-    And the transaction response has status ACTIVATED
-    And the transaction response has a valid transactionId and authToken
-    And the transaction payments have the expected structure
-    And the transaction status reaches "ACTIVATED" via polling
+  Scenario: Una nuova transazione raggiunge lo stato ACTIVATED
+    Dato l'id del metodo di pagamento carta di credito CDC e risolto
+    E una sessione NPG CDC e preparata
+    E viene generato un codice avviso CDC casuale
+    Quando l'utente crea una transazione CDC per la sessione corrente
+    Allora la risposta CDC ha codice di stato 200
+    E la risposta della transazione ha stato ACTIVATED
+    E la risposta della transazione ha transactionId e authToken validi
+    E i pagamenti della transazione hanno la struttura prevista
+    E lo stato della transazione raggiunge "ACTIVATED" tramite polling
 
   # ---------------------------------------------------------------------------
-  # Payment method details
+  # Dettagli metodo di pagamento
   # ---------------------------------------------------------------------------
 
   @cdc @payment-methods @positive
-  Scenario: Credit card payment method details are correctly retrieved
-    Given the CDC credit card payment method id is resolved
-    When the user retrieves the CDC payment method details
-    Then the CDC response has status code 200
-    And the payment method has name "CARDS" and paymentTypeCode "CP"
-    And the payment method has a non-empty asset and ranges
+  Scenario: I dettagli del metodo di pagamento carta di credito sono recuperati correttamente
+    Dato l'id del metodo di pagamento carta di credito CDC e risolto
+    Quando l'utente recupera i dettagli del metodo di pagamento CDC
+    Allora la risposta CDC ha codice di stato 200
+    E il metodo di pagamento ha nome "CARDS" e paymentTypeCode "CP"
+    E il metodo di pagamento ha asset e ranges non vuoti
 
   # ---------------------------------------------------------------------------
-  # Fee computation
+  # Calcolo commissioni
   # ---------------------------------------------------------------------------
 
   @cdc @fees @positive
-  Scenario: PSP fee bundles are retrieved for credit card payment
-    Given the CDC credit card payment method id is resolved
-    And a CDC NPG session is prepared
-    And a random CDC notice code is generated
-    And a CDC transaction is created for the current session
-    When the user computes the CDC fee for credit card payment
-    Then the CDC response has status code 200
-    And the fee response has paymentMethodStatus "ENABLED"
-    And the fee response has belowThreshold false
-    And the fee response has non-empty bundles
+  Scenario: I bundle commissione PSP vengono recuperati per il pagamento con carta di credito
+    Dato l'id del metodo di pagamento carta di credito CDC e risolto
+    E una sessione NPG CDC e preparata
+    E viene generato un codice avviso CDC casuale
+    E una transazione CDC e creata per la sessione corrente
+    Quando l'utente calcola la commissione CDC per il pagamento con carta di credito
+    Allora la risposta CDC ha codice di stato 200
+    E la risposta della commissione ha paymentMethodStatus "ENABLED"
+    E la risposta della commissione ha belowThreshold false
+    E la risposta della commissione ha bundles non vuoti
 
   # ---------------------------------------------------------------------------
-  # All payment methods — brand assets
+  # Tutti i metodi di pagamento - asset brand
   # ---------------------------------------------------------------------------
 
   @cdc @payment-methods @positive
-  Scenario: All payment methods v1 include expected brand assets
-    When the user retrieves all CDC payment methods v1
-    Then the CDC response has status code 200
-    And the payment methods list is not empty
-    And the credit card methods have VISA and Mastercard brand assets
+  Scenario: Tutti i metodi di pagamento v1 includono gli asset brand attesi
+    Quando l'utente recupera tutti i metodi di pagamento CDC v1
+    Allora la risposta CDC ha codice di stato 200
+    E la lista dei metodi di pagamento non e vuota
+    E i metodi carta di credito hanno gli asset brand VISA e Mastercard
 
   # ---------------------------------------------------------------------------
-  # Full CDC flow — request authorization → AUTHORIZATION_REQUESTED
+  # Flusso CDC completo - richiesta autorizzazione -> AUTHORIZATION_REQUESTED
   # ---------------------------------------------------------------------------
 
   @cdc @authorization @positive @e2e
-  Scenario: Full CDC flow ends with transaction in AUTHORIZATION_REQUESTED status
-    Given the CDC credit card payment method id is resolved
-    And a CDC NPG session is prepared
-    And the NPG cookies are populated
-    And a random CDC notice code is generated
-    And a CDC transaction is created for the current session
-    And the transaction status reaches "ACTIVATED" via polling
-    And the card data matches the test card values after filling NPG fields
-    When the user requests CDC authorization for the transaction
-    Then the CDC response has status code 200
-    And the authorization response has a valid authorizationUrl
-    And the authorization requestId matches the current order id
-    And the transaction status reaches "AUTHORIZATION_REQUESTED" via polling
+  Scenario: Il flusso CDC completo termina con transazione in stato AUTHORIZATION_REQUESTED
+    Dato l'id del metodo di pagamento carta di credito CDC e risolto
+    E una sessione NPG CDC e preparata
+    E i cookie NPG sono popolati
+    E viene generato un codice avviso CDC casuale
+    E una transazione CDC e creata per la sessione corrente
+    E lo stato della transazione raggiunge "ACTIVATED" tramite polling
+    E i dati carta corrispondono ai valori della carta di test dopo la compilazione dei campi NPG
+    Quando l'utente richiede l'autorizzazione CDC per la transazione
+    Allora la risposta CDC ha codice di stato 200
+    E la risposta di autorizzazione ha un authorizationUrl valido
+    E l'authorization requestId corrisponde all'order id corrente
+    E lo stato della transazione raggiunge "AUTHORIZATION_REQUESTED" tramite polling

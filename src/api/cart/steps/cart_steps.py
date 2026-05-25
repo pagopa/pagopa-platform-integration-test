@@ -16,18 +16,18 @@ from src.api.utility.cart.cart_helpers import (
 # Given — Context / Background
 # ---------------------------------------------------------------------------
 
-@given("that checkout host is configured through environment variable")
+@given("che l'host di checkout e configurato tramite variabile d'ambiente")
 def step_host_configurato(context):
     host = get_checkout_host()
     print(f"  → CHECKOUT_HOST: {host}")
 
 
-@given('a valid random notice code generated from the prefix configured in "{prefix}"')
+@given('un codice avviso casuale valido generato dal prefisso configurato in "{prefix}"')
 def step_codice_avviso(context, prefix: str):
     context.notice_code = generate_notice_code()
     print(f"  → VALID_NOTICE_CODE generated: {context.notice_code}")
 
-@given('a valid PA fiscal code configured in "{cod_fis}"')
+@given('un codice fiscale PA valido configurato in "{cod_fis}"')
 def step_codice_fiscale(context, cod_fis: str):
     fiscal_code = os.environ.get(cod_fis)
     if not fiscal_code:
@@ -43,18 +43,18 @@ def step_codice_fiscale(context, cod_fis: str):
 CART_ENDPOINT = "/checkout/ec/v1/carts"
 
 
-@when('the user submits a cart with email "{email}"')
+@when('l\'utente invia un carrello con email "{email}"')
 def step_post_cart_ok(context, email: str):
     body = build_cart_body(context.notice_code, context.fiscal_code, email)
     context.response = post_cart(CART_ENDPOINT, body)
 
 
-@when('the user submits a cart with an invalid body')
+@when('l\'utente invia un carrello con un body non valido')
 def step_post_cart_ko_invalid(context):
     context.response = post_cart(CART_ENDPOINT, INVALID_CART_BODY)
 
 
-@when('the user submits a cart with {count:d} payment notices')
+@when('l\'utente invia un carrello con {count:d} avvisi di pagamento')
 def step_post_cart_ko_multiple(context, count: int):
     body = build_multiple_notices_body()
     context.response = post_cart(CART_ENDPOINT, body)
@@ -64,14 +64,14 @@ def step_post_cart_ko_multiple(context, count: int):
 # Then — Assertions
 # ---------------------------------------------------------------------------
 
-@then("the response has status code {status_code:d}")
+@then("la risposta ha codice di stato {status_code:d}")
 def step_verifica_status_code(context, status_code: int):
     actual = context.response.status_code
     assert actual == status_code, \
         f"Expected status code: {status_code}, received: {actual}.\nBody: {context.response.text}"
 
 
-@then('the response contains the header "{header_name}"')
+@then('la risposta contiene l\'header "{header_name}"')
 def step_verifica_header(context, header_name: str):
     headers_lower = {k.lower(): v for k, v in context.response.headers.items()}
     assert header_name.lower() in headers_lower, \
@@ -80,7 +80,7 @@ def step_verifica_header(context, header_name: str):
     setattr(context, header_name, header_value)
 
 
-@then('the cart id is extracted from the header "{header_name}"')
+@then('l\'id del carrello viene estratto dall\'header "{header_name}"')
 def step_estrai_cart_id(context, header_name: str):
     header_value = getattr(context, header_name, None)
     assert header_value, f'Header "{header_name}" not present in response.'

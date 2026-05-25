@@ -1,24 +1,25 @@
+# language: it
 @FEAT_013_Checkout
-Feature: Checkout eCommerce — NPG payment gateway
-  Validate the eCommerce checkout API flows for NPG card session creation by language.
+Funzionalità: Checkout eCommerce - gateway di pagamento NPG
+  Valida i flussi API di checkout eCommerce per la creazione della sessione carta NPG per lingua.
 
-  Background:
-    Given that checkout host is configured through environment variable
-    And the checkout NPG environment variables are configured
+  Contesto:
+    Dato che l'host di checkout e configurato tramite variabile d'ambiente
+    E le variabili d'ambiente NPG di checkout sono configurate
 
   # ---------------------------------------------------------------------------
-  # NPG Session Creation (by language)
+  # Creazione sessione NPG (per lingua)
   # ---------------------------------------------------------------------------
 
   @checkout @npg @session @positive
   @FEAT_013_Checkout_SCENARIO_01
-  Scenario Outline: NPG card session is created successfully for each language
-    Given the credit card payment method id is resolved
-    When the user creates an NPG card session with language "<lang>"
-    Then the response has status code 200
-    And the NPG session response contains valid card form fields with payment method CARDS
+  Schema dello scenario: La sessione carta NPG viene creata con successo per ogni lingua
+    Dato l'id del metodo di pagamento carta di credito e risolto
+    Quando l'utente crea una sessione carta NPG con lingua "<lang>"
+    Allora la risposta ha codice di stato 200
+    E la risposta della sessione NPG contiene campi form carta validi con metodo di pagamento CARDS
 
-    Examples:
+    Esempi:
       | lang |
       | it   |
       | fr   |

@@ -1,53 +1,54 @@
+# language: it
 @FEAT_010_Checkout
-Feature: Checkout eCommerce — NPG payment gateway
-  Validate the eCommerce checkout API flows for NPG card data retrieval and validation.
+Funzionalità: Checkout eCommerce - gateway di pagamento NPG
+  Valida i flussi API di checkout eCommerce per il recupero e la validazione dei dati carta NPG.
 
-  Background:
-    Given that checkout host is configured through environment variable
-    And the checkout NPG environment variables are configured
+  Contesto:
+    Dato che l'host di checkout e configurato tramite variabile d'ambiente
+    E le variabili d'ambiente NPG di checkout sono configurate
 
   # ---------------------------------------------------------------------------
-  # NPG Card Data
+  # Dati carta NPG
   # ---------------------------------------------------------------------------
 
   @checkout @npg @card @positive
   @FEAT_010_Checkout_SCENARIO_01
-  Scenario: Card data is retrieved successfully after filling NPG fields
-    Given the credit card payment method id is resolved
-    And an NPG session is created
-    And a random valid notice code is generated
-    And a transaction is created for the current session
-    And the NPG card fields are filled with test card data
-    When the user retrieves the card data for the current session
-    Then the response has status code 200
-    And the card data matches the test card values
+  Scenario: I dati carta vengono recuperati con successo dopo la compilazione dei campi NPG
+    Dato l'id del metodo di pagamento carta di credito e risolto
+    E viene creata una sessione NPG
+    E viene generato un codice avviso valido casuale
+    E viene creata una transazione per la sessione corrente
+    E i campi carta NPG sono compilati con dati carta di test
+    Quando l'utente recupera i dati carta per la sessione corrente
+    Allora la risposta ha codice di stato 200
+    E i dati carta corrispondono ai valori della carta di test
 
   @checkout @npg @card @negative
   @FEAT_010_Checkout_SCENARIO_02
-  Scenario: Card data not available for wrong order id
-    Given the credit card payment method id is resolved
-    And an NPG session is created
-    And a random valid notice code is generated
-    And a transaction is created for the current session
-    When the user retrieves the card data with a wrong order id
-    Then the response has status code 401
+  Scenario: I dati carta non sono disponibili con order id errato
+    Dato l'id del metodo di pagamento carta di credito e risolto
+    E viene creata una sessione NPG
+    E viene generato un codice avviso valido casuale
+    E viene creata una transazione per la sessione corrente
+    Quando l'utente recupera i dati carta con un order id errato
+    Allora la risposta ha codice di stato 401
 
   @checkout @npg @card @negative
   @FEAT_010_Checkout_SCENARIO_03
-  Scenario: Card data not available for wrong transaction id
-    Given the credit card payment method id is resolved
-    And an NPG session is created
-    And a random valid notice code is generated
-    And a transaction is created for the current session
-    When the user retrieves the card data with a wrong transaction id
-    Then the response has status code 401
+  Scenario: I dati carta non sono disponibili con transaction id errato
+    Dato l'id del metodo di pagamento carta di credito e risolto
+    E viene creata una sessione NPG
+    E viene generato un codice avviso valido casuale
+    E viene creata una transazione per la sessione corrente
+    Quando l'utente recupera i dati carta con un transaction id errato
+    Allora la risposta ha codice di stato 401
 
   @checkout @npg @card @negative
   @FEAT_010_Checkout_SCENARIO_04
-  Scenario: Card data not available when auth token is missing
-    Given the credit card payment method id is resolved
-    And an NPG session is created
-    And a random valid notice code is generated
-    And a transaction is created for the current session
-    When the user retrieves the card data without auth token
-    Then the response has status code 401
+  Scenario: I dati carta non sono disponibili quando manca l'auth token
+    Dato l'id del metodo di pagamento carta di credito e risolto
+    E viene creata una sessione NPG
+    E viene generato un codice avviso valido casuale
+    E viene creata una transazione per la sessione corrente
+    Quando l'utente recupera i dati carta senza auth token
+    Allora la risposta ha codice di stato 401

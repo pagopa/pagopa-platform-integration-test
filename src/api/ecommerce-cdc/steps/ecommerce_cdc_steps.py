@@ -12,7 +12,7 @@ from pathlib import Path
 
 from behave import given, then, when
 
-HELPERS_DIR = Path(__file__).resolve().parents[3] / "utility" / "checkout"
+HELPERS_DIR = Path(__file__).resolve().parents[2] / "utility" / "checkout"
 if str(HELPERS_DIR) not in sys.path:
     sys.path.insert(0, str(HELPERS_DIR))
 
@@ -58,7 +58,7 @@ def _save_transaction_data(context, body: dict) -> None:
 # Background
 # ---------------------------------------------------------------------------
 
-@given("the eCommerce CDC environment variables are configured")
+@given("le variabili d'ambiente eCommerce CDC sono configurate")
 def step_cdc_env_configured(context):
     required = [
         "CHECKOUT_HOST",
@@ -81,19 +81,19 @@ def step_cdc_env_configured(context):
 # Given — Setup steps
 # ---------------------------------------------------------------------------
 
-@given("the CDC credit card payment method id is resolved")
+@given("l'id del metodo di pagamento carta di credito CDC e risolto")
 def step_cdc_resolve_payment_method_id(context):
     context.payment_method_id = resolve_credit_card_payment_method_id()
     print(f"  -> PAYMENT_METHOD_ID: {context.payment_method_id}")
 
 
-@given("a random CDC notice code is generated")
+@given("viene generato un codice avviso CDC casuale")
 def step_cdc_generate_notice_code(context):
     context.notice_code = generate_notice_code()
     print(f"  -> NOTICE_CODE: {context.notice_code}")
 
 
-@given("a CDC NPG session is prepared")
+@given("una sessione NPG CDC e preparata")
 def step_cdc_prepare_npg_session(context):
     response = create_session(context.payment_method_id, language="it")
     response.raise_for_status()
@@ -102,7 +102,7 @@ def step_cdc_prepare_npg_session(context):
     print(f"  -> ORDER_ID: {context.order_id}")
 
 
-@given("the NPG cookies are populated")
+@given("i cookie NPG sono popolati")
 def step_cdc_populate_npg_cookies(context):
     response = populate_npg_cookies(
         context.npg_correlation_id,
@@ -112,7 +112,7 @@ def step_cdc_populate_npg_cookies(context):
     print(f"  -> NPG cookies populated: HTTP {response.status_code}")
 
 
-@given("a CDC transaction is created for the current session")
+@given("una transazione CDC e creata per la sessione corrente")
 def step_cdc_create_transaction_given(context):
     fiscal_code = get_required_env("VALID_FISCAL_CODE_PA")
     response = create_transaction(
@@ -126,7 +126,7 @@ def step_cdc_create_transaction_given(context):
     print(f"  -> TRANSACTION_ID: {context.transaction_id}")
 
 
-@given('the transaction status reaches "{wanted_status}" via polling')
+@given('lo stato della transazione raggiunge "{wanted_status}" tramite polling')
 def step_cdc_poll_transaction_given(context, wanted_status: str):
     reached = poll_transaction_until_status(
         context.transaction_id, context.auth_token, wanted_status
@@ -134,7 +134,7 @@ def step_cdc_poll_transaction_given(context, wanted_status: str):
     print(f"  -> Transaction reached status: {reached}")
 
 
-@given("the card data matches the test card values after filling NPG fields")
+@given("i dati carta corrispondono ai valori della carta di test dopo la compilazione dei campi NPG")
 def step_cdc_fill_and_validate_card(context):
     fill_response = fill_npg_card_fields(context.npg_correlation_id, context.npg_session_id)
     print(f"  -> NPG card fields filled: HTTP {fill_response.status_code}")
@@ -175,7 +175,7 @@ def step_cdc_fill_and_validate_card(context):
 # When — Action steps
 # ---------------------------------------------------------------------------
 
-@when("the user creates a CDC transaction with a static order id")
+@when("l'utente crea una transazione CDC con un order id statico")
 def step_cdc_create_static_order_transaction(context):
     """
     Replica il prerequest del test 'Delete transaction' nella collection Postman:
@@ -193,12 +193,12 @@ def step_cdc_create_static_order_transaction(context):
     print(f"  -> Create transaction for delete: HTTP {context.response.status_code}")
 
 
-@when("the user deletes the CDC transaction")
+@when("l'utente elimina la transazione CDC")
 def step_cdc_delete_transaction(context):
     context.response = delete_transaction(context.transaction_id, context.auth_token)
 
 
-@when("the user creates a CDC NPG card session")
+@when("l'utente crea una sessione carta NPG CDC")
 def step_cdc_create_session(context):
     context.response = create_session(context.payment_method_id, language="it")
     if context.response.status_code == 200:
@@ -206,7 +206,7 @@ def step_cdc_create_session(context):
         _save_session_data(context, session_data)
 
 
-@when("the user creates a CDC transaction for the current session")
+@when("l'utente crea una transazione CDC per la sessione corrente")
 def step_cdc_create_transaction_when(context):
     fiscal_code = get_required_env("VALID_FISCAL_CODE_PA")
     context.response = create_transaction(
@@ -219,12 +219,12 @@ def step_cdc_create_transaction_when(context):
         _save_transaction_data(context, context.response.json())
 
 
-@when("the user retrieves the CDC payment method details")
+@when("l'utente recupera i dettagli del metodo di pagamento CDC")
 def step_cdc_get_payment_method_details(context):
     context.response = get_payment_method_details(context.payment_method_id)
 
 
-@when("the user computes the CDC fee for credit card payment")
+@when("l'utente calcola la commissione CDC per il pagamento con carta di credito")
 def step_cdc_compute_fee(context):
     context.response = compute_fee(
         method_id=context.payment_method_id,
@@ -233,12 +233,12 @@ def step_cdc_compute_fee(context):
     )
 
 
-@when("the user retrieves all CDC payment methods v1")
+@when("l'utente recupera tutti i metodi di pagamento CDC v1")
 def step_cdc_get_all_payment_methods(context):
     context.response = get_all_payment_methods_v1()
 
 
-@when("the user requests CDC authorization for the transaction")
+@when("l'utente richiede l'autorizzazione CDC per la transazione")
 def step_cdc_request_authorization(context):
     context.response = request_authorization(
         transaction_id=context.transaction_id,
@@ -254,7 +254,7 @@ def step_cdc_request_authorization(context):
 # Then — Assertion steps — Generic
 # ---------------------------------------------------------------------------
 
-@then("the CDC response has status code {expected_code:d}")
+@then("la risposta CDC ha codice di stato {expected_code:d}")
 def step_cdc_check_status_code(context, expected_code: int):
     actual = context.response.status_code
     assert actual == expected_code, (
@@ -263,7 +263,7 @@ def step_cdc_check_status_code(context, expected_code: int):
     )
 
 
-@then('the transaction status reaches "{wanted_status}" via polling')
+@then('lo stato della transazione raggiunge "{wanted_status}" tramite polling')
 def step_cdc_poll_transaction_then(context, wanted_status: str):
     reached = poll_transaction_until_status(
         context.transaction_id, context.auth_token, wanted_status
@@ -281,7 +281,7 @@ def step_cdc_poll_transaction_then(context, wanted_status: str):
 _EXPECTED_CARD_FORM_FIELDS = {"CARD_NUMBER", "EXPIRATION_DATE", "SECURITY_CODE", "CARDHOLDER_NAME"}
 
 
-@then("the NPG session contains four card form fields")
+@then("la sessione NPG contiene quattro campi del form carta")
 def step_cdc_session_form_fields(context):
     body = context.response.json()
     form = body.get("paymentMethodData", {}).get("form", [])
@@ -296,14 +296,14 @@ def step_cdc_session_form_fields(context):
     print(f"  -> Form fields validated: {field_ids}")
 
 
-@then("the NPG session has payment method CARDS")
+@then("la sessione NPG ha il metodo di pagamento CARDS")
 def step_cdc_session_payment_method(context):
     body = context.response.json()
     actual = body.get("paymentMethodData", {}).get("paymentMethod")
     assert actual == "CARDS", f"paymentMethod atteso 'CARDS', trovato {actual!r}"
 
 
-@then("the NPG session has a valid order id")
+@then("la sessione NPG ha un order id valido")
 def step_cdc_session_order_id(context):
     body = context.response.json()
     order_id = body.get("orderId")
@@ -321,7 +321,7 @@ _EXPECTED_PAYMENT_KEYS = {"rptId", "reason", "amount", "isAllCCP", "paymentToken
 _EXPECTED_TRANSFER_LIST_KEYS = {"paFiscalCode", "digitalStamp", "transferAmount", "transferCategory"}
 
 
-@then("the transaction response has status ACTIVATED")
+@then("la risposta della transazione ha stato ACTIVATED")
 def step_cdc_transaction_status_activated(context):
     body = context.response.json()
     assert body.get("status") == "ACTIVATED", (
@@ -329,7 +329,7 @@ def step_cdc_transaction_status_activated(context):
     )
 
 
-@then("the transaction response has a valid transactionId and authToken")
+@then("la risposta della transazione ha transactionId e authToken validi")
 def step_cdc_transaction_ids(context):
     body = context.response.json()
     assert isinstance(body.get("transactionId"), str) and body["transactionId"], (
@@ -341,7 +341,7 @@ def step_cdc_transaction_ids(context):
     print(f"  -> transactionId: {body['transactionId']}")
 
 
-@then("the transaction payments have the expected structure")
+@then("i pagamenti della transazione hanno la struttura prevista")
 def step_cdc_transaction_payments_structure(context):
     body = context.response.json()
     fiscal_code = get_required_env("VALID_FISCAL_CODE_PA")
@@ -379,7 +379,7 @@ def step_cdc_transaction_payments_structure(context):
 # Then — Payment method detail assertions
 # ---------------------------------------------------------------------------
 
-@then('the payment method has name "{expected_name}" and paymentTypeCode "{expected_type_code}"')
+@then('il metodo di pagamento ha nome "{expected_name}" e paymentTypeCode "{expected_type_code}"')
 def step_cdc_payment_method_name_type(context, expected_name: str, expected_type_code: str):
     body = context.response.json()
     assert body.get("name") == expected_name, (
@@ -392,7 +392,7 @@ def step_cdc_payment_method_name_type(context, expected_name: str, expected_type
     context.payment_method_description = body.get("description")
 
 
-@then("the payment method has a non-empty asset and ranges")
+@then("il metodo di pagamento ha asset e ranges non vuoti")
 def step_cdc_payment_method_asset_ranges(context):
     body = context.response.json()
     assert body.get("asset"), "asset vuoto o assente"
@@ -403,7 +403,7 @@ def step_cdc_payment_method_asset_ranges(context):
 # Then — Fee assertions
 # ---------------------------------------------------------------------------
 
-@then('the fee response has paymentMethodStatus "{expected_status}"')
+@then('la risposta della commissione ha paymentMethodStatus "{expected_status}"')
 def step_cdc_fee_payment_method_status(context, expected_status: str):
     body = context.response.json()
     actual = body.get("paymentMethodStatus")
@@ -412,7 +412,7 @@ def step_cdc_fee_payment_method_status(context, expected_status: str):
     )
 
 
-@then("the fee response has belowThreshold false")
+@then("la risposta della commissione ha belowThreshold false")
 def step_cdc_fee_below_threshold(context):
     body = context.response.json()
     assert body.get("belowThreshold") is False, (
@@ -420,7 +420,7 @@ def step_cdc_fee_below_threshold(context):
     )
 
 
-@then("the fee response has non-empty bundles")
+@then("la risposta della commissione ha bundles non vuoti")
 def step_cdc_fee_bundles(context):
     body = context.response.json()
     assert body.get("bundles"), "bundles vuoto o assente"
@@ -439,7 +439,7 @@ _EXPECTED_METHOD_KEYS = {
 }
 
 
-@then("the payment methods list is not empty")
+@then("la lista dei metodi di pagamento non e vuota")
 def step_cdc_payment_methods_not_empty(context):
     body = context.response.json()
     methods = body.get("paymentMethods") or body
@@ -447,7 +447,7 @@ def step_cdc_payment_methods_not_empty(context):
     print(f"  -> {len(methods)} payment method(s) found")
 
 
-@then("the credit card methods have VISA and Mastercard brand assets")
+@then("i metodi carta di credito hanno gli asset brand VISA e Mastercard")
 def step_cdc_brand_assets(context):
     body = context.response.json()
     methods = body.get("paymentMethods", [])
@@ -472,7 +472,7 @@ def step_cdc_brand_assets(context):
 # Then — Authorization assertions
 # ---------------------------------------------------------------------------
 
-@then("the authorization response has a valid authorizationUrl")
+@then("la risposta di autorizzazione ha un authorizationUrl valido")
 def step_cdc_auth_url(context):
     body = context.response.json()
     url = body.get("authorizationUrl")
@@ -482,7 +482,7 @@ def step_cdc_auth_url(context):
     print(f"  -> authorizationUrl: {url[:80]}...")
 
 
-@then("the authorization requestId matches the current order id")
+@then("l'authorization requestId corrisponde all'order id corrente")
 def step_cdc_auth_request_id(context):
     body = context.response.json()
     request_id = body.get("authorizationRequestId")

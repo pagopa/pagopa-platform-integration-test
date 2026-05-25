@@ -1,26 +1,27 @@
+# language: it
 @FEAT_009_Checkout
-Feature: Checkout eCommerce — NPG payment gateway
-  Validate the eCommerce checkout API flows for authorization requests via NPG.
+Funzionalità: Checkout eCommerce - gateway di pagamento NPG
+  Valida i flussi API di checkout eCommerce per le richieste di autorizzazione via NPG.
 
-  Background:
-    Given that checkout host is configured through environment variable
-    And the checkout NPG environment variables are configured
+  Contesto:
+    Dato che l'host di checkout e configurato tramite variabile d'ambiente
+    E le variabili d'ambiente NPG di checkout sono configurate
 
   # ---------------------------------------------------------------------------
-  # Authorization Requests
+  # Richieste di autorizzazione
   # ---------------------------------------------------------------------------
 
   @checkout @npg @authorization @negative
   @FEAT_009_Checkout_SCENARIO_01
-  Scenario Outline: Authorization request returns 401 when JWT token is absent
-    Given the credit card payment method id is resolved
-    And an NPG session is created with language "<lang>"
-    And a random valid notice code is generated
-    And a transaction is created for the current session
-    When the user requests authorization without JWT token using language "<lang>"
-    Then the response has status code 401
+  Schema dello scenario: La richiesta di autorizzazione restituisce 401 quando il token JWT e assente
+    Dato l'id del metodo di pagamento carta di credito e risolto
+    E viene creata una sessione NPG con lingua "<lang>"
+    E viene generato un codice avviso valido casuale
+    E viene creata una transazione per la sessione corrente
+    Quando l'utente richiede l'autorizzazione senza token JWT usando la lingua "<lang>"
+    Allora la risposta ha codice di stato 401
 
-    Examples:
+    Esempi:
       | lang |
       | it   |
       | fr   |
@@ -30,13 +31,13 @@ Feature: Checkout eCommerce — NPG payment gateway
 
   @checkout @npg @authorization @positive
   @FEAT_009_Checkout_SCENARIO_02
-  Scenario: Authorization request with JWT token returns authorization URL
-    Given the credit card payment method id is resolved
-    And an NPG session is created with language "it"
-    And a random valid notice code is generated
-    And a transaction is created for the current session
-    And the NPG card fields are filled with test card data
-    When the user requests authorization with JWT token using language "it"
-    Then the response has status code 200
-    And the authorization response contains a valid authorization URL
-    And the authorization request id matches the order id
+  Scenario: La richiesta di autorizzazione con token JWT restituisce URL di autorizzazione
+    Dato l'id del metodo di pagamento carta di credito e risolto
+    E viene creata una sessione NPG con lingua "it"
+    E viene generato un codice avviso valido casuale
+    E viene creata una transazione per la sessione corrente
+    E i campi carta NPG sono compilati con dati carta di test
+    Quando l'utente richiede l'autorizzazione con token JWT usando la lingua "it"
+    Allora la risposta ha codice di stato 200
+    E la risposta di autorizzazione contiene un URL di autorizzazione valido
+    E l'id della richiesta di autorizzazione corrisponde all'order id
