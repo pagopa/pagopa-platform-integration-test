@@ -6,7 +6,7 @@ Funzionalità: Creazione del carrello di pagamento
   cosi che un flusso di pagamento possa essere avviato e venga restituito un reindirizzamento checkout
 
   Contesto:
-    Dato che l'host di checkout e configurato tramite variabile d'ambiente
+    Dato l'host di checkout configurato tramite variabile d'ambiente
 
   @cart @checkout @positive
   @FEAT_007_Checkout_SCENARIO_01

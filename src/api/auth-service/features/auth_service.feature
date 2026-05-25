@@ -4,8 +4,8 @@ Funzionalità: Servizio auth
   Valida i flussi del servizio auth
 
   Contesto:
-    Dato che l'host di checkout e configurato tramite variabile d'ambiente
-    E le variabili d'ambiente del servizio auth sono configurate
+    Dato l'host di checkout configurato tramite variabile d'ambiente
+    E le variabili d'ambiente del servizio auth configurate
 
   @auth-service @checkout @positive
   @FEAT_008_Checkout_SCENARIO_01

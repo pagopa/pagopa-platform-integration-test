@@ -4,8 +4,8 @@ Funzionalità: Checkout eCommerce - gateway di pagamento NPG
   Valida i flussi API di checkout eCommerce per la gestione del ciclo di vita della transazione.
 
   Contesto:
-    Dato che l'host di checkout e configurato tramite variabile d'ambiente
-    E le variabili d'ambiente NPG di checkout sono configurate
+    Dato l'host di checkout configurato tramite variabile d'ambiente
+    E le variabili d'ambiente NPG di checkout configurate
 
   # ---------------------------------------------------------------------------
   # Transazioni
