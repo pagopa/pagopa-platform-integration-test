@@ -76,6 +76,9 @@ on:
 # this run via the API without depending on timestamps.
 run-name: "tas-${{ inputs.correlation_id || github.run_id }}"
 
+permissions:
+  contents: read
+
 jobs:
   run_tests:
     runs-on: ubuntu-latest
