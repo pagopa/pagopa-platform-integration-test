@@ -1,0 +1,100 @@
+##############################################################################
+# tas-example-ado-orchestrator-async.yml
+#
+# Example Azure DevOps pipeline showing how to integrate the
+# Test Automation Service via tas_orchestrator.py in asynchronous mode.
+#
+# The orchestrator fires the test run and exits immediately (exit 0).
+# The pipeline continues without waiting for the test outcome.
+# The CORRELATION_ID is captured as a pipeline variable for tracking.
+#
+# Copy this file to your repository and configure the following
+# secret variable in the pipeline or variable group:
+#   - INTEGRATION_TEST_PAT: GitHub PAT with scope public_repo, actions:read
+##############################################################################
+
+trigger: none
+
+parameters:
+  - name: suite
+    displayName: "Test suite"
+    type: string
+    default: wisp
+    values:
+      - wisp
+      - all
+  - name: environment
+    displayName: "Target environment"
+    type: string
+    default: uat
+    values:
+      - dev
+      - uat
+
+variables:
+  PYTHON_VERSION: "3.11"
+  TAS_REPO: "pagopa/pagopa-platform-integration-test"
+  TAS_REF: "main"
+
+stages:
+
+  # ── Stage 1: Dispatch integration tests (fire-and-forget) ─────────────────
+  - stage: TriggerTests
+    displayName: "Trigger Integration Tests"
+    jobs:
+      - job: FireAndForget
+        displayName: "Dispatch tests and continue"
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: "$(PYTHON_VERSION)"
+            displayName: "Setup Python $(PYTHON_VERSION)"
+
+          - script: pip install requests
+            displayName: "Install orchestrator dependencies"
+
+          - script: |
+              curl -sSfL \
+                "https://raw.githubusercontent.com/$(TAS_REPO)/$(TAS_REF)/scripts/tas_orchestrator.py" \
+                -o tas_orchestrator.py
+            displayName: "Download tas_orchestrator.py"
+
+          - script: |
+              # Run async: script exits immediately with 0 and prints:
+              #   CORRELATION_ID=<uuid>
+              #   RUN_NAME=tas-<uuid>
+              python tas_orchestrator.py \
+                --suite "${{ parameters.suite }}" \
+                --env "${{ parameters.environment }}" \
+                --caller-id "$(Build.Repository.Name)/$(Build.BuildId)" \
+                | tee orchestrator_output.txt
+
+              # Capture CORRELATION_ID and expose it as a pipeline variable
+              CORRELATION_ID=$(grep '^CORRELATION_ID=' orchestrator_output.txt | cut -d= -f2)
+              echo "##vso[task.setvariable variable=CORRELATION_ID;isOutput=true]$CORRELATION_ID"
+              echo "Correlation ID: $CORRELATION_ID"
+              echo "Monitor at: https://github.com/$(TAS_REPO)/actions"
+            displayName: "Dispatch tests (fire-and-forget)"
+            name: trigger
+            env:
+              GITHUB_TOKEN: $(INTEGRATION_TEST_PAT)
+
+  # ── Stage 2: Deploy: runs in parallel with the tests ──────────────────────
+  - stage: Deploy
+    displayName: "Deploy"
+    dependsOn: TriggerTests
+    condition: succeeded()
+    jobs:
+      - job: DeployApp
+        displayName: "Deploy application"
+        pool:
+          vmImage: ubuntu-latest
+        variables:
+          CORRELATION_ID: $[ stageDependencies.TriggerTests.FireAndForget.outputs['trigger.CORRELATION_ID'] ]
+        steps:
+          - script: |
+              echo "Deploying — tests are running asynchronously."
+              echo "Correlation ID: $(CORRELATION_ID)"
+            displayName: "Deploy step"
