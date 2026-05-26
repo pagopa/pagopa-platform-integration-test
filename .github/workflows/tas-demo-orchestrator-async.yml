@@ -1,0 +1,96 @@
+##############################################################################
+# TAS DEMO — tas_orchestrator.py async (Option 3)
+#
+# Demonstrative workflow showing how a calling system integrates the
+# Test Automation Service via the Python CLI bridge in asynchronous mode.
+#
+# The orchestrator dispatches the test run and exits immediately (exit 0).
+# The caller does NOT block and cannot determine the test outcome from the
+# exit code. The CORRELATION_ID is captured so the run can be tracked later.
+#
+# Can be triggered manually from the GitHub UI
+# (Actions → "TAS Demo — orchestrator async").
+#
+# Prerequisites:
+#   - INTEGRATION_TEST_PAT secret configured in this repository.
+#     (workflow_dispatch via API cannot use the built-in GITHUB_TOKEN
+#      to trigger another workflow in the same repo.)
+##############################################################################
+
+name: "TAS Demo — orchestrator async"
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: "Test suite to run"
+        required: true
+        type: choice
+        options:
+          - wisp
+          - all
+        default: wisp
+      environment:
+        description: "Target environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - uat
+        default: uat
+
+jobs:
+
+  # ── 1. Fire-and-forget: dispatch tests and continue immediately ───────────
+  trigger-tests:
+    name: "Trigger integration tests (async)"
+    runs-on: ubuntu-latest
+    outputs:
+      correlation_id: ${{ steps.trigger.outputs.correlation_id }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install orchestrator dependencies
+        run: pip install requests
+
+      - name: Dispatch tests (fire-and-forget)
+        id: trigger
+        run: |
+          # Run async: script exits immediately with 0 and prints:
+          #   CORRELATION_ID=<uuid>
+          #   RUN_NAME=tas-<uuid>
+          OUTPUT=$(python scripts/tas_orchestrator.py \
+            --suite "${{ inputs.test_suite }}" \
+            --env "${{ inputs.environment }}" \
+            --caller-id "${{ github.repository }} (demo)")
+
+          echo "$OUTPUT"
+
+          # Capture CORRELATION_ID for downstream use
+          CORRELATION_ID=$(echo "$OUTPUT" | grep '^CORRELATION_ID=' | cut -d= -f2)
+          echo "correlation_id=$CORRELATION_ID" >> "$GITHUB_OUTPUT"
+        env:
+          GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_PAT }}
+
+      - name: Print monitoring info
+        run: |
+          echo "Tests dispatched — continuing without waiting."
+          echo "Correlation ID : ${{ steps.trigger.outputs.correlation_id }}"
+          echo "Monitor at     : https://github.com/${{ github.repository }}/actions"
+
+  # ── 2. Next step runs immediately, in parallel with the tests ─────────────
+  next-step:
+    name: "Continue pipeline (parallel)"
+    needs: trigger-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Do other work
+        run: |
+          echo "Pipeline continues while tests run asynchronously."
+          echo "Correlation ID passed downstream: ${{ needs.trigger-tests.outputs.correlation_id }}"

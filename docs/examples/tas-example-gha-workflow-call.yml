@@ -1,0 +1,63 @@
+##############################################################################
+# ESEMPIO: integrazione TAS via workflow_call (sincrona)
+#
+# Copia questo file in .github/workflows/ del tuo repository.
+# Non serve configurare alcun segreto legato ai test: il TAS li gestisce
+# internamente nel proprio environment "integration-tests".
+##############################################################################
+
+name: Build, Integration Test & Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+
+  # ── 1. Integration test ──────────────────────────────────────────────────
+  integration-tests:
+    name: Integration Tests (WISP / UAT)
+    uses: pagopa/pagopa-platform-integration-test/.github/workflows/test-automation-service.yml@main
+    with:
+      test_suite:     wisp
+      environment:    uat
+      caller_id:      ${{ github.repository }}
+      # correlation_id univoco per questa run: utile per ritrovare l'artifact
+      # TAS in seguito (vedi documentazione "Recupero del report completo").
+      correlation_id: "${{ github.run_id }}-${{ github.run_attempt }}"
+    # Nessun secrets: da configurare — i segreti di test vivono nel repo TAS.
+
+  # ── 2. Log dei risultati ─────────────────────────────────────────────────
+  log-results:
+    name: Log test results
+    needs: integration-tests
+    # Eseguito anche se i test falliscono, così il log è sempre visibile.
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mostra riepilogo
+        run: |
+          echo "Passed   : ${{ needs.integration-tests.outputs.passed }}"
+          echo "Failed   : ${{ needs.integration-tests.outputs.failed }}"
+          echo "Skipped  : ${{ needs.integration-tests.outputs.skipped }}"
+          echo "Total    : ${{ needs.integration-tests.outputs.total }}"
+          echo "Duration : ${{ needs.integration-tests.outputs.duration }}s"
+          echo "Outcome  : ${{ needs.integration-tests.outputs.outcome }}"
+
+  # ── 3. Deploy (solo se i test sono passati) ───────────────────────────────
+  deploy:
+    name: Deploy
+    needs: integration-tests
+    # "needs" propaga automaticamente il fallimento: se il job TAS esce con
+    # codice 1 (scenari falliti), questo job non viene eseguito.
+    if: needs.integration-tests.outputs.outcome == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy application
+        run: |
+          echo "Tutti i test WISP superati. Avvio deploy..."
+          # ./deploy.sh
