@@ -1,0 +1,101 @@
+##############################################################################
+# tas-example-ado-raw-dispatch.yml
+#
+# Example Azure DevOps pipeline showing how to integrate the
+# Test Automation Service via direct GitHub REST API call (no Python required).
+#
+# The API call is always fire-and-forget: returns 204 immediately.
+# No test outputs (passed/failed counts) are available back to the caller.
+# The run can be tracked via the run name: tas-<CORRELATION_ID>
+#
+# Copy this file to your repository and configure the following
+# secret variable in the pipeline or variable group:
+#   - INTEGRATION_TEST_PAT: GitHub PAT with scope public_repo, actions:read
+##############################################################################
+
+trigger: none
+
+parameters:
+  - name: suite
+    displayName: "Test suite"
+    type: string
+    default: wisp
+    values:
+      - wisp
+      - all
+  - name: environment
+    displayName: "Target environment"
+    type: string
+    default: uat
+    values:
+      - dev
+      - uat
+
+variables:
+  TAS_REPO: "pagopa/pagopa-platform-integration-test"
+  TAS_REF: "main"
+
+stages:
+
+  # ── Stage 1: Dispatch integration tests via GitHub REST API ───────────────
+  - stage: TriggerTests
+    displayName: "Trigger Integration Tests"
+    jobs:
+      - job: RawDispatch
+        displayName: "Dispatch tests (raw API)"
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - script: |
+              CORRELATION_ID="$(Build.BuildId)-$(System.JobAttempt)"
+
+              HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+                -X POST \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer $(INTEGRATION_TEST_PAT)" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "https://api.github.com/repos/$(TAS_REPO)/actions/workflows/test-automation-service.yml/dispatches" \
+                -d "{
+                  \"ref\": \"$(TAS_REF)\",
+                  \"inputs\": {
+                    \"test_suite\": \"${{ parameters.suite }}\",
+                    \"environment\": \"${{ parameters.environment }}\",
+                    \"caller_id\": \"$(Build.Repository.Name)/$(Build.BuildId)\",
+                    \"correlation_id\": \"$CORRELATION_ID\"
+                  }
+                }")
+
+              echo "HTTP status: $HTTP_STATUS"
+              if [ "$HTTP_STATUS" != "204" ]; then
+                echo "##vso[task.logissue type=error]Dispatch failed with HTTP $HTTP_STATUS"
+                exit 1
+              fi
+
+              echo "Tests dispatched successfully (fire-and-forget)."
+              echo "Run name       : tas-$CORRELATION_ID"
+              echo "Correlation ID : $CORRELATION_ID"
+              echo "Monitor at     : https://github.com/$(TAS_REPO)/actions"
+
+              echo "##vso[task.setvariable variable=CORRELATION_ID;isOutput=true]$CORRELATION_ID"
+            displayName: "Dispatch workflow via GitHub API"
+            name: dispatch
+            env:
+              INTEGRATION_TEST_PAT: $(INTEGRATION_TEST_PAT)
+
+  # ── Stage 2: Deploy: runs in parallel with the tests ──────────────────────
+  - stage: Deploy
+    displayName: "Deploy"
+    dependsOn: TriggerTests
+    condition: succeeded()
+    jobs:
+      - job: DeployApp
+        displayName: "Deploy application"
+        pool:
+          vmImage: ubuntu-latest
+        variables:
+          CORRELATION_ID: $[ stageDependencies.TriggerTests.RawDispatch.outputs['dispatch.CORRELATION_ID'] ]
+        steps:
+          - script: |
+              echo "Deploying — tests are running asynchronously."
+              echo "Correlation ID: $(CORRELATION_ID)"
+            displayName: "Deploy step"
