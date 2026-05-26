@@ -1,0 +1,73 @@
+##############################################################################
+# TAS DEMO — workflow_call (Opzione 1)
+#
+# Workflow dimostrativo che mostra come un repository chiamante integra il
+# Test Automation Service tramite workflow_call sincrono.
+#
+# Lanciabile manualmente dalla UI GitHub (Actions → "TAS Demo — workflow_call")
+# per verificare il comportamento end-to-end prima di replicare il pattern
+# nel proprio repository.
+#
+# In un repository chiamante reale, la direttiva "uses" diventa:
+#   uses: pagopa/pagopa-platform-integration-test/.github/workflows/test-automation-service.yml@main
+##############################################################################
+
+name: "TAS Demo — workflow_call"
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: "Suite di test da eseguire"
+        required: true
+        type: choice
+        options:
+          - wisp
+          - all
+        default: wisp
+      environment:
+        description: "Ambiente target"
+        required: true
+        type: choice
+        options:
+          - dev
+          - uat
+        default: uat
+
+jobs:
+
+  # ── 1. Integration test via workflow_call ─────────────────────────────────
+  integration-tests:
+    name: "Integration Tests (${{ inputs.test_suite }} / ${{ inputs.environment }})"
+    uses: ./.github/workflows/test-automation-service.yml
+    with:
+      test_suite:     ${{ inputs.test_suite }}
+      environment:    ${{ inputs.environment }}
+      caller_id:      "${{ github.repository }} (demo)"
+      correlation_id: "${{ github.run_id }}-${{ github.run_attempt }}"
+
+  # ── 2. Log risultati (sempre, anche in caso di fallimento) ────────────────
+  log-results:
+    name: "Log risultati"
+    needs: integration-tests
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mostra riepilogo
+        run: |
+          echo "Passed   : ${{ needs.integration-tests.outputs.passed }}"
+          echo "Failed   : ${{ needs.integration-tests.outputs.failed }}"
+          echo "Skipped  : ${{ needs.integration-tests.outputs.skipped }}"
+          echo "Total    : ${{ needs.integration-tests.outputs.total }}"
+          echo "Duration : ${{ needs.integration-tests.outputs.duration }}s"
+          echo "Outcome  : ${{ needs.integration-tests.outputs.outcome }}"
+
+  # ── 3. Step successivo (simulazione deploy) ───────────────────────────────
+  deploy:
+    name: "Deploy (simulato)"
+    needs: integration-tests
+    if: needs.integration-tests.outputs.outcome == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Simula deploy
+        run: echo "Tutti i test superati — il deploy procederebbe qui."

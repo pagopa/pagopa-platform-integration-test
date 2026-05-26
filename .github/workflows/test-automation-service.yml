@@ -1,0 +1,240 @@
+name: Test Automation Service
+
+# Workflow designed to be triggered by external systems (GHA from other repos,
+# Azure DevOps, etc.) via workflow_dispatch. Runs Behave test suites,
+# uploads results as an artifact, and exits with code 1 if any scenarios fail.
+
+on:
+  workflow_call:
+    inputs:
+      test_suite:
+        description: "Test suite to run"
+        required: true
+        type: string
+      environment:
+        description: "Target environment"
+        required: true
+        type: string
+      caller_id:
+        description: "Identifier of the calling system (e.g. pagopa-checkout)"
+        required: false
+        type: string
+        default: ""
+      correlation_id:
+        description: "Unique ID provided by the caller to correlate this run"
+        required: false
+        type: string
+        default: ""
+    outputs:
+      passed:
+        description: "Number of passed scenarios"
+        value: ${{ jobs.run_tests.outputs.passed }}
+      failed:
+        description: "Number of failed scenarios"
+        value: ${{ jobs.run_tests.outputs.failed }}
+      skipped:
+        description: "Number of skipped scenarios"
+        value: ${{ jobs.run_tests.outputs.skipped }}
+      total:
+        description: "Total number of scenarios"
+        value: ${{ jobs.run_tests.outputs.total }}
+      duration:
+        description: "Total test duration in seconds"
+        value: ${{ jobs.run_tests.outputs.duration }}
+      outcome:
+        description: "Overall outcome: 'success' or 'failure'"
+        value: ${{ jobs.run_tests.outputs.outcome }}
+
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: "Test suite to run"
+        required: true
+        type: choice
+        options:
+          - wisp
+          - all
+        default: wisp
+      environment:
+        description: "Target environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - uat
+        default: uat
+      caller_id:
+        description: "Identifier of the calling system (e.g. pagopa-checkout)"
+        required: false
+        default: ""
+      correlation_id:
+        description: "Unique ID provided by the caller to correlate this run"
+        required: false
+        default: ""
+
+# The run-name includes the correlation_id so the CLI bridge can reliably locate
+# this run via the API without depending on timestamps.
+run-name: "tas-${{ inputs.correlation_id || github.run_id }}"
+
+jobs:
+  run_tests:
+    runs-on: ubuntu-latest
+    environment: integration-tests
+    outputs:
+      passed:   ${{ steps.summary.outputs.passed }}
+      failed:   ${{ steps.summary.outputs.failed }}
+      skipped:  ${{ steps.summary.outputs.skipped }}
+      total:    ${{ steps.summary.outputs.total }}
+      duration: ${{ steps.summary.outputs.duration }}
+      outcome:  ${{ steps.summary.outputs.outcome }}
+    steps:
+      - name: Log invocation metadata
+        run: |
+          echo "::notice title=Caller::${{ inputs.caller_id }}"
+          echo "::notice title=Correlation ID::${{ inputs.correlation_id }}"
+          echo "::notice title=Suite::${{ inputs.test_suite }} | Env: ${{ inputs.environment }}"
+
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: 3.x
+
+      - name: Setup Java
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
+        with:
+          distribution: zulu
+          java-version: 17
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Load secrets
+        run: echo "$SECRETS" >> ./config/.secrets.yaml
+        env:
+          SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS }}
+
+      - name: Determine test path
+        id: test_path
+        run: |
+          if [ "${{ inputs.test_suite }}" = "all" ]; then
+            echo "path=src/bdd" >> $GITHUB_OUTPUT
+          else
+            echo "path=src/bdd/${{ inputs.test_suite }}" >> $GITHUB_OUTPUT
+          fi
+
+      # continue-on-error=true: the workflow must not stop on test failures;
+      # artifact upload and result parsing must always run.
+      - name: Run Behave tests
+        id: run_tests
+        continue-on-error: true
+        run: |
+          behave ${{ steps.test_path.outputs.path }} \
+            --tags=@runnable \
+            --format json --outfile behave-results.json \
+            --junit --junit-directory=junit \
+            --summary --show-timings -v
+        env:
+          TARGET_ENV: ${{ inputs.environment }}
+
+      - name: Parse results and generate summary artifact
+        id: summary
+        run: |
+          python - <<'EOF'
+          import json, os, sys
+
+          try:
+              with open("behave-results.json") as f:
+                  features = json.load(f)
+          except (FileNotFoundError, json.JSONDecodeError) as e:
+              print(f"[ERROR] Cannot read behave-results.json: {e}", file=sys.stderr)
+              # Produce a failure summary so the artifact is always present
+              features = []
+
+          passed = failed = skipped = 0
+          total_duration = 0.0
+
+          for feature in features:
+              for element in feature.get("elements", []):
+                  if element.get("type") != "scenario":
+                      continue
+                  status = element.get("status", "skipped")
+                  duration = sum(
+                      step.get("result", {}).get("duration", 0)
+                      for step in element.get("steps", [])
+                  )
+                  total_duration += duration
+                  if status == "passed":
+                      passed += 1
+                  elif status == "failed":
+                      failed += 1
+                  else:
+                      skipped += 1
+
+          outcome = "success" if failed == 0 else "failure"
+          summary = {
+              "correlation_id": "${{ inputs.correlation_id }}",
+              "caller_id":      "${{ inputs.caller_id }}",
+              "suite":          "${{ inputs.test_suite }}",
+              "environment":    "${{ inputs.environment }}",
+              "passed":         passed,
+              "failed":         failed,
+              "skipped":        skipped,
+              "total":          passed + failed + skipped,
+              "duration_seconds": round(total_duration, 2),
+              "outcome":        outcome,
+          }
+
+          with open("test-summary.json", "w") as f:
+              json.dump(summary, f, indent=2)
+
+          # Write outputs for downstream steps
+          with open(os.environ["GITHUB_OUTPUT"], "a") as gho:
+              gho.write(f"passed={passed}\n")
+              gho.write(f"failed={failed}\n")
+              gho.write(f"skipped={skipped}\n")
+              gho.write(f"total={passed + failed + skipped}\n")
+              gho.write(f"duration={round(total_duration, 2)}\n")
+              gho.write(f"outcome={outcome}\n")
+
+          print(f"Parsed: {passed} passed | {failed} failed | {skipped} skipped | {round(total_duration,2)}s")
+          EOF
+
+      - name: Write job summary (GitHub UI)
+        if: always()
+        run: |
+          echo "## Test Automation Service — Results" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Caller** | ${{ inputs.caller_id || '—' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Correlation ID** | \`${{ inputs.correlation_id || github.run_id }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Suite** | ${{ inputs.test_suite }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Environment** | ${{ inputs.environment }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Passed** | ${{ steps.summary.outputs.passed }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Failed** | ${{ steps.summary.outputs.failed }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Skipped** | ${{ steps.summary.outputs.skipped }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total** | ${{ steps.summary.outputs.total }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Duration** | ${{ steps.summary.outputs.duration }}s |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Outcome** | ${{ steps.summary.outputs.outcome == 'success' && '✅ PASSED' || '❌ FAILED' }} |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload test results artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: test-results
+          path: |
+            behave-results.json
+            test-summary.json
+            junit/
+          if-no-files-found: warn
+
+      # This step fails the job when scenarios have failed, ensuring that
+      # workflow_call callers receive the correct exit code.
+      - name: Fail job if tests failed
+        if: steps.summary.outputs.outcome == 'failure'
+        run: |
+          echo "::error::${{ steps.summary.outputs.failed }} scenario(s) failed out of ${{ steps.summary.outputs.total }} total."
+          exit 1
