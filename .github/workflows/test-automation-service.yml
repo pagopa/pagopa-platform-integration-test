@@ -124,9 +124,9 @@ jobs:
         id: test_path
         run: |
           if [ "${{ inputs.test_suite }}" = "all" ]; then
-            echo "path=src/bdd" >> $GITHUB_OUTPUT
+            echo "path=src/integration" >> $GITHUB_OUTPUT
           else
-            echo "path=src/bdd/${{ inputs.test_suite }}" >> $GITHUB_OUTPUT
+            echo "path=src/integration/${{ inputs.test_suite }}" >> $GITHUB_OUTPUT
           fi
 
       # continue-on-error=true: the workflow must not stop on test failures;
