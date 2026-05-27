@@ -20,11 +20,11 @@ def get_checkout_host() -> str:
     return os.environ.get("CHECKOUT_HOST", "https://api.dev.platform.pagopa.it")
 
 
-def generate_notice_code() -> str:
-    """Genera un notice code casuale valido a partire dal prefisso NOTICE_CODE_PREFIX."""
-    prefix = os.environ.get("NOTICE_CODE_PREFIX")
+def generate_notice_code(prefix_env_var: str = "NOTICE_CODE_PREFIX") -> str:
+    """Genera un notice code casuale valido dal prefisso letto da una env var."""
+    prefix = os.environ.get(prefix_env_var)
     if not prefix:
-        raise EnvironmentError("Environment variable NOTICE_CODE_PREFIX not set.")
+        raise EnvironmentError(f"Environment variable {prefix_env_var} not set.")
     min_val = int(prefix + "10000000000000")
     max_val = int(prefix + "19999999999999")
     return str(random.randint(min_val, max_val))
@@ -91,9 +91,20 @@ def build_cart_body(notice_code: str, fiscal_code: str, email: str) -> dict:
     }
 
 
-def build_multiple_notices_body() -> dict:
+def build_multiple_notices_body(count: int = 6) -> dict:
+    if count < 1:
+        raise ValueError("count must be >= 1")
+
+    notices = []
+    for i in range(count):
+        base_notice = MULTIPLE_PAYMENT_NOTICES[i % len(MULTIPLE_PAYMENT_NOTICES)]
+        notice = dict(base_notice)
+        if i >= len(MULTIPLE_PAYMENT_NOTICES):
+            notice["noticeNumber"] = str(int(base_notice["noticeNumber"]) + i)
+        notices.append(notice)
+
     return {
-        "paymentNotices": MULTIPLE_PAYMENT_NOTICES,
+        "paymentNotices": notices,
         "returnUrls": {
             "returnOkUrl": "https://returnOkUrl",
             "returnCancelUrl": "https://returnCancelUrl",

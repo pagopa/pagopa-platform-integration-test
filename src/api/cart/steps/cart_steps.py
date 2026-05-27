@@ -16,7 +16,6 @@ from src.api.utility.cart.cart_helpers import (
 # Given — Context / Background
 # ---------------------------------------------------------------------------
 
-@given("che l'host di checkout e configurato tramite variabile d'ambiente")
 @given("l'host di checkout configurato tramite variabile d'ambiente")
 def step_host_configurato(context):
     host = get_checkout_host()
@@ -25,7 +24,7 @@ def step_host_configurato(context):
 
 @given('un codice avviso casuale valido generato dal prefisso configurato in "{prefix}"')
 def step_codice_avviso(context, prefix: str):
-    context.notice_code = generate_notice_code()
+    context.notice_code = generate_notice_code(prefix)
     print(f"  → VALID_NOTICE_CODE generated: {context.notice_code}")
 
 @given('un codice fiscale PA valido configurato in "{cod_fis}"')
@@ -57,7 +56,7 @@ def step_post_cart_ko_invalid(context):
 
 @when('l\'utente invia un carrello con {count:d} avvisi di pagamento')
 def step_post_cart_ko_multiple(context, count: int):
-    body = build_multiple_notices_body()
+    body = build_multiple_notices_body(count)
     context.response = post_cart(CART_ENDPOINT, body)
 
 
