@@ -829,11 +829,12 @@ def check_paymentposition_transfers_for_multibeneficiary(context):
 
 
 ######################################
-def exec_nm1_to_nmu(context, actor):
+def exec_nm1_to_nmu(context, actor, expected_status='302'):
     get_valid_sessionid(context)
     send_sessionid_to_wispdismantling(context)
-    check_status_code(context, actor, '302')
-    check_checkout_url(context)
+    check_status_code(context, actor, expected_status)
+    if expected_status == '302':
+        check_checkout_url(context)
 
 
 def retrieve_related_notice_numbers_from_redirect(context):
