@@ -25,15 +25,15 @@ Il porting segue questa sequenza:
 ```
 File JSON Newman  →  Variabili d'ambiente  →  Pre-request script  →  Request  →  Test assertions
        ↓                      ↓                       ↓                  ↓                ↓
-  Feature name          Background /           Given (setup)          When           Then (verify)
+  Funzionalità          Contesto /             Dato (setup)          Quando        Allora (verifica)
                          .env file
 ```
 
 Ogni **item** nella collezione Newman diventa uno **Scenario** nel file `.feature`.  
 Le **variabili di ambiente** diventano chiavi in un file `.env` per ambiente.  
-I **pre-request script** diventano step `Given` di setup.  
-La **request** diventa uno step `When`.  
-Le **assertions** (script di test) diventano step `Then`.
+I **pre-request script** diventano step `Dato` di setup.  
+La **request** diventa uno step `Quando`.  
+Le **assertions** (script di test) diventano step `Allora`.
 
 ---
 
@@ -57,7 +57,7 @@ cart-tests/
 
 Se esistono file `v1` e `v2`, valutare:
 - Se i test delle due versioni differiscono per endpoint o payload → creare Feature o Scenario separati (es. `Scenario: Post cart OK` vs `Scenario: Post cart OK (v2)`).
-- Se cambiano solo alcuni campi del body → usare `Scenario Outline` con una tabella `Examples`.
+- Se cambiano solo alcuni campi del body → usare `Schema dello scenario` con una tabella `Esempi`.
 
 ---
 
@@ -154,9 +154,9 @@ Le tre sezioni da analizzare:
 
 | Sezione Newman | Contenuto | Corrisponde a |
 |---|---|---|
-| `prerequest` → `script.exec` | Setup dinamico (es. generazione dati casuali) | Step `Given` |
-| `request` | Metodo HTTP, URL, headers, body | Step `When` |
-| `test` → `script.exec` | Asserzioni sulla risposta | Step `Then` |
+| `prerequest` → `script.exec` | Setup dinamico (es. generazione dati casuali) | Step `Dato` |
+| `request` | Metodo HTTP, URL, headers, body | Step `Quando` |
+| `test` → `script.exec` | Asserzioni sulla risposta | Step `Allora` |
 
 ### Esempio reale — `Post cart OK`
 
@@ -215,13 +215,13 @@ pm.test("Status code is 302 with one payment notice", () => {
 | Elemento Newman | Regola di trasformazione | Step Gherkin risultante |
 |---|---|---|
 | Nome dell'item | Titolo dello scenario | `Scenario: <nome>` |
-| Pre-request: lettura variabile di ambiente | Dato che una variabile è configurata | `Given a valid PA fiscal code configured in "VALID_FISCAL_CODE_PA"` |
-| Pre-request: generazione dato casuale | Dato che un dato viene generato dinamicamente | `Given a valid random notice code generated from the prefix configured in "NOTICE_CODE_PREFIX"` |
-| Request: metodo + URL | Azione sull'API | `When I send a POST to "/checkout/ec/v1/carts" with cart data and email "test@test.it"` |
-| Request: body non valido | Azione con payload specifico | `When I send a POST to "/checkout/ec/v1/carts" with invalid body` |
-| Test: `pm.response.code` | Verifica status code | `Then the response has status code 302` |
-| Test: `pm.response.to.have.header(...)` | Verifica header presente | `And the response contains the header "location"` |
-| Test: estrazione valore da header | Salvataggio valore per uso futuro | `And the CART_ID is extracted from the header "location"` |
+| Pre-request: lettura variabile di ambiente | Dato che una variabile è configurata | `Dato un codice fiscale PA valido configurato in "VALID_FISCAL_CODE_PA"` |
+| Pre-request: generazione dato casuale | Dato che un dato viene generato dinamicamente | `Dato un codice avviso casuale valido generato dal prefisso configurato in "NOTICE_CODE_PREFIX"` |
+| Request: metodo + URL | Azione sull'API | `Quando l'utente invia un carrello con email "test@test.it"` |
+| Request: body non valido | Azione con payload specifico | `Quando l'utente invia un carrello con un body non valido` |
+| Test: `pm.response.code` | Verifica status code | `Allora la risposta ha codice di stato 302` |
+| Test: `pm.response.to.have.header(...)` | Verifica header presente | `E la risposta contiene l'header "location"` |
+| Test: estrazione valore da header | Salvataggio valore per uso futuro | `E l'id del carrello viene estratto dall'header "location"` |
 
 ### Gestione dei dati dinamici
 
@@ -233,7 +233,7 @@ Nel test Newman, `VALID_NOTICE_CODE` viene generato a runtime nel pre-request sc
 # pm.environment.set("VALID_NOTICE_CODE", randomNoticeCode);
 
 # Gherkin equivalente:
-Given a valid random notice code generated from the prefix configured in "NOTICE_CODE_PREFIX"
+Dato un codice avviso casuale valido generato dal prefisso configurato in "NOTICE_CODE_PREFIX"
 ```
 
 Il dettaglio dell'algoritmo di generazione rimane nella parola `valid random` e nel riferimento alla variabile di configurazione.
@@ -247,7 +247,7 @@ Quando il test Newman imposta una variabile dopo aver verificato la risposta (es
 # pm.environment.set("CART_ID", pm.response.headers.get("Location").substring(...));
 
 # Gherkin:
-And the CART_ID is extracted from the header "location"
+E l'id del carrello viene estratto dall'header "location"
 ```
 
 ---
@@ -257,38 +257,38 @@ And the CART_ID is extracted from the header "location"
 ### Template base
 
 ```gherkin
-# language: en
-Feature: <Nome della Feature>
-  As a <attore>
-  I want to <obiettivo>
-  In order to <beneficio>
+# language: it
+Funzionalità: <Nome della Feature>
+  Come <attore>
+  voglio <obiettivo>
+  così che <beneficio>
 
-  Background:
-    Given that checkout host is configured through environment variable
+  Contesto:
+    Dato l'host di checkout configurato tramite variabile d'ambiente
 
   Scenario: <Nome scenario — corrisponde al nome dell'item Newman>
-    Given <setup / precondizioni>
-    When  <chiamata API>
-    Then  <verifica status code>
-    And   <verifiche aggiuntive>
+    Dato   <setup / precondizioni>
+    Quando <chiamata API>
+    Allora <verifica status code>
+    E      <verifiche aggiuntive>
 ```
 
-**`Background`**: contiene i passi comuni a tutti gli scenari (es. caricamento della configurazione host). Equivale al setup globale della collezione Newman.
+**`Contesto`**: contiene i passi comuni a tutti gli scenari (es. caricamento della configurazione host). Equivale al setup globale della collezione Newman.
 
-### Quando usare `Scenario Outline`
+### Quando usare `Schema dello scenario`
 
-Se due o più item Newman differiscono solo per un parametro (es. `emailNotice` con case diverso), si usa `Scenario Outline`:
+Se due o più item Newman differiscono solo per un parametro (es. `emailNotice` con case diverso), si usa `Schema dello scenario`:
 
 ```gherkin
-Scenario Outline: Post cart OK - Email address formatting
-  Given a valid random notice code generated from the prefix configured in "NOTICE_CODE_PREFIX"
-  And a valid PA fiscal code configured in "VALID_FISCAL_CODE_PA"
-  When I send a POST to "/checkout/ec/v1/carts" with cart data and email "<email>"
-  Then the response has status code 302
-  And the response contains the header "location"
-  And the CART_ID is extracted from the header "location"
+Schema dello scenario: Creazione carrello valida - formattazione email
+  Dato un codice avviso casuale valido generato dal prefisso configurato in "NOTICE_CODE_PREFIX"
+  E un codice fiscale PA valido configurato in "VALID_FISCAL_CODE_PA"
+  Quando l'utente invia un carrello con email "<email>"
+  Allora la risposta ha codice di stato 302
+  E la risposta contiene l'header "location"
+  E l'id del carrello viene estratto dall'header "location"
 
-  Examples:
+  Esempi:
     | email          |
     | test@test.it   |
     | TEST@test.IT   |
@@ -343,13 +343,13 @@ Scenario Outline: Post cart OK - Email address formatting
 **Gherkin risultante:**
 
 ```gherkin
-Scenario: Post cart OK - Valid cart creation with one payment notice
-  Given a valid random notice code generated from the prefix configured in "NOTICE_CODE_PREFIX"
-  And a valid PA fiscal code configured in "VALID_FISCAL_CODE_PA"
-  When I send a POST to "/checkout/ec/v1/carts" with cart data and email "test@test.it"
-  Then the response has status code 302
-  And the response contains the header "location"
-  And the CART_ID is extracted from the header "location"
+Scenario: Creazione carrello valida con un avviso di pagamento
+  Dato un codice avviso casuale valido generato dal prefisso configurato in "NOTICE_CODE_PREFIX"
+  E un codice fiscale PA valido configurato in "VALID_FISCAL_CODE_PA"
+  Quando l'utente invia un carrello con email "test@test.it"
+  Allora la risposta ha codice di stato 302
+  E la risposta contiene l'header "location"
+  E l'id del carrello viene estratto dall'header "location"
 ```
 
 ---
@@ -387,12 +387,12 @@ Scenario: Post cart OK - Valid cart creation with one payment notice
 **Gherkin risultante:**
 
 ```gherkin
-Scenario: Post cart KO - Invalid request (malformed body)
-  When I send a POST to "/checkout/ec/v1/carts" with invalid body
-  Then the response has status code 400
+Scenario: Creazione del carrello fallisce con body malformato
+  Quando l'utente invia un carrello con un body non valido
+  Allora la risposta ha codice di stato 400
 ```
 
-> Questo scenario non ha step `Given` perché non richiede setup preliminare: il test verifica solo che un body malformato venga rifiutato.
+> Questo scenario non ha step `Dato` perché non richiede setup preliminare: il test verifica solo che un body malformato venga rifiutato.
 
 ---
 
@@ -423,12 +423,12 @@ Scenario: Post cart KO - Invalid request (malformed body)
 **Gherkin risultante:**
 
 ```gherkin
-Scenario: Post cart KO - Number of payment notices exceeds maximum allowed
-  When I send a POST to "/checkout/ec/v1/carts" with 6 payment notices
-  Then the response has status code 400
+Scenario: La creazione del carrello fallisce quando gli avvisi superano il massimo consentito
+  Quando l'utente invia un carrello con 6 avvisi di pagamento
+  Allora la risposta ha codice di stato 400
 ```
 
-> Il numero `6` è estratto direttamente dal nome del test Newman (`more than 5`) e reso esplicito nello step `When` come parametro.
+> Il numero `6` è estratto direttamente dal nome del test Newman (`more than 5`) e reso esplicito nello step `Quando` come parametro.
 
 ---
 
@@ -441,29 +441,29 @@ Rispetto a v1, la v2 aggiunge `returnWaitingUrl` nell'oggetto `returnUrls` e usa
 **Gherkin — scenario separato per v2:**
 
 ```gherkin
-Scenario: Post cart OK (v2) - Valid cart creation with one payment notice
-  Given a valid random notice code generated from the prefix configured in "NOTICE_CODE_PREFIX"
-  And a valid PA fiscal code configured in "VALID_FISCAL_CODE_PA"
-  When I send a POST to "/checkout/ec/v2/carts" with cart data and email "test@test.it"
-  Then the response has status code 302
-  And the response contains the header "location"
-  And the CART_ID is extracted from the header "location"
+Scenario: Creazione carrello valida (v2) con un avviso di pagamento
+  Dato un codice avviso casuale valido generato dal prefisso configurato in "NOTICE_CODE_PREFIX"
+  E un codice fiscale PA valido configurato in "VALID_FISCAL_CODE_PA"
+  Quando l'utente invia un carrello v2 con email "test@test.it"
+  Allora la risposta ha codice di stato 302
+  E la risposta contiene l'header "location"
+  E l'id del carrello viene estratto dall'header "location"
 ```
 
-**Oppure, con `Scenario Outline` per coprire entrambe le versioni:**
+**Oppure, con `Schema dello scenario` per coprire entrambe le versioni:**
 
 ```gherkin
-Scenario Outline: Post cart OK - <version> - Valid cart creation
-  Given a valid random notice code generated from the prefix configured in "NOTICE_CODE_PREFIX"
-  And a valid PA fiscal code configured in "VALID_FISCAL_CODE_PA"
-  When I send a POST to "/checkout/ec/<path>/carts" with cart data and email "test@test.it"
-  Then the response has status code 302
-  And the response contains the header "location"
+Schema dello scenario: Creazione carrello valida - <versione>
+  Dato un codice avviso casuale valido generato dal prefisso configurato in "NOTICE_CODE_PREFIX"
+  E un codice fiscale PA valido configurato in "VALID_FISCAL_CODE_PA"
+  Quando l'utente invia un carrello <percorso> con email "test@test.it"
+  Allora la risposta ha codice di stato 302
+  E la risposta contiene l'header "location"
 
-  Examples:
-    | version | path |
-    | v1      | v1   |
-    | v2      | v2   |
+  Esempi:
+    | versione | percorso |
+    | v1       | v1       |
+    | v2       | v2       |
 ```
 
 ---
@@ -503,11 +503,11 @@ Scenario Outline: Post cart OK - <version> - Valid cart creation
 **Gherkin risultante:**
 
 ```gherkin
-Scenario: Post cart KO (v2) - Missing returnWaitingUrl
-  Given a valid random notice code generated from the prefix configured in "NOTICE_CODE_PREFIX"
-  And a valid PA fiscal code configured in "VALID_FISCAL_CODE_PA"
-  When I send a POST to "/checkout/ec/v2/carts" with cart data missing "returnWaitingUrl"
-  Then the response has status code 400
+Scenario: Creazione carrello fallisce (v2) - returnWaitingUrl mancante
+  Dato un codice avviso casuale valido generato dal prefisso configurato in "NOTICE_CODE_PREFIX"
+  E un codice fiscale PA valido configurato in "VALID_FISCAL_CODE_PA"
+  Quando l'utente invia un carrello v2 senza "returnWaitingUrl"
+  Allora la risposta ha codice di stato 400
 ```
 
 ---
@@ -522,9 +522,9 @@ Dopo aver scritto il file `.feature`, verificare i seguenti punti:
 |---|---|
 | Ogni item Newman ha uno Scenario corrispondente | ✓ |
 | Le variabili in `dev.envs.json` con valore fisso sono in `.env.dev` | ✓ |
-| Le variabili calcolate dinamicamente sono step `Given` | ✓ |
+| Le variabili calcolate dinamicamente sono step `Dato` | ✓ |
 | I valori estratti dalla risposta sono step `And` separati | ✓ |
-| Lo status code di ogni test Newman è nello step `Then` | ✓ |
+| Lo status code di ogni test Newman è nello step `Allora` | ✓ |
 | I test v1 e v2 sono differenziati nell'endpoint (`/v1/` vs `/v2/`) | ✓ |
 
 ### Verifica della leggibilità
@@ -533,7 +533,7 @@ Un buon file `.feature` deve essere leggibile da chi non conosce i dettagli tecn
 
 > *"Dato che... quando faccio... allora mi aspetto..."*
 
-Se uno step contiene dettagli di implementazione (URL completo, codici hardcoded, logica condizionale), è un segnale che la granularità è troppo fine — astrai il concetto nel testo dello step.
+Se uno step contiene dettagli di implementazione (URL completo, codici hardcoded, logica condizionale), è un segnale che la granularità è troppo fine — astrarre il concetto nel testo dello step.
 
 ### Confronto scenario Newman ↔ Feature Gherkin
 
