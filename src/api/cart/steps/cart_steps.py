@@ -17,6 +17,7 @@ from src.api.utility.cart.cart_helpers import (
 # ---------------------------------------------------------------------------
 
 @given("che l'host di checkout e configurato tramite variabile d'ambiente")
+@given("l'host di checkout configurato tramite variabile d'ambiente")
 def step_host_configurato(context):
     host = get_checkout_host()
     print(f"  → CHECKOUT_HOST: {host}")

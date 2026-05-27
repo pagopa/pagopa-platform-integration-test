@@ -39,6 +39,7 @@ from checkout_helpers import (  # noqa: E402
 # ---------------------------------------------------------------------------
 
 @given("che l'host di checkout e configurato tramite variabile d'ambiente")
+@given("l'host di checkout configurato tramite variabile d'ambiente")
 def step_checkout_host_configured(context):
     from checkout_helpers import get_checkout_host
     host = get_checkout_host()
@@ -46,6 +47,7 @@ def step_checkout_host_configured(context):
 
 
 @given("le variabili d'ambiente NPG di checkout sono configurate")
+@given("le variabili d'ambiente NPG di checkout configurate")
 def step_npg_env_configured(context):
     required = [
         "NOTICE_CODE_PREFIX",

@@ -24,12 +24,14 @@ from auth_service_helpers import (  # noqa: E402
 
 
 @given("che l'host di checkout e configurato tramite variabile d'ambiente")
+@given("l'host di checkout configurato tramite variabile d'ambiente")
 def step_checkout_host_configured(context):
     host = get_checkout_host()
     print(f"  -> CHECKOUT_HOST: {host}")
 
 
 @given("le variabili d'ambiente del servizio auth sono configurate")
+@given("le variabili d'ambiente del servizio auth configurate")
 def step_auth_env_configured(context):
     required_names = [
         "FAKE_RECAPTCHA_NOT_VALIDATED",
