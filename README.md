@@ -14,6 +14,22 @@ alcune suite storiche usano Cucumber.js o Playwright.
 - [Suite disponibili](#suite-disponibili)
 - [Esecuzione locale](#esecuzione-locale)
 - [Report Allure](#report-allure)
+# pagopa-platform-integration-test
+
+Repository di test di integrazione, API ed end-to-end per componenti della piattaforma pagoPA.
+Le suite sono scritte principalmente in Python con Behave/Gherkin e producono report Allure;
+alcune suite storiche usano Cucumber.js o Playwright.
+
+## Indice
+
+- [Panoramica](#panoramica)
+- [Struttura del repository](#struttura-del-repository)
+- [Requisiti](#requisiti)
+- [Installazione](#installazione)
+- [Configurazione](#configurazione)
+- [Suite disponibili](#suite-disponibili)
+- [Esecuzione locale](#esecuzione-locale)
+- [Report Allure](#report-allure)
 - [Esecuzione in CI](#esecuzione-in-ci)
 - [Servizio di test riusabile](#servizio-di-test-riusabile)
 - [Documentazione scenari](#documentazione-scenari)
@@ -23,17 +39,16 @@ alcune suite storiche usano Cucumber.js o Playwright.
 
 ## Panoramica
 
-Il repository raccoglie scenari BDD e script di automazione per validare:
+Il repository raccoglie scenari BDD e script di automazione per:
 
-- API Checkout e servizi collegati, sotto `src/api/<suite>/`.
-- Flussi di integrazione WISP, FdR, eBollo e GPD, sotto `src/integration/<suite>/`.
-- Flussi end-to-end Checkout, sotto `src/e2e/checkout/`.
+- Test API e servizi, sotto `src/api/<suite>/`.
+- Test flussi di integrazione, sotto `src/integration/<suite>/`.
+- Test flussi end-to-end , sotto `src/e2e/<suite>/`.
 
 Ogni suite Behave va eseguita dalla root del repository, puntando alla cartella della singola
-suite. Per le API, non eseguire `behave src/api`: la cartella aggregatrice non contiene una
-directory `steps` comune.
+suite. 
 
-Fonti principali: struttura `src/`, `behave.ini`, `requirements.txt`, regole operative di
+Riferimenti: struttura `src/`, `behave.ini`, `requirements.txt`, regole operative di
 progetto.
 
 ## Struttura del repository
@@ -72,7 +87,7 @@ pagopa-platform-integration-test/
   └── html/                        # dashboard GitHub Pages
 ```
 
-Fonti principali: struttura workspace, `.gitignore`, `.github/workflows/*`, `.github/scripts/*`,
+Riferimenti: struttura workspace, `.gitignore`, `.github/workflows/*`, `.github/scripts/*`,
 `.github/templates/history-index-template.html`, `.github/html/index.html`.
 
 ## Requisiti
@@ -97,7 +112,7 @@ Dipendenze Python principali presenti nel progetto:
 - `jinja2`
 - `markdown==3.8.1`
 
-Fonti principali: `requirements.txt`, `.github/workflows/wisp-tests.yml`,
+Riferimenti: `requirements.txt`, `.github/workflows/wisp-tests.yml`,
 `.github/workflows/fdr-tests.yml`, `.github/workflows/deploy-test-report.yml`.
 
 ## Installazione
@@ -130,7 +145,7 @@ pip install playwright
 playwright install chromium
 ```
 
-Fonti principali: `requirements.txt`, `src/integration/gpd/package.json`,
+Riferimenti: `requirements.txt`, `src/integration/gpd/package.json`,
 `src/integration/gpd/README.md`, `src/e2e/checkout/package.json`,
 `src/e2e/checkout/environment.py`, `src/integration/ebollo/environment.py`.
 
@@ -158,10 +173,10 @@ Variabili comuni:
 | `DEPLOYMENT_*` | routing specifico per payment-methods, payment-requests, transactions |
 | `NPG_*` | host e dati carta test NPG |
 
-Fonti principali: `config/api-tests/.env.dev`, `config/api-tests/.env.uat`,
+Riferimenti: `config/api-tests/.env.dev`, `config/api-tests/.env.uat`,
 `src/api/utility/api_test_environment.py`.
 
-### Suite di integrazione
+### Integration test
 
 Le suite sotto `src/integration/` usano `config.yaml`, `commondata.yaml` e, quando necessario,
 `config/.secrets.yaml`. Se `TARGET_ENV` non e impostata, la configurazione Python seleziona
@@ -170,10 +185,10 @@ Le suite sotto `src/integration/` usano `config.yaml`, `commondata.yaml` e, quan
 Preparare i segreti locali partendo dal template:
 
 ```bash
-cp config/.secrets_template.yaml config/.secrets.yaml
+cp config/.secrets_template.yaml -> config/.secrets.yaml
 ```
 
-Il file `config/.secrets.yaml` e ignorato da git e deve contenere le subscription key e le
+Il file `config/.secrets.yaml` è ignorato da git e deve contenere le subscription key e le
 password richieste dalle chiamate verso Nodo, GPD, Technical Support e canali WISP/Checkout.
 
 PowerShell:
@@ -188,13 +203,13 @@ Bash:
 export TARGET_ENV=uat
 ```
 
-Fonti principali: `config.yaml`, `config/.secrets_template.yaml`,
+Riferimenti: `config.yaml`, `config/.secrets_template.yaml`,
 `src/conf/configuration.py`, `.gitignore`.
 
-### Checkout E2E
+### E2E test
 
-La suite Behave in `src/e2e/checkout/` puo caricare un file env locale tramite `ENV_FILE`.
-Il file presente e `dev.env`.
+Le suite Behave sotto `src/e2e/` caricano ognuna un file env locale tramite variabile `ENV_FILE`.
+Es. `dev.env` in checkout.
 
 PowerShell:
 
@@ -212,11 +227,11 @@ export HEADLESS=true
 export E2E_TIMEOUT_MS=80000
 ```
 
-Fonti principali: `src/e2e/checkout/environment.py`, `src/e2e/checkout/dev.env`.
+Riferimenti: `src/e2e/checkout/environment.py`, `src/e2e/checkout/dev.env`.
 
 ## Suite disponibili
 
-### API Behave
+### API
 
 | Suite | Percorso | Focus | Report locale |
 |---|---|---|---|
@@ -229,9 +244,9 @@ Tag ricorrenti: `@checkout`, `@positive`, `@negative`, `@npg`, `@cdc`,
 `@authorization`, `@card`, `@payment-methods`, `@payment-verify`, `@session`,
 `@transaction`.
 
-Fonti principali: `src/api/*/features/*.feature`, `src/api/*/environment.py`.
+Riferimenti: `src/api/*/features/*.feature`, `src/api/*/environment.py`.
 
-### Integrazione
+### Integration
 
 | Suite | Percorso | Runner | Note |
 |---|---|---|---|
@@ -243,17 +258,16 @@ Fonti principali: `src/api/*/features/*.feature`, `src/api/*/environment.py`.
 Report locali consigliati: `reports/allure-results/<suite>-<env>` per le suite Behave.
 La suite GPD usa la reportistica Cucumber configurata dal runner JS.
 
-Fonti principali: `src/integration/**/features/**/*.feature`,
+Riferimenti: `src/integration/**/features/**/*.feature`,
 `src/integration/gpd/package.json`, `src/integration/gpd/README.md`.
 
-### End-to-end Checkout
+### End-to-end
 
 | Suite | Percorso | Runner | Note |
 |---|---|---|---|
 | `checkout` | `src/e2e/checkout` | Behave + Playwright Python | feature UI Checkout sotto `features/` |
-| `checkout` JS | `src/e2e/checkout/tests` | Playwright Test | test JS opzionale con `npx playwright test` |
 
-Fonti principali: `src/e2e/checkout/features/*.feature`,
+Riferimenti: `src/e2e/checkout/features/*.feature`,
 `src/e2e/checkout/environment.py`, `src/e2e/checkout/tests/checkout-payment.spec.js`.
 
 ## Esecuzione locale
@@ -294,60 +308,8 @@ behave "src/api/${suite}" -D env="$target_env" \
 
 Sostituire `cart` con `auth-service`, `checkout-npg` o `ecommerce-cdc`.
 
-Fonti principali: regole operative di progetto, `src/api/utility/api_test_environment.py`,
+Riferimenti: regole operative di progetto, `src/api/utility/api_test_environment.py`,
 `src/api/*/features/*.feature`.
-
-### Run combinata API
-
-PowerShell:
-
-```powershell
-$targetEnv = "uat"
-$suites = @("auth-service", "cart", "checkout-npg", "ecommerce-cdc")
-$failedSuites = @()
-
-foreach ($suite in $suites) {
-  $outDir = "reports\allure-results\$suite-$targetEnv"
-  Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $outDir
-  New-Item $outDir -ItemType Directory -Force | Out-Null
-
-  behave "src\api\$suite" -D env=$targetEnv `
-    -f allure_behave.formatter:AllureFormatter -o $outDir `
-    -f progress --summary --show-timings
-
-  if ($LASTEXITCODE -ne 0) {
-    $failedSuites += $suite
-  }
-}
-
-if ($failedSuites.Count -gt 0) {
-  Write-Error "Suite fallite: $($failedSuites -join ', ')"
-  exit 1
-}
-```
-
-Bash:
-
-```bash
-target_env="uat"
-suites=("auth-service" "cart" "checkout-npg" "ecommerce-cdc")
-failed=0
-
-for suite in "${suites[@]}"; do
-  out_dir="reports/allure-results/${suite}-${target_env}"
-  rm -rf "$out_dir"
-  mkdir -p "$out_dir"
-
-  behave "src/api/${suite}" -D env="$target_env" \
-    -f allure_behave.formatter:AllureFormatter -o "$out_dir" \
-    -f progress --summary --show-timings || failed=1
-done
-
-exit "$failed"
-```
-
-Fonti principali: regole operative di progetto, `src/api/*/features/*.feature`,
-`src/api/*/environment.py`.
 
 ### WISP e FdR
 
@@ -381,9 +343,9 @@ behave "src/integration/${suite}" --tags=@runnable \
   -f progress --junit-directory=junit --junit --summary --show-timings -v
 ```
 
-Per FdR usare `suite="fdr"` e `src/integration/fdr`.
+Per FdR usare `suite="fdr"`.
 
-Fonti principali: `.github/workflows/wisp-tests.yml`, `.github/workflows/fdr-tests.yml`,
+Riferimenti: `.github/workflows/wisp-tests.yml`, `.github/workflows/fdr-tests.yml`,
 `.github/workflows/run_behave_tests.yml`, `src/integration/wisp/features/**`,
 `src/integration/fdr/features/**`.
 
@@ -417,10 +379,10 @@ behave "src/integration/ebollo" \
   -f progress --summary --show-timings
 ```
 
-Fonti principali: `src/integration/ebollo/environment.py`,
+Riferimenti: `src/integration/ebollo/environment.py`,
 `src/integration/ebollo/features/*.feature`.
 
-### Checkout E2E Behave
+### E2E 
 
 PowerShell:
 
@@ -452,8 +414,8 @@ behave "src/e2e/checkout" \
   -f progress --summary --show-timings
 ```
 
-Fonti principali: `src/e2e/checkout/environment.py`,
-`src/e2e/checkout/features/*.feature`.
+Riferimenti: `src/e2e/checkout/environment.py`,
+`src/e2e/checkout/dev.env`.
 
 ### GPD Cucumber.js
 
@@ -465,37 +427,8 @@ yarn test:uat
 
 Script disponibili: `test`, `test:local`, `test:dev`, `test:uat`, `test:prod`.
 
-Fonti principali: `src/integration/gpd/package.json`, `src/integration/gpd/README.md`.
+Riferimenti: `src/integration/gpd/package.json`, `src/integration/gpd/README.md`.
 
-### Playwright JS Checkout
-
-```bash
-cd src/e2e/checkout
-npm install
-npx playwright install
-npx playwright test
-```
-
-Il test JS usa `PAGOPA_API_KEY` per creare e cancellare una posizione debitoria di supporto.
-
-Fonti principali: `src/e2e/checkout/package.json`,
-`src/e2e/checkout/tests/checkout-payment.spec.js`.
-
-### Filtri Behave utili
-
-Eseguire solo un tag:
-
-```bash
-behave src/api/checkout-npg --tags=@authorization -D env=uat -f progress
-```
-
-Validare il binding feature/step senza chiamate HTTP:
-
-```bash
-behave src/api/cart --dry-run --no-capture
-```
-
-Fonti principali: feature file Gherkin, `behave.ini`.
 
 ## Report Allure
 
@@ -510,7 +443,7 @@ reports/allure-results/<suite>-<env>
 Nei workflow WISP/FdR il runner produce `allure-results` nella working directory, poi il report
 HTML viene pubblicato come artefatto e copiato su GitHub Pages.
 
-Fonti principali: regole operative di progetto, `.github/workflows/wisp-tests.yml`,
+Riferimenti: regole operative di progetto, `.github/workflows/wisp-tests.yml`,
 `.github/workflows/fdr-tests.yml`, `.github/workflows/run_behave_tests.yml`.
 
 ### Aprire il report locale
@@ -540,7 +473,7 @@ allure open reports/allure-html/cart-uat --port 5300
 Nota sul formatter Behave: `-o` si associa al primo formatter indicato. Mettere sempre
 `allure_behave.formatter:AllureFormatter` prima di `-f progress`.
 
-Fonti principali: regole operative di progetto, workflow WISP/FdR, cartelle `reports/`.
+Riferimenti: regole operative di progetto, workflow WISP/FdR, cartelle `reports/`.
 
 ### Dashboard pubblicata
 
@@ -552,7 +485,7 @@ La dashboard GitHub Pages espone:
 - `last-history` per l'ultimo report processato dagli script di pubblicazione;
 - statistiche lette da `widgets/summary.json` e `stats.json`.
 
-Fonti principali: `.github/html/index.html`, `.github/scripts/process_reports.py`,
+Riferimenti: `.github/html/index.html`, `.github/scripts/process_reports.py`,
 `.github/scripts/notify_slack.py`, `.github/templates/history-index-template.html`,
 `.github/workflows/deploy-test-report.yml`.
 
@@ -568,7 +501,7 @@ Il workflow `Check PR` gira sulle pull request verso `main` e applica automazion
 - applica `size/large` sopra 400 righe modificate;
 - ignora nel conteggio alcuni file OpenAPI.
 
-Fonti principali: `.github/workflows/check_pr.yml`, `.github/auto_assign.yml`.
+Riferimenti: `.github/workflows/check_pr.yml`, `.github/auto_assign.yml`.
 
 ### WISP e FdR
 
@@ -586,9 +519,9 @@ behave src/integration/fdr --tags=@runnable \
   --junit-directory=junit --junit --summary --show-timings -v
 ```
 
-WISP carica `config/.secrets.yaml` dal segreto `INTEGRATION_TESTS_SECRETS`.
+WISP carica `config/.secrets.yaml` dal secret `INTEGRATION_TESTS_SECRETS`.
 
-Fonti principali: `.github/workflows/wisp-tests.yml`, `.github/workflows/fdr-tests.yml`,
+Riferimenti: `.github/workflows/wisp-tests.yml`, `.github/workflows/fdr-tests.yml`,
 `.github/workflows/run_behave_tests.yml`.
 
 ### Dispatch e pubblicazione report
@@ -602,8 +535,7 @@ Fonti principali: `.github/workflows/wisp-tests.yml`, `.github/workflows/fdr-tes
 - `extract_allure_fail_rate.yml` legge `widgets/summary.json` da `gh-pages`, calcola fail
   rate e success rate, poi passa i dati al workflow di notifica.
 
-Fonti principali: `.github/workflows/main-dispatch-tests.yml`,
-`.github/workflows/run_behave_tests.yml`, `.github/workflows/deploy-test-report.yml`,
+Riferimenti: `.github/workflows/main-dispatch-tests.yml`, `.github/workflows/run_behave_tests.yml`, `.github/workflows/deploy-test-report.yml`,
 `.github/workflows/extract_allure_fail_rate.yml`, `.github/workflows/send_notification.yml`.
 
 ### Documentazione GitHub Pages
@@ -612,7 +544,7 @@ Al push su `main`, `landing_pages.yaml` esegue `scenario_parser.py`, genera pagi
 partire dalle feature sotto `src/integration` e pubblica `site/` su `gh-pages` mantenendo i
 file gia presenti.
 
-Fonti principali: `.github/workflows/landing_pages.yaml`, `scenario_parser.py`.
+Riferimenti: `.github/workflows/landing_pages.yaml`, `scenario_parser.py`.
 
 ## Servizio di test riusabile
 
@@ -644,10 +576,10 @@ Il workflow carica i segreti dall'environment `integration-tests`, produce `beha
 uno o piu scenari falliscono.
 
 Nota di allineamento: il workflow riusabile storico risolve il path `src/bdd/<suite>` per
-`wisp` e `all`. Prima di usarlo come gate per la struttura attuale del repository, verificare
+wisp e `all`. Prima di usarlo come gate per la struttura attuale del repository, verificare
 che il path sia coerente con `src/integration/<suite>`.
 
-Fonti principali: `.github/workflows/test-automation-service.yml`, `docs/examples/*`,
+Riferimenti: `.github/workflows/test-automation-service.yml`, `docs/examples/*`,
 `scripts/tas_orchestrator.py`.
 
 ### Bridge CLI
@@ -688,7 +620,7 @@ Exit code:
 | `1` | uno o piu scenari falliti |
 | `2` | errore di orchestrazione, configurazione, timeout o API |
 
-Fonti principali: `scripts/tas_orchestrator.py`, `docs/examples/tas-example-*.yml`.
+Riferimenti: `scripts/tas_orchestrator.py`, `docs/examples/tas-example-*.yml`.
 
 ## Documentazione scenari
 
@@ -710,7 +642,7 @@ python3 scenario_parser.py \
 mkdocs build
 ```
 
-Fonti principali: `scenario_parser.py`, `.github/workflows/landing_pages.yaml`.
+Riferimenti: `scenario_parser.py`, `.github/workflows/landing_pages.yaml`.
 
 ## Contribuire
 
@@ -726,7 +658,7 @@ Fonti principali: `scenario_parser.py`, `.github/workflows/landing_pages.yaml`.
 - Tenere al massimo 12 scenari per feature file; se serve, dividere per area semantica.
 - Usare la terza persona presente negli step.
 
-Fonti principali: regole operative di progetto, feature file esistenti.
+Riferimenti: regole operative di progetto, feature file esistenti.
 
 ### Processo consigliato
 
@@ -739,7 +671,7 @@ Fonti principali: regole operative di progetto, feature file esistenti.
    falliti, causa probabile e azioni correttive.
 7. Non disabilitare scenari falliti per far passare la suite.
 
-Fonti principali: regole operative di progetto, `reports/`, suite esistenti.
+Riferimenti: regole operative di progetto, `reports/`, suite esistenti.
 
 ### Commit e PR
 
@@ -757,8 +689,7 @@ Usare uno dei prefissi seguenti nel messaggio di commit:
 La PR deve descrivere cambiamenti, motivazione, test eseguiti e tipo di modifica. Il workflow
 di PR applica automaticamente label di dimensione in base alle righe modificate.
 
-Fonti principali: `.github/PULL_REQUEST_TEMPLATE.md`, `.github/workflows/check_pr.yml`,
-regole operative di progetto.
+Riferimenti: `.github/PULL_REQUEST_TEMPLATE.md`, `.github/workflows/check_pr.yml`, regole operative di progetto.
 
 ## Troubleshooting
 
@@ -773,7 +704,7 @@ regole operative di progetto.
 | Browser Playwright non trovato | browser runtime non installato | eseguire `playwright install` o `npx playwright install` |
 | Workflow riusabile non trova WISP | path storico non allineato alla struttura attuale | verificare `src/bdd` vs `src/integration` nel workflow |
 
-Fonti principali: `src/api/utility/http_client.py`, `src/api/utility/api_test_environment.py`,
+Riferimenti: `src/api/utility/http_client.py`, `src/api/utility/api_test_environment.py`,
 `config/.secrets_template.yaml`, workflow CI, regole operative di progetto.
 
 ## Tracciabilita delle fonti
