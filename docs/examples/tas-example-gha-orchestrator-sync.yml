@@ -1,0 +1,65 @@
+##############################################################################
+# tas-example-gha-orchestrator-sync.yml
+#
+# Example GitHub Actions workflow showing how to integrate the
+# Test Automation Service via tas_orchestrator.py in synchronous mode.
+#
+# Copy this file to .github/workflows/ in your repository and configure
+# the INTEGRATION_TEST_PAT secret (GitHub PAT with scope: public_repo, actions:read).
+##############################################################################
+
+name: Build, Integration Test & Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+
+  # ── 1. Integration tests ──────────────────────────────────────────────────
+  integration-tests:
+    name: "Integration Tests (WISP / UAT)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install orchestrator dependencies
+        run: pip install requests
+
+      - name: Download tas_orchestrator.py
+        run: |
+          curl -sSfL \
+            "https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/main/scripts/tas_orchestrator.py" \
+            -o tas_orchestrator.py
+
+      # Exit 0 = all tests passed   → job succeeds → deploy runs
+      # Exit 1 = scenarios failed   → job fails    → deploy skipped
+      # Exit 2 = orchestration error (missing token, timeout, API error)
+      - name: Run integration tests (sync)
+        run: |
+          python tas_orchestrator.py \
+            --suite wisp \
+            --env uat \
+            --caller-id "${{ github.repository }}" \
+            --correlation-id "${{ github.run_id }}-${{ github.run_attempt }}" \
+            --sync
+        env:
+          GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_PAT }}
+
+  # ── 2. Deploy (runs only if tests passed) ─────────────────────────────────
+  deploy:
+    name: "Deploy"
+    needs: integration-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy application
+        run: |
+          echo "All tests passed — deploying..."
+          # ./deploy.sh

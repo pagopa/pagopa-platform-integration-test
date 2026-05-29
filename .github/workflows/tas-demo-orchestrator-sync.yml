@@ -1,0 +1,88 @@
+##############################################################################
+# TAS DEMO — tas_orchestrator.py --sync (Option 2)
+#
+# Demonstrative workflow showing how a calling system integrates the
+# Test Automation Service via the Python CLI bridge in synchronous mode.
+#
+# Can be triggered manually from the GitHub UI
+# (Actions → "TAS Demo — orchestrator sync").
+#
+# The orchestrator script is run directly from the scripts/ folder
+# (same repo checkout). In a real calling repository it is downloaded
+# via curl from raw.githubusercontent.com — see docs/examples/tas-example-gha-orchestrator-sync.yml.
+#
+# Prerequisites:
+#   - INTEGRATION_TEST_PAT secret configured in this repository.
+#     (workflow_dispatch via API cannot use the built-in GITHUB_TOKEN
+#      to trigger another workflow in the same repo.)
+##############################################################################
+
+name: "TAS Demo — orchestrator sync"
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: "Test suite to run"
+        required: true
+        type: choice
+        options:
+          - wisp
+          - all
+        default: wisp
+      environment:
+        description: "Target environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - uat
+        default: uat
+
+permissions:
+  contents: read
+
+jobs:
+
+  # ── 1. Run integration tests via orchestrator (sync) ──────────────────────
+  integration-tests:
+    name: "Integration Tests (${{ inputs.test_suite }} / ${{ inputs.environment }})"
+    runs-on: ubuntu-latest
+    outputs:
+      outcome: ${{ steps.run.outputs.outcome }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install orchestrator dependencies
+        run: pip install requests
+
+      # Exit 0 = all tests passed   → job succeeds → deploy runs
+      # Exit 1 = scenarios failed   → job fails    → deploy skipped
+      # Exit 2 = orchestration error (missing token, timeout, API error)
+      - name: Run integration tests (sync)
+        id: run
+        run: |
+          python scripts/tas_orchestrator.py \
+            --suite "${{ inputs.test_suite }}" \
+            --env "${{ inputs.environment }}" \
+            --caller-id "${{ github.repository }} (demo)" \
+            --correlation-id "${{ github.run_id }}-${{ github.run_attempt }}" \
+            --sync
+        env:
+          GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_PAT }}
+
+  # ── 2. Deploy (runs only if tests passed) ─────────────────────────────────
+  deploy:
+    name: "Deploy (simulated)"
+    needs: integration-tests
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Simulate deploy
+        run: echo "All tests passed — deploy would proceed here."
