@@ -73,6 +73,7 @@ jobs:
             --env "${{ inputs.environment }}" \
             --caller-id "${{ github.repository }} (demo)" \
             --correlation-id "${{ github.run_id }}-${{ github.run_attempt }}" \
+            --ref "${{ github.ref_name }}" \
             --sync
         env:
           GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_PAT }}
