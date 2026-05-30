@@ -43,6 +43,7 @@ jobs:
   integration-tests:
     name: "Integration Tests (${{ inputs.test_suite }} / ${{ inputs.environment }})"
     uses: ./.github/workflows/test-automation-service.yml
+    secrets: inherit
     with:
       test_suite:     ${{ inputs.test_suite }}
       environment:    ${{ inputs.environment }}
