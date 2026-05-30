@@ -1,4 +1,4 @@
-name: Test Automation Service
+name: ↔️ Test Automation Service
 
 # Workflow designed to be triggered by external systems (GHA from other repos,
 # Azure DevOps, etc.) via workflow_dispatch. Runs Behave test suites,
@@ -114,6 +114,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
+          sudo apt-get install -y jq
 
       - name: Load secrets
         run: echo "$SECRETS" >> ./config/.secrets.yaml
