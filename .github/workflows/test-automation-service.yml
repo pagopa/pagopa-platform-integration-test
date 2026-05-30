@@ -121,6 +121,15 @@ jobs:
         env:
           SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS }}
 
+      - name: Verify secrets loaded
+        run: |
+          if [ -s ./config/.secrets.yaml ]; then
+            echo "✅ .secrets.yaml loaded ($(wc -l < ./config/.secrets.yaml) lines)"
+          else
+            echo "❌ .secrets.yaml is empty or missing — INTEGRATION_TESTS_SECRETS not available"
+            exit 1
+          fi
+
       - name: Determine test path
         id: test_path
         run: |
