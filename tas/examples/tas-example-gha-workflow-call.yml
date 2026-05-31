@@ -1,0 +1,66 @@
+##############################################################################
+# tas-example-gha-workflow-call.yml
+#
+# Example GitHub Actions workflow showing how to integrate the
+# Test Automation Service via synchronous workflow_call.
+#
+# Copy this file to .github/workflows/ in your repository.
+# No test-related secrets need to be configured: the TAS manages them
+# internally in its own "integration-tests" environment.
+##############################################################################
+
+name: Build, Integration Test & Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+
+  # ── 1. Integration tests ──────────────────────────────────────────────────
+  integration-tests:
+    name: Integration Tests (WISP / UAT)
+    uses: pagopa/pagopa-platform-integration-test/.github/workflows/test-automation-service.yml@main
+    with:
+      test_suite:     wisp
+      environment:    uat
+      caller_id:      ${{ github.repository }}
+      # Unique correlation_id for this run: useful for retrieving the TAS
+      # artifact later (see documentation "Downloading the full report artifact").
+      correlation_id: "${{ github.run_id }}-${{ github.run_attempt }}"
+    # No secrets: to configure — test secrets live in the TAS repository.
+
+  # ── 2. Log results ────────────────────────────────────────────────────────
+  log-results:
+    name: Log test results
+    needs: integration-tests
+    # Runs even if tests fail, so the log is always visible.
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show summary
+        run: |
+          echo "Passed   : ${{ needs.integration-tests.outputs.passed }}"
+          echo "Failed   : ${{ needs.integration-tests.outputs.failed }}"
+          echo "Skipped  : ${{ needs.integration-tests.outputs.skipped }}"
+          echo "Total    : ${{ needs.integration-tests.outputs.total }}"
+          echo "Duration : ${{ needs.integration-tests.outputs.duration }}s"
+          echo "Outcome  : ${{ needs.integration-tests.outputs.outcome }}"
+
+  # ── 3. Deploy (only if tests passed) ─────────────────────────────────────
+  deploy:
+    name: Deploy
+    needs: integration-tests
+    # "needs" automatically propagates failure: if the TAS job exits with
+    # code 1 (scenarios failed), this job is skipped.
+    if: needs.integration-tests.outputs.outcome == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy application
+        run: |
+          echo "All WISP tests passed — deploying..."
+          # ./deploy.sh

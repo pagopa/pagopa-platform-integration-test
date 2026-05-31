@@ -1,0 +1,1539 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="PagoPA">
+      
+      
+        <link rel="canonical" href="https://pagopa.github.io/pagopa-platform-integration-test/tas/tas-developer-guide/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Test Automation Service — Developer Guide - PagoPA platform integration test</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#test-automation-service-developer-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="PagoPA platform integration test" class="md-header__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PagoPA platform integration test
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Test Automation Service — Developer Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="PagoPA platform integration test" class="md-nav__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PagoPA platform integration test
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/wisp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    wisp
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/utility/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    utility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/fdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/ebollo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ebollo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prerequisites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-all-callers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For all callers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-github-actions-callers-workflow_call" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For GitHub Actions callers (workflow_call)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-callers-using-tas_orchestratorpy-or-raw-workflow_dispatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For callers using tas_orchestrator.py or raw workflow_dispatch
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#which-option-should-i-choose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which option should I choose?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Which option should I choose?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-target-branch-question" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The target branch question
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#option-1-workflow_call-from-github-actions-synchronous" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 1 — workflow_call from GitHub Actions (synchronous)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#option-2-tas_orchestratorpy-sync-synchronous" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 2 — tas_orchestrator.py --sync (synchronous)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Option 2 — tas_orchestrator.py --sync (synchronous)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#from-github-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From GitHub Actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-azure-devops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From Azure DevOps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#option-3-tas_orchestratorpy-async" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 3 — tas_orchestrator.py (async)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Option 3 — tas_orchestrator.py (async)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#from-github-actions_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From GitHub Actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-azure-devops_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From Azure DevOps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#option-4-raw-workflow_dispatch-fire-and-forget-no-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 4 — Raw workflow_dispatch (fire-and-forget, no script)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Option 4 — Raw workflow_dispatch (fire-and-forget, no script)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#from-github-actions_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From GitHub Actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-azure-devops-curl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From Azure DevOps (curl)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#downloading-the-full-report-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Downloading the full report artifact
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Downloading the full report artifact">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#from-tas_orchestratorpy-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From tas_orchestrator.py --sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-tas_orchestratorpy-async" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From tas_orchestrator.py (async)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-workflow_call" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From workflow_call
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-raw-workflow_dispatch-option-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From raw workflow_dispatch / Option 4
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cli-reference-tas_orchestratorpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CLI reference — tas_orchestrator.py
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="test-automation-service-developer-guide">Test Automation Service — Developer Guide</h1>
+<p>This guide is intended for external teams who want to integrate the <strong>Test Automation Service (TAS)</strong>
+into their CI/CD pipelines. Before choosing an integration option, read the
+<a href="#which-option-should-i-choose">Which option should I choose?</a> section, which will guide you
+through the decision using a flowchart.</p>
+<hr />
+<h2 id="prerequisites">Prerequisites</h2>
+<h3 id="for-all-callers">For all callers</h3>
+<ul>
+<li>No test-related secrets to configure: test secrets are managed centrally in the
+  <code>integration-tests</code> environment of the TAS repository, regardless of the integration
+  mode used.</li>
+<li>The <code>pagopa/pagopa-platform-integration-test</code> repository is <strong>public</strong>: no special
+  access is required to read it.</li>
+</ul>
+<h3 id="for-github-actions-callers-workflow_call">For GitHub Actions callers (<code>workflow_call</code>)</h3>
+<ul>
+<li><strong>No PAT required</strong> to trigger the workflow and read its outputs: GitHub Actions orchestrates
+  the call natively via the <code>uses:</code> directive, without going through external APIs.</li>
+<li>A PAT is only needed if you want to download the full report artifact from the TAS repo
+  (see <a href="#downloading-the-full-report-artifact">Downloading the full report artifact</a>).
+  In that case the minimum required scopes are <strong><code>public_repo</code></strong> and <strong><code>actions:read</code></strong>.</li>
+</ul>
+<h3 id="for-callers-using-tas_orchestratorpy-or-raw-workflow_dispatch">For callers using <code>tas_orchestrator.py</code> or raw <code>workflow_dispatch</code></h3>
+<ul>
+<li>Python 3.9+ and <code>pip install requests</code> (only for <code>tas_orchestrator.py</code>).</li>
+<li>A GitHub Personal Access Token (PAT) with scopes <strong><code>public_repo</code></strong> and <strong><code>actions:read</code></strong>,
+  stored as a secret in the calling system (<code>INTEGRATION_TEST_PAT</code> in the examples below).
+  A PAT is required because these modes trigger the workflow via the GitHub API, which
+  requires authentication even on public repositories.</li>
+</ul>
+<hr />
+<h2 id="which-option-should-i-choose">Which option should I choose?</h2>
+<p>Use the following flowchart to identify the option that best fits your situation.</p>
+<pre><code class="language-mermaid">flowchart TD
+    A([Start]) --&gt; B{Is your CI/CD\nGitHub Actions?}
+
+    B -- Yes --&gt; C{Do you need\nsynchronous results?}
+    B -- No --&gt; G{Do you need\nsynchronous results?}
+
+    C -- Yes --&gt; D{Are the tests already on main,\nor do you need to target\na feature branch?}
+    C -- No --&gt; E([Option 3\ntas_orchestrator async\nfrom GHA])
+
+    D -- &quot;Only main\n(no parallel development)&quot; --&gt; F([Option 1\nworkflow_call])
+    D -- &quot;Feature branch\n(parallel development\nwith the TAS team)&quot; --&gt; H([Option 2\ntas_orchestrator --sync\nfrom GHA])
+
+    G -- Yes --&gt; I([Option 2\ntas_orchestrator --sync\nfrom Azure DevOps\nor other CI/CD])
+    G -- No --&gt; L([Option 4\nraw workflow_dispatch])
+</code></pre>
+<h3 id="quick-reference">Quick reference</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Option</th>
+<th>Mode</th>
+<th>Target branch</th>
+<th>Caller</th>
+<th>Results</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1</strong></td>
+<td><code>workflow_call</code></td>
+<td>Synchronous</td>
+<td><code>main</code> only (fixed)</td>
+<td>GitHub Actions only</td>
+<td>✅ Native GHA outputs</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td><code>tas_orchestrator.py --sync</code></td>
+<td>Synchronous</td>
+<td>Any branch ✅</td>
+<td>GHA / Azure DevOps / any</td>
+<td>✅ stdout + exit code</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td><code>tas_orchestrator.py</code> (async)</td>
+<td>Asynchronous</td>
+<td>Any branch ✅</td>
+<td>GHA / Azure DevOps / any</td>
+<td>❌ correlation_id only</td>
+</tr>
+<tr>
+<td><strong>4</strong></td>
+<td><code>workflow_dispatch</code> (raw)</td>
+<td>Asynchronous</td>
+<td>Configurable in payload</td>
+<td>Any</td>
+<td>❌</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="the-target-branch-question">The target branch question</h2>
+<p>A crucial aspect to consider when choosing an integration option is the ability to specify
+<strong>which branch of the TAS repository</strong> the tests should run from.</p>
+<p>This becomes relevant when the team developing the product under test and the team writing
+the tests are working <strong>in parallel on separate feature branches</strong>. At this stage, the new
+tests are not yet available on <code>main</code> of the TAS repo: the calling team needs to be able to
+point to the test feature branch — otherwise the pipeline would run outdated scenarios, or
+worse, scenarios that do not yet cover the new functionality under development.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Target branch</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>workflow_call</code></td>
+<td><strong>Fixed</strong> — hardcoded in the <code>uses: ...@&lt;ref&gt;</code> directive in the caller's YAML</td>
+<td>Cannot be made dynamic: <strong>GitHub Actions limitation</strong></td>
+</tr>
+<tr>
+<td><code>tas_orchestrator.py</code></td>
+<td><strong>Dynamic</strong> — <code>--ref</code> parameter at runtime</td>
+<td>Ideal for parallel development</td>
+</tr>
+<tr>
+<td>raw <code>workflow_dispatch</code></td>
+<td><strong>Configurable</strong> — <code>"ref"</code> field in the JSON payload</td>
+<td>Settable at runtime but fire-and-forget</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Recommendation for parallel development:</strong> use option 2 (<code>tas_orchestrator.py --sync</code>)
+with the <code>--ref &lt;feature-branch&gt;</code> parameter. Once the feature branch is merged into <code>main</code>,
+simply remove <code>--ref</code> (the default is already <code>main</code>) — no other changes to the pipeline needed.</p>
+</blockquote>
+<hr />
+<h2 id="option-1-workflow_call-from-github-actions-synchronous">Option 1 — <code>workflow_call</code> from GitHub Actions (synchronous)</h2>
+<p><strong>When to use it:</strong> your pipeline is GitHub Actions, you want to block execution and read the
+results as native job outputs, and the tests you want to run are already available on <code>main</code>
+of the TAS repository.</p>
+<p><strong>How it works:</strong> the calling job waits until <code>test-automation-service.yml</code> completes. If one
+or more scenarios fail, the called workflow exits with code 1, which automatically fails the
+calling job — exactly as if the test were part of your own pipeline. Results (passed, failed,
+duration, outcome…) are available as named outputs in the <code>needs</code> context, ready to use in
+downstream jobs without any additional logic.</p>
+<p><strong>Main limitation:</strong> the TAS repo branch on which the tests run is hardcoded in the <code>uses:</code>
+directive. GitHub Actions does not support dynamic expressions in that field, so it is not
+possible to choose at runtime which branch to run the tests on. If your team and the TAS team
+are developing in parallel on separate feature branches, this option is not suitable until
+that branch has been merged into <code>main</code>.</p>
+<pre><code class="language-yaml"># .github/workflows/deploy.yml  (in your repository)
+name: Build, Test &amp; Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+
+  # ── Step 1: run integration tests ─────────────────────────────────────────
+  integration-tests:
+    uses: pagopa/pagopa-platform-integration-test/.github/workflows/test-automation-service.yml@main
+    with:
+      test_suite: wisp           # wisp | all
+      environment: uat           # dev | uat
+      caller_id: ${{ github.repository }}
+    # No secrets: to pass — test secrets live in the centralised TAS repository
+
+  # ── Step 2: deploy only if tests passed ───────────────────────────────────
+  deploy:
+    needs: integration-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show test results
+        run: |
+          echo &quot;Passed   : ${{ needs.integration-tests.outputs.passed }}&quot;
+          echo &quot;Failed   : ${{ needs.integration-tests.outputs.failed }}&quot;
+          echo &quot;Skipped  : ${{ needs.integration-tests.outputs.skipped }}&quot;
+          echo &quot;Total    : ${{ needs.integration-tests.outputs.total }}&quot;
+          echo &quot;Duration : ${{ needs.integration-tests.outputs.duration }}s&quot;
+          echo &quot;Outcome  : ${{ needs.integration-tests.outputs.outcome }}&quot;
+
+      - name: Deploy application
+        run: ./deploy.sh
+</code></pre>
+<p><strong>Available outputs on <code>needs.integration-tests.outputs</code>:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Output</th>
+<th>Example value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>passed</code></td>
+<td><code>42</code></td>
+<td>Passed scenarios</td>
+</tr>
+<tr>
+<td><code>failed</code></td>
+<td><code>0</code></td>
+<td>Failed scenarios</td>
+</tr>
+<tr>
+<td><code>skipped</code></td>
+<td><code>3</code></td>
+<td>Skipped scenarios</td>
+</tr>
+<tr>
+<td><code>total</code></td>
+<td><code>45</code></td>
+<td>Total scenarios</td>
+</tr>
+<tr>
+<td><code>duration</code></td>
+<td><code>134.7</code></td>
+<td>Execution time (seconds)</td>
+</tr>
+<tr>
+<td><code>outcome</code></td>
+<td><code>success</code></td>
+<td><code>success</code> or <code>failure</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>No PAT required</strong> for <code>workflow_call</code> invocations: GitHub Actions handles the call
+natively. Test secrets are managed centrally in the <code>integration-tests</code> environment
+of the TAS repository.</p>
+</blockquote>
+<hr />
+<h2 id="option-2-tas_orchestratorpy-sync-synchronous">Option 2 — <code>tas_orchestrator.py --sync</code> (synchronous)</h2>
+<p><strong>When to use it:</strong> you want synchronous behaviour with the full summary visible in the step
+log, your pipeline is not GitHub Actions, or — a very common case during parallel development —
+<strong>you need to target a feature branch</strong> of the TAS repo.</p>
+<p><strong>How it works:</strong> the Python script <code>tas_orchestrator.py</code> acts as a bridge between your CI/CD
+and the GitHub Actions API. It sends a <code>workflow_dispatch</code> to <code>test-automation-service.yml</code>,
+polls the run status every 15 seconds, downloads the results artifact upon completion, and
+prints a summary to the log. If tests fail it exits with code 1, otherwise with 0 —
+natively compatible with the <code>success()</code>/<code>failed()</code> logic of any pipeline.</p>
+<p>The key parameter of this option is <code>--ref</code>: it lets you specify which branch of the TAS repo
+to run the tests from. In a parallel development scenario, the calling team passes
+<code>--ref feature/new-wisp-tests</code> to point to the test branch still in progress. Once that
+branch is merged into <code>main</code>, simply remove the parameter (the default is already <code>main</code>).</p>
+<h3 id="from-github-actions">From GitHub Actions</h3>
+<pre><code class="language-yaml"># .github/workflows/deploy.yml  (in your repository)
+name: Build, Test &amp; Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: &quot;3.11&quot;
+
+      - name: Install orchestrator dependencies
+        run: pip install requests
+
+      - name: Download tas_orchestrator.py
+        run: |
+          curl -sSfL \
+            &quot;https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/main/scripts/tas_orchestrator.py&quot; \
+            -o tas_orchestrator.py
+
+      # Exit 0 = all tests passed   → job succeeds → deploy runs
+      # Exit 1 = scenarios failed   → job fails    → deploy skipped
+      # Exit 2 = orchestration error (config / timeout)
+      - name: Run integration tests (sync)
+        run: |
+          python tas_orchestrator.py \
+            --suite wisp \
+            --env uat \
+            --caller-id &quot;${{ github.repository }}&quot; \
+            --sync
+            # Add --ref &lt;feature-branch&gt; if tests are not yet on main
+        env:
+          GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_PAT }}
+
+  deploy:
+    needs: integration-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy application
+        run: ./deploy.sh
+</code></pre>
+<p><strong>Example output printed in the step log:</strong></p>
+<pre><code>======================================================
+   TEST AUTOMATION SERVICE — RESULTS SUMMARY
+======================================================
+   Correlation ID  : 3f2a1b4c-...
+   Caller          : pagopa/pagopa-checkout
+   Suite           : wisp
+   Environment     : uat
+------------------------------------------------------
+   Passed          : 42
+   Failed          : 0
+   Skipped         : 3
+   Total           : 45
+   Duration        : 134.7s
+------------------------------------------------------
+   Outcome         : PASSED
+======================================================
+</code></pre>
+<h3 id="from-azure-devops">From Azure DevOps</h3>
+<p><strong>Configuring the secret in Azure DevOps:</strong></p>
+<ol>
+<li>Go to <strong>Pipelines → Library → Variable Groups</strong> (or directly to the pipeline variables).</li>
+<li>Add a variable named <code>INTEGRATION_TEST_PAT</code> and mark it as <strong>secret</strong>.</li>
+<li>Value: the GitHub PAT with scopes <code>public_repo</code> + <code>actions:read</code>.</li>
+</ol>
+<pre><code class="language-yaml"># azure-pipelines.yml  (in your ADO repository)
+trigger: none
+
+parameters:
+  - name: suite
+    type: string
+    default: wisp
+    values: [wisp, all]
+  - name: environment
+    type: string
+    default: uat
+    values: [dev, uat]
+  - name: ref
+    type: string
+    default: main
+    displayName: &quot;TAS repo branch to run the tests from&quot;
+
+variables:
+  PYTHON_VERSION: &quot;3.11&quot;
+  TAS_REPO: &quot;pagopa/pagopa-platform-integration-test&quot;
+  TAS_REF: ${{ parameters.ref }}
+
+stages:
+
+  # ── Stage 1: Integration tests ────────────────────────────────────────────
+  - stage: IntegrationTests
+    displayName: &quot;Integration Tests&quot;
+    jobs:
+      - job: RunTests
+        displayName: &quot;Trigger and wait for results&quot;
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: &quot;$(PYTHON_VERSION)&quot;
+
+          - script: pip install requests
+            displayName: &quot;Install dependencies&quot;
+
+          - script: |
+              curl -sSfL \
+                &quot;https://raw.githubusercontent.com/$(TAS_REPO)/$(TAS_REF)/scripts/tas_orchestrator.py&quot; \
+                -o tas_orchestrator.py
+            displayName: &quot;Download tas_orchestrator.py&quot;
+
+          - script: |
+              python tas_orchestrator.py \
+                --suite &quot;${{ parameters.suite }}&quot; \
+                --env &quot;${{ parameters.environment }}&quot; \
+                --ref &quot;$(TAS_REF)&quot; \
+                --caller-id &quot;$(Build.Repository.Name)/$(Build.BuildId)&quot; \
+                --sync
+            displayName: &quot;Run integration tests (sync)&quot;
+            env:
+              GITHUB_TOKEN: $(INTEGRATION_TEST_PAT)
+
+  # ── Stage 2: Deploy (runs only if IntegrationTests succeeded) ─────────────
+  - stage: Deploy
+    displayName: &quot;Deploy&quot;
+    dependsOn: IntegrationTests
+    condition: succeeded()
+    jobs:
+      - job: DeployApp
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - script: echo &quot;Deploying...&quot;
+            displayName: &quot;Deploy&quot;
+</code></pre>
+<hr />
+<h2 id="option-3-tas_orchestratorpy-async">Option 3 — <code>tas_orchestrator.py</code> (async)</h2>
+<p><strong>When to use it:</strong> you want to trigger tests without waiting for their outcome — for example
+to run them in parallel with other jobs, to gain observability without blocking the deploy,
+or purely for monitoring purposes.</p>
+<p><strong>How it works:</strong> the script sends the <code>workflow_dispatch</code> and returns immediately with exit
+code 0, without waiting for completion. It prints <code>CORRELATION_ID</code> and <code>RUN_NAME</code>
+(<code>tas-{correlation_id}</code>) to stdout, which you can use to track or locate the run later.
+This mode also supports <code>--ref</code> to target a specific feature branch.</p>
+<h3 id="from-github-actions_1">From GitHub Actions</h3>
+<pre><code class="language-yaml">jobs:
+  trigger-tests:
+    runs-on: ubuntu-latest
+    outputs:
+      correlation_id: ${{ steps.trigger.outputs.correlation_id }}
+    steps:
+      - uses: actions/setup-python@v5
+        with: { python-version: &quot;3.11&quot; }
+
+      - run: pip install requests
+
+      - run: |
+          curl -sSfL \
+            &quot;https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/main/scripts/tas_orchestrator.py&quot; \
+            -o tas_orchestrator.py
+
+      - name: Trigger tests (fire-and-forget)
+        id: trigger
+        run: |
+          OUTPUT=$(python tas_orchestrator.py \
+            --suite wisp \
+            --env uat \
+            --caller-id &quot;${{ github.repository }}&quot;)
+            # Add --ref &lt;feature-branch&gt; if needed
+          echo &quot;$OUTPUT&quot;
+          CORRELATION_ID=$(echo &quot;$OUTPUT&quot; | grep '^CORRELATION_ID=' | cut -d= -f2)
+          echo &quot;correlation_id=$CORRELATION_ID&quot; &gt;&gt; &quot;$GITHUB_OUTPUT&quot;
+        env:
+          GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_PAT }}
+
+      - name: Continue without waiting
+        run: |
+          echo &quot;Tests triggered in background.&quot;
+          echo &quot;Monitor at: https://github.com/pagopa/pagopa-platform-integration-test/actions&quot;
+          echo &quot;Correlation ID: ${{ steps.trigger.outputs.correlation_id }}&quot;
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong> in async mode the script always exits with <code>0</code>. The caller does not block and
+cannot determine the test outcome from the exit code.</p>
+</blockquote>
+<h3 id="from-azure-devops_1">From Azure DevOps</h3>
+<pre><code class="language-yaml">stages:
+  - stage: TriggerTests
+    jobs:
+      - job: FireAndForget
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: UsePythonVersion@0
+            inputs: { versionSpec: &quot;3.11&quot; }
+
+          - script: pip install requests
+            displayName: &quot;Install dependencies&quot;
+
+          - script: |
+              curl -sSfL \
+                &quot;https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/main/scripts/tas_orchestrator.py&quot; \
+                -o tas_orchestrator.py
+            displayName: &quot;Download tas_orchestrator.py&quot;
+
+          - script: |
+              python tas_orchestrator.py \
+                --suite wisp \
+                --env uat \
+                --caller-id &quot;$(Build.Repository.Name)&quot;
+                # Add --ref &lt;feature-branch&gt; if needed
+              # Prints CORRELATION_ID=&lt;uuid&gt; — save it if you want to track the run later
+            displayName: &quot;Trigger tests (async)&quot;
+            env:
+              GITHUB_TOKEN: $(INTEGRATION_TEST_PAT)
+
+  - stage: ContinueImmediately
+    dependsOn: TriggerTests
+    jobs:
+      - job: NextStep
+        pool: { vmImage: ubuntu-latest }
+        steps:
+          - script: echo &quot;Tests triggered in background, pipeline continues.&quot;
+</code></pre>
+<hr />
+<h2 id="option-4-raw-workflow_dispatch-fire-and-forget-no-script">Option 4 — Raw <code>workflow_dispatch</code> (fire-and-forget, no script)</h2>
+<p><strong>When to use it:</strong> maximum simplicity, no results needed, just trigger the tests.
+This is the option with the fewest dependencies: no Python, no additional script required.</p>
+<p><strong>How it works:</strong> a direct HTTP call is sent to the GitHub Actions API. The API responds
+immediately with <code>HTTP 204 No Content</code> — no <code>run_id</code> is returned. The <code>"ref"</code> field in the
+payload determines which branch of the TAS repo the tests run from and can be set freely
+at runtime.</p>
+<h3 id="from-github-actions_2">From GitHub Actions</h3>
+<pre><code class="language-yaml">steps:
+  - name: Trigger integration tests
+    run: |
+      curl -X POST \
+        -H &quot;Accept: application/vnd.github+json&quot; \
+        -H &quot;Authorization: Bearer ${{ secrets.INTEGRATION_TEST_PAT }}&quot; \
+        -H &quot;X-GitHub-Api-Version: 2022-11-28&quot; \
+        -d '{
+          &quot;ref&quot;: &quot;main&quot;,
+          &quot;inputs&quot;: {
+            &quot;test_suite&quot;: &quot;wisp&quot;,
+            &quot;environment&quot;: &quot;uat&quot;,
+            &quot;caller_id&quot;: &quot;${{ github.repository }}&quot;
+          }
+        }' \
+        https://api.github.com/repos/pagopa/pagopa-platform-integration-test/actions/workflows/test-automation-service.yml/dispatches
+</code></pre>
+<h3 id="from-azure-devops-curl">From Azure DevOps (curl)</h3>
+<pre><code class="language-yaml">- script: |
+    curl -X POST \
+      -H &quot;Authorization: Bearer $(INTEGRATION_TEST_PAT)&quot; \
+      -H &quot;Accept: application/vnd.github+json&quot; \
+      -H &quot;X-GitHub-Api-Version: 2022-11-28&quot; \
+      -d '{
+        &quot;ref&quot;: &quot;main&quot;,
+        &quot;inputs&quot;: {
+          &quot;test_suite&quot;: &quot;wisp&quot;,
+          &quot;environment&quot;: &quot;uat&quot;,
+          &quot;caller_id&quot;: &quot;my-ado-pipeline&quot;
+        }
+      }' \
+      https://api.github.com/repos/pagopa/pagopa-platform-integration-test/actions/workflows/test-automation-service.yml/dispatches
+  displayName: &quot;Trigger integration tests (fire-and-forget)&quot;
+</code></pre>
+<blockquote>
+<p>The API returns <code>HTTP 204 No Content</code> on success. No run_id is returned.
+Monitor the triggered run at:
+<code>https://github.com/pagopa/pagopa-platform-integration-test/actions</code></p>
+</blockquote>
+<hr />
+<h2 id="downloading-the-full-report-artifact">Downloading the full report artifact</h2>
+<p>The TAS workflow always uploads a <code>test-results</code> artifact to the GHA run that executed it.
+The zip contains <code>test-summary.json</code>, <code>behave-results.json</code>, and the <code>junit/</code> folder with
+XML reports.</p>
+<p>Two API calls are needed:
+1. List the run's artifacts → <code>GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts</code>
+2. Download the zip → <code>GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/zip</code></p>
+<p>Availability of the <code>run_id</code> varies depending on the integration mode used.</p>
+<hr />
+<h3 id="from-tas_orchestratorpy-sync">From <code>tas_orchestrator.py --sync</code></h3>
+<p>The script prints <code>RUN_ID=&lt;id&gt;</code> to stdout before the summary. The <code>run_id</code> is therefore
+directly available without any additional API calls.</p>
+<pre><code class="language-bash"># Capture RUN_ID from the script output
+RUN_ID=$(python tas_orchestrator.py --suite wisp --env uat --caller-id myapp --sync \
+  | grep '^RUN_ID=' | cut -d= -f2)
+
+# Download the artifact
+curl -sSfL \
+  -H &quot;Authorization: Bearer $GITHUB_TOKEN&quot; \
+  -H &quot;Accept: application/vnd.github+json&quot; \
+  &quot;https://api.github.com/repos/pagopa/pagopa-platform-integration-test/actions/runs/${RUN_ID}/artifacts&quot; \
+  | python -c &quot;import sys,json; print(next(a['id'] for a in json.load(sys.stdin)['artifacts'] if a['name']=='test-results'))&quot; \
+  | xargs -I{} curl -sSfL \
+      -H &quot;Authorization: Bearer $GITHUB_TOKEN&quot; \
+      -H &quot;Accept: application/vnd.github+json&quot; \
+      -L &quot;https://api.github.com/repos/pagopa/pagopa-platform-integration-test/actions/artifacts/{}/zip&quot; \
+      -o test-results.zip
+
+unzip test-results.zip -d test-results/
+</code></pre>
+<hr />
+<h3 id="from-tas_orchestratorpy-async">From <code>tas_orchestrator.py</code> (async)</h3>
+<p>In async mode the script exits before the run is visible on GitHub, so it cannot provide
+the <code>run_id</code>. However, it prints <code>CORRELATION_ID</code> and <code>RUN_NAME</code> (<code>tas-{correlation_id}</code>),
+which allow you to locate the run by name after it completes.</p>
+<pre><code class="language-bash">CORRELATION_ID=&quot;&lt;uuid-received-from-the-script&gt;&quot;
+RUN_NAME=&quot;tas-${CORRELATION_ID}&quot;
+
+RUN_ID=$(curl -sSfL \
+  -H &quot;Authorization: Bearer $GITHUB_TOKEN&quot; \
+  -H &quot;Accept: application/vnd.github+json&quot; \
+  &quot;https://api.github.com/repos/pagopa/pagopa-platform-integration-test/actions/runs?event=workflow_dispatch&amp;per_page=50&quot; \
+  | python -c &quot;
+import sys, json
+runs = json.load(sys.stdin)['workflow_runs']
+match = next((r for r in runs if r['name'] == '${RUN_NAME}'), None)
+print(match['id'] if match else '')
+&quot;)
+
+# Then proceed with the download as shown in the --sync section above
+</code></pre>
+<hr />
+<h3 id="from-workflow_call">From <code>workflow_call</code></h3>
+<p><code>workflow_call</code> does not expose the TAS run's <code>run_id</code> among the native outputs.
+Here too you need to search for the run by name; the <code>correlation_id</code> passed as an input
+to the workflow becomes the <code>run-name: tas-{correlation_id}</code>.</p>
+<pre><code class="language-yaml">- name: Retrieve TAS artifact (optional)
+  run: |
+    CORRELATION_ID=&quot;${{ inputs.correlation_id }}&quot;
+    RUN_NAME=&quot;tas-${CORRELATION_ID}&quot;
+
+    RUN_ID=$(curl -sSfL \
+      -H &quot;Authorization: Bearer ${{ secrets.INTEGRATION_TEST_PAT }}&quot; \
+      -H &quot;Accept: application/vnd.github+json&quot; \
+      &quot;https://api.github.com/repos/pagopa/pagopa-platform-integration-test/actions/runs?event=workflow_call&amp;per_page=50&quot; \
+      | python3 -c &quot;
+    import sys, json
+    runs = json.load(sys.stdin)['workflow_runs']
+    match = next((r for r in runs if r['name'] == '${RUN_NAME}'), None)
+    print(match['id'] if match else '')
+    &quot;)
+
+    echo &quot;RUN_ID=$RUN_ID&quot;
+    # Then proceed with the artifact download as shown above
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong> always pass an explicit <code>correlation_id</code> (e.g.
+<code>${{ github.run_id }}-${{ github.run_attempt }}</code>) to have a unique identifier
+with which to locate the TAS run.</p>
+</blockquote>
+<hr />
+<h3 id="from-raw-workflow_dispatch-option-4">From raw <code>workflow_dispatch</code> / Option 4</h3>
+<p>No run identifier is available at dispatch time (the API returns only <code>HTTP 204</code>).
+The only way to locate the run afterwards is to pass a <code>correlation_id</code> in the dispatch
+parameters and search by run-name as shown in the async section above.</p>
+<hr />
+<h2 id="cli-reference-tas_orchestratorpy">CLI reference — <code>tas_orchestrator.py</code></h2>
+<pre><code>usage: tas_orchestrator.py [-h]
+                               --suite {wisp,all}
+                               --env {dev,uat}
+                               --caller-id CALLER_ID
+                               [--correlation-id CORRELATION_ID]
+                               [--sync]
+                               [--repo REPO]
+                               [--workflow WORKFLOW]
+                               [--ref REF]
+
+arguments:
+  --suite           Test suite to run: wisp | all
+  --env             Target environment: dev | uat
+  --caller-id       Identifier of the calling system (e.g. repository name)
+  --correlation-id  Custom correlation ID (auto-generated UUID if omitted)
+  --sync            Wait for completion and exit with the test outcome
+  --repo            GitHub repo in owner/repo format (default: pagopa/pagopa-platform-integration-test)
+  --workflow        Workflow filename to trigger (default: test-automation-service.yml)
+  --ref             Branch or tag of the TAS repo to run the tests from (default: main).
+                    Useful during parallel development to point to a feature branch
+                    not yet merged into main.
+
+environment variables:
+  GITHUB_TOKEN      Required. PAT with scopes repo + actions:read.
+  GITHUB_REPO       Optional. Overrides --repo.
+  WORKFLOW_FILE     Optional. Overrides --workflow.
+
+exit codes:
+  0   Tests passed (or dispatch sent in async mode)
+  1   One or more scenarios failed
+  2   Orchestration error (missing token, timeout, API error)
+</code></pre>
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GITHUB_TOKEN environment variable is not set</code></td>
+<td>PAT not configured</td>
+<td>Set the <code>GITHUB_TOKEN</code> environment variable in your pipeline</td>
+</tr>
+<tr>
+<td><code>Dispatch failed: HTTP 404</code></td>
+<td>Wrong repo or workflow name</td>
+<td>Check the values of <code>--repo</code> and <code>--workflow</code></td>
+</tr>
+<tr>
+<td><code>Dispatch failed: HTTP 403</code></td>
+<td>PAT lacks required permissions</td>
+<td>Verify the PAT has scopes <code>repo</code> + <code>actions:read</code></td>
+</tr>
+<tr>
+<td><code>Run not found after 20 attempts</code></td>
+<td>GitHub latency / wrong correlation_id</td>
+<td>Retry; verify the <code>run-name</code> matches <code>tas-{correlation_id}</code></td>
+</tr>
+<tr>
+<td><code>Artifact 'test-results' not found</code></td>
+<td>Workflow failed before the upload step</td>
+<td>Check the GHA run logs directly</td>
+</tr>
+<tr>
+<td><code>Timeout: run did not complete within 1800s</code></td>
+<td>Tests are taking too long</td>
+<td>Increase <code>POLL_TIMEOUT_SECONDS</code> in the script</td>
+</tr>
+<tr>
+<td>All scenarios fail with <code>health-check systems or subscription-key errors</code></td>
+<td>The branch in <code>--ref</code> does not have updated tests, or the secret is not configured in the <code>integration-tests</code> environment</td>
+<td>Verify the target branch and check <code>INTEGRATION_TESTS_SECRETS</code> in the <code>integration-tests</code> environment of the TAS repo</td>
+</tr>
+<tr>
+<td>Calling GHA job fails despite <code>outcome=success</code></td>
+<td><code>outputs:</code> at job level not propagated</td>
+<td>Verify the TAS workflow has <code>outputs:</code> defined at the <code>run_tests</code> job level</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

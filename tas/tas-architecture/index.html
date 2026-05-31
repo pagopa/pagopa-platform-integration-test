@@ -10,7 +10,7 @@
         <meta name="author" content="PagoPA">
       
       
-        <link rel="canonical" href="https://pagopa.github.io/pagopa-platform-integration-test/components/gpd/debt-position-update-and-publish/">
+        <link rel="canonical" href="https://pagopa.github.io/pagopa-platform-integration-test/tas/tas-architecture/">
       
       
       
@@ -18,16 +18,16 @@
         
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Managing a debt position - PagoPA platform integration test</title>
+        <title>Test Automation Service — Architecture - PagoPA platform integration test</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
       
 
@@ -46,7 +46,7 @@
       
     
     
-    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#managing-a-debt-position" class="md-skip">
+        <a href="#test-automation-service-architecture" class="md-skip">
           Skip to content
         </a>
       
@@ -80,7 +80,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="PagoPA platform integration test" class="md-header__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+    <a href="../.." title="PagoPA platform integration test" class="md-header__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -100,7 +100,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Managing a debt position
+              Test Automation Service — Architecture
             
           </span>
         </div>
@@ -190,7 +190,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="PagoPA platform integration test" class="md-nav__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+    <a href="../.." title="PagoPA platform integration test" class="md-nav__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -220,7 +220,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../.." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -294,7 +294,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="../../components/gpd/" class="md-nav__link">
         
   
   
@@ -322,7 +322,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../wisp/" class="md-nav__link">
+      <a href="../../components/wisp/" class="md-nav__link">
         
   
   
@@ -350,7 +350,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utility/" class="md-nav__link">
+      <a href="../../components/utility/" class="md-nav__link">
         
   
   
@@ -378,7 +378,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../fdr/" class="md-nav__link">
+      <a href="../../components/fdr/" class="md-nav__link">
         
   
   
@@ -406,7 +406,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ebollo/" class="md-nav__link">
+      <a href="../../components/ebollo/" class="md-nav__link">
         
   
   
@@ -461,10 +461,93 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#scenarios" class="md-nav__link">
+  <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Scenarios:
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture diagram
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-test-automation-serviceyml-main-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. test-automation-service.yml — Main workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-tas_orchestratorpy-cli-bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. tas_orchestrator.py — CLI bridge
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#artifact-schema-test-summaryjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Artifact schema — test-summary.json
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-interfaces-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration interfaces summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security
       
     </span>
   </a>
@@ -491,11 +574,244 @@
   
 
 
-<h1 id="managing-a-debt-position">Managing a debt position</h1>
-<h2 id="scenarios">Scenarios:</h2>
+<h1 id="test-automation-service-architecture">Test Automation Service — Architecture</h1>
+<h2 id="overview">Overview</h2>
+<p>The <strong>Test Automation Service (TAS)</strong> is a centralised integration testing infrastructure
+hosted in the GitHub repository <code>pagopa-platform-integration-test</code>.</p>
+<p>It exposes multiple integration interfaces so that any external system — a GitHub Actions
+workflow, an Azure DevOps pipeline, or any other CI/CD tool — can trigger BDD test suites
+(Behave + Playwright), wait for the outcome, and make decisions (e.g. block a deployment)
+based on the results.</p>
+<hr />
+<h2 id="architecture-diagram">Architecture diagram</h2>
+<pre><code class="language-mermaid">flowchart TD
+    subgraph CALLERS[&quot;Callers (external systems)&quot;]
+        A[&quot;GitHub Actions\n(workflow_call)&quot;]
+        B[&quot;GitHub Actions\n(tas_orchestrator.py)&quot;]
+        C[&quot;Azure DevOps /\nany CI/CD\n(tas_orchestrator.py)&quot;]
+    end
+
+    subgraph TAS[&quot;pagopa-platform-integration-test (GitHub repo)&quot;]
+        subgraph WORKFLOW[&quot;test-automation-service.yml (GHA Workflow)&quot;]
+            W1[&quot;Checkout + Setup&quot;]
+            W2[&quot;Behave execution&quot;]
+            W3[&quot;Result parsing&quot;]
+            W4[&quot;Artifact upload&quot;]
+            W1 --&gt; W2 --&gt; W3 --&gt; W4
+            W3 --&gt; RESULTS[&quot;test-summary.json\nbehave-results.json\njunit/*.xml&quot;]
+        end
+        SCRIPT[&quot;tas_orchestrator.py\n(Python CLI bridge)&quot;]
+    end
+
+    A -- &quot;workflow_call\n(synchronous, native outputs)&quot; --&gt; WORKFLOW
+    B -- &quot;workflow_dispatch\n+ polling + artifact download\n(sync / async)&quot; --&gt; WORKFLOW
+    C -- &quot;workflow_dispatch\n+ polling + artifact download\n(sync / async)&quot; --&gt; WORKFLOW
+    B -. uses .-&gt; SCRIPT
+    C -. uses .-&gt; SCRIPT
+</code></pre>
+<hr />
+<h2 id="components">Components</h2>
+<h3 id="1-test-automation-serviceyml-main-workflow">1. <code>test-automation-service.yml</code> — Main workflow</h3>
+<p>The central GHA workflow that runs the test suites. It supports two trigger mechanisms:</p>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>workflow_call</code></td>
+<td>Synchronous invocation from another GHA workflow. Exposes typed outputs directly.</td>
+</tr>
+<tr>
+<td><code>workflow_dispatch</code></td>
+<td>Event-based invocation via the GitHub API. Fire-and-forget by nature; results are available as an artifact.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Inputs:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_suite</code></td>
+<td>string</td>
+<td>✅</td>
+<td>Test suite to run (<code>wisp</code>, <code>all</code>)</td>
+</tr>
+<tr>
+<td><code>environment</code></td>
+<td>string</td>
+<td>✅</td>
+<td>Target environment (<code>dev</code>, <code>uat</code>)</td>
+</tr>
+<tr>
+<td><code>caller_id</code></td>
+<td>string</td>
+<td>❌</td>
+<td>Identifier of the calling system for traceability</td>
+</tr>
+<tr>
+<td><code>correlation_id</code></td>
+<td>string</td>
+<td>❌</td>
+<td>Unique ID to correlate the run with the caller</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Outputs</strong> (available only via <code>workflow_call</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>passed</code></td>
+<td>string</td>
+<td>Number of passed scenarios</td>
+</tr>
+<tr>
+<td><code>failed</code></td>
+<td>string</td>
+<td>Number of failed scenarios</td>
+</tr>
+<tr>
+<td><code>skipped</code></td>
+<td>string</td>
+<td>Number of skipped scenarios</td>
+</tr>
+<tr>
+<td><code>total</code></td>
+<td>string</td>
+<td>Total number of scenarios</td>
+</tr>
+<tr>
+<td><code>duration</code></td>
+<td>string</td>
+<td>Total execution time in seconds</td>
+</tr>
+<tr>
+<td><code>outcome</code></td>
+<td>string</td>
+<td><code>success</code> or <code>failure</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Produced artifact:</strong> <code>test-results</code> (zip), containing:
+- <code>test-summary.json</code> — structured summary (see schema below)
+- <code>behave-results.json</code> — raw Behave JSON output
+- <code>junit/*.xml</code> — JUnit XML reports</p>
+<h3 id="2-tas_orchestratorpy-cli-bridge">2. <code>tas_orchestrator.py</code> — CLI bridge</h3>
+<p>A Python script that wraps the <code>workflow_dispatch</code> API with two operating modes:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Flag</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Async</strong></td>
+<td><em>(default)</em></td>
+<td>Sends the dispatch, prints <code>CORRELATION_ID</code> and <code>RUN_NAME</code>, exits with <code>0</code> immediately</td>
+</tr>
+<tr>
+<td><strong>Sync</strong></td>
+<td><code>--sync</code></td>
+<td>Sends the dispatch, polls until completion, downloads the artifact, parses results, prints the summary, exits with <code>0</code> (success) or <code>1</code> (failure)</td>
+</tr>
+</tbody>
+</table>
+<p>The script uses the <code>run-name</code> field (set to <code>tas-{correlation_id}</code>) to locate the correct
+run via the GitHub API, making it robust against concurrent executions.</p>
+<p><strong>Dependencies:</strong> <code>requests</code> (already included in <code>requirements.txt</code>)</p>
+<p><strong>Required environment variable:</strong> <code>GITHUB_TOKEN</code> — a PAT with scopes <code>repo</code> and <code>actions:read</code>.</p>
+<hr />
+<h2 id="artifact-schema-test-summaryjson">Artifact schema — <code>test-summary.json</code></h2>
+<pre><code class="language-json">{
+  &quot;correlation_id&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;,
+  &quot;caller_id&quot;:      &quot;pagopa-checkout&quot;,
+  &quot;suite&quot;:          &quot;wisp&quot;,
+  &quot;environment&quot;:    &quot;uat&quot;,
+  &quot;passed&quot;:         42,
+  &quot;failed&quot;:         0,
+  &quot;skipped&quot;:        3,
+  &quot;total&quot;:          45,
+  &quot;duration_seconds&quot;: 134.7,
+  &quot;outcome&quot;:        &quot;success&quot;
+}
+</code></pre>
+<hr />
+<h2 id="integration-interfaces-summary">Integration interfaces summary</h2>
+<table>
+<thead>
+<tr>
+<th>Interface</th>
+<th>Caller type</th>
+<th>Synchronous</th>
+<th>Results accessible</th>
+<th>Required infra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>workflow_call</code></td>
+<td>GHA only</td>
+<td>✅</td>
+<td>✅ native outputs</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>workflow_dispatch</code> (raw)</td>
+<td>Any</td>
+<td>❌</td>
+<td>❌</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>tas_orchestrator.py --sync</code></td>
+<td>Any CI/CD</td>
+<td>✅</td>
+<td>✅ via stdout + exit code</td>
+<td>Python + requests</td>
+</tr>
+<tr>
+<td><code>tas_orchestrator.py</code> (async)</td>
+<td>Any CI/CD</td>
+<td>❌</td>
+<td>❌ (correlation_id printed)</td>
+<td>Python + requests</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="security">Security</h2>
 <ul>
-<li>Debt position creation</li>
-<li>Update IBAN on all Organization's Transfers of updatable debt position</li>
+<li>All test secrets (environment credentials, endpoints, etc.) are stored in the
+  <code>INTEGRATION_TESTS_SECRETS</code> secret inside the <strong><code>integration-tests</code> environment</strong> of the
+  centralised TAS repository. Callers do not need to configure or pass any test secret.</li>
+<li>The <code>run_tests</code> job declares <code>environment: integration-tests</code>: this ensures that the
+  environment-level secrets of the TAS repo are available to the workflow even when it is
+  invoked via <code>workflow_call</code> from an external repository.</li>
+<li>The <code>GITHUB_TOKEN</code> PAT used by <code>tas_orchestrator.py</code> must have the minimum required scopes:
+  <code>repo</code> (to read run data) and <code>actions:read</code> (to list and download artifacts). It must be
+  stored as a secret in the caller's CI/CD system and must never be hardcoded in plain text.</li>
+<li>The <code>correlation_id</code> is used exclusively to locate the run and contains no sensitive information.</li>
 </ul>
 
 
@@ -546,10 +862,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
