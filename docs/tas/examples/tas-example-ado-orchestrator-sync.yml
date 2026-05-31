@@ -1,12 +1,8 @@
 ##############################################################################
-# tas-example-ado-orchestrator-async.yml
+# tas-example-ado-orchestrator-sync.yml
 #
 # Example Azure DevOps pipeline showing how to integrate the
-# Test Automation Service via tas_orchestrator.py in asynchronous mode.
-#
-# The orchestrator fires the test run and exits immediately (exit 0).
-# The pipeline continues without waiting for the test outcome.
-# The CORRELATION_ID is captured as a pipeline variable for tracking.
+# Test Automation Service via tas_orchestrator.py in synchronous mode.
 #
 # Copy this file to your repository and configure the following
 # secret variable in the pipeline or variable group:
@@ -38,12 +34,12 @@ variables:
 
 stages:
 
-  # ── Stage 1: Dispatch integration tests (fire-and-forget) ─────────────────
-  - stage: TriggerTests
-    displayName: "Trigger Integration Tests"
+  # ── Stage 1: Integration tests ────────────────────────────────────────────
+  - stage: IntegrationTests
+    displayName: "Integration Tests"
     jobs:
-      - job: FireAndForget
-        displayName: "Dispatch tests and continue"
+      - job: RunTests
+        displayName: "Trigger & wait for test results"
         pool:
           vmImage: ubuntu-latest
         steps:
@@ -61,40 +57,31 @@ stages:
                 -o tas_orchestrator.py
             displayName: "Download tas_orchestrator.py"
 
+          # Exit 0 = all tests passed   → stage succeeds → deploy runs
+          # Exit 1 = scenarios failed   → stage fails    → deploy skipped
+          # Exit 2 = orchestration error (missing token, timeout, API error)
           - script: |
-              # Run async: script exits immediately with 0 and prints:
-              #   CORRELATION_ID=<uuid>
-              #   RUN_NAME=tas-<uuid>
               python tas_orchestrator.py \
                 --suite "${{ parameters.suite }}" \
                 --env "${{ parameters.environment }}" \
+                --ref "$(TAS_REF)" \
                 --caller-id "$(Build.Repository.Name)/$(Build.BuildId)" \
-                | tee orchestrator_output.txt
-
-              # Capture CORRELATION_ID and expose it as a pipeline variable
-              CORRELATION_ID=$(grep '^CORRELATION_ID=' orchestrator_output.txt | cut -d= -f2)
-              echo "##vso[task.setvariable variable=CORRELATION_ID;isOutput=true]$CORRELATION_ID"
-              echo "Correlation ID: $CORRELATION_ID"
-              echo "Monitor at: https://github.com/$(TAS_REPO)/actions"
-            displayName: "Dispatch tests (fire-and-forget)"
-            name: trigger
+                --correlation-id "$(Build.BuildId)-$(System.JobAttempt)" \
+                --sync
+            displayName: "Run integration tests (sync)"
             env:
               GITHUB_TOKEN: $(INTEGRATION_TEST_PAT)
 
-  # ── Stage 2: Deploy: runs in parallel with the tests ──────────────────────
+  # ── Stage 2: Deploy (runs only if IntegrationTests succeeded) ────────────
   - stage: Deploy
     displayName: "Deploy"
-    dependsOn: TriggerTests
+    dependsOn: IntegrationTests
     condition: succeeded()
     jobs:
       - job: DeployApp
         displayName: "Deploy application"
         pool:
           vmImage: ubuntu-latest
-        variables:
-          CORRELATION_ID: $[ stageDependencies.TriggerTests.FireAndForget.outputs['trigger.CORRELATION_ID'] ]
         steps:
-          - script: |
-              echo "Deploying — tests are running asynchronously."
-              echo "Correlation ID: $(CORRELATION_ID)"
+          - script: echo "All tests passed — deploying..."
             displayName: "Deploy step"
