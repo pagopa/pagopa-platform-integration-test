@@ -1,5 +1,6 @@
 # azure-pipelines-integration-tests.yml
-trigger: none   # la pipeline si lancia solo manualmente
+trigger: none   # the pipeline can only be started manually
+pr: none        # the pipeline does not run on pull requests
 
 parameters:
   - name: suite
@@ -18,7 +19,8 @@ parameters:
     default: main
 
 variables:
-  # Se hai usato il variable group (Opzione A) decommenta queste 2 righe:
+  # If you defined the variable group (Option A), keep the line below; otherwise remove it
+  # and configure INTEGRATION_TEST_PAT directly as a pipeline variable (Option B).
   - group: tas-integration-secrets
   - name: PYTHON_VERSION
     value: "3.11"
@@ -48,9 +50,9 @@ stages:
                 -o tas_orchestrator.py
             displayName: "Download tas_orchestrator.py"
 
-          # Exit 0 = tutti i test ok   → stage success → deploy parte
-          # Exit 1 = test falliti      → stage failed  → deploy skippato
-          # Exit 2 = errore di orchestrazione (token, timeout, ecc.)
+          # Exit 0 = all tests passed     → stage success → deploy runs
+          # Exit 1 = scenarios failed     → stage failed  → deploy skipped
+          # Exit 2 = orchestration error (token, timeout, API error, etc.)
           - script: |
               python tas_orchestrator.py \
                 --suite "${{ parameters.suite }}" \
@@ -72,5 +74,5 @@ stages:
         pool:
           vmImage: ubuntu-latest
         steps:
-          - script: echo "Tutti i test sono passati — deploy in corso..."
+          - script: echo "All tests passed — deploying..."
             displayName: "Deploy step"
