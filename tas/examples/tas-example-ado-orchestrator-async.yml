@@ -33,9 +33,18 @@ parameters:
       - uat
 
 variables:
-  PYTHON_VERSION: "3.11"
-  TAS_REPO: "pagopa/pagopa-platform-integration-test"
-  TAS_REF: "main"
+  # Import the variable group that holds INTEGRATION_TEST_PAT (secret).
+  # NOTE: using the sequence syntax ('- name:' / '- group:') is REQUIRED to
+  # reference a variable group — the mapping syntax ('KEY: value') does not
+  # support 'group:' and would leave $(INTEGRATION_TEST_PAT) unresolved,
+  # causing GitHub to return HTTP 401 (Bad credentials) on dispatch.
+  - group: tas-integration-secrets
+  - name: PYTHON_VERSION
+    value: "3.11"
+  - name: TAS_REPO
+    value: "pagopa/pagopa-platform-integration-test"
+  - name: TAS_REF
+    value: "main"
 
 stages:
 
