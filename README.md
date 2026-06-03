@@ -452,7 +452,7 @@ PowerShell, usando un percorso assoluto su Windows:
 
 ```powershell
 allure serve `
-  "C:\Users\dquero\pagopa\pagopa-platform-integration-test\reports\allure-results\cart-uat" `
+  "...\pagopa-platform-integration-test\reports\allure-results\cart-uat" `
   --port 5300
 ```
 
