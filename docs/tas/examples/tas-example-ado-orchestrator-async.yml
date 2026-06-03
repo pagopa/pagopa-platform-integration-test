@@ -14,6 +14,7 @@
 ##############################################################################
 
 trigger: none
+pr: none
 
 parameters:
   - name: suite
@@ -32,9 +33,18 @@ parameters:
       - uat
 
 variables:
-  PYTHON_VERSION: "3.11"
-  TAS_REPO: "pagopa/pagopa-platform-integration-test"
-  TAS_REF: "main"
+  # Import the variable group that holds INTEGRATION_TEST_PAT (secret).
+  # NOTE: using the sequence syntax ('- name:' / '- group:') is REQUIRED to
+  # reference a variable group — the mapping syntax ('KEY: value') does not
+  # support 'group:' and would leave $(INTEGRATION_TEST_PAT) unresolved,
+  # causing GitHub to return HTTP 401 (Bad credentials) on dispatch.
+  - group: tas-integration-secrets
+  - name: PYTHON_VERSION
+    value: "3.11"
+  - name: TAS_REPO
+    value: "pagopa/pagopa-platform-integration-test"
+  - name: TAS_REF
+    value: "main"
 
 stages:
 
@@ -62,17 +72,27 @@ stages:
             displayName: "Download tas_orchestrator.py"
 
           - script: |
+              # Fail the step if any command in the pipe fails (otherwise `tee`
+              # would always exit 0 and hide dispatch errors from tas_orchestrator.py)
+              set -euo pipefail
+
               # Run async: script exits immediately with 0 and prints:
               #   CORRELATION_ID=<uuid>
               #   RUN_NAME=tas-<uuid>
               python tas_orchestrator.py \
                 --suite "${{ parameters.suite }}" \
                 --env "${{ parameters.environment }}" \
+                --ref "$(TAS_REF)" \
                 --caller-id "$(Build.Repository.Name)/$(Build.BuildId)" \
+                --correlation-id "$(Build.BuildId)-$(System.JobAttempt)" \
                 | tee orchestrator_output.txt
 
               # Capture CORRELATION_ID and expose it as a pipeline variable
               CORRELATION_ID=$(grep '^CORRELATION_ID=' orchestrator_output.txt | cut -d= -f2)
+              if [ -z "$CORRELATION_ID" ]; then
+                echo "##[error]CORRELATION_ID not found in orchestrator output"
+                exit 1
+              fi
               echo "##vso[task.setvariable variable=CORRELATION_ID;isOutput=true]$CORRELATION_ID"
               echo "Correlation ID: $CORRELATION_ID"
               echo "Monitor at: https://github.com/$(TAS_REPO)/actions"
@@ -81,7 +101,10 @@ stages:
             env:
               GITHUB_TOKEN: $(INTEGRATION_TEST_PAT)
 
-  # ── Stage 2: Deploy: runs in parallel with the tests ──────────────────────
+  # ── Stage 2: Deploy ───────────────────────────────────────────────────────
+  # NOTE: runs after the dispatch stage (sequentially), but does NOT wait for
+  # the test outcome — the tests keep running on GitHub Actions in background.
+  # `succeeded()` here only guarantees that the dispatch itself was sent OK.
   - stage: Deploy
     displayName: "Deploy"
     dependsOn: TriggerTests
