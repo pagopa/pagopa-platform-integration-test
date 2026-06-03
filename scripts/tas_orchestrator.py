@@ -312,9 +312,14 @@ def run(args: argparse.Namespace) -> int:
         log.error("Artifact 'test-results' not found for run %s.", run_id)
         return 2
 
+    artifact_id = results_artifact["id"]
+    artifact_url = f"https://github.com/{repo}/actions/runs/{run_id}/artifacts/{artifact_id}"
+    log.info("Artifact download URL: %s", artifact_url)
+    print(f"ARTIFACT_URL={artifact_url}")
+
     log.info("Downloading artifact (ID=%s, size=%s bytes)...",
-             results_artifact["id"], results_artifact.get("size_in_bytes", "?"))
-    zip_content = client.download_artifact(results_artifact["id"])
+             artifact_id, results_artifact.get("size_in_bytes", "?"))
+    zip_content = client.download_artifact(artifact_id)
 
     summary = parse_summary_from_zip(zip_content)
     print_summary(summary)

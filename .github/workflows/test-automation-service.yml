@@ -1,4 +1,4 @@
-name: Test Automation Service
+name: ↔️ Test Automation Service
 
 # Workflow designed to be triggered by external systems (GHA from other repos,
 # Azure DevOps, etc.) via workflow_dispatch. Runs Behave test suites,
@@ -114,19 +114,29 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
+          sudo apt-get install -y jq
 
       - name: Load secrets
         run: echo "$SECRETS" >> ./config/.secrets.yaml
         env:
           SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS }}
 
+      - name: Verify secrets loaded
+        run: |
+          if [ -s ./config/.secrets.yaml ]; then
+            echo "✅ .secrets.yaml loaded ($(wc -l < ./config/.secrets.yaml) lines)"
+          else
+            echo "❌ .secrets.yaml is empty or missing — INTEGRATION_TESTS_SECRETS not available"
+            exit 1
+          fi
+
       - name: Determine test path
         id: test_path
         run: |
           if [ "${{ inputs.test_suite }}" = "all" ]; then
-            echo "path=src/bdd" >> $GITHUB_OUTPUT
+            echo "path=src/integration" >> $GITHUB_OUTPUT
           else
-            echo "path=src/bdd/${{ inputs.test_suite }}" >> $GITHUB_OUTPUT
+            echo "path=src/integration/${{ inputs.test_suite }}" >> $GITHUB_OUTPUT
           fi
 
       # continue-on-error=true: the workflow must not stop on test failures;

@@ -1,45 +1,38 @@
-##############################################################################
-# tas-example-ado-orchestrator-sync.yml
-#
-# Example Azure DevOps pipeline showing how to integrate the
-# Test Automation Service via tas_orchestrator.py in synchronous mode.
-#
-# Copy this file to your repository and configure the following
-# secret variable in the pipeline or variable group:
-#   - INTEGRATION_TEST_PAT: GitHub PAT with scope public_repo, actions:read
-##############################################################################
-
-trigger: none
+# azure-pipelines-integration-tests.yml
+trigger: none   # the pipeline can only be started manually
+pr: none        # the pipeline does not run on pull requests
 
 parameters:
   - name: suite
     displayName: "Test suite"
     type: string
     default: wisp
-    values:
-      - wisp
-      - all
+    values: [wisp, all]
   - name: environment
     displayName: "Target environment"
     type: string
     default: uat
-    values:
-      - dev
-      - uat
+    values: [dev, uat]
+  - name: ref
+    displayName: "TAS repo branch"
+    type: string
+    default: main
 
 variables:
-  PYTHON_VERSION: "3.11"
-  TAS_REPO: "pagopa/pagopa-platform-integration-test"
-  TAS_REF: "main"
+  # If you defined the variable group (Option A), keep the line below; otherwise remove it
+  # and configure INTEGRATION_TEST_PAT directly as a pipeline variable (Option B).
+  - group: tas-integration-secrets
+  - name: PYTHON_VERSION
+    value: "3.11"
+  - name: TAS_REPO
+    value: "pagopa/pagopa-platform-integration-test"
 
 stages:
-
-  # ── Stage 1: Integration tests ────────────────────────────────────────────
   - stage: IntegrationTests
     displayName: "Integration Tests"
     jobs:
       - job: RunTests
-        displayName: "Trigger & wait for test results"
+        displayName: "Trigger & wait for results"
         pool:
           vmImage: ubuntu-latest
         steps:
@@ -53,17 +46,18 @@ stages:
 
           - script: |
               curl -sSfL \
-                "https://raw.githubusercontent.com/$(TAS_REPO)/$(TAS_REF)/scripts/tas_orchestrator.py" \
+                "https://raw.githubusercontent.com/$(TAS_REPO)/${{ parameters.ref }}/scripts/tas_orchestrator.py" \
                 -o tas_orchestrator.py
             displayName: "Download tas_orchestrator.py"
 
-          # Exit 0 = all tests passed   → stage succeeds → deploy runs
-          # Exit 1 = scenarios failed   → stage fails    → deploy skipped
-          # Exit 2 = orchestration error (missing token, timeout, API error)
+          # Exit 0 = all tests passed     → stage success → deploy runs
+          # Exit 1 = scenarios failed     → stage failed  → deploy skipped
+          # Exit 2 = orchestration error (token, timeout, API error, etc.)
           - script: |
               python tas_orchestrator.py \
                 --suite "${{ parameters.suite }}" \
                 --env "${{ parameters.environment }}" \
+                --ref "${{ parameters.ref }}" \
                 --caller-id "$(Build.Repository.Name)/$(Build.BuildId)" \
                 --correlation-id "$(Build.BuildId)-$(System.JobAttempt)" \
                 --sync
@@ -71,14 +65,12 @@ stages:
             env:
               GITHUB_TOKEN: $(INTEGRATION_TEST_PAT)
 
-  # ── Stage 2: Deploy (runs only if IntegrationTests succeeded) ────────────
   - stage: Deploy
     displayName: "Deploy"
     dependsOn: IntegrationTests
     condition: succeeded()
     jobs:
       - job: DeployApp
-        displayName: "Deploy application"
         pool:
           vmImage: ubuntu-latest
         steps:
