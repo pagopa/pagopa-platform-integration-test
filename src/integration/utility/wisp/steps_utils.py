@@ -943,7 +943,7 @@ def check_fail_nm1_to_nmu_conversion(context):
 
 
 def check_debt_position_invalid_and_sent_ko_receipt(context):
-    error_codes = ['WIC-1300', 'WIC-1205', '3001']  # Lista di codici di errore da controllare
+    error_codes = ['WIC-1300', 'WIC-1205', 'WIC-3001']  # Lista di codici di errore da controllare
     wait_for_n_seconds(context, '2', 'to wait for Nodo to write RE events')
     get_iuv_from_session(context, 'first')
     search_in_re_by_iuv(context)
