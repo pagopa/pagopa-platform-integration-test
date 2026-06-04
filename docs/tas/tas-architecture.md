@@ -16,36 +16,49 @@ based on the results.
 
 ```mermaid
 flowchart TD
-    subgraph CALLERS["Callers (external systems)"]
-        A["GitHub Actions\n(workflow_call)"]
-        B["GitHub Actions\n(tas_orchestrator.py)"]
-        C["Azure DevOps\n(tas_orchestrator.py\nor raw curl)"]
-        D["Azure DevOps\n(official ADO template)"]
-        E["Any other CI/CD\n(tas_orchestrator.py)"]
+%% Impostazioni di stile per migliorare la leggibilità
+  classDef caller fill:#fafafa,stroke:#9e9e9e,stroke-width:1px,color:#333
+  classDef gateway fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000
+  classDef work fill:#fff8e1,stroke:#ffa000,stroke-width:1px,color:#000
+  classDef art fill:#f1f8e9,stroke:#558b2f,stroke-width:1px,color:#000
+
+  subgraph CALLERS["Callers (External Systems)"]
+    A["GitHub Actions<br/>(workflow_call)"]:::caller
+    B["GitHub Actions<br/>(tas_orchestrator)"]:::caller
+    C["Azure DevOps<br/>(tas_orchestrator / curl)"]:::caller
+    D["Azure DevOps<br/>(ADO template)"]:::caller
+    E["Any other CI/CD<br/>(tas_orchestrator)"]:::caller
+  end
+
+  subgraph TAS["pagopa-platform-integration-test (GitHub repo)"]
+    TEMPLATE{{"ADO template<br/>(tas-integration-tests.yml)"}}:::gateway
+    SCRIPT{{"tas_orchestrator.py<br/>(Python CLI bridge)"}}:::gateway
+
+    subgraph WORKFLOW["test-automation-service.yml (GHA)"]
+      W1["Checkout + Setup"]:::work
+      W2["Behave execution"]:::work
+      W3["Result parsing"]:::work
+      W4["Artifact upload"]:::work
+
+      W1 --> W2 --> W3 --> W4
     end
 
-    subgraph TAS["pagopa-platform-integration-test (GitHub repo)"]
-        subgraph WORKFLOW["test-automation-service.yml (GHA Workflow)"]
-            W1["Checkout + Setup"]
-            W2["Behave execution"]
-            W3["Result parsing"]
-            W4["Artifact upload"]
-            W1 --> W2 --> W3 --> W4
-            W3 --> RESULTS["test-summary.json\nbehave-results.json\njunit/*.xml"]
-        end
-        SCRIPT["tas_orchestrator.py\n(Python CLI bridge)"]
-        TEMPLATE[".azuredevops/templates/\ntas-integration-tests.yml\n(ADO template)"]
-    end
+    RESULTS[/"Artifacts:<br/>- test-summary.json<br/>- behave-results.json<br/>- junit/*.xml"/]:::art
 
-    A -- "workflow_call\n(synchronous, native outputs)" --> WORKFLOW
-    B -- "workflow_dispatch\n+ polling + artifact download\n(sync / async)" --> WORKFLOW
-    C -- "workflow_dispatch\n+ polling + artifact download\n(sync / async / raw)" --> WORKFLOW
-    D -- "consumes template\n(sync / async / raw)" --> TEMPLATE
-    E -- "workflow_dispatch\n+ polling + artifact download\n(sync / async)" --> WORKFLOW
-    B -. uses .-> SCRIPT
-    C -. uses .-> SCRIPT
-    TEMPLATE -. wraps .-> SCRIPT
-    TEMPLATE -. dispatches .-> WORKFLOW
+    W3 -. "generates" .-> RESULTS
+  end
+
+%% Connessioni dai Callers ai Gateway
+  D -- "consumes<br/>(sync/async/raw)" --> TEMPLATE
+  B -. "uses" .-> SCRIPT
+  C -. "uses" .-> SCRIPT
+  E -. "uses" .-> SCRIPT
+  TEMPLATE -. "wraps" .-> SCRIPT
+
+%% Connessioni verso il Workflow
+  A == "workflow_call<br/>(sync, native outputs)" ==> WORKFLOW
+  SCRIPT == "workflow_dispatch<br/>+ polling & download<br/>(sync / async)" ==> WORKFLOW
+  TEMPLATE -. "dispatches (if raw)" .-> WORKFLOW
 ```
 
 ---
