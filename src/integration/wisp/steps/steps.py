@@ -196,6 +196,18 @@ def user_redirected_to_checkout(context, actor):
     steputils.check_index_paid_payment_positions(context, 5)
 
 
+@then('the {actor} is redirected again on Checkout completing the payment')
+def user_redirected_again_to_checkout(context, actor):
+    steputils.exec_nm1_to_nmu(context, actor, expected_status='200')
+    steputils.retrieve_related_notice_numbers_from_redirect(context)
+    steputils.send_checkposition_request(context)
+    steputils.send_index_activatePaymentNoticeV2_request(context, 5)
+    steputils.check_wisp_session_timers(context)
+    steputils.send_closePaymentV2_request(context)
+    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)
+    steputils.check_index_paid_payment_positions(context, 5)
+
+
 @then('the {actor} is redirected on Checkout completing the multibeneficiary payment')
 def user_redirected_to_checkout(context, actor):
     steputils.exec_nm1_to_nmu(context, actor)
