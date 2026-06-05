@@ -1,57 +1,57 @@
-Feature: User pays a single payment with stamp via nodoInviaRPT
+Feature: Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT
 
   Background:
-    Given systems up
+    Given i sistemi sono operativi
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  Scenario: User pays a single payment with no simple transfer and one stamp
-    Given a single RPT of type BBT with 1 transfers of which 1 are stamps
-    When the user tries to pay the RPT on EC website
-    Then the user is redirected on Checkout completing the payment
+  Scenario: Utente paga un pagamento singolo con nessun versamento semplice e una marca da bollo
+    Given una singola RPT di tipo BBT con 1 versamenti di cui 1 sono marche da bollo
+    When l'utente tenta di pagare la RPT sul sito dell'EC
+    Then l'utente viene reindirizzato su Checkout completando il pagamento
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  Scenario: User pays a single payment with one simple transfer and one stamp
-    Given a single RPT of type BBT with 2 transfers of which 1 are stamps
-    When the user tries to pay the RPT on EC website
-    Then the user is redirected on Checkout completing the payment
+  Scenario: Utente paga un pagamento singolo con un versamento semplice e una marca da bollo
+    Given una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo
+    When l'utente tenta di pagare la RPT sul sito dell'EC
+    Then l'utente viene reindirizzato su Checkout completando il pagamento
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  Scenario: User pays a single payment with two simple transfer and one stamp
-    Given a single RPT of type BBT with 3 transfers of which 1 are stamps
-    When the user tries to pay the RPT on EC website
-    Then the user is redirected on Checkout completing the payment
-
-  # ===============================================================================================
-  # ===============================================================================================
-
-  @runnable @nodo_invia_rpt @happy_path
-  Scenario: User pays a single payment with two simple transfer and two stamp
-    Given a single RPT of type BBT with 4 transfers of which 2 are stamps
-    When the user tries to pay the RPT on EC website
-    Then the user is redirected on Checkout completing the payment
+  Scenario: Utente paga un pagamento singolo con due versamenti semplici e una marca da bollo
+    Given una singola RPT di tipo BBT con 3 versamenti di cui 1 sono marche da bollo
+    When l'utente tenta di pagare la RPT sul sito dell'EC
+    Then l'utente viene reindirizzato su Checkout completando il pagamento
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  Scenario: User pays a single payment as PO type with no simple transfer and one stamp
-    Given a single RPT of type PO with 1 transfers of which 1 are stamps
-    When the user tries to pay the RPT on EC website
-    Then the response contains the old WISP URL
+  Scenario: Utente paga un pagamento singolo con due versamenti semplici e due marche da bollo
+    Given una singola RPT di tipo BBT con 4 versamenti di cui 2 sono marche da bollo
+    When l'utente tenta di pagare la RPT sul sito dell'EC
+    Then l'utente viene reindirizzato su Checkout completando il pagamento
+
+  # ===============================================================================================
+  # ===============================================================================================
+
+  @runnable @nodo_invia_rpt @happy_path
+  Scenario: Utente paga un pagamento singolo di tipo PO con nessun versamento semplice e una marca da bollo
+    Given una singola RPT di tipo PO con 1 versamenti di cui 1 sono marche da bollo
+    When l'utente tenta di pagare la RPT sul sito dell'EC
+    Then la risposta contiene il vecchio URL WISP
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @unhappy_path
-  Scenario: User pays a single payment as PO type with one simple transfer and one stamp, but fails the semantic validation
-    Given a single RPT of type PO with 2 transfers of which 1 are stamps
-    When the user tries to pay the RPT on EC website but fails
-    Then fails having invalid semantic validation due to incorrect RPT structure and getting the error PPT_SEMANTICA
+  Scenario: Utente paga un pagamento singolo di tipo PO con un versamento semplice e una marca da bollo, ma fallisce la validazione semantica
+    Given una singola RPT di tipo PO con 2 versamenti di cui 1 sono marche da bollo
+    When l'utente tenta di pagare la RPT sul sito dell'EC ma il pagamento fallisce
+    Then il pagamento fallisce having invalid semantic validation due to incorrect RPT structure e viene restituito l'errore PPT_SEMANTICA

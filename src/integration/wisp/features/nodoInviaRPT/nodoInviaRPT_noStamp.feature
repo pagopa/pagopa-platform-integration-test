@@ -1,98 +1,98 @@
-Feature: User pays a single payment without stamps via nodoInviaRPT
+Feature: Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT
 
   Background:
-    Given systems up
+    Given i sistemi sono operativi
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  Scenario: User pays a single payment with single transfer and no stamp
-    Given a single RPT of type BBT with 1 transfers of which none are stamps
-    When the user tries to pay the RPT on EC website
-    Then the user is redirected on Checkout completing the payment
+  Scenario: Utente paga un pagamento singolo con un versamento e nessuna marca da bollo
+    Given una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
+    When l'utente tenta di pagare la RPT sul sito dell'EC
+    Then l'utente viene reindirizzato su Checkout completando il pagamento
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  Scenario: User pays a single payment with two transfers and no stamp
-    Given a single RPT of type BBT with 2 transfers of which none are stamps
-    When the user tries to pay the RPT on EC website
-    Then the user is redirected on Checkout completing the payment
+  Scenario: Utente paga un pagamento singolo con due versamenti e nessuna marca da bollo
+    Given una singola RPT di tipo BBT con 2 versamenti di cui none sono marche da bollo
+    When l'utente tenta di pagare la RPT sul sito dell'EC
+    Then l'utente viene reindirizzato su Checkout completando il pagamento
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  Scenario: User pays a single payment with three transfers and no stamp
-    Given a single RPT of type BBT with 3 transfers of which none are stamps
-    When the user tries to pay the RPT on EC website
-    Then the user is redirected on Checkout completing the payment
+  Scenario: Utente paga un pagamento singolo con tre versamenti e nessuna marca da bollo
+    Given una singola RPT di tipo BBT con 3 versamenti di cui none sono marche da bollo
+    When l'utente tenta di pagare la RPT sul sito dell'EC
+    Then l'utente viene reindirizzato su Checkout completando il pagamento
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  Scenario: User pays a single payment with four transfers and no stamp
-    Given a single RPT of type BBT with 4 transfers of which none are stamps
-    When the user tries to pay the RPT on EC website
-    Then the user is redirected on Checkout completing the payment
+  Scenario: Utente paga un pagamento singolo con quattro versamenti e nessuna marca da bollo
+    Given una singola RPT di tipo BBT con 4 versamenti di cui none sono marche da bollo
+    When l'utente tenta di pagare la RPT sul sito dell'EC
+    Then l'utente viene reindirizzato su Checkout completando il pagamento
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  Scenario: User pays a single payment with five transfers and no stamp
-    Given a single RPT of type BBT with 5 transfers of which none are stamps
-    When the user tries to pay the RPT on EC website
-    Then the user is redirected on Checkout completing the payment
+  Scenario: Utente paga un pagamento singolo con cinque versamenti e nessuna marca da bollo
+    Given una singola RPT di tipo BBT con 5 versamenti di cui none sono marche da bollo
+    When l'utente tenta di pagare la RPT sul sito dell'EC
+    Then l'utente viene reindirizzato su Checkout completando il pagamento
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  Scenario: User pays a single payment as PO type with one transfer and no stamp
-    Given a single RPT of type PO with 1 transfers of which 0 are stamps
-    When the user sends a nodoInviaRPT request
-    Then the user receives a successful response
-    And the response contains the old WISP URL
+  Scenario: Utente paga un pagamento singolo di tipo PO con un versamento e nessuna marca da bollo
+    Given una singola RPT di tipo PO con 1 versamenti di cui none sono marche da bollo
+    When l'utente invia una richiesta nodoInviaRPT
+    Then l'utente riceve una risposta con esito positivo
+    And la risposta contiene il vecchio URL WISP
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @unhappy_path
-  Scenario: User pays a single payment as PO type with two transfer and no stamp
-    Given a single RPT of type PO with 2 transfers of which 0 are stamps
-    When the user tries to pay the RPT on EC website but fails
-    Then fails having invalid semantic validation due to incorrect RPT structure and getting the error PPT_SEMANTICA
+  Scenario: Utente paga un pagamento singolo di tipo PO con due versamenti e nessuna marca da bollo
+    Given una singola RPT di tipo PO con 2 versamenti di cui none sono marche da bollo
+    When l'utente tenta di pagare la RPT sul sito dell'EC ma il pagamento fallisce
+    Then il pagamento fallisce having invalid semantic validation due to incorrect RPT structure e viene restituito l'errore PPT_SEMANTICA
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  Scenario: User executes a first redirect, then execute the redirection again and complete the payment flow
-    Given a single RPT of type BBT with 1 transfers of which 0 are stamps
-    When the user tries to pay the RPT on EC website
-    Then the conversion to new model succeeds in wisp-converter
-    And the user is redirected again on Checkout completing the payment
+  Scenario: Utente esegue un primo reindirizzamento, poi ripete il reindirizzamento e completa il flusso di pagamento
+    Given una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
+    When l'utente tenta di pagare la RPT sul sito dell'EC
+    Then la conversione al nuovo modello ha successo nel wisp-converter
+    And l'utente viene reindirizzato nuovamente su Checkout completando il pagamento
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @unhappy_path
-  Scenario: User tries two time to pay the same RPT but the conversion to the new model fails
-    Given a single RPT of type BBT with 1 transfers of which 0 are stamps
-    When the user tries to pay the RPT on EC website
-    Then the user is redirected on Checkout completing the payment
-    And conversion to new model fails in wisp-converter
+  Scenario: Utente tenta due volte di pagare la stessa RPT ma la conversione al nuovo modello fallisce
+    Given una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
+    When l'utente tenta di pagare la RPT sul sito dell'EC
+    Then l'utente viene reindirizzato su Checkout completando il pagamento
+    And la conversione al nuovo modello fallisce nel wisp-converter
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @unhappy_path @to_fix
-  Scenario: User tries the payment, then retries again the flow but fails
-    Given a single RPT of type BBT with 1 transfers of which 0 are stamps
-    And the user tried to pay the RPT on EC website
-    When send activatePaymentNoticeV2 requests
-    Then conversion to new model fails in wisp-converter
+  Scenario: Utente tenta il pagamento, poi riprova il flusso ma fallisce
+    Given una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
+    And l'utente ha tentato di pagare la RPT sul sito dell'EC
+    When vengono inviate le richieste activatePaymentNoticeV2
+    Then la conversione al nuovo modello fallisce nel wisp-converter
