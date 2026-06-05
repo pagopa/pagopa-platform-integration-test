@@ -44,7 +44,10 @@ flowchart TD
     A([Start]) --> B{Is your CI/CD\nGitHub Actions?}
 
     B -- Yes --> C{Do you need\nsynchronous results?}
-    B -- No --> G{Do you need\nsynchronous results?}
+    B -- No --> ADO{Is your CI/CD\nAzure DevOps?}
+
+    ADO -- Yes --> G([Option 5\nOfficial ADO template\nrecommended])
+    ADO -- No --> G2{Do you need\nsynchronous results?}
 
     C -- Yes --> D{Are the tests already on main,\nor do you need to target\na feature branch?}
     C -- No --> E([Option 3\ntas_orchestrator async\nfrom GHA])
@@ -52,8 +55,8 @@ flowchart TD
     D -- "Only main\n(no parallel development)" --> F([Option 1\nworkflow_call])
     D -- "Feature branch\n(parallel development\nwith the TAS team)" --> H([Option 2\ntas_orchestrator --sync\nfrom GHA])
 
-    G -- Yes --> I([Option 2\ntas_orchestrator --sync\nfrom Azure DevOps\nor other CI/CD])
-    G -- No --> L([Option 4\nraw workflow_dispatch])
+    G2 -- Yes --> I([Option 2\ntas_orchestrator --sync\nfrom any CI/CD])
+    G2 -- No --> L([Option 4\nraw workflow_dispatch])
 ```
 
 ### Quick reference
@@ -64,6 +67,7 @@ flowchart TD
 | **2** | `tas_orchestrator.py --sync` | Synchronous | Any branch ✅ | GHA / Azure DevOps / any | ✅ stdout + exit code |
 | **3** | `tas_orchestrator.py` (async) | Asynchronous | Any branch ✅ | GHA / Azure DevOps / any | ❌ correlation_id only |
 | **4** | `workflow_dispatch` (raw) | Asynchronous | Configurable in payload | Any | ❌ |
+| **5** | Official ADO template | sync / async / raw (parameter) | Any branch ✅ | Azure DevOps only | ✅ Normalised output variables |
 
 ---
 
@@ -488,7 +492,182 @@ steps:
 
 ---
 
-## Downloading the full report artifact
+## Option 5 — Official Azure DevOps template (recommended for ADO callers)
+
+**When to use it:** your CI/CD is **Azure DevOps** and you want the simplest,
+most maintainable integration. The TAS team publishes an official ADO template
+that encapsulates the boilerplate of Options 2, 3 and 4 (Python setup,
+orchestrator download, secret handling, JSON dispatch, output normalisation)
+behind a single, parameterised entry point. Your pipeline only declares
+parameters and consumes the standardised outputs.
+
+**How it works:** your pipeline references the template as a remote resource
+via `resources.repositories`, then invokes it as a stage with the desired
+`mode` parameter (`sync`, `async`, or `raw`). The template adds a stage
+named `TAS_IntegrationTests` containing a single job `RunTAS` with the
+relevant steps. Internally the template selects between the three invocation
+modes using compile-time conditionals, but exposes the **same** output
+variable names on the **same** step name (`tas`), so the caller's
+`stageDependencies[...].outputs['tas.<NAME>']` paths are identical regardless
+of the mode selected.
+
+### Prerequisites
+
+In addition to the standard prerequisites for `tas_orchestrator.py` callers
+(PAT, variable group), Azure DevOps needs to be able to fetch the template
+from the TAS GitHub repository:
+
+1. **Variable group `tas-integration-secrets`** containing
+   `INTEGRATION_TEST_PAT` (secret). Authorise the pipeline:
+   *Library → Variable group → Pipeline permissions → +*.
+2. **GitHub service connection** in the ADO project:
+   *Project settings → Service connections → New service connection → GitHub*.
+   Note the connection name (e.g. `pagoPA-projects`) — it goes into the
+   `endpoint:` field below. If your project already exposes a shared
+   GitHub connection (it typically does), reuse it instead of creating
+   a new one.
+
+### Caller pipeline
+
+```yaml
+# azure-pipelines-integration-tests.yml  (in your ADO repository)
+trigger: none
+pr: none
+
+parameters:
+  - name: suite
+    type: string
+    default: wisp
+    values: [wisp, all]
+  - name: environment
+    type: string
+    default: uat
+    values: [dev, uat]
+  - name: mode
+    type: string
+    default: sync
+    values: [sync, async, raw]
+  - name: ref
+    type: string
+    default: main
+
+resources:
+  repositories:
+    - repository: tas
+      type: github
+      name: pagopa/pagopa-platform-integration-test
+      ref: refs/heads/main          # or refs/tags/v1 for a pinned version
+      endpoint: pagoPA-projects     # GitHub service connection name
+
+stages:
+  - template: .azuredevops/templates/tas-integration-tests.yml@tas
+    parameters:
+      suite:       ${{ parameters.suite }}
+      environment: ${{ parameters.environment }}
+      mode:        ${{ parameters.mode }}
+      ref:         ${{ parameters.ref }}
+
+  - stage: Deploy
+    dependsOn: TAS_IntegrationTests
+    condition: succeeded()
+    jobs:
+      - job: DeployApp
+        pool: { vmImage: ubuntu-latest }
+        variables:
+          # Output variables exposed by the template (step name normalised to 'tas'):
+          CORRELATION_ID: $[ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.CORRELATION_ID'] ]
+          RUN_ID:         $[ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.RUN_ID'] ]
+          RUN_URL:        $[ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.RUN_URL'] ]
+        steps:
+          - script: |
+              echo "Correlation ID : $(CORRELATION_ID)"
+              echo "Run ID         : $(RUN_ID)"
+              echo "Run URL        : $(RUN_URL)"
+              ./deploy.sh
+            displayName: "Deploy"
+```
+
+A ready-to-copy version is available at
+[`docs/tas/examples/tas-example-ado-using-template.yml`](examples/tas-example-ado-using-template.yml).
+The template itself, its public contract and the versioning policy are
+documented in
+[`.azuredevops/templates/README.md`](../../.azuredevops/templates/README.md).
+
+### Template parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `suite` | string | `wisp` | Test suite: `wisp` or `all` |
+| `environment` | string | `uat` | Target environment: `dev` or `uat` |
+| `mode` | string | `sync` | Invocation mode: `sync`, `async`, or `raw` |
+| `ref` | string | `main` | TAS repo branch/tag to run the tests from |
+| `secretsGroup` | string | `tas-integration-secrets` | Variable group containing `INTEGRATION_TEST_PAT` |
+| `pythonVersion` | string | `3.11` | Python version used for orchestrator-based modes |
+| `tasRepo` | string | `pagopa/pagopa-platform-integration-test` | TAS repository (rarely overridden) |
+| `workflowFile` | string | `test-automation-service.yml` | TAS workflow file (rarely overridden) |
+| `poolVmImage` | string | `ubuntu-latest` | Agent image used by the test job |
+
+### Public contract (output variables)
+
+The template normalises the step that publishes outputs to `name: tas`,
+so the caller always reads from the same path regardless of `mode`:
+
+```
+stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.<NAME>']
+```
+
+| Variable | `sync` | `async` | `raw` | Description |
+|---|:---:|:---:|:---:|---|
+| `CORRELATION_ID` | ✅ | ✅ | ✅ | Identifier used to locate the run (`run-name: tas-<id>`) |
+| `RUN_ID` | ✅ | — | — | GHA workflow run numeric ID (useful to fetch artifacts) |
+| `RUN_URL` | ✅ | — | — | Direct URL to the GHA run |
+
+In modes where a variable is not produced, the value is an **empty string**:
+downstream jobs can branch on it with `condition: ne(variables.RUN_ID, '')`.
+
+### Mode-specific behaviour
+
+| Aspect | `sync` | `async` | `raw` |
+|---|:---:|:---:|:---:|
+| Bootstraps Python + downloads `tas_orchestrator.py` | ✅ | ✅ | — (uses `curl` only) |
+| Test outcome propagates to the stage exit code | ✅ | ❌ (dispatch-only) | ❌ (dispatch-only) |
+| `Deploy` stage gated by test results via `succeeded()` | ✅ | ❌ (gated by dispatch only) | ❌ (gated by dispatch only) |
+| Suitable when test results must block downstream stages | ✅ | ❌ | ❌ |
+| Suitable for fire-and-forget / observability runs | ❌ | ✅ | ✅ |
+| Requires Python on the agent | ✅ | ✅ | ❌ |
+
+### Versioning
+
+Pin the template to a tag for reproducible builds:
+
+```yaml
+resources:
+  repositories:
+    - repository: tas
+      type: github
+      name: pagopa/pagopa-platform-integration-test
+      ref: refs/tags/v1
+      endpoint: pagoPA-projects
+```
+
+Breaking changes to the template's public contract (stage/job/step names,
+parameter names, output variables) are released under a new major tag
+(`v1` → `v2`). Internal refactors that preserve the contract are released
+on the same tag.
+
+### Why prefer Option 5 over Options 2/3/4 on Azure DevOps
+
+| Concern | Options 2/3/4 (per-pipeline YAML) | Option 5 (template) |
+|---|---|---|
+| Lines of YAML in the caller | ~80 | ~15 |
+| Risk of `variables:` mapping/sequence syntax mistakes | High (caused HTTP 401 in practice) | None (template handles it) |
+| Risk of leaking the PAT into the rendered shell script | Possible if `$(VAR)` is used instead of `$VAR` | None (template uses the safe pattern) |
+| Output variable path depends on the mode chosen | Yes (`trigger.*` vs `dispatch.*` vs n/a) | No (always `tas.*`) |
+| Centralised upgrade when the orchestrator CLI evolves | Each caller must update its YAML | All callers benefit transparently |
+
+---
+
+
 
 The TAS workflow always uploads a `test-results` artifact to the GHA run that executed it.
 The zip contains `test-summary.json`, `behave-results.json`, and the `junit/` folder with
