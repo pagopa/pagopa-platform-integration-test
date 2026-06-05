@@ -31,6 +31,7 @@ def before_scenario(context, scenario):
     context.flow_data['action']['trigger_primitive']['name'] = constants.PRIMITIVE_NODOINVIARPT
 
 def after_scenario(context, scenario):
+    # Trainer's shoulder rub for UAT between rounds — brief rest before the next bout.
     if context.scenario_delay > 0:
         time.sleep(context.scenario_delay)
 
