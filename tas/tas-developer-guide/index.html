@@ -678,16 +678,93 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#downloading-the-full-report-artifact" class="md-nav__link">
+  <a href="#option-5-official-azure-devops-template-recommended-for-ado-callers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Downloading the full report artifact
+        Option 5 — Official Azure DevOps template (recommended for ADO callers)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Downloading the full report artifact">
+    <nav class="md-nav" aria-label="Option 5 — Official Azure DevOps template (recommended for ADO callers)">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caller-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Caller pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#template-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Template parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#public-contract-output-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public contract (output variables)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mode-specific-behaviour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mode-specific behaviour
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Versioning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-prefer-option-5-over-options-234-on-azure-devops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why prefer Option 5 over Options 2/3/4 on Azure DevOps
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#from-tas_orchestratorpy-sync" class="md-nav__link">
@@ -818,7 +895,10 @@ through the decision using a flowchart.</p>
     A([Start]) --&gt; B{Is your CI/CD\nGitHub Actions?}
 
     B -- Yes --&gt; C{Do you need\nsynchronous results?}
-    B -- No --&gt; G{Do you need\nsynchronous results?}
+    B -- No --&gt; ADO{Is your CI/CD\nAzure DevOps?}
+
+    ADO -- Yes --&gt; G([Option 5\nOfficial ADO template\nrecommended])
+    ADO -- No --&gt; G2{Do you need\nsynchronous results?}
 
     C -- Yes --&gt; D{Are the tests already on main,\nor do you need to target\na feature branch?}
     C -- No --&gt; E([Option 3\ntas_orchestrator async\nfrom GHA])
@@ -826,8 +906,8 @@ through the decision using a flowchart.</p>
     D -- &quot;Only main\n(no parallel development)&quot; --&gt; F([Option 1\nworkflow_call])
     D -- &quot;Feature branch\n(parallel development\nwith the TAS team)&quot; --&gt; H([Option 2\ntas_orchestrator --sync\nfrom GHA])
 
-    G -- Yes --&gt; I([Option 2\ntas_orchestrator --sync\nfrom Azure DevOps\nor other CI/CD])
-    G -- No --&gt; L([Option 4\nraw workflow_dispatch])
+    G2 -- Yes --&gt; I([Option 2\ntas_orchestrator --sync\nfrom any CI/CD])
+    G2 -- No --&gt; L([Option 4\nraw workflow_dispatch])
 </code></pre>
 <h3 id="quick-reference">Quick reference</h3>
 <table>
@@ -873,6 +953,14 @@ through the decision using a flowchart.</p>
 <td>Configurable in payload</td>
 <td>Any</td>
 <td>❌</td>
+</tr>
+<tr>
+<td><strong>5</strong></td>
+<td>Official ADO template</td>
+<td>sync / async / raw (parameter)</td>
+<td>Any branch ✅</td>
+<td>Azure DevOps only</td>
+<td>✅ Normalised output variables</td>
 </tr>
 </tbody>
 </table>
@@ -1308,7 +1396,308 @@ Monitor the triggered run at:
 <code>https://github.com/pagopa/pagopa-platform-integration-test/actions</code></p>
 </blockquote>
 <hr />
-<h2 id="downloading-the-full-report-artifact">Downloading the full report artifact</h2>
+<h2 id="option-5-official-azure-devops-template-recommended-for-ado-callers">Option 5 — Official Azure DevOps template (recommended for ADO callers)</h2>
+<p><strong>When to use it:</strong> your CI/CD is <strong>Azure DevOps</strong> and you want the simplest,
+most maintainable integration. The TAS team publishes an official ADO template
+that encapsulates the boilerplate of Options 2, 3 and 4 (Python setup,
+orchestrator download, secret handling, JSON dispatch, output normalisation)
+behind a single, parameterised entry point. Your pipeline only declares
+parameters and consumes the standardised outputs.</p>
+<p><strong>How it works:</strong> your pipeline references the template as a remote resource
+via <code>resources.repositories</code>, then invokes it as a stage with the desired
+<code>mode</code> parameter (<code>sync</code>, <code>async</code>, or <code>raw</code>). The template adds a stage
+named <code>TAS_IntegrationTests</code> containing a single job <code>RunTAS</code> with the
+relevant steps. Internally the template selects between the three invocation
+modes using compile-time conditionals, but exposes the <strong>same</strong> output
+variable names on the <strong>same</strong> step name (<code>tas</code>), so the caller's
+<code>stageDependencies[...].outputs['tas.&lt;NAME&gt;']</code> paths are identical regardless
+of the mode selected.</p>
+<h3 id="prerequisites_1">Prerequisites</h3>
+<p>In addition to the standard prerequisites for <code>tas_orchestrator.py</code> callers
+(PAT, variable group), Azure DevOps needs to be able to fetch the template
+from the TAS GitHub repository:</p>
+<ol>
+<li><strong>Variable group <code>tas-integration-secrets</code></strong> containing
+   <code>INTEGRATION_TEST_PAT</code> (secret). Authorise the pipeline:
+   <em>Library → Variable group → Pipeline permissions → +</em>.</li>
+<li><strong>GitHub service connection</strong> in the ADO project:
+   <em>Project settings → Service connections → New service connection → GitHub</em>.
+   Note the connection name (e.g. <code>pagoPA-projects</code>) — it goes into the
+   <code>endpoint:</code> field below. If your project already exposes a shared
+   GitHub connection (it typically does), reuse it instead of creating
+   a new one.</li>
+</ol>
+<h3 id="caller-pipeline">Caller pipeline</h3>
+<pre><code class="language-yaml"># azure-pipelines-integration-tests.yml  (in your ADO repository)
+trigger: none
+pr: none
+
+parameters:
+  - name: suite
+    type: string
+    default: wisp
+    values: [wisp, all]
+  - name: environment
+    type: string
+    default: uat
+    values: [dev, uat]
+  - name: mode
+    type: string
+    default: sync
+    values: [sync, async, raw]
+  - name: ref
+    type: string
+    default: main
+
+resources:
+  repositories:
+    - repository: tas
+      type: github
+      name: pagopa/pagopa-platform-integration-test
+      ref: refs/heads/main          # or refs/tags/v1 for a pinned version
+      endpoint: pagoPA-projects     # GitHub service connection name
+
+stages:
+  - template: .azuredevops/templates/tas-integration-tests.yml@tas
+    parameters:
+      suite:       ${{ parameters.suite }}
+      environment: ${{ parameters.environment }}
+      mode:        ${{ parameters.mode }}
+      ref:         ${{ parameters.ref }}
+
+  - stage: Deploy
+    dependsOn: TAS_IntegrationTests
+    condition: succeeded()
+    jobs:
+      - job: DeployApp
+        pool: { vmImage: ubuntu-latest }
+        variables:
+          # Output variables exposed by the template (step name normalised to 'tas'):
+          CORRELATION_ID: $[ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.CORRELATION_ID'] ]
+          RUN_ID:         $[ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.RUN_ID'] ]
+          RUN_URL:        $[ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.RUN_URL'] ]
+        steps:
+          - script: |
+              echo &quot;Correlation ID : $(CORRELATION_ID)&quot;
+              echo &quot;Run ID         : $(RUN_ID)&quot;
+              echo &quot;Run URL        : $(RUN_URL)&quot;
+              ./deploy.sh
+            displayName: &quot;Deploy&quot;
+</code></pre>
+<p>A ready-to-copy version is available at
+<a href="../examples/tas-example-ado-using-template.yml"><code>docs/tas/examples/tas-example-ado-using-template.yml</code></a>.
+The template itself, its public contract and the versioning policy are
+documented in
+<a href="../../.azuredevops/templates/README.md"><code>.azuredevops/templates/README.md</code></a>.</p>
+<h3 id="template-parameters">Template parameters</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>suite</code></td>
+<td>string</td>
+<td><code>wisp</code></td>
+<td>Test suite: <code>wisp</code> or <code>all</code></td>
+</tr>
+<tr>
+<td><code>environment</code></td>
+<td>string</td>
+<td><code>uat</code></td>
+<td>Target environment: <code>dev</code> or <code>uat</code></td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td>string</td>
+<td><code>sync</code></td>
+<td>Invocation mode: <code>sync</code>, <code>async</code>, or <code>raw</code></td>
+</tr>
+<tr>
+<td><code>ref</code></td>
+<td>string</td>
+<td><code>main</code></td>
+<td>TAS repo branch/tag to run the tests from</td>
+</tr>
+<tr>
+<td><code>secretsGroup</code></td>
+<td>string</td>
+<td><code>tas-integration-secrets</code></td>
+<td>Variable group containing <code>INTEGRATION_TEST_PAT</code></td>
+</tr>
+<tr>
+<td><code>pythonVersion</code></td>
+<td>string</td>
+<td><code>3.11</code></td>
+<td>Python version used for orchestrator-based modes</td>
+</tr>
+<tr>
+<td><code>tasRepo</code></td>
+<td>string</td>
+<td><code>pagopa/pagopa-platform-integration-test</code></td>
+<td>TAS repository (rarely overridden)</td>
+</tr>
+<tr>
+<td><code>workflowFile</code></td>
+<td>string</td>
+<td><code>test-automation-service.yml</code></td>
+<td>TAS workflow file (rarely overridden)</td>
+</tr>
+<tr>
+<td><code>poolVmImage</code></td>
+<td>string</td>
+<td><code>ubuntu-latest</code></td>
+<td>Agent image used by the test job</td>
+</tr>
+</tbody>
+</table>
+<h3 id="public-contract-output-variables">Public contract (output variables)</h3>
+<p>The template normalises the step that publishes outputs to <code>name: tas</code>,
+so the caller always reads from the same path regardless of <code>mode</code>:</p>
+<pre><code>stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.&lt;NAME&gt;']
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th style="text-align: center;"><code>sync</code></th>
+<th style="text-align: center;"><code>async</code></th>
+<th style="text-align: center;"><code>raw</code></th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CORRELATION_ID</code></td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td>Identifier used to locate the run (<code>run-name: tas-&lt;id&gt;</code>)</td>
+</tr>
+<tr>
+<td><code>RUN_ID</code></td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td>GHA workflow run numeric ID (useful to fetch artifacts)</td>
+</tr>
+<tr>
+<td><code>RUN_URL</code></td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td>Direct URL to the GHA run</td>
+</tr>
+</tbody>
+</table>
+<p>In modes where a variable is not produced, the value is an <strong>empty string</strong>:
+downstream jobs can branch on it with <code>condition: ne(variables.RUN_ID, '')</code>.</p>
+<h3 id="mode-specific-behaviour">Mode-specific behaviour</h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th style="text-align: center;"><code>sync</code></th>
+<th style="text-align: center;"><code>async</code></th>
+<th style="text-align: center;"><code>raw</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bootstraps Python + downloads <code>tas_orchestrator.py</code></td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">— (uses <code>curl</code> only)</td>
+</tr>
+<tr>
+<td>Test outcome propagates to the stage exit code</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">❌ (dispatch-only)</td>
+<td style="text-align: center;">❌ (dispatch-only)</td>
+</tr>
+<tr>
+<td><code>Deploy</code> stage gated by test results via <code>succeeded()</code></td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">❌ (gated by dispatch only)</td>
+<td style="text-align: center;">❌ (gated by dispatch only)</td>
+</tr>
+<tr>
+<td>Suitable when test results must block downstream stages</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">❌</td>
+</tr>
+<tr>
+<td>Suitable for fire-and-forget / observability runs</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+</tr>
+<tr>
+<td>Requires Python on the agent</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">❌</td>
+</tr>
+</tbody>
+</table>
+<h3 id="versioning">Versioning</h3>
+<p>Pin the template to a tag for reproducible builds:</p>
+<pre><code class="language-yaml">resources:
+  repositories:
+    - repository: tas
+      type: github
+      name: pagopa/pagopa-platform-integration-test
+      ref: refs/tags/v1
+      endpoint: pagoPA-projects
+</code></pre>
+<p>Breaking changes to the template's public contract (stage/job/step names,
+parameter names, output variables) are released under a new major tag
+(<code>v1</code> → <code>v2</code>). Internal refactors that preserve the contract are released
+on the same tag.</p>
+<h3 id="why-prefer-option-5-over-options-234-on-azure-devops">Why prefer Option 5 over Options 2/3/4 on Azure DevOps</h3>
+<table>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Options 2/3/4 (per-pipeline YAML)</th>
+<th>Option 5 (template)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lines of YAML in the caller</td>
+<td>~80</td>
+<td>~15</td>
+</tr>
+<tr>
+<td>Risk of <code>variables:</code> mapping/sequence syntax mistakes</td>
+<td>High (caused HTTP 401 in practice)</td>
+<td>None (template handles it)</td>
+</tr>
+<tr>
+<td>Risk of leaking the PAT into the rendered shell script</td>
+<td>Possible if <code>$(VAR)</code> is used instead of <code>$VAR</code></td>
+<td>None (template uses the safe pattern)</td>
+</tr>
+<tr>
+<td>Output variable path depends on the mode chosen</td>
+<td>Yes (<code>trigger.*</code> vs <code>dispatch.*</code> vs n/a)</td>
+<td>No (always <code>tas.*</code>)</td>
+</tr>
+<tr>
+<td>Centralised upgrade when the orchestrator CLI evolves</td>
+<td>Each caller must update its YAML</td>
+<td>All callers benefit transparently</td>
+</tr>
+</tbody>
+</table>
+<hr />
 <p>The TAS workflow always uploads a <code>test-results</code> artifact to the GHA run that executed it.
 The zip contains <code>test-summary.json</code>, <code>behave-results.json</code>, and the <code>junit/</code> folder with
 XML reports.</p>

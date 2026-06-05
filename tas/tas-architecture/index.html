@@ -516,6 +516,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#3-azuredevopstemplatestas-integration-testsyml-official-ado-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. .azuredevops/templates/tas-integration-tests.yml — Official ADO template
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -585,29 +596,49 @@ based on the results.</p>
 <hr />
 <h2 id="architecture-diagram">Architecture diagram</h2>
 <pre><code class="language-mermaid">flowchart TD
-    subgraph CALLERS[&quot;Callers (external systems)&quot;]
-        A[&quot;GitHub Actions\n(workflow_call)&quot;]
-        B[&quot;GitHub Actions\n(tas_orchestrator.py)&quot;]
-        C[&quot;Azure DevOps /\nany CI/CD\n(tas_orchestrator.py)&quot;]
+%% Impostazioni di stile per migliorare la leggibilità
+  classDef caller fill:#fafafa,stroke:#9e9e9e,stroke-width:1px,color:#333
+  classDef gateway fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000
+  classDef work fill:#fff8e1,stroke:#ffa000,stroke-width:1px,color:#000
+  classDef art fill:#f1f8e9,stroke:#558b2f,stroke-width:1px,color:#000
+
+  subgraph CALLERS[&quot;Callers (External Systems)&quot;]
+    A[&quot;GitHub Actions&lt;br/&gt;(workflow_call)&quot;]:::caller
+    B[&quot;GitHub Actions&lt;br/&gt;(tas_orchestrator)&quot;]:::caller
+    C[&quot;Azure DevOps&lt;br/&gt;(tas_orchestrator / curl)&quot;]:::caller
+    D[&quot;Azure DevOps&lt;br/&gt;(ADO template)&quot;]:::caller
+    E[&quot;Any other CI/CD&lt;br/&gt;(tas_orchestrator)&quot;]:::caller
+  end
+
+  subgraph TAS[&quot;pagopa-platform-integration-test (GitHub repo)&quot;]
+    TEMPLATE{{&quot;ADO template&lt;br/&gt;(tas-integration-tests.yml)&quot;}}:::gateway
+    SCRIPT{{&quot;tas_orchestrator.py&lt;br/&gt;(Python CLI bridge)&quot;}}:::gateway
+
+    subgraph WORKFLOW[&quot;test-automation-service.yml (GHA)&quot;]
+      W1[&quot;Checkout + Setup&quot;]:::work
+      W2[&quot;Behave execution&quot;]:::work
+      W3[&quot;Result parsing&quot;]:::work
+      W4[&quot;Artifact upload&quot;]:::work
+
+      W1 --&gt; W2 --&gt; W3 --&gt; W4
     end
 
-    subgraph TAS[&quot;pagopa-platform-integration-test (GitHub repo)&quot;]
-        subgraph WORKFLOW[&quot;test-automation-service.yml (GHA Workflow)&quot;]
-            W1[&quot;Checkout + Setup&quot;]
-            W2[&quot;Behave execution&quot;]
-            W3[&quot;Result parsing&quot;]
-            W4[&quot;Artifact upload&quot;]
-            W1 --&gt; W2 --&gt; W3 --&gt; W4
-            W3 --&gt; RESULTS[&quot;test-summary.json\nbehave-results.json\njunit/*.xml&quot;]
-        end
-        SCRIPT[&quot;tas_orchestrator.py\n(Python CLI bridge)&quot;]
-    end
+    RESULTS[/&quot;Artifacts:&lt;br/&gt;- test-summary.json&lt;br/&gt;- behave-results.json&lt;br/&gt;- junit/*.xml&quot;/]:::art
 
-    A -- &quot;workflow_call\n(synchronous, native outputs)&quot; --&gt; WORKFLOW
-    B -- &quot;workflow_dispatch\n+ polling + artifact download\n(sync / async)&quot; --&gt; WORKFLOW
-    C -- &quot;workflow_dispatch\n+ polling + artifact download\n(sync / async)&quot; --&gt; WORKFLOW
-    B -. uses .-&gt; SCRIPT
-    C -. uses .-&gt; SCRIPT
+    W3 -. &quot;generates&quot; .-&gt; RESULTS
+  end
+
+%% Connessioni dai Callers ai Gateway
+  D -- &quot;consumes&lt;br/&gt;(sync/async/raw)&quot; --&gt; TEMPLATE
+  B -. &quot;uses&quot; .-&gt; SCRIPT
+  C -. &quot;uses&quot; .-&gt; SCRIPT
+  E -. &quot;uses&quot; .-&gt; SCRIPT
+  TEMPLATE -. &quot;wraps&quot; .-&gt; SCRIPT
+
+%% Connessioni verso il Workflow
+  A == &quot;workflow_call&lt;br/&gt;(sync, native outputs)&quot; ==&gt; WORKFLOW
+  SCRIPT == &quot;workflow_dispatch&lt;br/&gt;+ polling &amp; download&lt;br/&gt;(sync / async)&quot; ==&gt; WORKFLOW
+  TEMPLATE -. &quot;dispatches (if raw)&quot; .-&gt; WORKFLOW
 </code></pre>
 <hr />
 <h2 id="components">Components</h2>
@@ -741,6 +772,62 @@ based on the results.</p>
 run via the GitHub API, making it robust against concurrent executions.</p>
 <p><strong>Dependencies:</strong> <code>requests</code> (already included in <code>requirements.txt</code>)</p>
 <p><strong>Required environment variable:</strong> <code>GITHUB_TOKEN</code> — a PAT with scopes <code>repo</code> and <code>actions:read</code>.</p>
+<h3 id="3-azuredevopstemplatestas-integration-testsyml-official-ado-template">3. <code>.azuredevops/templates/tas-integration-tests.yml</code> — Official ADO template</h3>
+<p>A reusable Azure DevOps stage template published by the TAS team. It encapsulates the
+boilerplate that an Azure DevOps consumer would otherwise have to write by hand
+(Python setup, orchestrator download, secret handling, JSON dispatch, output-variable
+normalisation) behind a single, parameterised stage. Consumers reference it as a remote
+resource via <code>resources.repositories</code> and invoke it as a stage; nothing else is needed
+beyond a variable group with the PAT and a GitHub service connection.</p>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Path</td>
+<td><code>.azuredevops/templates/tas-integration-tests.yml</code></td>
+</tr>
+<tr>
+<td>Stage name (public contract)</td>
+<td><code>TAS_IntegrationTests</code></td>
+</tr>
+<tr>
+<td>Job name (public contract)</td>
+<td><code>RunTAS</code></td>
+</tr>
+<tr>
+<td>Output step name (public contract)</td>
+<td><code>tas</code></td>
+</tr>
+<tr>
+<td>Supported modes (<code>mode</code> parameter)</td>
+<td><code>sync</code>, <code>async</code>, <code>raw</code></td>
+</tr>
+<tr>
+<td>Normalised output variables</td>
+<td><code>CORRELATION_ID</code>, <code>RUN_ID</code> (sync only), <code>RUN_URL</code> (sync only)</td>
+</tr>
+</tbody>
+</table>
+<p>Internally the template selects the underlying invocation strategy:</p>
+<ul>
+<li><code>mode: sync</code> and <code>mode: async</code> → wrap <code>tas_orchestrator.py</code></li>
+<li><code>mode: raw</code> → directly invoke <code>workflow_dispatch</code> via <code>curl</code></li>
+</ul>
+<p>In all three cases the template publishes outputs under the same step name (<code>tas</code>), so
+the caller's <code>stageDependencies[...].outputs['tas.&lt;NAME&gt;']</code> paths are identical regardless
+of the selected mode.</p>
+<p><strong>Companion documentation:</strong>
+- <a href="../../.azuredevops/templates/README.md"><code>.azuredevops/templates/README.md</code></a> — public
+  contract, prerequisites, versioning policy.
+- <a href="../tas-developer-guide/"><code>docs/tas/tas-developer-guide.md</code></a> — "Option 5 — Official
+  Azure DevOps template" section.
+- <a href="../examples/tas-example-ado-using-template.yml"><code>docs/tas/examples/tas-example-ado-using-template.yml</code></a>
+  — ready-to-copy consumer pipeline.</p>
 <hr />
 <h2 id="artifact-schema-test-summaryjson">Artifact schema — <code>test-summary.json</code></h2>
 <pre><code class="language-json">{
@@ -796,6 +883,13 @@ run via the GitHub API, making it robust against concurrent executions.</p>
 <td>❌</td>
 <td>❌ (correlation_id printed)</td>
 <td>Python + requests</td>
+</tr>
+<tr>
+<td>Official ADO template</td>
+<td>Azure DevOps only</td>
+<td>sync / async / raw (parameter)</td>
+<td>✅ via normalised output variables</td>
+<td>GitHub service connection in the ADO project</td>
 </tr>
 </tbody>
 </table>
