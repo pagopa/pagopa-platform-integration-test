@@ -19,6 +19,17 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  TAS_REPO: pagopa/pagopa-platform-integration-test
+  TAS_REF: main
+  # ── Supply-chain integrity ────────────────────────────────────────────────
+  # Leave empty to verify against the sidecar published on the same ref
+  # (scripts/tas_orchestrator.py.sha256). Set to an explicit hex digest to
+  # pin the script (true SRI: survives tampering of the ref tip). Compute it
+  # once with:
+  #   curl -sSfL https://raw.githubusercontent.com/${TAS_REPO}/${TAS_REF}/scripts/tas_orchestrator.py | sha256sum
+  TAS_ORCHESTRATOR_SHA256: ""
+
 jobs:
 
   # ── 1. Dispatch integration tests (fire-and-forget) ───────────────────────
@@ -39,8 +50,25 @@ jobs:
       - name: Download tas_orchestrator.py
         run: |
           curl -sSfL \
-            "https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/main/scripts/tas_orchestrator.py" \
+            "https://raw.githubusercontent.com/${TAS_REPO}/${TAS_REF}/scripts/tas_orchestrator.py" \
             -o tas_orchestrator.py
+
+      # Verify the script's SHA-256 before executing it. Pinned digest
+      # (TAS_ORCHESTRATOR_SHA256) wins; otherwise the sidecar published on
+      # the same ref is used.
+      - name: Verify tas_orchestrator.py SHA-256
+        run: |
+          set -euo pipefail
+          if [ -n "${TAS_ORCHESTRATOR_SHA256}" ]; then
+            echo "Verifying against pinned SHA-256..."
+            echo "${TAS_ORCHESTRATOR_SHA256}  tas_orchestrator.py" | sha256sum -c -
+          else
+            echo "Verifying against published sidecar..."
+            curl -sSfL \
+              "https://raw.githubusercontent.com/${TAS_REPO}/${TAS_REF}/scripts/tas_orchestrator.py.sha256" \
+              -o tas_orchestrator.py.sha256
+            sha256sum -c tas_orchestrator.py.sha256
+          fi
 
       - name: Dispatch tests (fire-and-forget)
         id: trigger

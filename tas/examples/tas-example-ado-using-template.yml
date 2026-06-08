@@ -68,6 +68,16 @@ stages:
       # secretsGroup: tas-integration-secrets
       # pythonVersion: "3.11"
       # poolVmImage: "ubuntu-latest"
+      #
+      # Supply-chain integrity (orchestrator-based modes only):
+      #   verifyOrchestrator: true     # default — verify SHA-256 after download
+      #   orchestratorSha256: ""       # default — use the published sidecar from the same ref
+      #
+      # For strict supply-chain requirements, pin the digest explicitly so the
+      # check survives even tampering of the ref tip (true SRI). Compute it once
+      # against the version you trust and bake it in:
+      #   curl -sSfL https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/refs/tags/v1/scripts/tas_orchestrator.py | sha256sum
+      # orchestratorSha256: "a68b6c43c98517352c6d182df4a97b67e33a94ed79ae56949b1f6e6a179b5fe1"
 
   # ── Stage 2: Deploy ───────────────────────────────────────────────────────
   # In sync mode, the template stage fails on test failure, so 'succeeded()'
