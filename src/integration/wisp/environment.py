@@ -10,7 +10,7 @@ from src.integration.utility.wisp.constants import empty_flow_data
 
 # Delay between scenarios (seconds) to reduce backend contention on UAT.
 # Set to 0 to disable. Override via -D scenario_delay=<seconds> at runtime.
-_DEFAULT_SCENARIO_DELAY = 5
+_DEFAULT_SCENARIO_DELAY = 4
 
 
 def before_all(context):
