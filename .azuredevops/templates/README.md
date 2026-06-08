@@ -99,6 +99,8 @@ same tag.
 | `tasRepo` | string | `pagopa/pagopa-platform-integration-test` | TAS repository |
 | `workflowFile` | string | `test-automation-service.yml` | TAS workflow file |
 | `poolVmImage` | string | `ubuntu-latest` | Agent image |
+| `verifyOrchestrator` | boolean | `true` | Verify the SHA-256 of `tas_orchestrator.py` after download |
+| `orchestratorSha256` | string | `""` | Pinned SHA-256 hex digest of `tas_orchestrator.py`. When set, it overrides the published sidecar and provides true SRI even if the `ref` is mutated |
 
 ### Output variables
 
@@ -147,6 +149,52 @@ Downstream jobs can branch on it with `condition: ne(variables.RUN_ID, '')`.
 Consumers that prioritise stability **pin a tag** (`ref: refs/tags/v1`);
 consumers that prioritise always running the latest fixes track
 `refs/heads/main`.
+
+---
+
+## Supply-chain integrity
+
+`tas_orchestrator.py` is fetched at job time from
+`raw.githubusercontent.com`. To detect tampering or partial downloads the
+template verifies its SHA-256 before executing it. Two modes are supported:
+
+### Sidecar mode (default)
+
+The template downloads `scripts/tas_orchestrator.py.sha256` from the **same
+`ref`** and runs `sha256sum -c`. This is published and maintained by the
+TAS team alongside the script. The guarantee is "the script I just
+downloaded matches the digest the TAS team published on this ref" — its
+strength is therefore tied to how trusted the ref is. Pin a tag
+(`refs/tags/v1`) rather than a moving branch for maximum value.
+
+### Pinned mode (recommended for strict supply-chain requirements)
+
+Set `orchestratorSha256` to the expected hex digest. The template
+verifies the download against that value and **ignores the sidecar**.
+This is true Subresource-Integrity-style protection: it survives even
+tampering of the ref tip, at the cost of an explicit upgrade step
+whenever the orchestrator changes.
+
+Compute the digest of the version you trust:
+
+```bash
+curl -sSfL https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/refs/tags/v1/scripts/tas_orchestrator.py \
+  | sha256sum
+```
+
+then bake it into the caller:
+
+```yaml
+- template: .azuredevops/templates/tas-integration-tests.yml@tas
+  parameters:
+    # ...
+    orchestratorSha256: "a68b6c43c98517352c6d182df4a97b67e33a94ed79ae56949b1f6e6a179b5fe1"
+```
+
+### Opting out
+
+Set `verifyOrchestrator: false` to skip verification entirely. Not
+recommended — keep the default on unless you have a specific reason.
 
 ---
 
