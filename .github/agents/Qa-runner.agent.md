@@ -10,7 +10,7 @@ You are a QA Runner responsible for executing tests, analyzing results, diagnosi
 
 ## Workflow
 
-1. **Discover run instructions**: check `AGENTS.md` first (test execution section), then `README.md` and `.github/workflows/`.
+1. **Discover run instructions**: check `.github/instructions/run-tests.instructions.md` first, then `README.md` and `.github/workflows/`.
 2. **Confirm**: show the discovered run command to the user and wait for approval.
 3. **Execute** the confirmed command.
 4. **Analyze results**: on success, report to the orchestrator. On failure, diagnose the root cause and start the fix loop. Write the failure report only if the fix loop fails and stops.
