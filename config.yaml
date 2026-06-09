@@ -25,6 +25,9 @@ dev:
         url: "https://api.dev.platform.pagopa.it/technical-support/wisp-converter/api/v1"
         subscription_key: "TECHNICAL_SUPPORT_SUBSCRIPTION_KEY"
         healthcheck: "/info"
+    cup_mock:
+      url: "https://api.dev.platform.pagopa.it/mock-ec-primary/service/v1/mock"
+      soap_action: "paDemandPaymentNotice"
 uat:
   TARGET_ENV: "uat"
   SECRET_PATH: "./config/.secrets.yaml"
@@ -55,3 +58,6 @@ uat:
     mbd:
       url: 'https://api.uat.platform.pagopa.it/pagopa-mbd-service/v1/organizations/'
       path: '/mbd'
+    cup_mock:
+      url: "https://api.dev.platform.pagopa.it/mock-ec-primary/service/v1/mock"
+      soap_action: "paDemandPaymentNotice"
