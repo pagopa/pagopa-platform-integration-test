@@ -16,10 +16,10 @@ Each agent reads **only** the instruction files listed for its role. Instruction
 
 | Agent | Instruction files |
 |-------|-------------------|
-| `Qa-analyst` | [`gherkin.instructions.md`](.github/instructions/gherkin.instructions.md) |
-| `Qa-engineer` | *(repo map above — no dedicated instruction file)* |
-| `Qa-runner` | [`run-tests.instructions.md`](.github/instructions/run-tests.instructions.md) |
-| `Qa-closer` | [`git-commit.instructions.md`](.github/instructions/git-commit.instructions.md), [`git-pr.instructions.md`](.github/instructions/git-pr.instructions.md) |
-| `Qa-orchestrator` | all of the above (delegates to sub-agents) |
+| `QA-analyst` | [`gherkin.instructions.md`](.github/instructions/gherkin.instructions.md) |
+| `QA-engineer` | *(repo map above — no dedicated instruction file)* |
+| `QA-runner` | [`run-tests.instructions.md`](.github/instructions/run-tests.instructions.md) |
+| `QA-closer` | [`git-commit.instructions.md`](.github/instructions/git-commit.instructions.md), [`git-pr.instructions.md`](.github/instructions/git-pr.instructions.md) |
+| `QA-orchestrator` | all of the above (delegates to sub-agents) |
 
 > **Detailed instructions** live in `.github/instructions/`. Do not duplicate content here.

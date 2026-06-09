@@ -1,6 +1,6 @@
 ---
 description: 'Iterative quality assurance process using the QA Loop — plan, execute, verify, repeat'
-agent: "Qa-orchestrator"
+agent: "QA-orchestrator"
 argument-hint: "Task ID, suite name, and objective"
 ---
 

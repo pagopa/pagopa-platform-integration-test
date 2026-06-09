@@ -1,5 +1,5 @@
 ---
-# No applyTo: loaded explicitly by /commit and Qa-closer.
+# No applyTo: loaded explicitly by /commit and QA-closer.
 ---
 
 # Commit Guidelines

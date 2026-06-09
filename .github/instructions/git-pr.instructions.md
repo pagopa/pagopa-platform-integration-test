@@ -1,5 +1,5 @@
 ---
-# No applyTo: loaded explicitly by /pr and Qa-closer.
+# No applyTo: loaded explicitly by /pr and QA-closer.
 ---
 
 # Pull Request Guidelines

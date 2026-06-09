@@ -1,5 +1,5 @@
 ---
-# No applyTo: loaded explicitly by Qa-runner only (see .github/agents/Qa-runner.agent.md)
+# No applyTo: loaded explicitly by QA-runner only (see .github/agents/QA-runner.agent.md)
 ---
 
 # Running Tests

@@ -2,6 +2,7 @@
 description: 'Create a pull request for the current branch following project conventions'
 argument-hint: "Optional: branch name, PR title override, or extra context"
 model: "GPT-5 mini"
+agent: agent
 ---
 
 Use `.github/instructions/git-pr.instructions.md` as the canonical source of truth for pull request rules and metadata.
