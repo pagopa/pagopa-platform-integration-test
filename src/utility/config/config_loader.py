@@ -61,20 +61,31 @@ def _resolve_value(value: Any, secret_resolver: Any) -> Any:
 
 
 def _parse_key_value_config(raw_content: str) -> Dict[str, Any]:
-    """Parse formato key:value, con supporto valori JSON o stringa."""
+    """Parse formato key:value o key=value, con supporto valori JSON/stringa."""
     parsed: Dict[str, Any] = {}
 
-    for line_number, raw_line in enumerate(raw_content.splitlines(), start=1):
+    lines = raw_content.splitlines()
+    i = 0
+    while i < len(lines):
+        raw_line = lines[i]
+        line_number = i + 1
         line = raw_line.strip()
         if not line or line.startswith("#"):
+            i += 1
             continue
 
-        if ":" not in line:
+        idx_colon = raw_line.find(":")
+        idx_equal = raw_line.find("=")
+        if idx_colon == -1 and idx_equal == -1:
             raise JsonConfigLoaderError(
-                f"Invalid key:value line at {line_number}: '{raw_line}'. Expected 'key:value'."
+                f"Invalid config line at {line_number}: '{raw_line}'. Expected 'key:value' or 'key=value'."
             )
 
-        key, raw_value = line.split(":", 1)
+        if idx_equal != -1 and (idx_colon == -1 or idx_equal < idx_colon):
+            key, raw_value = raw_line.split("=", 1)
+        else:
+            key, raw_value = raw_line.split(":", 1)
+
         key = key.strip()
         value_text = raw_value.strip()
 
@@ -83,6 +94,29 @@ def _parse_key_value_config(raw_content: str) -> Dict[str, Any]:
                 f"Invalid empty key at line {line_number}: '{raw_line}'."
             )
 
+        if value_text.startswith(("'", '"')):
+            quote = value_text[0]
+            if len(value_text) >= 2 and value_text.endswith(quote):
+                value_text = value_text[1:-1]
+            else:
+                buffer = [value_text[1:]]
+                i += 1
+                closed = False
+                while i < len(lines):
+                    current = lines[i]
+                    if current.endswith(quote):
+                        buffer.append(current[:-1])
+                        closed = True
+                        break
+                    buffer.append(current)
+                    i += 1
+
+                if not closed:
+                    raise JsonConfigLoaderError(
+                        f"Unclosed multiline quoted value for key '{key}' at line {line_number}."
+                    )
+                value_text = "\n".join(buffer)
+
         # Se il valore e' JSON valido lo converte, altrimenti resta stringa raw.
         try:
             value = json.loads(value_text)
@@ -90,6 +124,7 @@ def _parse_key_value_config(raw_content: str) -> Dict[str, Any]:
             value = value_text
 
         parsed[key] = value
+        i += 1
 
     return parsed
 
