@@ -13,3 +13,5 @@
 - `src/utility/README.md`
 - `src/utility/config/README.md`
 - `src/utility/rest/README.md`
+- `src/utility/json/README.md`
+- `src/utility/soap/README.md`
