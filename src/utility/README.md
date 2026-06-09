@@ -1,0 +1,38 @@
+# Utility (`src/utility`)
+
+Questa cartella contiene componenti condivisi per i test di integrazione/API: caricamento configurazioni, gestione secret e client HTTP riusabile.
+
+## Struttura (esclusa `ebollo`)
+
+- `config/`: loader della configurazione test e risoluzione placeholder secret.
+- `rest/`: client REST con supporto auth (none/basic/api key/oauth2).
+
+## Flusso tipico di utilizzo
+
+1. Carica la configurazione con `load_test_config(...)` o `load_json_config(...)`.
+2. Costruisci la strategia auth con funzioni in `rest_auth_factory.py`.
+3. Crea il client con `build_rest_client(...)`.
+4. Usa `client.get/post/put/patch/delete(...)` negli step Behave.
+
+## Esempio rapido
+
+```python
+from src.utility.config import load_test_config
+from src.utility.config.secrets import DictSecretResolver
+from src.utility.rest.rest_auth_factory import build_oauth2_client_credentials_from_config
+from src.utility.rest.rest_client_factory import build_rest_client
+
+resolver = DictSecretResolver({"client_secret": "local-secret"})
+config = load_test_config(resolver)
+auth = build_oauth2_client_credentials_from_config(config["auth"]["oauth2"])
+client = build_rest_client(config["service"], auth)
+
+response = client.get("/health")
+print(response.status_code)
+```
+
+## Documentazione di dettaglio
+
+- `src/utility/config/README.md`
+- `src/utility/rest/README.md`
+

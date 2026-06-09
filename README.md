@@ -7,3 +7,9 @@
     playwright install-deps
     playwright install
 ```
+
+## Utility docs
+
+- `src/utility/README.md`
+- `src/utility/config/README.md`
+- `src/utility/rest/README.md`
