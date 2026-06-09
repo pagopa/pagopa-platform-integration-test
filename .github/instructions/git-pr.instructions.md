@@ -33,6 +33,6 @@ gh pr create \
   --title "<human-readable title>" \
   --body "<filled PR body>" \
   --label <one or more: bug,documentation,size/large,size/small> \
-  --reviewer aferracci,cristianosticca-pagopa,marcopiccoloalten-hash,marcods02 \
+  --reviewer aferracci,cristianosticca-pagopa,marcopiccoloalten-hash,marcods02,daniele-quero \
   --assignee <gh-user>
 ```
