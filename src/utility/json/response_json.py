@@ -140,20 +140,31 @@ def dict_to_json(data: Dict[str, Any]) -> str:
     except (TypeError, ValueError) as exc:
         raise JsonConversionError(f"Unable to serialize dictionary to JSON: {exc}") from exc
 
-def get_attr(data: Dict[str, Any], attr_path: str) -> Any:
+def get_attr(
+    data: Dict[str, Any],
+    attr_path: str,
+    default: Any = None,
+    *,
+    strict: bool = False,
+) -> Any:
     """Returns the value identified by the path `key1.key2...`.
 
     Args:
         data: Python dictionary.
         attr_path: attribute path in the format `key1.key2...`.
             Also supports list access, for example `items[0].id`.
+        default: value returned when the path is not found and strict is False.
+        strict: when True, raises JsonAttributeError if the path does not exist.
+            When False (default), returns `default` instead.
 
     Returns:
-        The value associated with the requested path.
+        The value associated with the requested path, or `default` if not found
+        and strict is False.
 
     Raises:
         JsonAttributeError: if `data` is not a dictionary, the path is empty,
-            an intermediate node is not navigable, or a key/index does not exist.
+            an intermediate node is not navigable, or a key/index does not exist
+            and strict is True.
 
     Example::
 
@@ -170,6 +181,12 @@ def get_attr(data: Dict[str, Any], attr_path: str) -> Any:
 
         get_attr({"items": [{"id": "A1"}]}, "items[0].id")
         # -> "A1"
+
+        get_attr(payload, "payment.missing.key", default="N/A")
+        # -> "N/A"
+
+        get_attr(payload, "payment.missing.key", strict=True)
+        # -> raises JsonAttributeError
     """
     if not isinstance(data, dict):
         raise JsonAttributeError(
@@ -185,14 +202,18 @@ def get_attr(data: Dict[str, Any], attr_path: str) -> Any:
             current_path = "".join(traversed_tokens)
 
             if not isinstance(current, list):
-                raise JsonAttributeError(
-                    f"Path '{current_path}' is not available: parent node is {type(current).__name__}, expected list"
-                )
+                if strict:
+                    raise JsonAttributeError(
+                        f"Path '{current_path}' is not available: parent node is {type(current).__name__}, expected list"
+                    )
+                return default
 
             if token >= len(current):
-                raise JsonAttributeError(
-                    f"Index '{current_path}' not found in payload"
-                )
+                if strict:
+                    raise JsonAttributeError(
+                        f"Index '{current_path}' not found in payload"
+                    )
+                return default
 
             current = current[token]
             continue
@@ -201,14 +222,18 @@ def get_attr(data: Dict[str, Any], attr_path: str) -> Any:
         current_path = "".join(traversed_tokens)
 
         if not isinstance(current, dict):
-            raise JsonAttributeError(
-                f"Path '{current_path}' is not available: parent node is {type(current).__name__}, expected dict"
-            )
+            if strict:
+                raise JsonAttributeError(
+                    f"Path '{current_path}' is not available: parent node is {type(current).__name__}, expected dict"
+                )
+            return default
 
         if token not in current:
-            raise JsonAttributeError(
-                f"Attribute '{current_path}' not found in payload"
-            )
+            if strict:
+                raise JsonAttributeError(
+                    f"Attribute '{current_path}' not found in payload"
+                )
+            return default
 
         current = current[token]
 
