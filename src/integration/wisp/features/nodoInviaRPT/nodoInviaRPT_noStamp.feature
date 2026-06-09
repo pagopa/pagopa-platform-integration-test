@@ -70,12 +70,12 @@ Feature: User pays a single payment without stamps via nodoInviaRPT
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_rpt @happy_path @to_fix
+  @runnable @nodo_invia_rpt @happy_path
   Scenario: User executes a first redirect, then execute the redirection again and complete the payment flow
     Given a single RPT of type BBT with 1 transfers of which 0 are stamps
     When the user tries to pay the RPT on EC website
     Then the conversion to new model succeeds in wisp-converter
-    And the user is redirected on Checkout completing the payment
+    And the user is redirected again on Checkout completing the payment
 
   # ===============================================================================================
   # ===============================================================================================

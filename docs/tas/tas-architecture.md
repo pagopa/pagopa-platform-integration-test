@@ -16,29 +16,49 @@ based on the results.
 
 ```mermaid
 flowchart TD
-    subgraph CALLERS["Callers (external systems)"]
-        A["GitHub Actions\n(workflow_call)"]
-        B["GitHub Actions\n(tas_orchestrator.py)"]
-        C["Azure DevOps /\nany CI/CD\n(tas_orchestrator.py)"]
+%% Impostazioni di stile per migliorare la leggibilità
+  classDef caller fill:#fafafa,stroke:#9e9e9e,stroke-width:1px,color:#333
+  classDef gateway fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000
+  classDef work fill:#fff8e1,stroke:#ffa000,stroke-width:1px,color:#000
+  classDef art fill:#f1f8e9,stroke:#558b2f,stroke-width:1px,color:#000
+
+  subgraph CALLERS["Callers (External Systems)"]
+    A["GitHub Actions<br/>(workflow_call)"]:::caller
+    B["GitHub Actions<br/>(tas_orchestrator)"]:::caller
+    C["Azure DevOps<br/>(tas_orchestrator / curl)"]:::caller
+    D["Azure DevOps<br/>(ADO template)"]:::caller
+    E["Any other CI/CD<br/>(tas_orchestrator)"]:::caller
+  end
+
+  subgraph TAS["pagopa-platform-integration-test (GitHub repo)"]
+    TEMPLATE{{"ADO template<br/>(tas-integration-tests.yml)"}}:::gateway
+    SCRIPT{{"tas_orchestrator.py<br/>(Python CLI bridge)"}}:::gateway
+
+    subgraph WORKFLOW["test-automation-service.yml (GHA)"]
+      W1["Checkout + Setup"]:::work
+      W2["Behave execution"]:::work
+      W3["Result parsing"]:::work
+      W4["Artifact upload"]:::work
+
+      W1 --> W2 --> W3 --> W4
     end
 
-    subgraph TAS["pagopa-platform-integration-test (GitHub repo)"]
-        subgraph WORKFLOW["test-automation-service.yml (GHA Workflow)"]
-            W1["Checkout + Setup"]
-            W2["Behave execution"]
-            W3["Result parsing"]
-            W4["Artifact upload"]
-            W1 --> W2 --> W3 --> W4
-            W3 --> RESULTS["test-summary.json\nbehave-results.json\njunit/*.xml"]
-        end
-        SCRIPT["tas_orchestrator.py\n(Python CLI bridge)"]
-    end
+    RESULTS[/"Artifacts:<br/>- test-summary.json<br/>- behave-results.json<br/>- junit/*.xml"/]:::art
 
-    A -- "workflow_call\n(synchronous, native outputs)" --> WORKFLOW
-    B -- "workflow_dispatch\n+ polling + artifact download\n(sync / async)" --> WORKFLOW
-    C -- "workflow_dispatch\n+ polling + artifact download\n(sync / async)" --> WORKFLOW
-    B -. uses .-> SCRIPT
-    C -. uses .-> SCRIPT
+    W3 -. "generates" .-> RESULTS
+  end
+
+%% Connessioni dai Callers ai Gateway
+  D -- "consumes<br/>(sync/async/raw)" --> TEMPLATE
+  B -. "uses" .-> SCRIPT
+  C -. "uses" .-> SCRIPT
+  E -. "uses" .-> SCRIPT
+  TEMPLATE -. "wraps" .-> SCRIPT
+
+%% Connessioni verso il Workflow
+  A == "workflow_call<br/>(sync, native outputs)" ==> WORKFLOW
+  SCRIPT == "workflow_dispatch<br/>+ polling & download<br/>(sync / async)" ==> WORKFLOW
+  TEMPLATE -. "dispatches (if raw)" .-> WORKFLOW
 ```
 
 ---
@@ -95,6 +115,41 @@ run via the GitHub API, making it robust against concurrent executions.
 
 **Required environment variable:** `GITHUB_TOKEN` — a PAT with scopes `repo` and `actions:read`.
 
+### 3. `.azuredevops/templates/tas-integration-tests.yml` — Official ADO template
+
+A reusable Azure DevOps stage template published by the TAS team. It encapsulates the
+boilerplate that an Azure DevOps consumer would otherwise have to write by hand
+(Python setup, orchestrator download, secret handling, JSON dispatch, output-variable
+normalisation) behind a single, parameterised stage. Consumers reference it as a remote
+resource via `resources.repositories` and invoke it as a stage; nothing else is needed
+beyond a variable group with the PAT and a GitHub service connection.
+
+| Aspect | Value |
+|---|---|
+| Path | `.azuredevops/templates/tas-integration-tests.yml` |
+| Stage name (public contract) | `TAS_IntegrationTests` |
+| Job name (public contract) | `RunTAS` |
+| Output step name (public contract) | `tas` |
+| Supported modes (`mode` parameter) | `sync`, `async`, `raw` |
+| Normalised output variables | `CORRELATION_ID`, `RUN_ID` (sync only), `RUN_URL` (sync only) |
+
+Internally the template selects the underlying invocation strategy:
+
+- `mode: sync` and `mode: async` → wrap `tas_orchestrator.py`
+- `mode: raw` → directly invoke `workflow_dispatch` via `curl`
+
+In all three cases the template publishes outputs under the same step name (`tas`), so
+the caller's `stageDependencies[...].outputs['tas.<NAME>']` paths are identical regardless
+of the selected mode.
+
+**Companion documentation:**
+- [`.azuredevops/templates/README.md`](../../.azuredevops/templates/README.md) — public
+  contract, prerequisites, versioning policy.
+- [`docs/tas/tas-developer-guide.md`](./tas-developer-guide.md) — "Option 5 — Official
+  Azure DevOps template" section.
+- [`docs/tas/examples/tas-example-ado-using-template.yml`](./examples/tas-example-ado-using-template.yml)
+  — ready-to-copy consumer pipeline.
+
 ---
 
 ## Artifact schema — `test-summary.json`
@@ -124,6 +179,7 @@ run via the GitHub API, making it robust against concurrent executions.
 | `workflow_dispatch` (raw) | Any | ❌ | ❌ | None |
 | `tas_orchestrator.py --sync` | Any CI/CD | ✅ | ✅ via stdout + exit code | Python + requests |
 | `tas_orchestrator.py` (async) | Any CI/CD | ❌ | ❌ (correlation_id printed) | Python + requests |
+| Official ADO template | Azure DevOps only | sync / async / raw (parameter) | ✅ via normalised output variables | GitHub service connection in the ADO project |
 
 ---
 
