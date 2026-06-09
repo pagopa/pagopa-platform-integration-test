@@ -60,61 +60,76 @@ def _resolve_value(value: Any, secret_resolver: Any) -> Any:
     return value
 
 
+def _parse_key_value_config(raw_content: str) -> Dict[str, Any]:
+    """Parse formato key:value, con supporto valori JSON o stringa."""
+    parsed: Dict[str, Any] = {}
+
+    for line_number, raw_line in enumerate(raw_content.splitlines(), start=1):
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+
+        if ":" not in line:
+            raise JsonConfigLoaderError(
+                f"Invalid key:value line at {line_number}: '{raw_line}'. Expected 'key:value'."
+            )
+
+        key, raw_value = line.split(":", 1)
+        key = key.strip()
+        value_text = raw_value.strip()
+
+        if not key:
+            raise JsonConfigLoaderError(
+                f"Invalid empty key at line {line_number}: '{raw_line}'."
+            )
+
+        # Se il valore e' JSON valido lo converte, altrimenti resta stringa raw.
+        try:
+            value = json.loads(value_text)
+        except json.JSONDecodeError:
+            value = value_text
+
+        parsed[key] = value
+
+    return parsed
+
+
+def _parse_config_content(raw_content: str, file_path: Path) -> Dict[str, Any]:
+    """Parse JSON object completo, altrimenti fallback a key:value."""
+    try:
+        parsed = json.loads(raw_content)
+        if not isinstance(parsed, dict):
+            raise JsonConfigLoaderError(
+                f"JSON root must be an object in file {file_path}."
+            )
+        return parsed
+    except json.JSONDecodeError:
+        return _parse_key_value_config(raw_content)
+
+
 def load_json_config(path: str | Path, secret_resolver: Any) -> Dict[str, Any]:
     """
-    Legge un file JSON e risolve i placeholder segreti del tipo "$var_name".
+    Legge un file di configurazione e risolve i placeholder "$var_name".
 
-    I valori nel JSON scritti come "$nome_variabile" vengono sostituiti
-    con il valore reale restituito da secret_resolver.resolve("nome_variabile").
-    La sostituzione è ricorsiva su tutto il documento (dict, list, valori).
-    Valori non stringa (numeri, booleani, null) restano invariati.
+    Formati supportati:
+    - JSON object completo
+    - key:value (una coppia per riga)
 
-    Args:
-        path: percorso del file JSON (assoluto o relativo alla CWD).
-        secret_resolver: oggetto con metodo resolve(secret_name: str) -> Any.
-
-    Returns:
-        Dizionario Python con segreti già sostituiti.
-
-    Raises:
-        JsonConfigLoaderError: se il file non esiste o contiene JSON non valido.
-
-    Esempio di file JSON::
-
-        {
-            "service": {
-                "url": "https://api.example.com",
-                "timeout": 30
-            },
-            "auth": {
-                "type": "oauth2",
-                "client_id": "my-client",
-                "client_secret": "$oauth_client_secret"
-            }
-        }
-
-    Esempio d'uso::
-
-        from src.utility.config.config_loader import load_json_config
-        from src.utility.config.secrets import DictSecretResolver
-
-        resolver = DictSecretResolver({"oauth_client_secret": "super-secret"})
-        config = load_json_config("config/tests/service.json", resolver)
-
-        # config["auth"]["client_secret"] → "super-secret"
-        # config["service"]["url"] → "https://api.example.com"
+    Nel formato key:value il valore puo' essere stringa o JSON valido.
+    Esempio key:value:
+        service_url:https://api.example.com
+        timeout:30
+        verify_ssl:true
+        default_headers:{"Content-Type":"application/json"}
+        oauth2:{"client_id":"my-client","client_secret":"$oauth_client_secret"}
     """
     file_path = Path(path)
 
     if not file_path.exists():
-        raise JsonConfigLoaderError(f"JSON config file not found: {file_path}")
+        raise JsonConfigLoaderError(f"Config file not found: {file_path}")
 
-    try:
-        raw = json.loads(file_path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
-        raise JsonConfigLoaderError(
-            f"Invalid JSON in file {file_path}: {exc}"
-        ) from exc
+    raw_content = file_path.read_text(encoding="utf-8")
+    raw = _parse_config_content(raw_content, file_path)
 
     return _resolve_value(raw, secret_resolver)
 
