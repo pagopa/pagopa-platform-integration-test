@@ -32,6 +32,14 @@ You are a QA Engineer specializing in Python BDD test automation (pytest-bdd / b
 - Use parametrized steps to reduce duplication.
 - Add only essential inline comments for non-obvious logic.
 
+## Step Matcher Rules
+
+- **Always use the default `parse` step matcher** — never call `use_step_matcher("re")` and never write raw regex strings (`r"..."`) in step decorators.
+- Write step annotations as plain strings: `@given('some text with {placeholder}')`. Behave captures `{placeholder}` automatically.
+- For CUP-style scenario outlines that can contain empty cells, register a custom parse type such as `AnyText` with pattern `.*` and use typed placeholders like `{name:AnyText}`. Keep the decorator text non-regex and avoid `use_step_matcher("re")`.
+- **Do not** use `from behave import given, when, then, use_step_matcher` — use `from behave import *` as the project blueprint.
+- For large suites, split step definitions by semantic area or scenario file. Keep shared steps in `common_steps.py` and define each step text in exactly one file.
+
 ## Constraints
 
 - Do NOT run tests — that is the QA runner's job.
