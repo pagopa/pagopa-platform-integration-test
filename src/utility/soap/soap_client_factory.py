@@ -11,7 +11,6 @@ from src.utility.soap.soap_client import (
     SoapAuthConfig,
     SoapBasicAuthConfig,
     SoapClientError,
-    SoapNoAuthConfig,
     SoapWsseAuthConfig,
 )
 
