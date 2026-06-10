@@ -5,8 +5,8 @@
 Funzionalità: Flusso di accesso con SPID
 
   Contesto:
-    Dato La pagina di checkout e aperta
-    E La lingua e impostata su "it"
+    Dato La pagina di checkout è aperta
+    E La lingua è impostata su "it"
 
   @checkout @positive
   @FEAT_002_Checkout_scenario_01

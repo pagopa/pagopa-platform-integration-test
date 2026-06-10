@@ -163,7 +163,7 @@ def step_click_sort_button(context, sort_type):
 # WHEN steps — PSP selection page sorting (drawer)
 # ──────────────────────────────────────────────
 
-@when('La pagina di selezione PSP e caricata')
+@when('La pagina di selezione PSP è caricata')
 def step_psp_selection_page_loaded(context):
     """Wait for the PSP selection page to render (at least one .pspFeeName visible)."""
     page = _get_page(context)
@@ -293,7 +293,7 @@ def _get_name_values(page) -> list:
     return values
 
 
-@then('La lista dei nomi PSP e ordinata in ordine alfabetico decrescente')
+@then('La lista dei nomi PSP è ordinata in ordine alfabetico decrescente')
 def step_name_list_descending(context):
     """
     Assert that .pspFeeName elements are in descending alphabetical order.
@@ -310,7 +310,7 @@ def step_name_list_descending(context):
     logger.debug("PSP name list is correctly sorted descending")
 
 
-@then('La lista dei nomi PSP e ordinata in ordine alfabetico crescente')
+@then('La lista dei nomi PSP è ordinata in ordine alfabetico crescente')
 def step_name_list_ascending(context):
     """
     Assert that .pspFeeName elements are in ascending alphabetical order.

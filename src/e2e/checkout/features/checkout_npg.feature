@@ -7,8 +7,8 @@ Funzionalità: Attivazione pagamento Checkout
   cosi da poter pagare un avviso tramite la piattaforma pagoPA
 
   Contesto:
-    Dato La pagina di checkout e aperta
-    E La lingua e impostata su "it"
+    Dato La pagina di checkout è aperta
+    E La lingua è impostata su "it"
 
   # ──────────────────────────────────────────────
   # Happy path: flusso di pagamento completo

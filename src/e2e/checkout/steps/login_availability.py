@@ -73,7 +73,7 @@ def step_login_button_visible(context):
     )
 
 
-@then('Il titolo del pulsante di login e "Accedi"')
+@then('Il titolo del pulsante di login è "Accedi"')
 def step_login_button_title(context):
     page = _get_page(context)
     title = page.locator(SELECTORS["login_button"]).get_attribute("title")

@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 # GIVEN steps (Background)
 # ──────────────────────────────────────────────
 
-@given('La pagina di checkout e aperta')
+@given('La pagina di checkout è aperta')
 def step_checkout_page_open(context):
     """Navigate to the checkout URL."""
     page = _get_page(context)
@@ -22,7 +22,7 @@ def step_checkout_page_open(context):
     context.notice_code = None
     context.fiscal_code = None
 
-@given('La lingua e impostata su "it"')
+@given('La lingua è impostata su "it"')
 def step_set_language_it(context):
     page = _get_page(context)
     logger.debug("Imposto lingua a 'it'")
