@@ -12,10 +12,19 @@
 
 ## PR data collection
 
-- Run `git log main..HEAD --oneline -n 40`
-- Run `git diff main...HEAD --stat`
+- Run `git branch --show-current` to get the current branch name for PR head reference.
+- Run `git log main..HEAD --oneline --no-merges -n 12` for concise commit context.
+- Run `git diff main...HEAD --name-only` to list changed files.
+- Run `git diff main...HEAD --shortstat` for compact change size.
 - Compose PR body inline using [`.github/PULL_REQUEST_TEMPLATE.md`](../../.github/PULL_REQUEST_TEMPLATE.md) sections (do not pass template file directly).
-- Run `git branch --show-current` to get current branch name for PR head reference and title inference.
+
+### Fallback for ambiguous scope
+
+Use detailed per-file stats only when needed:
+
+```bash
+git diff main...HEAD --stat
+```
 
 ## PR creation
 

@@ -24,6 +24,13 @@ Applies to custom agents and non-custom coding agents working in this repository
 2. Reuse existing utility APIs from [src/utility](src/utility) whenever they satisfy the scenario.
 3. Add new helper layers only when no existing utility fits; keep additions minimal and consistent with the existing utility style.
 
+## Python script instruction rule (all coding agents)
+
+Applies to custom agents and non-custom coding agents working in this repository.
+
+1. Before creating or editing any `.py` file, read [`.github/instructions/python-scripts.instructions.md`](.github/instructions/python-scripts.instructions.md).
+2. When editing behave step files (`src/**/steps/**/*.py`), also read [`.github/instructions/behave-steps.instructions.md`](.github/instructions/behave-steps.instructions.md).
+
 ## Agent-to-Instructions mapping
 
 Each agent reads **only** the instruction files listed for its role. Instructions not listed are out of scope for that agent.
@@ -31,7 +38,7 @@ Each agent reads **only** the instruction files listed for its role. Instruction
 | Agent | Instruction files |
 |-------|-------------------|
 | `QA-analyst` | [`gherkin.instructions.md`](.github/instructions/gherkin.instructions.md) |
-| `QA-engineer` | *(repo map above — no dedicated instruction file)* |
+| `QA-engineer` | [`python-scripts.instructions.md`](.github/instructions/python-scripts.instructions.md), [`behave-steps.instructions.md`](.github/instructions/behave-steps.instructions.md) |
 | `QA-runner` | [`run-tests.instructions.md`](.github/instructions/run-tests.instructions.md) |
 | `QA-closer` | [`git-commit.instructions.md`](.github/instructions/git-commit.instructions.md), [`git-pr.instructions.md`](.github/instructions/git-pr.instructions.md) |
 | `QA-orchestrator` | all of the above (delegates to sub-agents) |
