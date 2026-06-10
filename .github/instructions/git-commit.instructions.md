@@ -4,6 +4,10 @@
 
 # Commit Guidelines
 
+## Asses terminal
+
+Determine which terminal is in use (e.g., bash, zsh, cmd, PowerShell) to ensure compatibility with git commands and input/output parsing.
+
 ## Allowed prefixes
 
 Every commit message must start with one of:
