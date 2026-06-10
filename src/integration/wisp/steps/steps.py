@@ -17,7 +17,6 @@ def generate_single_rpt(context, payment_type, number_of_transfers, number_of_st
         number_of_stamps = '0'
 
     context.payment_type = payment_type
-    # forza la definizione dello IUV se la RPT fa parte di un carrello multibeneficiario
     iuv = None
 
     is_multibeneficiary_cart = context.flow_data['common']['cart']['is_multibeneficiary']
@@ -25,7 +24,6 @@ def generate_single_rpt(context, payment_type, number_of_transfers, number_of_st
     if is_multibeneficiary_cart is not None and is_multibeneficiary_cart == True:
         iuv = context.flow_data['common']['cart']['iuv_for_multibeneficiary']
 
-    # forza la definizione del CCP se la RPT fa parte di un carrello multibeneficiario
     ccp = None
     if is_multibeneficiary_cart:
         ccp = context.flow_data['common']['cart']['id']
@@ -35,9 +33,9 @@ def generate_single_rpt(context, payment_type, number_of_transfers, number_of_st
 
     payee_institution = test_data['payee_institutions_1']
 
-    # imposta l'istituzione pagante corretta se deve essere creata una RPT non-prima del carrello multibeneficiario
     rpts = context.flow_data['common']['rpts']
 
+    # In multibeneficiary carts, rotate payee institution after the first RPT.
     if is_multibeneficiary_cart:
         if len(rpts) == 1:
             other_payee_institution = test_data['payee_institutions_2']
@@ -48,11 +46,9 @@ def generate_single_rpt(context, payment_type, number_of_transfers, number_of_st
             domain_id = other_payee_institution['fiscal_code']
             payee_institution = other_payee_institution
 
-    # genera la RPT grezza che sarà usata per costruire il contenuto XML
     rpt = requestgen.create_rpt(test_data, iuv, ccp, domain_id, payee_institution, payment_type,
                                 int(number_of_transfers), int(number_of_stamps))
 
-    # aggiorna la lista delle RPT grezze generate
     rpts.append(rpt)
 
     context.flow_data['common']['rpts'] = rpts
@@ -60,20 +56,15 @@ def generate_single_rpt(context, payment_type, number_of_transfers, number_of_st
 
 @then('the same cart is used for another try')
 def update_old_nodoInviaCarrelloRPT_request(context):
-    # modifica l'identificatore del carrello alterando l'ultimo carattere
     cart_id = context.flow_data['common']['cart']['id']
-
-    # session.set_flow_data(context, constants.SESSION_DATA_CART_ID, utils.change_last_numeric_char(cart_id))
     context.flow_data['common']['cart']['id'] = utils.change_last_numeric_char(cart_id)
 
-    # modifica il contenuto di tutti i CCP alterando l'ultimo carattere
     rpts = context.flow_data['common']['rpts']
 
     for rpt in rpts:
         ccp = rpt['payment_data']['ccp']
         rpt['payment_data']['ccp'] = utils.change_last_numeric_char(ccp)
 
-    # aggiorna il contesto con la richiesta e modifica il flow_data
     context.flow_data['common']['rpts'] = rpts
 
 
@@ -81,25 +72,17 @@ def update_old_nodoInviaCarrelloRPT_request(context):
     'una posizione debitoria esistente relativa alla {index} RPT con segregation code uguale a {segregation_code} e stato uguale a {payment_status}')
 def generate_payment_position(context, index, segregation_code, payment_status):
     session.set_skip_tests(context, False)
-
-    # recupera la RPT corretta dal contesto per generare una posizione debitoria a partire da essa
     raw_rpts = context.flow_data['common']['rpts']
 
     payment_notice_index = utils.get_index_from_cardinal(index)
     rpt = raw_rpts[payment_notice_index]
-
-    # genera la posizione debitoria dalla RPT estratta
     payment_positions = requestgen.generate_gpd_paymentposition(context, rpt, segregation_code, payment_status)
 
-    # se payment_status è VALID, l'URL recuperato conterrà il flag toPublish impostato a true
     if payment_status == 'VALID':
         base_url, subkey = router.get_rest_url(context, 'create_paymentposition_and_publish')
-
-    # se payment_status non è VALID, l'URL recuperato conterrà il flag toPublish impostato a false
     else:
         base_url, subkey = router.get_rest_url(context, 'create_paymentposition')
 
-    # inizializza la chiamata API e ottiene la risposta
     url = base_url.format(creditor_institution=rpt['domain']['id'])
 
     headers = {'Content-Type': 'application/json', constants.OCP_APIM_SUBSCRIPTION_KEY: subkey}
@@ -109,7 +92,6 @@ def generate_payment_position(context, index, segregation_code, payment_status):
     status_code, body, _ = utils.execute_request(url, 'post', headers, payment_positions,
                                                  type=constants.ResponseType.JSON,
                                                  description=req_description)
-    # esecuzione delle asserzioni
     utils.assert_show_message(status_code == 201,
                               f'The debt position for RPT with index [{index}] was not created. Expected status code [201], Current status code [{status_code}]')
 
@@ -130,20 +112,17 @@ def step_impl(context, scenario_name):
 @given('un carrello di RPT {note}')
 def generate_empty_cart(context, note):
     """Generate an empty cart and set multibeneficiary flags based on step note."""
-    # recupera i test_data per generare i dati di sessione flow_data
     test_data = context.commondata
-
-    # imposta le informazioni sulla primitiva di trigger
     context.flow_data['action']['trigger_primitive']['name'] = constants.PRIMITIVE_NODOINVIACARRELLORPT
 
     normalized_note = ' '.join(note.lower().replace('-', ' ').split())
+    # Accept both legacy and translated step text variants.
     is_multibeneficiary_note = normalized_note in (
         'for multibeneficiary',
         'multibeneficiary',
         'multi beneficiario',
     )
 
-    # genera l'identificatore del carrello e definisce le info sul carrello multibeneficiario nel flow_data
     if is_multibeneficiary_note:
         iuv = utils.generate_iuv(in_18digit_format=True)
 
@@ -152,8 +131,6 @@ def generate_empty_cart(context, note):
         context.flow_data['common']['cart']['is_multibeneficiary'] = True
 
         context.flow_data['common']['cart']['iuv_for_multibeneficiary'] = iuv
-
-    # genera l'identificatore del carrello e imposta le info multibeneficiario a False nel flow_data
     else:
         context.flow_data['common']['cart']['id'] = utils.generate_cart_id(None, test_data['creditor_institution'])
 
