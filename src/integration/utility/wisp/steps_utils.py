@@ -552,7 +552,7 @@ def search_paymentposition_by_iuv(context, index):
                                                           description=req_description)
 
     # update context setting all information about response
-    context.flow_data['action']['response'][status_code] = status_code
+    context.flow_data['action']['response']['status_code'] = status_code
 
     context.flow_data['action']['response']['body'] = body_response
 
@@ -829,11 +829,12 @@ def check_paymentposition_transfers_for_multibeneficiary(context):
 
 
 ######################################
-def exec_nm1_to_nmu(context, actor):
+def exec_nm1_to_nmu(context, actor, expected_status='302'):
     get_valid_sessionid(context)
     send_sessionid_to_wispdismantling(context)
-    check_status_code(context, actor, '302')
-    check_checkout_url(context)
+    check_status_code(context, actor, expected_status)
+    if expected_status == '302':
+        check_checkout_url(context)
 
 
 def retrieve_related_notice_numbers_from_redirect(context):
@@ -942,7 +943,7 @@ def check_fail_nm1_to_nmu_conversion(context):
 
 
 def check_debt_position_invalid_and_sent_ko_receipt(context):
-    error_codes = ['WIC-1300', 'WIC-1205', '3001']  # Lista di codici di errore da controllare
+    error_codes = ['WIC-1300', 'WIC-1205', 'WIC-3001']  # Lista di codici di errore da controllare
     wait_for_n_seconds(context, '2', 'to wait for Nodo to write RE events')
     get_iuv_from_session(context, 'first')
     search_in_re_by_iuv(context)

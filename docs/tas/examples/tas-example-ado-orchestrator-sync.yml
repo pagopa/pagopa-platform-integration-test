@@ -1,0 +1,103 @@
+# azure-pipelines-integration-tests.yml
+trigger: none   # the pipeline can only be started manually
+pr: none        # the pipeline does not run on pull requests
+
+parameters:
+  - name: suite
+    displayName: "Test suite"
+    type: string
+    default: wisp
+    values: [wisp, all]
+  - name: environment
+    displayName: "Target environment"
+    type: string
+    default: uat
+    values: [dev, uat]
+  - name: ref
+    displayName: "TAS repo branch"
+    type: string
+    default: main
+
+variables:
+  # If you defined the variable group (Option A), keep the line below; otherwise remove it
+  # and configure INTEGRATION_TEST_PAT directly as a pipeline variable (Option B).
+  - group: tas-integration-secrets
+  - name: PYTHON_VERSION
+    value: "3.11"
+  - name: TAS_REPO
+    value: "pagopa/pagopa-platform-integration-test"
+  # ── Supply-chain integrity ─────────────────────────────────────────────────
+  # Leave empty to verify against the sidecar published on the same ref
+  # (scripts/tas_orchestrator.py.sha256). Set to an explicit hex digest to
+  # pin the script (true SRI: survives tampering of the ref tip). Compute
+  # the digest once with:
+  #   curl -sSfL https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/<ref>/scripts/tas_orchestrator.py | sha256sum
+  - name: TAS_ORCHESTRATOR_SHA256
+    value: ""
+
+stages:
+  - stage: IntegrationTests
+    displayName: "Integration Tests"
+    jobs:
+      - job: RunTests
+        displayName: "Trigger & wait for results"
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: "$(PYTHON_VERSION)"
+            displayName: "Setup Python $(PYTHON_VERSION)"
+
+          - script: pip install requests
+            displayName: "Install orchestrator dependencies"
+
+          - script: |
+              curl -sSfL \
+                "https://raw.githubusercontent.com/$(TAS_REPO)/${{ parameters.ref }}/scripts/tas_orchestrator.py" \
+                -o tas_orchestrator.py
+            displayName: "Download tas_orchestrator.py"
+
+          # Verify the script's SHA-256 before executing it.
+          # Pinned digest (TAS_ORCHESTRATOR_SHA256) wins; otherwise the
+          # sidecar published on the same ref is used.
+          - script: |
+              set -euo pipefail
+              if [ -n "$(TAS_ORCHESTRATOR_SHA256)" ]; then
+                echo "Verifying against pinned SHA-256..."
+                echo "$(TAS_ORCHESTRATOR_SHA256)  tas_orchestrator.py" | sha256sum -c -
+              else
+                echo "Verifying against published sidecar..."
+                curl -sSfL \
+                  "https://raw.githubusercontent.com/$(TAS_REPO)/${{ parameters.ref }}/scripts/tas_orchestrator.py.sha256" \
+                  -o tas_orchestrator.py.sha256
+                sha256sum -c tas_orchestrator.py.sha256
+              fi
+            displayName: "Verify tas_orchestrator.py SHA-256"
+
+          # Exit 0 = all tests passed     → stage success → deploy runs
+          # Exit 1 = scenarios failed     → stage failed  → deploy skipped
+          # Exit 2 = orchestration error (token, timeout, API error, etc.)
+          - script: |
+              python tas_orchestrator.py \
+                --suite "${{ parameters.suite }}" \
+                --env "${{ parameters.environment }}" \
+                --ref "${{ parameters.ref }}" \
+                --caller-id "$(Build.Repository.Name)/$(Build.BuildId)" \
+                --correlation-id "$(Build.BuildId)-$(System.JobAttempt)" \
+                --sync
+            displayName: "Run integration tests (sync)"
+            env:
+              GITHUB_TOKEN: $(INTEGRATION_TEST_PAT)
+
+  - stage: Deploy
+    displayName: "Deploy"
+    dependsOn: IntegrationTests
+    condition: succeeded()
+    jobs:
+      - job: DeployApp
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - script: echo "All tests passed — deploying..."
+            displayName: "Deploy step"

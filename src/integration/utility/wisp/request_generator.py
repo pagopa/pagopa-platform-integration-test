@@ -466,7 +466,7 @@ def generate_gpd_paymentposition(context, rpt, segregation_code, payment_status)
                 'fee': 0,
                 'notificationFee': None,
                 'transfer': transfers,
-                'paymentOptionMetadata': None
+                'paymentOptionMetadata': []
             }
         ]
     }

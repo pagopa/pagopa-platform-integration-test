@@ -1,0 +1,107 @@
+##############################################################################
+# tas-example-ado-using-template.yml
+#
+# Example Azure DevOps pipeline showing how to integrate the
+# Test Automation Service via the official ADO template.
+#
+# This is the recommended way to integrate from ADO: the caller only
+# declares the parameters and consumes the standardised outputs.
+# All boilerplate (Python setup, orchestrator download, secret handling,
+# JSON dispatch, output normalisation) lives inside the template.
+#
+# ── Prerequisites ───────────────────────────────────────────────────────────
+# 1. Variable group 'tas-integration-secrets' containing:
+#      INTEGRATION_TEST_PAT — GitHub PAT (secret), scopes public_repo + actions:read
+#    Authorise this pipeline to consume the group:
+#      Library → tas-integration-secrets → Pipeline permissions → +
+#
+# 2. A 'GitHub' service connection (Project settings → Service connections)
+#    pointing to github.com. The name of the connection goes into
+#    'resources.repositories[].endpoint' below.
+##############################################################################
+
+trigger: none
+pr: none
+
+parameters:
+  - name: suite
+    displayName: "Test suite"
+    type: string
+    default: wisp
+    values: [wisp, all]
+  - name: environment
+    displayName: "Target environment"
+    type: string
+    default: uat
+    values: [dev, uat]
+  - name: mode
+    displayName: "Invocation mode"
+    type: string
+    default: sync
+    values: [sync, async, raw]
+  - name: ref
+    displayName: "TAS repo branch/tag"
+    type: string
+    default: main
+
+# ── Remote template source ──────────────────────────────────────────────────
+# 'tas' is a logical alias used in the 'template:' directive below. Pin 'ref'
+# to a tag (e.g. refs/tags/v1) for reproducible builds, or to refs/heads/main
+# to always get the latest template version.
+resources:
+  repositories:
+    - repository: tas
+      type: github
+      name: pagopa/pagopa-platform-integration-test
+      ref: refs/heads/main
+      endpoint: pagoPA-projects   # ← GitHub service connection name (Project settings → Service connections)
+
+stages:
+  # ── Stage 1: Integration tests (provided entirely by the template) ───────
+  - template: .azuredevops/templates/tas-integration-tests.yml@tas
+    parameters:
+      suite:       ${{ parameters.suite }}
+      environment: ${{ parameters.environment }}
+      mode:        ${{ parameters.mode }}
+      ref:         ${{ parameters.ref }}
+      # Optional overrides (defaults shown):
+      # secretsGroup: tas-integration-secrets
+      # pythonVersion: "3.11"
+      # poolVmImage: "ubuntu-latest"
+      #
+      # Supply-chain integrity (orchestrator-based modes only):
+      #   verifyOrchestrator: true     # default — verify SHA-256 after download
+      #   orchestratorSha256: ""       # default — use the published sidecar from the same ref
+      #
+      # For strict supply-chain requirements, pin the digest explicitly so the
+      # check survives even tampering of the ref tip (true SRI). Compute it once
+      # against the version you trust and bake it in:
+      #   curl -sSfL https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/refs/tags/v1/scripts/tas_orchestrator.py | sha256sum
+      # orchestratorSha256: "a68b6c43c98517352c6d182df4a97b67e33a94ed79ae56949b1f6e6a179b5fe1"
+
+  # ── Stage 2: Deploy ───────────────────────────────────────────────────────
+  # In sync mode, the template stage fails on test failure, so 'succeeded()'
+  # blocks the deploy. In async/raw modes the template stage only reflects
+  # the dispatch outcome, so deploy proceeds in parallel with the tests.
+  - stage: Deploy
+    displayName: "Deploy"
+    dependsOn: TAS_IntegrationTests
+    condition: succeeded()
+    jobs:
+      - job: DeployApp
+        displayName: "Deploy application"
+        pool:
+          vmImage: ubuntu-latest
+        variables:
+          # Output variables exposed by the template (step name normalised to 'tas'):
+          CORRELATION_ID: $[ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.CORRELATION_ID'] ]
+          RUN_ID:         $[ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.RUN_ID'] ]
+          RUN_URL:        $[ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.RUN_URL'] ]
+        steps:
+          - script: |
+              echo "Correlation ID : $(CORRELATION_ID)"
+              echo "Run ID         : $(RUN_ID)      # populated only in mode=sync"
+              echo "Run URL        : $(RUN_URL)     # populated only in mode=sync"
+              echo "Deploying application..."
+            displayName: "Deploy step"
+

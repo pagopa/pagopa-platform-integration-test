@@ -1,0 +1,111 @@
+##############################################################################
+# tas-example-gha-orchestrator-async.yml
+#
+# Example GitHub Actions workflow showing how to integrate the
+# Test Automation Service via tas_orchestrator.py in asynchronous mode.
+#
+# The orchestrator fires the test run and exits immediately (exit 0).
+# The pipeline continues without waiting for the test outcome.
+# The CORRELATION_ID is captured and passed to downstream jobs for tracking.
+#
+# Copy this file to .github/workflows/ in your repository and configure
+# the INTEGRATION_TEST_PAT secret (GitHub PAT with scope: public_repo, actions:read).
+##############################################################################
+
+name: Build & Deploy (tests async)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  TAS_REPO: pagopa/pagopa-platform-integration-test
+  TAS_REF: main
+  # ── Supply-chain integrity ────────────────────────────────────────────────
+  # Leave empty to verify against the sidecar published on the same ref
+  # (scripts/tas_orchestrator.py.sha256). Set to an explicit hex digest to
+  # pin the script (true SRI: survives tampering of the ref tip). Compute it
+  # once with:
+  #   curl -sSfL https://raw.githubusercontent.com/${TAS_REPO}/${TAS_REF}/scripts/tas_orchestrator.py | sha256sum
+  TAS_ORCHESTRATOR_SHA256: ""
+
+jobs:
+
+  # ── 1. Dispatch integration tests (fire-and-forget) ───────────────────────
+  trigger-tests:
+    name: "Trigger integration tests"
+    runs-on: ubuntu-latest
+    outputs:
+      correlation_id: ${{ steps.trigger.outputs.correlation_id }}
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install orchestrator dependencies
+        run: pip install requests
+
+      - name: Download tas_orchestrator.py
+        run: |
+          curl -sSfL \
+            "https://raw.githubusercontent.com/${TAS_REPO}/${TAS_REF}/scripts/tas_orchestrator.py" \
+            -o tas_orchestrator.py
+
+      # Verify the script's SHA-256 before executing it. Pinned digest
+      # (TAS_ORCHESTRATOR_SHA256) wins; otherwise the sidecar published on
+      # the same ref is used.
+      - name: Verify tas_orchestrator.py SHA-256
+        run: |
+          set -euo pipefail
+          if [ -n "${TAS_ORCHESTRATOR_SHA256}" ]; then
+            echo "Verifying against pinned SHA-256..."
+            echo "${TAS_ORCHESTRATOR_SHA256}  tas_orchestrator.py" | sha256sum -c -
+          else
+            echo "Verifying against published sidecar..."
+            curl -sSfL \
+              "https://raw.githubusercontent.com/${TAS_REPO}/${TAS_REF}/scripts/tas_orchestrator.py.sha256" \
+              -o tas_orchestrator.py.sha256
+            sha256sum -c tas_orchestrator.py.sha256
+          fi
+
+      - name: Dispatch tests (fire-and-forget)
+        id: trigger
+        run: |
+          # Run async: script exits immediately with 0 and prints:
+          #   CORRELATION_ID=<uuid>
+          #   RUN_NAME=tas-<uuid>
+          OUTPUT=$(python tas_orchestrator.py \
+            --suite wisp \
+            --env uat \
+            --caller-id "${{ github.repository }}")
+
+          echo "$OUTPUT"
+
+          # Capture CORRELATION_ID for downstream use / artifact retrieval
+          CORRELATION_ID=$(echo "$OUTPUT" | grep '^CORRELATION_ID=' | cut -d= -f2)
+          echo "correlation_id=$CORRELATION_ID" >> "$GITHUB_OUTPUT"
+        env:
+          GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_PAT }}
+
+      - name: Print monitoring info
+        run: |
+          echo "Tests dispatched — pipeline continues immediately."
+          echo "Correlation ID : ${{ steps.trigger.outputs.correlation_id }}"
+          echo "Monitor at     : https://github.com/pagopa/pagopa-platform-integration-test/actions"
+
+  # ── 2. Deploy: runs in parallel with the tests ────────────────────────────
+  deploy:
+    name: "Deploy"
+    needs: trigger-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy application
+        run: |
+          echo "Deploying — tests are running asynchronously."
+          echo "Correlation ID: ${{ needs.trigger-tests.outputs.correlation_id }}"
+          # ./deploy.sh

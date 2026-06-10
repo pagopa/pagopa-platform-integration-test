@@ -1,0 +1,93 @@
+##############################################################################
+# tas-example-gha-orchestrator-sync.yml
+#
+# Example GitHub Actions workflow showing how to integrate the
+# Test Automation Service via tas_orchestrator.py in synchronous mode.
+#
+# Copy this file to .github/workflows/ in your repository and configure
+# the INTEGRATION_TEST_PAT secret (GitHub PAT with scope: public_repo, actions:read).
+##############################################################################
+
+name: Build, Integration Test & Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  TAS_REPO: pagopa/pagopa-platform-integration-test
+  TAS_REF: main
+  # ── Supply-chain integrity ────────────────────────────────────────────────
+  # Leave empty to verify against the sidecar published on the same ref
+  # (scripts/tas_orchestrator.py.sha256). Set to an explicit hex digest to
+  # pin the script (true SRI: survives tampering of the ref tip). Compute it
+  # once with:
+  #   curl -sSfL https://raw.githubusercontent.com/${TAS_REPO}/${TAS_REF}/scripts/tas_orchestrator.py | sha256sum
+  TAS_ORCHESTRATOR_SHA256: ""
+
+jobs:
+
+  # ── 1. Integration tests ──────────────────────────────────────────────────
+  integration-tests:
+    name: "Integration Tests (WISP / UAT)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install orchestrator dependencies
+        run: pip install requests
+
+      - name: Download tas_orchestrator.py
+        run: |
+          curl -sSfL \
+            "https://raw.githubusercontent.com/${TAS_REPO}/${TAS_REF}/scripts/tas_orchestrator.py" \
+            -o tas_orchestrator.py
+
+      # Verify the script's SHA-256 before executing it. Pinned digest
+      # (TAS_ORCHESTRATOR_SHA256) wins; otherwise the sidecar published on
+      # the same ref is used.
+      - name: Verify tas_orchestrator.py SHA-256
+        run: |
+          set -euo pipefail
+          if [ -n "${TAS_ORCHESTRATOR_SHA256}" ]; then
+            echo "Verifying against pinned SHA-256..."
+            echo "${TAS_ORCHESTRATOR_SHA256}  tas_orchestrator.py" | sha256sum -c -
+          else
+            echo "Verifying against published sidecar..."
+            curl -sSfL \
+              "https://raw.githubusercontent.com/${TAS_REPO}/${TAS_REF}/scripts/tas_orchestrator.py.sha256" \
+              -o tas_orchestrator.py.sha256
+            sha256sum -c tas_orchestrator.py.sha256
+          fi
+
+      # Exit 0 = all tests passed   → job succeeds → deploy runs
+      # Exit 1 = scenarios failed   → job fails    → deploy skipped
+      # Exit 2 = orchestration error (missing token, timeout, API error)
+      - name: Run integration tests (sync)
+        run: |
+          python tas_orchestrator.py \
+            --suite wisp \
+            --env uat \
+            --caller-id "${{ github.repository }}" \
+            --correlation-id "${{ github.run_id }}-${{ github.run_attempt }}" \
+            --sync
+        env:
+          GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_PAT }}
+
+  # ── 2. Deploy (runs only if tests passed) ─────────────────────────────────
+  deploy:
+    name: "Deploy"
+    needs: integration-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy application
+        run: |
+          echo "All tests passed — deploying..."
+          # ./deploy.sh
