@@ -28,7 +28,7 @@ Funzionalità: Ordinamento lista PSP in Checkout
     E L'utente clicca il pulsante modifica PSP nella pagina di riepilogo
     E L'utente clicca il pulsante "ordina per commissione"
     E L'utente clicca il pulsante "ordina per commissione"
-    Allora La lista delle commissioni PSP e ordinata in ordine crescente
+    Allora La lista delle commissioni PSP è ordinata in ordine crescente
     E L'utente annulla il pagamento
 
   @positive
@@ -43,7 +43,7 @@ Funzionalità: Ordinamento lista PSP in Checkout
     E L'utente clicca il pulsante continua della lista PSP
     E L'utente clicca il pulsante modifica PSP nella pagina di riepilogo
     E L'utente clicca il pulsante "ordina per commissione"
-    Allora La lista delle commissioni PSP e ordinata in ordine decrescente
+    Allora La lista delle commissioni PSP è ordinata in ordine decrescente
     E L'utente annulla il pagamento
 
   @positive
@@ -106,4 +106,4 @@ Funzionalità: Ordinamento lista PSP in Checkout
     E L'utente clicca il pulsante ordina lista PSP
     E L'utente seleziona l'opzione radio "ordina per importo"
     E L'utente clicca il pulsante mostra risultati
-    Allora La lista delle commissioni PSP e ordinata in ordine crescente
+    Allora La lista delle commissioni PSP è ordinata in ordine crescente

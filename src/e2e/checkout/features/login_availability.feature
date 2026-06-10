@@ -11,7 +11,7 @@ Funzionalità: Disponibilità opzione login in tutte le fasi del flusso di pagam
   @FEAT_01_Checkout_scenario_01
   Scenario: Opzione login disponibile durante l'inserimento dei dati avviso
     Quando L'utente inserisce i dati dell'avviso
-    Allora Il pulsante di login e visibile e abilitato
+    Allora Il pulsante di login è visibile e abilitato
     E Il titolo del pulsante di login è "Accedi"
 
   @positive
@@ -19,7 +19,7 @@ Funzionalità: Disponibilità opzione login in tutte le fasi del flusso di pagam
   Scenario: Opzione login disponibile durante l'inserimento dei dati di pagamento
     Quando L'utente inserisce i dati dell'avviso
     E L'utente inserisce i dati di pagamento
-    Allora Il pulsante di login e visibile e abilitato
+    Allora Il pulsante di login è visibile e abilitato
     E Il titolo del pulsante di login è "Accedi"
 
   @positive
@@ -28,7 +28,7 @@ Funzionalità: Disponibilità opzione login in tutte le fasi del flusso di pagam
     Quando L'utente inserisce i dati dell'avviso
     E L'utente inserisce i dati di pagamento
     E L'utente inserisce l'email
-    Allora Il pulsante di login e visibile e abilitato
+    Allora Il pulsante di login è visibile e abilitato
     E Il titolo del pulsante di login è "Accedi"
 
   @positive
@@ -38,5 +38,5 @@ Funzionalità: Disponibilità opzione login in tutte le fasi del flusso di pagam
     E L'utente inserisce i dati di pagamento
     E L'utente inserisce l'email
     E L'utente seleziona il metodo di pagamento
-    Allora Il pulsante di login e visibile e abilitato
+    Allora Il pulsante di login è visibile e abilitato
     E Il titolo del pulsante di login è "Accedi"
