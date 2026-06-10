@@ -129,14 +129,22 @@ def step_impl(context, scenario_name):
 
 @given('un carrello di RPT {note}')
 def generate_empty_cart(context, note):
+    """Generate an empty cart and set multibeneficiary flags based on step note."""
     # recupera i test_data per generare i dati di sessione flow_data
     test_data = context.commondata
 
     # imposta le informazioni sulla primitiva di trigger
     context.flow_data['action']['trigger_primitive']['name'] = constants.PRIMITIVE_NODOINVIACARRELLORPT
 
+    normalized_note = ' '.join(note.lower().replace('-', ' ').split())
+    is_multibeneficiary_note = normalized_note in (
+        'for multibeneficiary',
+        'multibeneficiary',
+        'multi beneficiario',
+    )
+
     # genera l'identificatore del carrello e definisce le info sul carrello multibeneficiario nel flow_data
-    if 'for multibeneficiary' in note:
+    if is_multibeneficiary_note:
         iuv = utils.generate_iuv(in_18digit_format=True)
 
         context.flow_data['common']['cart']['id'] = utils.generate_cart_id(iuv, test_data['creditor_institution'])
@@ -208,6 +216,7 @@ def user_redirected_again_to_checkout(context, actor):
     steputils.check_index_paid_payment_positions(context, 5)
 
 
+@then("l'{actor} viene reindirizzato su Checkout completando il pagamento multi-beneficiario")
 @then("l'{actor} viene reindirizzato su Checkout completando il pagamento multibeneficiario")
 def user_redirected_to_checkout(context, actor):
     steputils.exec_nm1_to_nmu(context, actor)
@@ -220,6 +229,8 @@ def user_redirected_to_checkout(context, actor):
     steputils.check_paid_payment_position_from_multibeneficiary_cart(context)
 
 
+@then("l'{actor} viene reindirizzato su Checkout senza completare il pagamento multi-beneficiario")
+@given("l'{actor} viene reindirizzato su Checkout senza completare il pagamento multi-beneficiario")
 @then("l'{actor} viene reindirizzato su Checkout senza completare il pagamento multibeneficiario")
 @given("l'{actor} viene reindirizzato su Checkout senza completare il pagamento multibeneficiario")
 def user_redirected_to_checkout(context, actor):
