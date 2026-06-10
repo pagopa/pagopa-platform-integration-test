@@ -14,7 +14,7 @@
 
 - Run `git log main..HEAD --oneline -n 40`
 - Run `git diff main...HEAD --stat`
-- Compose PR body inline using `.github/PULL_REQUEST_TEMPLATE.md` sections (do not pass template file directly).
+- Compose PR body inline using [`.github/PULL_REQUEST_TEMPLATE.md`](../../.github/PULL_REQUEST_TEMPLATE.md) sections (do not pass template file directly).
 
 ## PR creation
 
