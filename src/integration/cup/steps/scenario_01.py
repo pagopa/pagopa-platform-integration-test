@@ -1,9 +1,8 @@
 from behave import *
-import logging
 
 import src.integration.cup.steps.step_param_types  # noqa: F401
-from src.integration.utility.cup.client import CupClient
-from src.integration.utility.cup.request_builder import build_happy_path
+from src.integration.cup.utility.client import send_demand_payment_notice
+from src.integration.cup.utility.request_builder import build_happy_path
 
 
 @given('Il PSP ha ricevuto dalla Corporate un file di input valido che include i dati mandatori')
@@ -23,19 +22,11 @@ def step_psp_invia_demand_payment_notice_happy_path(context):
     """Send the CUP paDemandPaymentNotice happy-path request and store raw flow data."""
     request_body = build_happy_path()
 
-    cup_service = context.settings.services['cup_mock']
-    soap_action = cup_service.get('soap_action')
-    if soap_action:
-        cup_client = CupClient(url=cup_service['url'], soap_action=soap_action)
-    else:
-        cup_client = CupClient(url=cup_service['url'])
-
-    status_code, response_body = cup_client.demand_payment_notice(
+    status_code, response_body = send_demand_payment_notice(
+        service_config=context.settings.services['cup_mock'],
         xml_body=request_body,
         description=getattr(context, 'running_step', None),
     )
-
-    logging.debug('[demandPaymentNotice] status_code=%s | response_body=%s', status_code, response_body)
 
     context.flow_data['request']['body'] = request_body
     context.flow_data['response']['status_code'] = status_code

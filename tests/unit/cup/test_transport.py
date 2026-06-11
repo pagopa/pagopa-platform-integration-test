@@ -1,6 +1,6 @@
 """Unit tests for CUP SOAP transport delegation."""
 
-from src.integration.utility.cup.transport import send_soap_request
+from src.integration.cup.utility.transport import send_soap_request
 
 
 def test_send_soap_request_delegates_to_common_raw_helper(monkeypatch):
@@ -17,7 +17,7 @@ def test_send_soap_request_delegates_to_common_raw_helper(monkeypatch):
         return expected_response
 
     monkeypatch.setattr(
-        "src.integration.utility.cup.transport.send_raw_soap_request",
+        "src.integration.cup.utility.transport.send_raw_soap_request",
         fake_send_raw_soap_request,
     )
 

@@ -1,10 +1,10 @@
-"""Unit tests for src/integration/utility/cup/request_builder.py.
+"""Unit tests for src/integration/cup/utility/request_builder.py.
 
 These tests are pure unit tests: no network, no behave context, no Allure.
 Run with: python -m pytest tests/unit/cup/ -v
 """
 import pytest
-from src.integration.utility.cup import request_builder
+from src.integration.cup.utility import request_builder
 
 
 class TestBuildHappyPath:

@@ -2,7 +2,7 @@
 
 import xml.etree.ElementTree as ET
 
-from src.integration.utility.cup.parsers import (
+from src.integration.cup.utility.parsers import (
     get_pa_demand_payment_notice_fault_code,
     get_pa_demand_payment_notice_outcome,
     get_pa_demand_payment_notice_payment_option_description,
