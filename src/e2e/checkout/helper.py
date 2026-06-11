@@ -1,4 +1,3 @@
-import os
 import random
 import logging
 import json
@@ -6,7 +5,7 @@ from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 logger = logging.getLogger(__name__)
 
-def _get_page(context):
+def get_page(context):
     if not hasattr(context, "page"):
         raise RuntimeError(
             "context.page non trovato. Inizializzalo in features/environment.py "
@@ -14,26 +13,32 @@ def _get_page(context):
         )
     return context.page
 
-def _get_required_env(name: str) -> str:
-    value = os.getenv(name)
-    if not value:
-        raise RuntimeError(f"Variabile ambiente obbligatoria non trovata: {name}")
+def get_required_config(context, name: str):
+    config = getattr(context, "test_config", None)
+    if not isinstance(config, dict):
+        raise RuntimeError("context.test_config non disponibile o non valido")
+
+    value = config.get(name)
+    if value is None:
+        raise RuntimeError(f"Proprieta obbligatoria non trovata nel config: {name}")
     return value
 
-def _get_required_json_env(name: str):
+def get_required_json_config(context, name: str):
     """
-    Read required env var and parse it as JSON.
+    Read required config value and parse it as JSON.
     Raises RuntimeError with clear context if missing or invalid.
     """
-    raw = _get_required_env(name)
+    raw = get_required_config(context, name)
+    if not isinstance(raw, str):
+        return raw
     try:
         return json.loads(raw)
     except json.JSONDecodeError as exc:
         raise RuntimeError(
-            f"Variabile ambiente '{name}' non contiene JSON valido: {exc}"
+            f"Proprieta config '{name}' non contiene JSON valido: {exc}"
         ) from exc
 
-def _generate_random_notice_code(notice_code_prefix: str) -> str:
+def generate_random_notice_code(notice_code_prefix: str) -> str:
     # Build inclusive range: <prefix>000... to <prefix>999...
     valid_range_end = int(str(notice_code_prefix) + "9999999999999")
     valid_range_start = int(str(notice_code_prefix) + "0000000000000")
@@ -41,7 +46,7 @@ def _generate_random_notice_code(notice_code_prefix: str) -> str:
     logger.debug("Generated notice code with prefix %s: %s", notice_code_prefix, code)
     return code
 
-def _perform_mock_login(page):
+def perform_mock_login(page):
     logger.info("Performing mock login")
 
     logger.debug("Waiting navigation state (networkidle)")
@@ -56,7 +61,7 @@ def _perform_mock_login(page):
     assert icon is not None, "Icon 'AccountCircleRoundedIcon' non trovato"
     logger.info("Login successful")
 
-def _locate_and_click(page, locator, click_count=1, timeout=5000):
+def locate_and_click(page, locator, click_count=1, timeout=5000):
     to_click = page.locator(locator)
     try:
         to_click.wait_for(state="visible", timeout=timeout)
@@ -72,4 +77,15 @@ def _locate_and_click(page, locator, click_count=1, timeout=5000):
         raise RuntimeError(
             f"Timeout on locator '{locator}' after {timeout} ms (url: {current_url})"
         ) from exc
+
+def locate_click_and_type(page, locator, text, click_count=1, timeout=5000):
+    """Click a locator, clear it and type text."""
+    target = page.locator(locator)
+    locate_and_click(page, locator, click_count=click_count, timeout=timeout)
+    try:
+        target.fill("")
+    except Exception:
+        pass
+    page.keyboard.type(str(text))
+    logger.debug("Typed on %s: %r", locator, text)
 
