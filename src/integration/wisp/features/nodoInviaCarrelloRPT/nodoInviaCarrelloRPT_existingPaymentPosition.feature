@@ -1,206 +1,140 @@
-Feature: User pays a payment carts from existing payment position via nodoInviaCarrelloRPT
+# language: it
+@FEAT_006_NodoInviaCarrelloRPT_ExistingPaymentPosition
+Funzionalità: L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT
 
-  Background:
-    Given systems up
-
-  # ===============================================================================================
-  # ===============================================================================================
-
-  @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: User pays a cart with single RPT without stamp that exists already in GPD
-    Given a cart of RPTs non-multibeneficiary
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the user tries to pay a cart of RPTs on EC website
-    Then the user is redirected on Checkout completing the payment
-    And the debt position is closed
+  Contesto:
+    Dati i sistemi sono operativi
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: User pays a cart with single RPT with multiple transfers that exists already in GPD
-    Given a cart of RPTs non-multibeneficiary
-    And a single RPT of type BBT with 3 transfers of which none are stamps
-    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the user tries to pay a cart of RPTs on EC website
-    Then the user is redirected on Checkout completing the payment
-    And the debt position is closed
+  @FEAT_006_NodoInviaCarrelloRPT_ExistingPaymentPosition_SCENARIO_01
+  Scenario: L'utente paga un carrello con singola RPT senza marca da bollo gia esistente in GPD
+    Dato un carrello di RPT non multi-beneficiario
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a VALID
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento
+    E la posizione debitoria è chiusa
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: Scenario: User pays a cart with single RPT with one stamp that exists already in GPD
-    Given a cart of RPTs non-multibeneficiary
-    And a single RPT of type BBT with 2 transfers of which 1 are stamps
-    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the user tries to pay a cart of RPTs on EC website
-    Then the user is redirected on Checkout completing the payment
-    And the debt position is closed
+  @FEAT_006_NodoInviaCarrelloRPT_ExistingPaymentPosition_SCENARIO_02
+  Scenario: L'utente paga un carrello con singola RPT con versamenti multipli gia esistente in GPD
+    Dato un carrello di RPT non multi-beneficiario
+    E una singola RPT di tipo BBT con 3 versamenti di cui none sono marche da bollo
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a VALID
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento
+    E la posizione debitoria è chiusa
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: User pays a cart with two RPTs without stamp of which one already exists in GPD
-    Given a cart of RPTs non-multibeneficiary
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the user tries to pay a cart of RPTs on EC website
-    Then the user is redirected on Checkout completing the payment
-    And the debt position is closed
+  @FEAT_006_NodoInviaCarrelloRPT_ExistingPaymentPosition_SCENARIO_03
+  Scenario: L'utente paga un carrello con singola RPT con una marca da bollo gia esistente in GPD
+    Dato un carrello di RPT non multi-beneficiario
+    E una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a VALID
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento
+    E la posizione debitoria è chiusa
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: User pays a cart with two RPTs with multiple transfers that exists already in GPD
-    Given a cart of RPTs non-multibeneficiary
-    And a single RPT of type BBT with 3 transfers of which none are stamps
-    And a single RPT of type BBT with 3 transfers of which none are stamps
-    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the user tries to pay a cart of RPTs on EC website
-    Then the user is redirected on Checkout completing the payment
-    And the debt position is closed
+  @FEAT_006_NodoInviaCarrelloRPT_ExistingPaymentPosition_SCENARIO_04
+  Scenario: L'utente paga un carrello con due RPT senza marca da bollo di cui una gia esistente in GPD
+    Dato un carrello di RPT non multi-beneficiario
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a VALID
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento
+    E la posizione debitoria è chiusa
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  Scenario: Scenario: User pays a cart with two RPTs with at least on stamp that exists already in GPD
-    Given a cart of RPTs non-multibeneficiary
-    And a single RPT of type BBT with 2 transfers of which 1 are stamps
-    And a single RPT of type BBT with 3 transfers of which 1 are stamps
-    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the user tries to pay a cart of RPTs on EC website
-    Then the user is redirected on Checkout completing the payment
-    And the debt position is closed
+  @FEAT_006_NodoInviaCarrelloRPT_ExistingPaymentPosition_SCENARIO_05
+  Scenario: L'utente paga un carrello con due RPT con versamenti multipli gia esistente in GPD
+    Dato un carrello di RPT non multi-beneficiario
+    E una singola RPT di tipo BBT con 3 versamenti di cui none sono marche da bollo
+    E una singola RPT di tipo BBT con 3 versamenti di cui none sono marche da bollo
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a VALID
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento
+    E la posizione debitoria è chiusa
+
+  # ===============================================================================================
+  # ===============================================================================================
+
+  @runnable @nodo_invia_carrello_rpt @happy_path
+  @FEAT_006_NodoInviaCarrelloRPT_ExistingPaymentPosition_SCENARIO_06
+  Scenario: L'utente paga un carrello con due RPT con almeno una marca da bollo gia esistente in GPD
+    Dato un carrello di RPT non multi-beneficiario
+    E una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo
+    E una singola RPT di tipo BBT con 3 versamenti di cui 1 sono marche da bollo
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a VALID
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento
+    E la posizione debitoria è chiusa
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @unhappy_path
-  Scenario: User tries to pay a cart with single RPT that exists already in GPD in invalid state
-    Given a cart of RPTs non-multibeneficiary
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to DRAFT
-    When the user tries to pay a cart of RPTs on EC website
-    Then conversion to new model fails in wisp-converter
-    And the KO receipt is sent
+  @FEAT_006_NodoInviaCarrelloRPT_ExistingPaymentPosition_SCENARIO_07
+  Scenario: L'utente tenta di pagare un carrello con singola RPT gia esistente in GPD in stato non valido
+    Dato un carrello di RPT non multi-beneficiario
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a DRAFT
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
+    Allora la conversione al nuovo modello fallisce nel wisp-converter
+    E la ricevuta KO è inviata
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @unhappy_path
-  Scenario: User tries to pay a cart with single RPT that was inserted from ACA and is in valid state
-    Given a cart of RPTs non-multibeneficiary
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And an existing payment position related to first RPT with segregation code equals to 01 and state equals to VALID
-    When the user tries to pay a cart of RPTs on EC website
-    Then conversion to new model fails in wisp-converter
-    And the KO receipt is sent
+  @FEAT_006_NodoInviaCarrelloRPT_ExistingPaymentPosition_SCENARIO_08
+  Scenario: L'utente tenta di pagare un carrello con singola RPT inserita da ACA e in stato valido
+    Dato un carrello di RPT non multi-beneficiario
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 01 e stato uguale a VALID
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
+    Allora la conversione al nuovo modello fallisce nel wisp-converter
+    E la ricevuta KO è inviata
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @unhappy_path
-  Scenario: User tries to pay a cart with single RPT that was inserted from ACA and is in invalid state
-    Given a cart of RPTs non-multibeneficiary
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT
-    When the user tries to pay a cart of RPTs on EC website
-    Then conversion to new model fails in wisp-converter
-    And the KO receipt is sent
+  @FEAT_006_NodoInviaCarrelloRPT_ExistingPaymentPosition_SCENARIO_09
+  Scenario: L'utente tenta di pagare un carrello con singola RPT inserita da ACA e in stato non valido
+    Dato un carrello di RPT non multi-beneficiario
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 01 e stato uguale a DRAFT
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
+    Allora la conversione al nuovo modello fallisce nel wisp-converter
+    E la ricevuta KO è inviata
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @unhappy_path
-  Scenario: User tries to pay a cart with two RPTs that exists already in GPD in invalid state
-    Given a cart of RPTs non-multibeneficiary
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to DRAFT
-    When the user tries to pay a cart of RPTs on EC website
-    Then conversion to new model fails in wisp-converter
-    And the KO receipt is sent
-
-  # ===============================================================================================
-  # ===============================================================================================
-
-  @runnable @nodo_invia_carrello_rpt @unhappy_path
-  Scenario: User tries to pay a cart with two RPTs that was inserted from ACA and is in valid state
-    Given a cart of RPTs non-multibeneficiary
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And an existing payment position related to first RPT with segregation code equals to 01 and state equals to VALID
-    When the user tries to pay a cart of RPTs on EC website
-    Then conversion to new model fails in wisp-converter
-    And the KO receipt is sent
-
-  # ===============================================================================================
-  # ===============================================================================================
-
-  @runnable @nodo_invia_carrello_rpt @unhappy_path
-  Scenario: User tries to pay a cart with two RPTs that was inserted from ACA and is in invalid state
-    Given a cart of RPTs non-multibeneficiary
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT
-    When the user tries to pay a cart of RPTs on EC website
-    Then conversion to new model fails in wisp-converter
-    And the KO receipt is sent
-
-  # ===============================================================================================
-  # ===============================================================================================
-
-  @runnable @nodo_invia_carrello_rpt @unhappy_path
-  Scenario: User tries to pay a multibeneficiary cart that exists already in GPD in invalid state
-    Given a cart of RPTs for multibeneficiary
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to DRAFT
-    When the user tries to pay a cart of RPTs on EC website
-    Then conversion to new model fails in wisp-converter
-    And the KO receipt is sent
-
-  # ===============================================================================================
-  # ===============================================================================================
-
-  @runnable @nodo_invia_carrello_rpt @unhappy_path
-  Scenario: User tries to pay a multibeneficiary cart that was inserted from ACA and is in valid state
-    Given a cart of RPTs for multibeneficiary
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And an existing payment position related to first RPT with segregation code equals to 01 and state equals to VALID
-    When the user tries to pay a cart of RPTs on EC website
-    Then conversion to new model fails in wisp-converter
-    And the KO receipt is sent
-
-  # ===============================================================================================
-  # ===============================================================================================
-
-  @runnable @nodo_invia_carrello_rpt @unhappy_path
-  Scenario: User tries to pay a multibeneficiary cart that was inserted from ACA and is in invalid state
-    Given a cart of RPTs for multibeneficiary
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT
-    When the user tries to pay a cart of RPTs on EC website
-    Then conversion to new model fails in wisp-converter
-    And the KO receipt is sent
-
-  # ===============================================================================================
-  # ===============================================================================================
-
-  @runnable @nodo_invia_carrello_rpt @unhappy_path
-  Scenario: User pays a multibeneficiary cart that exists already in GPD
-    Given a cart of RPTs for multibeneficiary
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And a single RPT of type BBT with 1 transfers of which none are stamps
-    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the user tries to pay a cart of RPTs on EC website
-    Then conversion to new model fails in wisp-converter
-    And the KO receipt is sent
+  @FEAT_006_NodoInviaCarrelloRPT_ExistingPaymentPosition_SCENARIO_10
+  Scenario: L'utente tenta di pagare un carrello con due RPT gia esistenti in GPD in stato non valido
+    Dato un carrello di RPT non multi-beneficiario
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a DRAFT
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
+    Allora la conversione al nuovo modello fallisce nel wisp-converter
+    E la ricevuta KO è inviata

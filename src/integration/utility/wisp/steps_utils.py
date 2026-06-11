@@ -864,7 +864,7 @@ def send_index_activatePaymentNoticeV2_request(context, index):
 
 
 def check_wisp_session_timers(context):
-    wait_for_n_seconds(context, '5', 'to wait for Nodo to write RE events')
+    wait_for_n_seconds(context, '10', 'to wait for Nodo to write RE events')
     search_in_re_by_iuv(context)
     check_status_code(context, 'user', '200')
     check_event(context, 'timer-set', 'outcome', 'OK')
@@ -886,7 +886,7 @@ def send_KO_closePaymentV2_request(context):
 
 
 def check_wisp_session_timers_del_and_rts_were_sent(context):
-    wait_for_n_seconds(context, '10', 'to wait for Nodo to write RE events')
+    wait_for_n_seconds(context, '20', 'to wait for Nodo to write RE events')
     get_iuvs_from_session(context)
     search_in_re_by_iuv(context)
     check_status_code(context, 'user', '200')
@@ -897,7 +897,7 @@ def check_wisp_session_timers_del_and_rts_were_sent(context):
 
 
 def check_wisp_session_timers_del_and_rts_were_sent_receipt_ko(context):
-    wait_for_n_seconds(context, '10', 'to wait for Nodo to write RE events')
+    wait_for_n_seconds(context, '20', 'to wait for Nodo to write RE events')
     get_iuvs_from_session(context)
     search_in_re_by_iuv(context)
     check_status_code(context, 'user', '200')

@@ -1,64 +1,75 @@
-Feature: User pays a single payment from existing payment position via nodoInviaRPT
+# language: it
+@FEAT_003_NodoInviaRPT_ExistingPaymentPosition
+Funzionalità: Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT
 
-  Background:
-    Given systems up
+  Contesto:
+    Dati i sistemi sono operativi
 
-    @runnable @nodo_invia_rpt @happy_path
-    Scenario: User pays a single payment with single transfer and no stamp that exists already in GPD
-    Given a single RPT of type BBT with 1 transfers of which 0 are stamps
-    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the user tries to pay the RPT on EC website
-    Then the user is redirected on Checkout completing the payment
-    And the debt position is closed
+  # ===============================================================================================
+  # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  Scenario: User pays a single payment with no transfer and one stamp that exists already in GPD
-    Given a single RPT of type BBT with 1 transfers of which 1 are stamps
-    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the user tries to pay the RPT on EC website
-    Then the user is redirected on Checkout completing the payment
-    And the debt position is closed
+  @FEAT_003_NodoInviaRPT_ExistingPaymentPosition_SCENARIO_01
+  Scenario: Utente paga un pagamento singolo con un versamento e nessuna marca da bollo gia esistente in GPD
+    Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a VALID
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento
+    E la posizione debitoria è chiusa
+
+  @runnable @nodo_invia_rpt @happy_path
+  @FEAT_003_NodoInviaRPT_ExistingPaymentPosition_SCENARIO_02
+  Scenario: Utente paga un pagamento singolo senza versamenti semplici e una marca da bollo gia esistente in GPD
+    Data una singola RPT di tipo BBT con 1 versamenti di cui 1 sono marche da bollo
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a VALID
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento
+    E la posizione debitoria è chiusa
 
   # ===============================================================================================
   # ===============================================================================================
 
-    @runnable @nodo_invia_rpt @happy_path
-    Scenario: User pays a single payment with single transfer and one stamp that exists already in GPD
-    Given a single RPT of type BBT with 2 transfers of which 1 are stamps
-    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to VALID
-    When the user tries to pay the RPT on EC website
-    Then the user is redirected on Checkout completing the payment
-    And the debt position is closed
-
-  # ===============================================================================================
-  # ===============================================================================================
-
-  @runnable @nodo_invia_rpt @unhappy_path
-  Scenario: User tries to pay a single payment with single transfer and no stamp that exists already in GPD in invalid state
-    Given a single RPT of type BBT with 1 transfers of which 0 are stamps
-    And an existing payment position related to first RPT with segregation code equals to 48 and state equals to DRAFT
-    When the user tries to pay the RPT on EC website
-    Then conversion to new model fails in wisp-converter
-    And the KO receipt is sent
-
-  # ===============================================================================================
-  # ===============================================================================================
-
-  @runnable @nodo_invia_rpt @unhappy_path
-  Scenario: User tries to pay a single payment that was inserted from ACA and is in valid state
-    Given a single RPT of type BBT with 1 transfers of which 0 are stamps
-    And an existing payment position related to first RPT with segregation code equals to 01 and state equals to VALID
-    When the user tries to pay the RPT on EC website
-    Then conversion to new model fails in wisp-converter
-    And the KO receipt is sent
+  @runnable @nodo_invia_rpt @happy_path
+  @FEAT_003_NodoInviaRPT_ExistingPaymentPosition_SCENARIO_03
+  Scenario: Utente paga un pagamento singolo con un versamento e una marca da bollo gia esistente in GPD
+    Data una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a VALID
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento
+    E la posizione debitoria è chiusa
 
   # ===============================================================================================
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @unhappy_path
-  Scenario: User tries to pay a single payment that was inserted from ACA and is in invalid state
-    Given a single RPT of type BBT with 1 transfers of which 0 are stamps
-    And an existing payment position related to first RPT with segregation code equals to 01 and state equals to DRAFT
-    When the user tries to pay the RPT on EC website
-    Then conversion to new model fails in wisp-converter
-    And the KO receipt is sent
+  @FEAT_003_NodoInviaRPT_ExistingPaymentPosition_SCENARIO_04
+  Scenario: Utente tenta di pagare un pagamento singolo con un versamento e nessuna marca da bollo gia esistente in GPD in stato non valido
+    Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a DRAFT
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC
+    Allora la conversione al nuovo modello fallisce nel wisp-converter
+    E la ricevuta KO è inviata
+
+  # ===============================================================================================
+  # ===============================================================================================
+
+  @runnable @nodo_invia_rpt @unhappy_path
+  @FEAT_003_NodoInviaRPT_ExistingPaymentPosition_SCENARIO_05
+  Scenario: Utente tenta di pagare un pagamento singolo inserito da ACA e in stato valido
+    Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 01 e stato uguale a VALID
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC
+    Allora la conversione al nuovo modello fallisce nel wisp-converter
+    E la ricevuta KO è inviata
+
+  # ===============================================================================================
+  # ===============================================================================================
+
+  @runnable @nodo_invia_rpt @unhappy_path
+  @FEAT_003_NodoInviaRPT_ExistingPaymentPosition_SCENARIO_06
+  Scenario: Utente tenta di pagare un pagamento singolo inserito da ACA e in stato non valido
+    Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 01 e stato uguale a DRAFT
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC
+    Allora la conversione al nuovo modello fallisce nel wisp-converter
+    E la ricevuta KO è inviata
