@@ -2,7 +2,7 @@ import logging
 import re
 
 from behave import given, when, then
-from ..helper import _get_page, _get_required_env, _generate_random_notice_code, _locate_and_click
+from src.e2e.checkout import get_page, get_required_config, generate_random_notice_code, locate_and_click, locate_click_and_type
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ def step_generate_notice_code(context):
     Generate a random notice code with the given prefix (e.g. "30202")
     and store it in context for later steps.
     """
-    context.notice_code = _generate_random_notice_code("30202")
+    context.notice_code = generate_random_notice_code("30202")
     logger.debug("Generated notice code: %s (prefix: %s)", context.notice_code, "30202")
 
 
@@ -41,7 +41,7 @@ def step_store_fiscal_code(context):
     Store the fiscal code in context.
     If the value is the literal placeholder '<VALID_FISCAL_CODE>', read it from env instead.
     """
-    context.fiscal_code = _get_required_env("VALID_FISCAL_CODE")
+    context.fiscal_code = get_required_config(context, "VALID_FISCAL_CODE")
     logger.debug("Stored taxpayer fiscal code: %s", context.fiscal_code)
 
 
@@ -55,7 +55,7 @@ def step_enter_notice_data(context):
     Open the manual keyboard form and fill in the notice code and fiscal code
     previously stored in context (from Background steps).
     """
-    page = _get_page(context)
+    page = get_page(context)
 
     if not hasattr(context, "notice_code") or not context.notice_code:
         raise RuntimeError("notice_code not set in context — check Background step")
@@ -68,13 +68,11 @@ def step_enter_notice_data(context):
     )
 
     # Open manual input form via keyboard icon
-    _locate_and_click(page, "[data-testid='KeyboardIcon']")
+    locate_and_click(page, "[data-testid='KeyboardIcon']")
 
-    _locate_and_click(page, "#billCode")
-    page.keyboard.type(context.notice_code)
+    locate_click_and_type(page, "#billCode", context.notice_code)
 
-    _locate_and_click(page, "#cf")
-    page.keyboard.type(context.fiscal_code)
+    locate_click_and_type(page, "#cf", context.fiscal_code)
 
 
 # ──────────────────────────────────────────────
@@ -84,9 +82,9 @@ def step_enter_notice_data(context):
 @when('The user clicks the pay button on the summary page')
 def step_click_pay_summary(context):
     """Click the pay button on the payment summary page."""
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Clicking pay button on summary page")
-    _locate_and_click(page, "#paymentSummaryButtonPay")
+    locate_and_click(page, "#paymentSummaryButtonPay")
 
 
 @when('The user enters and confirm the email')
@@ -95,17 +93,15 @@ def step_enter_and_confirm_email(context):
     Fill in the email and confirm email fields using EMAIL from env,
     then click the continue button.
     """
-    page = _get_page(context)
-    email = _get_required_env("EMAIL")
+    page = get_page(context)
+    email = get_required_config(context, "EMAIL")
     logger.debug("Entering email: %s", email)
 
-    _locate_and_click(page, "#email")
-    page.keyboard.type(email)
+    locate_click_and_type(page, "#email", email)
 
-    _locate_and_click(page, "#confirmEmail")
-    page.keyboard.type(email)
+    locate_click_and_type(page, "#confirmEmail", email)
 
-    _locate_and_click(page, "#paymentEmailPageButtonContinue")
+    locate_and_click(page, "#paymentEmailPageButtonContinue")
     logger.debug("Email confirmed and continued")
 
 
@@ -116,17 +112,17 @@ def step_enter_and_confirm_email(context):
 @when('The user selects the PSP with radio id "{psp_radio_id}"')
 def step_select_psp_radio(context, psp_radio_id):
     """Click the PSP radio button by its id (used on the PSP list page)."""
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Selecting PSP radio: %s", psp_radio_id)
-    _locate_and_click(page, f"#psp-radio-{psp_radio_id}")
+    locate_and_click(page, f"#psp-radio-{psp_radio_id}")
 
 
 @when('The user clicks the PSP list continue button')
 def step_click_psp_list_continue(context):
     """Click the continue button on the PSP list page."""
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Clicking PSP list continue button")
-    _locate_and_click(page, "#paymentPspListPageButtonContinue")
+    locate_and_click(page, "#paymentPspListPageButtonContinue")
 
 
 # ──────────────────────────────────────────────
@@ -136,9 +132,9 @@ def step_click_psp_list_continue(context):
 @when('The user clicks the PSP edit button on the summary page')
 def step_click_psp_edit_summary(context):
     """Click the PSP edit/change button on the summary page (#pspEdit)."""
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Clicking PSP edit button on summary page")
-    _locate_and_click(page, "#pspEdit")
+    locate_and_click(page, "#pspEdit")
     # Wait for the fee values to render before asserting sort order
     page.locator(".pspFeeValue").first.wait_for(state="visible", timeout=5000)
     logger.debug("PSP fee list loaded")
@@ -151,13 +147,13 @@ def step_click_sort_button(context, sort_type):
     Supported: "sort by fee" (#sortByFee), "sort by name" (#sortByName).
     Stores the locator in context so 'button again' can reuse it.
     """
-    page = _get_page(context)
+    page = get_page(context)
     selector = _SORT_BUTTON_SELECTORS.get(sort_type)
     if not selector:
         raise ValueError(f"Unknown sort type: '{sort_type}'. Known: {list(_SORT_BUTTON_SELECTORS)}")
 
     logger.debug("Clicking sort button '%s' (%s)", sort_type, selector)
-    _locate_and_click(page, selector)  # ensure click is registered (sometimes the first doesn'T work)
+    locate_and_click(page, selector)  # ensure click is registered (sometimes the first doesn'T work)
 
 # ──────────────────────────────────────────────
 # WHEN steps — PSP selection page sorting (drawer)
@@ -166,7 +162,7 @@ def step_click_sort_button(context, sort_type):
 @when('The PSP selection page is loaded')
 def step_psp_selection_page_loaded(context):
     """Wait for the PSP selection page to render (at least one .pspFeeName visible)."""
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Waiting for PSP selection page to load (.pspFeeName)")
     page.locator(".pspFeeName").first.wait_for(state="visible", timeout=5000)
     logger.debug("PSP selection page loaded")
@@ -175,9 +171,9 @@ def step_psp_selection_page_loaded(context):
 @when('The user clicks the sort PSP list button')
 def step_click_sort_psp_list_button(context):
     """Click the sort/filter button on the PSP selection page (#sort-psp-list)."""
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Clicking sort PSP list button (#sort-psp-list)")
-    _locate_and_click(page, "#sort-psp-list")
+    locate_and_click(page, "#sort-psp-list")
     logger.debug("Sort drawer opened")
 
 
@@ -187,48 +183,22 @@ def step_select_sort_radio(context, radio_option):
     Select a sort radio option inside the sort drawer.
     Supported: "order by name", "order by amount".
     """
-    page = _get_page(context)
+    page = get_page(context)
     selector = _SORT_RADIO_SELECTORS.get(radio_option)
     if not selector:
         raise ValueError(f"Unknown radio option: '{radio_option}'. Known: {list(_SORT_RADIO_SELECTORS)}")
 
     logger.debug("Selecting radio option '%s' (%s)", radio_option, selector)
-    _locate_and_click(page, selector)
+    locate_and_click(page, selector)
 
 
 @when('The user clicks the show results button')
 def step_click_show_results(context):
     """Click the show results / apply sort button (#sort-psp-list-drawer)."""
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Clicking show results button (#sort-psp-list-drawer)")
-    _locate_and_click(page, "#sort-psp-list-drawer")
+    locate_and_click(page, "#sort-psp-list-drawer")
     logger.debug("Sort applied")
-
-
-# ──────────────────────────────────────────────
-# WHEN steps — cancel payment
-# ──────────────────────────────────────────────
-
-@when('The user cancels the payment')
-def step_cancel_payment(context):
-    """
-    Cancel the current payment:
-    click the cancel button (via JS evaluate to bypass animation),
-    confirm in the modal, and wait for the redirect button.
-    """
-    page = _get_page(context)
-    logger.debug("Cancelling payment")
-
-    # Use evaluate() — direct click doesn'T work after animation (matches TypeScript page.$eval)
-    page.evaluate("document.querySelector('#paymentCheckPageButtonCancel').click()")
-    logger.debug("Cancel button clicked via evaluate")
-
-    _locate_and_click(page, "#confirm")
-    logger.debug("Confirmation dialog confirmed")
-
-    page.locator("#redirect-button").wait_for(state="visible", timeout=5000)
-    logger.debug("Payment cancelled — redirect button visible")
-
 
 # ──────────────────────────────────────────────
 # THEN steps — fee sorting assertions
@@ -257,7 +227,7 @@ def _get_fee_values(page) -> list:
 @then('The PSP fee list is sorted in ascending order')
 def step_fee_list_ascending(context):
     """Assert that all .pspFeeValue elements are in ascending (non-decreasing) order."""
-    page = _get_page(context)
+    page = get_page(context)
     values = _get_fee_values(page)
     assert len(values) > 0, "No PSP fee values found on the page"
     for i in range(len(values) - 1):
@@ -270,7 +240,7 @@ def step_fee_list_ascending(context):
 @then('The PSP fee list is sorted in descending order')
 def step_fee_list_descending(context):
     """Assert that all .pspFeeValue elements are in descending (non-increasing) order."""
-    page = _get_page(context)
+    page = get_page(context)
     values = _get_fee_values(page)
     assert len(values) > 0, "No PSP fee values found on the page"
     for i in range(len(values) - 1):
@@ -299,7 +269,7 @@ def step_name_list_descending(context):
     Assert that .pspFeeName elements are in descending alphabetical order.
     Mirrors: localeCompare(next) >= 0 (current >= next).
     """
-    page = _get_page(context)
+    page = get_page(context)
     values = _get_name_values(page)
     assert len(values) > 0, "No PSP name values found on the page"
     for i in range(len(values) - 1):
@@ -316,7 +286,7 @@ def step_name_list_ascending(context):
     Assert that .pspFeeName elements are in ascending alphabetical order.
     Mirrors: localeCompare(next) <= 0 (current <= next).
     """
-    page = _get_page(context)
+    page = get_page(context)
     values = _get_name_values(page)
     assert len(values) > 0, "No PSP name values found on the page"
     for i in range(len(values) - 1):
@@ -329,8 +299,8 @@ def step_name_list_ascending(context):
 
 @then('The user cancels the payment')
 def step_cancel_payment(context):
-    page = _get_page(context)
+    page = get_page(context)
 
     page.evaluate("document.querySelector('#paymentCheckPageButtonCancel').click()")
-    _locate_and_click(page, "#confirm")
+    locate_and_click(page, "#confirm")
     page.locator("#redirect-button").wait_for(state="visible", timeout=5000)

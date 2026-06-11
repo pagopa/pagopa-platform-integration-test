@@ -1,6 +1,6 @@
 import logging
 from behave import when, then
-from ..helper import _get_page, _get_required_env, _generate_random_notice_code, _locate_and_click
+from src.e2e.checkout import get_page, get_required_config, generate_random_notice_code, locate_and_click, locate_click_and_type
 
 logger = logging.getLogger(__name__)
 
@@ -22,51 +22,47 @@ DEFAULT_TIMEOUT_MS = 5000
 
 @when('The user enters the notice data')
 def step_enter_notice_data(context):
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Apro tastiera e porto il focus su campo avviso")
-    _locate_and_click(page, SELECTORS["keyboard_icon"])
-    _locate_and_click(page, SELECTORS["bill_code"])
+    locate_and_click(page, SELECTORS["keyboard_icon"])
+    locate_and_click(page, SELECTORS["bill_code"])
 
 
 @when("The user enters the payment data")
 def step_enter_payment_data(context):
-    page = _get_page(context)
-    notice_code = _generate_random_notice_code("30201")
-    fiscal_code = _get_required_env("VALID_FISCAL_CODE")
+    page = get_page(context)
+    notice_code = generate_random_notice_code("30201")
+    fiscal_code = get_required_config(context, "VALID_FISCAL_CODE")
 
     logger.debug("Inserisco dati pagamento (notice + fiscal code)")
-    page.keyboard.type(notice_code)
+    locate_click_and_type(page, SELECTORS["bill_code"], notice_code)
+    locate_click_and_type(page, SELECTORS["fiscal_code"], fiscal_code)
 
-    _locate_and_click(page, SELECTORS["fiscal_code"])
-    page.keyboard.type(fiscal_code)
-
-    _locate_and_click(page, SELECTORS["verify_payment"])
+    locate_and_click(page, SELECTORS["verify_payment"])
 
 @when("The user enters the email")
 def step_enter_email(context):
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Confermo riepilogo e apro step email")
-    _locate_and_click(page, SELECTORS["pay_notice"])
+    locate_and_click(page, SELECTORS["pay_notice"])
 
 
 @when("The user select the payment method")
 def step_select_payment_method(context):
-    page = _get_page(context)
-    email = _get_required_env("EMAIL")
+    page = get_page(context)
+    email = get_required_config(context, "EMAIL")
 
     logger.debug("Inserisco email e proseguo al metodo di pagamento")
-    _locate_and_click(page, SELECTORS["email"])
-    page.keyboard.type(email)
+    locate_click_and_type(page, SELECTORS["email"], email)
 
-    _locate_and_click(page, SELECTORS["confirm_email"])
-    page.keyboard.type(email)
+    locate_click_and_type(page, SELECTORS["confirm_email"], email)
 
-    _locate_and_click(page, SELECTORS["continue_email"])
+    locate_and_click(page, SELECTORS["continue_email"])
 
 
 @then("The login button is visible and enabled")
 def step_login_button_visible(context):
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Verifico visibilita pulsante login")
     page.locator(SELECTORS["login_button"]).wait_for(
         state="visible", timeout=DEFAULT_TIMEOUT_MS
@@ -75,7 +71,7 @@ def step_login_button_visible(context):
 
 @then('The login button title is “Accedi”')
 def step_login_button_title(context):
-    page = _get_page(context)
+    page = get_page(context)
     title = page.locator(SELECTORS["login_button"]).get_attribute("title")
     logger.debug("Titolo pulsante login trovato: %r", title)
     assert title == "Accedi", f"Titolo atteso 'Accedi', ottenuto: {title!r}"

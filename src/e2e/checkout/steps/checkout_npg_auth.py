@@ -1,7 +1,7 @@
 import logging
 
 from behave import given
-from spid_auth import step_click_login_button
+from steps.spid_auth import step_click_login_button
 logger = logging.getLogger(__name__)
 
 
