@@ -1,57 +1,59 @@
-@FEAT_004_Checkout @e2e @checkout @ui
-Feature: Checkout Payment Activation Authenticated
-  A user of the checkout system
-  wants to complete a payment using a credit/debit card
-  so that he can pay a notice through the pagoPA platform
+# language: it
 
-  Background:
-    Given The checkout page is open
-    And The language is set to "it"
-    And The user is authenticated
+@FEAT_004_Checkout @e2e @checkout @ui
+Funzionalità: Attivazione pagamento Checkout autenticato
+  Un utente del sistema checkout
+  vuole completare un pagamento con carta di credito/debito
+  cosi da poter pagare un avviso tramite la piattaforma pagoPA
+
+  Contesto:
+    Dato La pagina di checkout è aperta
+    E La lingua è impostata su "it"
+    E L'utente è autenticato
 
   # ──────────────────────────────────────────────
-  # Happy path: full payment flow
+  # Happy path: flusso di pagamento completo
   # ──────────────────────────────────────────────
   @positive
   @FEAT_004_Checkout_scenario_01
-  Scenario Outline: A payment with card configuration "<testing_psp>" is successfully completed
-    When The user enters the notice data with a notice code with notice code prefix "<notice_code_prefix>"
-    And The user enters the taxpayer fiscal code "<fiscal_code>"
-    And The user clicks the verify button
-    And The user clicks the pay button
-    And The user enters the email "<email>"
-    And The user confirms the email "<email>"
-    And The user selects the payment method "CP"
-    And The user fills in the card number "<pan>"
-    And The user fills in the expiration date "<expiration_date>"
-    And The user fills in the security code "<cvv>"
-    And The user fills in the cardholder name "Test test"
-    And The user selects the PSP with id "<pspId>"
-    And The user confirms the PSP selection
-    And The user clicks the final pay button
-    Then A successful payment message is shown
+  Schema dello scenario: Un pagamento con configurazione carta "<testing_psp>" viene completato con successo
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso con prefisso "<notice_code_prefix>"
+    E L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"
+    E L'utente clicca il pulsante verifica
+    E L'utente clicca il pulsante paga
+    E L'utente inserisce l'email "<email>"
+    E L'utente conferma l'email "<email>"
+    E L'utente seleziona il metodo di pagamento "CP"
+    E L'utente inserisce il numero carta "<pan>"
+    E L'utente inserisce la data di scadenza "<expiration_date>"
+    E L'utente inserisce il codice di sicurezza "<cvv>"
+    E L'utente inserisce il nome dell'intestatario carta "Test test"
+    E L'utente seleziona il PSP con id "<pspId>"
+    E L'utente conferma la selezione del PSP
+    E L'utente clicca il pulsante paga finale
+    Allora Viene mostrato un messaggio di pagamento completato con successo
 
-    Examples:
+    Esempi:
       | testing_psp | notice_code_prefix | fiscal_code | email                              | pan              | expiration_date | cvv | pspId       |
       | Postepay    | 30200              | 77777777777 | ecommerce-test-mailgroup@pagopa.it | 5255000260000014 | 12/30           | 123 | PPAYITR1XXX |
       | Wordline    | 30201              | 77777777777 | ecommerce-test-mailgroup@pagopa.it | 5255000260000014 | 12/30           | 123 | BNLIITRR    |
       | Worldpay    | 30201              | 77777777777 | ecommerce-test-mailgroup@pagopa.it | 4242424242424242 | 12/30           | 123 | WOLLNLB1    |
 
   # ──────────────────────────────────────────────
-  # Error cases: verify/activate payment errors
+  # Casi di errore: errori di verifica/attivazione pagamento
   # ──────────────────────────────────────────────
 
   @negative
   @FEAT_004_Checkout_scenario_02
-  Scenario Outline: Error <error_code> for invalid notice code in range <range_start>-<range_end> is shown on verify
-    When The user enters the notice data with a notice code in range "<range_start>" to "<range_end>"
-    And The user enters the taxpayer fiscal code "<fiscal_code>"
-    And The user clicks the verify button
-    Then An error modal is displayed after "<seconds>" seconds
-    And The error modal header contains "<expected_header>"
-    And The error modal body contains "<expected_body>"
+  Schema dello scenario: Viene mostrato l'errore <error_code> per codice avviso non valido nell'intervallo <range_start>-<range_end>
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso nell'intervallo "<range_start>" a "<range_end>"
+    E L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"
+    E L'utente clicca il pulsante verifica
+    Allora Viene mostrata una modale di errore dopo "<seconds>" secondi
+    E L'intestazione della modale di errore contiene "<expected_header>"
+    E Il corpo della modale di errore contiene "<expected_body>"
 
-    Examples:
+    Esempi:
       | error_code                  | range_start        | range_end          | fiscal_code | seconds | expected_header                                  | expected_body                                                                                  |
       | PAA_PAGAMENTO_SCONOSCIUTO   | 302400000000000000 | 302409999999999999 | 77777777777 | 5       | Non riusciamo a trovare l’avviso                 | L'avviso potrebbe essere stato già pagato. Per ricevere assistenza, contatta l’Ente Creditore. |
       | PAA_PAGAMENTO_SCADUTO       | 302990000000000000 | 302999999999999999 | 77777777777 | 60      | L’avviso è scaduto e non è più possibile pagarlo | Contatta l’Ente per maggiori informazioni.                                                     |
@@ -60,15 +62,15 @@ Feature: Checkout Payment Activation Authenticated
 
   @negative
   @FEAT_004_Checkout_scenario_03
-  Scenario Outline: Error code for unreachable creditor institution is shown on verify
-    When The user enters the notice data with a notice code in range "<range_start>" to "<range_end>"
-    And The user enters the taxpayer fiscal code "<fiscal_code>"
-    And The user clicks the verify button
-    Then An error modal is displayed
-    And The error modal header contains "<expected_header>"
-    And The error modal body contains "<expected_body>"
-    And The error code shown contains "<error_code>"
+  Schema dello scenario: Viene mostrato il codice di errore per ente creditore non raggiungibile
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso nell'intervallo "<range_start>" a "<range_end>"
+    E L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"
+    E L'utente clicca il pulsante verifica
+    Allora Viene mostrata una modale di errore
+    E L'intestazione della modale di errore contiene "<expected_header>"
+    E Il corpo della modale di errore contiene "<expected_body>"
+    E Il codice di errore mostrato contiene "<error_code>"
 
-    Examples:
+    Esempi:
       | error_code                          | range_start        | range_end          | fiscal_code | expected_header                                     | expected_body                     |
       | PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE | 302970000000000000 | 302979999999999999 | 77777777777 | L’Ente Creditore sta avendo problemi nella risposta | Codice di errore per l'assistenza |
