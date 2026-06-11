@@ -33,5 +33,3 @@ You are a QA Engineer specializing in Python BDD test automation (pytest-bdd / b
 - Do NOT re-implement utilities already available in `src/utility`; reuse documented helpers first.
 - Do NOT create unnecessary abstractions or helper layers beyond what the blueprint uses.
 - Do NOT skip required instruction files.
-- Do NOT re-implement utilities already available in `src/utility`; reuse documented helpers first.
-- Do NOT modify or create common utilities in `src/utility`.

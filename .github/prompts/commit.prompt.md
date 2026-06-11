@@ -2,6 +2,7 @@
 description: 'Create a commit with a compliant message from staged changes and push the current branch'
 argument-hint: "Optional: message override, scope hint, or extra context"
 model: "GPT-5 mini"
+<<<<<<< HEAD
 ---
 
 Use `.github/instructions/git-commit.instructions.md` as the canonical source of truth for allowed commit prefixes and workflow conventions.
@@ -14,5 +15,20 @@ Steps:
 5. Create the commit with `git commit -m "<message>"`.
 6. Push the current branch: if no upstream exists, run `git push --set-upstream origin <current-branch>`; otherwise run `git push`.
 7. Return a concise output with only: commit message, commit hash, and push result.
+=======
+agent: agent
+---
+
+Use [`.github/instructions/git-commit.instructions.md`](../../.github/instructions/git-commit.instructions.md) as the canonical source of truth for allowed commit prefixes and workflow conventions.
+
+Follow that instruction file end-to-end.
+
+If input provides a valid message override, use it.
+
+Return only:
+- commit message
+- commit hash
+- push result
+>>>>>>> main
 
 ${input:Optional context — message override, scope hint, or notes}
