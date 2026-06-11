@@ -64,7 +64,7 @@ def step_select_payment_method(context):
     _locate_and_click(page, SELECTORS["continue_email"])
 
 
-@then("Il pulsante di login e visibile e abilitato")
+@then("Il pulsante di login è visibile e abilitato")
 def step_login_button_visible(context):
     page = _get_page(context)
     logger.debug("Verifico visibilita pulsante login")
