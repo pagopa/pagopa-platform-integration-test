@@ -7,7 +7,7 @@
 Funzionalità: Attivazione pagamento Checkout autenticato
   Un utente del sistema checkout
   vuole completare un pagamento con carta di credito/debito
-  cosi da poter pagare un avviso tramite la piattaforma pagoPA
+  così da poter pagare un avviso tramite la piattaforma pagoPA
 
   Contesto:
     Dato La pagina di checkout è aperta

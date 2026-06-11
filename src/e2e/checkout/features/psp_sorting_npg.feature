@@ -6,7 +6,7 @@
 @ui
 Funzionalità: Ordinamento lista PSP in Checkout
   L'utente checkout vuole poter ordinare la lista PSP (Payment Service Provider)
-  cosi da poter scegliere il prestatore piu conveniente per commissione o nome
+  così da poter scegliere il prestatore più conveniente per commissione o nome
 
   Contesto:
     Dato La pagina di checkout è aperta
