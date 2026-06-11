@@ -87,5 +87,5 @@ def locate_click_and_type(page, locator, text, click_count=1, timeout=5000):
     except Exception:
         pass
     page.keyboard.type(str(text))
-    logger.debug("Typed on %s: %r", locator, text)
+    logger.debug("Typed value into %s", locator)
 
