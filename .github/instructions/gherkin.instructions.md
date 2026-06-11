@@ -14,6 +14,7 @@ applyTo: "src/**/*.feature"
 - Use consistent formatting and indentation.
 - Use third-person singular present tense for steps (e.g. "l'utente effettua il login", not "io effettuo il login").
 - Search the codebase for existing feature files to match style and language; ask the user which to follow as a blueprint.
+- `Examples` should never have columns with only one value; if a column has only one value, it should be moved to the scenario outline as a *parameter*.
 
 
 ### Feature file style & indentation
@@ -29,3 +30,4 @@ applyTo: "src/**/*.feature"
 - Gherkin keywords are capitalized
 - Scenario titles and steps do not end with periods
 - Numeric values are written as digits (for example `1`, `3`, `48`).
+- No more than a single blank line between steps, scenarios, and sections.

@@ -8,6 +8,10 @@ Questa cartella contiene componenti condivisi per i test di integrazione/API: ca
 - `rest/`: client REST con supporto auth (none/basic/api key/oauth2).
 - `json/`: utility per conversione JSON, lettura (`get_attr`) e scrittura (`set_attr`) di valori via path.
 - `soap/`: client SOAP basato su `zeep` con supporto auth (none/basic/wsse), utility get/set su response e supporto a chiamate SOAP raw via zeep transport quando non e disponibile un WSDL.
+- `data_generators.py`: generatori condivisi per stringhe casuali e identificativi applicativi (es. cart id).
+- `datetime_utils.py`: helper condivisi per date e timestamp in formato stringa.
+- `indexing.py`: mapping condiviso di cardinalita testuali verso indici numerici.
+- `assertions.py`: assert helper con logging centralizzato del messaggio di errore.
 
 ## Flusso tipico di utilizzo
 

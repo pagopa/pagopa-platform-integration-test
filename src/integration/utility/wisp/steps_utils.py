@@ -5,6 +5,9 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 from allure_commons._allure import attach
+from src.utility.assertions import assert_show_message
+from src.utility.datetime_utils import get_current_date
+from src.utility.indexing import get_index_from_cardinal
 
 import src.integration.wisp.steps.session as session
 from . import request_generator as requestgen
@@ -68,13 +71,13 @@ def check_field(context, field_name, field_value):
     if content_type == constants.ResponseType.XML:
         field_value_in_object = response.find(f'.//{field_name}')
 
-        utils.assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
+        assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
         field_value_in_object = field_value_in_object.text
     elif content_type == constants.ResponseType.JSON:
         field_value_in_object = utils.get_nested_field(response, field_name)
-        utils.assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
-        utils.assert_show_message(field_value_in_object == field_value,
-                                  f'The field [{field_name}] is not equals to {field_value}. Current value: {field_value_in_object}.')
+        assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
+        assert_show_message(field_value_in_object == field_value,
+                            f'The field [{field_name}] is not equals to {field_value}. Current value: {field_value_in_object}.')
 
 
 # @then('the response contains the {url_type} URL')
@@ -84,21 +87,21 @@ def check_redirect_url(context, url_type):
 
     url = response.find('.//url')
 
-    utils.assert_show_message(url is not None, f"The field 'redirect_url' in response doesn't exists.")
+    assert_show_message(url is not None, f"The field 'redirect_url' in response doesn't exists.")
     extracted_url = url.text
     parsed_url = urlparse(extracted_url)
     query_params = parse_qs(parsed_url.query)
     id_session = query_params['idSession'][0] if len(query_params['idSession']) > 0 else None
 
     # executing assertions
-    utils.assert_show_message(id_session is not None, f"The field 'idSession' in response is not correctly set.")
+    assert_show_message(id_session is not None, f"The field 'idSession' in response is not correctly set.")
     if 'redirect' in url_type:
-        utils.assert_show_message('wisp-converter' in extracted_url,
-                                  f'The URL is not the one defined for WISP dismantling.')
+        assert_show_message('wisp-converter' in extracted_url,
+                            f'The URL is not the one defined for WISP dismantling.')
     elif 'old WISP' in url_type:
-        utils.assert_show_message('wallet' in extracted_url, f'The URL is not the one defined for old WISP.')
+        assert_show_message('wallet' in extracted_url, f'The URL is not the one defined for old WISP.')
     elif 'fake WFESP' in url_type:
-        utils.assert_show_message('wfesp' in extracted_url, f'The URL is not the one defined for WFESP dismantling.')
+        assert_show_message('wfesp' in extracted_url, f'The URL is not the one defined for WFESP dismantling.')
 
     # set session identifier in context in order to be better analyzed in the next steps
     context.flow_data['common']['session_id'] = id_session
@@ -112,8 +115,8 @@ def get_valid_sessionid(context):
     session_id = context.flow_data['common']['session_id']
 
     # executing assertions
-    utils.assert_show_message(len(session_id) == 36,
-                              f'The session ID must consist of a UUID only. Session ID: [{session_id}]')
+    assert_show_message(len(session_id) == 36,
+                        f'The session ID must consist of a UUID only. Session ID: [{session_id}]')
 
 
 # @when('the user continue the session in WISP dismantling')
@@ -152,9 +155,9 @@ def check_checkout_url(context):
     location_redirect_url = context.flow_data['action']['response']['body']
 
     # executing assertions
-    utils.assert_show_message(location_redirect_url is not None, f"The header 'Location' does not exists.")
-    utils.assert_show_message('ecommerce/checkout' in location_redirect_url,
-                              f"The header 'Location' does not refers to Checkout service. {location_redirect_url}")
+    assert_show_message(location_redirect_url is not None, f"The header 'Location' does not exists.")
+    assert_show_message('ecommerce/checkout' in location_redirect_url,
+                        f"The header 'Location' does not refers to Checkout service. {location_redirect_url}")
 
 
 # @given('a waiting time of {time_in_seconds} second{notes}')
@@ -170,7 +173,7 @@ def get_iuv_from_session(context, index):
     session.set_skip_tests(context, False)
 
     # retrieve raw RPTs from context
-    rpt_index = utils.get_index_from_cardinal(index)
+    rpt_index = get_index_from_cardinal(index)
     raw_rpts = context.flow_data['common']['rpts']
 
     # check if IUV at passed index exists
@@ -202,7 +205,7 @@ def search_in_re_by_iuv(context):
 
     creditor_institution = context.commondata['creditor_institution']
 
-    today = utils.get_current_date()
+    today = get_current_date()
     re_events = []
 
     # initialize API call main information
@@ -221,8 +224,8 @@ def search_in_re_by_iuv(context):
                                                                   description=req_description)
 
             # executing assertions
-            utils.assert_show_message('data' in body_response, f'The response does not contains data.')
-            utils.assert_show_message(len(body_response['data']) > 0, f'There are not event data in the response.')
+            assert_show_message('data' in body_response, f'The response does not contains data.')
+            assert_show_message(len(body_response['data']) > 0, f'There are not event data in the response.')
 
             # add received event on the list of whole events
             re_events.extend(body_response['data'])
@@ -250,7 +253,7 @@ def retrieve_payment_notice_from_re_event(context):
 
     # executing assertions
     all_needed_events = needed_events_gpd + needed_events_iuv
-    utils.assert_show_message(
+    assert_show_message(
         len(all_needed_events) > 0,
         f'The redirect process is not ended successfully or there are missing events in RE'
     )
@@ -261,7 +264,7 @@ def retrieve_payment_notice_from_re_event(context):
         if all(key in re_event for key in ['domain_id', 'iuv', 'notice_number']):
             notices.add((re_event['domain_id'], re_event['iuv'], re_event['notice_number']))
 
-    utils.assert_show_message(
+    assert_show_message(
         len(notices) > 0,
         f'Impossible to extract payment notices from events in RE'
     )
@@ -305,9 +308,9 @@ def check_field_as_not_empty_list(context, field_name):
     elif content_type == constants.ResponseType.JSON:
         field_value_in_object = utils.get_nested_field(response, field_name)
 
-    utils.assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
-    utils.assert_show_message(len(field_value_in_object) > 0,
-                              f'The field [{field_name}] is empty but is required to be not empty.')
+    assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
+    assert_show_message(len(field_value_in_object) > 0,
+                        f'The field [{field_name}] is empty but is required to be not empty.')
 
 
 # @given('a valid activatePaymentNoticeV2 request on {index} payment notice')
@@ -356,7 +359,7 @@ def check_field_with_non_null_value(context, field_name):
         field_value_in_object = response.find(f'.//{field_name}')
     elif content_type == constants.ResponseType.JSON:
         field_value_in_object = utils.get_nested_field(response, field_name)
-    utils.assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
+    assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
 
 
 # @then('the payment token can be retrieved and associated to {index} RPT')
@@ -374,10 +377,10 @@ def retrieve_payment_token_from_activatepaymentnotice(context, index):
     # executing assertions
     payment_notices = context.flow_data['common']['payment_notices']
 
-    utils.assert_show_message(len(payment_notices) >= rpt_index + 1,
-                              f'Not enough payment notices are defined in the session data for correctly point at index {rpt_index}.')
+    assert_show_message(len(payment_notices) >= rpt_index + 1,
+                        f'Not enough payment notices are defined in the session data for correctly point at index {rpt_index}.')
     payment_notice = payment_notices[rpt_index]
-    utils.assert_show_message('iuv' in payment_notice, f'No valid payment is defined at index {rpt_index}.')
+    assert_show_message('iuv' in payment_notice, f'No valid payment is defined at index {rpt_index}.')
     payment_notice['payment_token'] = field_value_in_object.text
 
     context.flow_data['common']['payment_notices'] = payment_notices
@@ -397,13 +400,13 @@ def check_event(context, business_process, field_name, field_value):
     needed_process_events = [re_event for re_event in re_events if
                              'business_process' in re_event and re_event['business_process'] == business_process]
 
-    utils.assert_show_message(len(needed_process_events) > 0,
-                              f'There are not events with business process {business_process}.')
+    assert_show_message(len(needed_process_events) > 0,
+                        f'There are not events with business process {business_process}.')
     needed_events = [re_event for re_event in needed_process_events if
                      field_name in re_event and re_event[field_name] == field_value]
 
-    utils.assert_show_message(len(needed_events) > 0,
-                              f'There are no events with business process {business_process} and field {field_name} containing value [{field_value}].')
+    assert_show_message(len(needed_events) > 0,
+                        f'There are no events with business process {business_process} and field {field_name} containing value [{field_value}].')
 
     # set needed events in context in order to be better analyzed in the next steps
     context.flow_data['common']['re']['last_analyzed_event'] = needed_events
@@ -457,7 +460,7 @@ def check_event_token_relation(context):
     relevant_events = find_event_with_payment_token(needed_events)
 
     if not relevant_events:
-        utils.assert_show_message(
+        assert_show_message(
             False,
             'No event containing a payment token or http_uri was found.'
         )
@@ -467,7 +470,7 @@ def check_event_token_relation(context):
     # Verify the tokens
     if payment_tokens and payment_tokens_to_check:
         for payment_token in payment_tokens:
-            utils.assert_show_message(
+            assert_show_message(
                 payment_token in payment_tokens_to_check,
                 f'The payment token {payment_token} is not in the list of payment_tokens_to_check.'
             )
@@ -524,8 +527,8 @@ def check_event_notice_number_relation(context):
     # executing assertions
     notice_numbers = [payment_notice['notice_number'] for payment_notice in payment_notices]
     for notice_number in notice_numbers:
-        utils.assert_show_message(any(event['notice_number'] == notice_number for event in needed_events),
-                                  f'The notice number {notice_number} is not correctly handled by the previous event.')
+        assert_show_message(any(event['notice_number'] == notice_number for event in needed_events),
+                    f'The notice number {notice_number} is not correctly handled by the previous event.')
 
 
 # @when('the user searches for payment position in GPD by {index} IUV')
@@ -570,11 +573,11 @@ def check_single_paymentoption(context):
     response = context.flow_data['action']['response']['body']
 
     # executing assertions
-    utils.assert_show_message('paymentOption' in response,
-                              f"No field 'paymentOption' is defined for the retrieved payment position.")
+    assert_show_message('paymentOption' in response,
+                        f"No field 'paymentOption' is defined for the retrieved payment position.")
     payment_options = utils.get_nested_field(response, 'paymentOption')
-    utils.assert_show_message(len(payment_options) == 1,
-                              f'There is not only one payment option in the payment position. Found number {len(payment_options)}.')
+    assert_show_message(len(payment_options) == 1,
+                        f'There is not only one payment option in the payment position. Found number {len(payment_options)}.')
 
     # sorting transfer by transfer ID in order to avoid strange comparations
     transfers = payment_options[0]['transfer']
@@ -610,12 +613,12 @@ def check_paymentoption_amounts_for_multibeneficiary(context):
                 amount = round(amount * 100)
 
                 # executing assertions
-                utils.assert_show_message(int(payment_option['amount']) == amount,
-                                          f"The total amount calculated from all RPTs in multibeneficiary cart is not equals to the one defined in GPD payment position. GPD's: [{int(payment_option['amount'])}], RPT's: [{amount}]")
-                utils.assert_show_message(payment_option['notificationFee'] == 0,
-                                          f'The notification fee in the payment position defined for GPD must be always 0.')
-                utils.assert_show_message(payment_option['isPartialPayment'] == False,
-                                          f'The payment option must be not defined as partial payment.')
+                assert_show_message(int(payment_option['amount']) == amount,
+                                    f"The total amount calculated from all RPTs in multibeneficiary cart is not equals to the one defined in GPD payment position. GPD's: [{int(payment_option['amount'])}], RPT's: [{amount}]")
+                assert_show_message(payment_option['notificationFee'] == 0,
+                                    f'The notification fee in the payment position defined for GPD must be always 0.')
+                assert_show_message(payment_option['isPartialPayment'] == False,
+                                    f'The payment option must be not defined as partial payment.')
 
 
 # @then('the response contains the payment option correctly generated from {index} RPT')
@@ -643,12 +646,12 @@ def check_paymentoption_amounts(context, index):
 
     # executing assertions
     # utils.assert_show_message(response['pull'] == False, f'The payment option must be not defined for pull payments.')
-    utils.assert_show_message(int(payment_option['amount']) == round(payment_data['total_amount'] * 100),
-                              f"The total amount calculated for {index} RPT is not equals to the one defined in GPD payment position. GPD's: [{int(payment_option['amount'])}], RPT's: [{round(payment_data['total_amount'] * 100)}]")
-    utils.assert_show_message(payment_option['notificationFee'] == 0,
-                              f'The notification fee in the {index} payment position defined for GPD must be always 0.')
-    utils.assert_show_message(payment_option['isPartialPayment'] == False,
-                              f'The payment option must be not defined as partial payment.')
+    assert_show_message(int(payment_option['amount']) == round(payment_data['total_amount'] * 100),
+                        f"The total amount calculated for {index} RPT is not equals to the one defined in GPD payment position. GPD's: [{int(payment_option['amount'])}], RPT's: [{round(payment_data['total_amount'] * 100)}]")
+    assert_show_message(payment_option['notificationFee'] == 0,
+                        f'The notification fee in the {index} payment position defined for GPD must be always 0.')
+    assert_show_message(payment_option['isPartialPayment'] == False,
+                        f'The payment option must be not defined as partial payment.')
 
 
 # @then('the response contains the status in {status} for the payment option')
@@ -665,8 +668,8 @@ def check_paymentposition_status(context, status):
     payment_option = payment_options[0]
 
     # executing assertions
-    utils.assert_show_message(payment_option['status'] == status,
-                              f"The payment option must be equals to [{status}]. Current status: [{payment_option['status']}]")
+    assert_show_message(payment_option['status'] == status,
+                        f"The payment option must be equals to [{status}]. Current status: [{payment_option['status']}]")
 
 
 # @then('the response contains the transfers correctly generated from RPT')
@@ -689,36 +692,36 @@ def check_paymentposition_transfers(context):
     transfers_from_rpt = rpt['payment_data']['transfers']
 
     # executing assertions
-    utils.assert_show_message(len(transfers_from_po) == len(transfers_from_rpt),
-                              f"There are not the same amount of transfers. GPD's: [{len(transfers_from_po)}], RPT's: [{len(transfers_from_rpt)}]")
+    assert_show_message(len(transfers_from_po) == len(transfers_from_rpt),
+                        f"There are not the same amount of transfers. GPD's: [{len(transfers_from_po)}], RPT's: [{len(transfers_from_rpt)}]")
     for transfer_index in range(len(transfers_from_po)):
         transfer_from_po = transfers_from_po[transfer_index]
         transfer_from_rpt = transfers_from_rpt[transfer_index]
-        utils.assert_show_message(transfer_from_po['status'] == 'T_UNREPORTED',
-                                  f"The status of the transfer {transfer_index} must be equals to [T_UNREPORTED]. Current status: [{transfer_from_po['status']}]")
-        utils.assert_show_message(int(transfer_from_po['amount']) == round(transfer_from_rpt['amount'] * 100),
-                                  f"The amount of the transfer {transfer_index} must be equals to the same defined in the payment position. GPD's: [{int(transfer_from_po['amount'])}], RPT's: [{round(transfer_from_rpt['amount'])}]")
-        utils.assert_show_message(
+        assert_show_message(transfer_from_po['status'] == 'T_UNREPORTED',
+                            f"The status of the transfer {transfer_index} must be equals to [T_UNREPORTED]. Current status: [{transfer_from_po['status']}]")
+        assert_show_message(int(transfer_from_po['amount']) == round(transfer_from_rpt['amount'] * 100),
+                            f"The amount of the transfer {transfer_index} must be equals to the same defined in the payment position. GPD's: [{int(transfer_from_po['amount'])}], RPT's: [{round(transfer_from_rpt['amount'])}]")
+        assert_show_message(
             'transferMetadata' in transfer_from_po and len(transfer_from_po['transferMetadata']) > 0,
             f'There are not transfer metadata in transfer {transfer_index} but at least one is required.')
-        utils.assert_show_message('stamp' in transfer_from_po or 'iban' in transfer_from_po,
-                                  f'There are either IBAN and stamp definition in transfer {transfer_index} but they cannot be defined together.')
+        assert_show_message('stamp' in transfer_from_po or 'iban' in transfer_from_po,
+                            f'There are either IBAN and stamp definition in transfer {transfer_index} but they cannot be defined together.')
         if transfer_from_rpt['is_mbd'] == True:
-            utils.assert_show_message('stamp' in transfer_from_po,
-                                      f'There is not stamp definition in transfer {transfer_index} but RPT transfer require it.')
-            utils.assert_show_message('hashDocument' in transfer_from_po['stamp'],
-                                      f'There is not a valid hash for stamp in transfer {transfer_index}.')
-            utils.assert_show_message('stampType' in transfer_from_po['stamp'],
-                                      f'There is not a valid type for stamp in transfer {transfer_index}.')
-            utils.assert_show_message(transfer_from_po['stamp']['hashDocument'] == transfer_from_rpt['stamp_hash'],
-                                      f"The hash defined for the stamp in payment position in transfer {transfer_index} is not equals to the one defined in RPT. GPD's: [{transfer_from_po['stamp']['hashDocument']}], RPT's: [{transfer_from_rpt['stamp_hash']}]")
-            utils.assert_show_message(transfer_from_po['stamp']['stampType'] == transfer_from_rpt['stamp_type'],
-                                      f"The type defined for the stamp in payment position in transfer {transfer_index} is not equals to the one defined in RPT. GPD's: [{transfer_from_po['stamp']['stampType']}], RPT's: [{transfer_from_rpt['stamp_type']}]")
+            assert_show_message('stamp' in transfer_from_po,
+                                f'There is not stamp definition in transfer {transfer_index} but RPT transfer require it.')
+            assert_show_message('hashDocument' in transfer_from_po['stamp'],
+                                f'There is not a valid hash for stamp in transfer {transfer_index}.')
+            assert_show_message('stampType' in transfer_from_po['stamp'],
+                                f'There is not a valid type for stamp in transfer {transfer_index}.')
+            assert_show_message(transfer_from_po['stamp']['hashDocument'] == transfer_from_rpt['stamp_hash'],
+                                f"The hash defined for the stamp in payment position in transfer {transfer_index} is not equals to the one defined in RPT. GPD's: [{transfer_from_po['stamp']['hashDocument']}], RPT's: [{transfer_from_rpt['stamp_hash']}]")
+            assert_show_message(transfer_from_po['stamp']['stampType'] == transfer_from_rpt['stamp_type'],
+                                f"The type defined for the stamp in payment position in transfer {transfer_index} is not equals to the one defined in RPT. GPD's: [{transfer_from_po['stamp']['stampType']}], RPT's: [{transfer_from_rpt['stamp_type']}]")
         else:
-            utils.assert_show_message('iban' in transfer_from_po,
-                                      f'There is not IBAN definition in transfer {transfer_index} but RPT transfer require it.')
-            utils.assert_show_message(transfer_from_po['iban'] == transfer_from_rpt['creditor_iban'],
-                                      f"The IBAN defined in transfer {transfer_index} is not equals to the one defined in RPT. GPD's: [{transfer_from_po['iban']}], RPT's: [{transfer_from_rpt['creditor_iban']}]")
+            assert_show_message('iban' in transfer_from_po,
+                                f'There is not IBAN definition in transfer {transfer_index} but RPT transfer require it.')
+            assert_show_message(transfer_from_po['iban'] == transfer_from_rpt['creditor_iban'],
+                                f"The IBAN defined in transfer {transfer_index} is not equals to the one defined in RPT. GPD's: [{transfer_from_po['iban']}], RPT's: [{transfer_from_rpt['creditor_iban']}]")
 
 
 # @then('the {actor} receives an HTML page with an error')
@@ -727,9 +730,9 @@ def check_html_error_page(context, actor):
     response = context.flow_data['action']['response']['body']
 
     # executing assertions
-    utils.assert_show_message('<!DOCTYPE html>' in response, f'The response is not an HTML page')
-    utils.assert_show_message('Si &egrave; verificato un errore imprevisto' in response,
-                              f'The HTML page does not contains an error message.')
+    assert_show_message('<!DOCTYPE html>' in response, f'The response is not an HTML page')
+    assert_show_message('Si &egrave; verificato un errore imprevisto' in response,
+                        f'The HTML page does not contains an error message.')
 
 
 # @given('a valid nodoInviaCarrelloRPT request{options}')
@@ -804,26 +807,26 @@ def check_paymentposition_transfers_for_multibeneficiary(context):
                         transfers_from_rpt.append(transfer)
 
                 # executing assertions
-                utils.assert_show_message(len(transfers_from_po) == len(transfers_from_rpt),
-                                          f"There are not the same amount of transfers. GPD's: [{len(transfers_from_po)}], RPT's: [{len(transfers_from_rpt)}]")
+                assert_show_message(len(transfers_from_po) == len(transfers_from_rpt),
+                                    f"There are not the same amount of transfers. GPD's: [{len(transfers_from_po)}], RPT's: [{len(transfers_from_rpt)}]")
                 for transfer_index in range(len(transfers_from_po)):
                     transfer_from_po = transfers_from_po[transfer_index]
                     # using this filter because it cannot be used a filter on IUV for multibeneficiary
                     transfer_from_rpt = next((transfer for transfer in transfers_from_rpt if
                                               transfer['transfer_note'] == transfer_from_po['remittanceInformation']),
                                              None)
-                    utils.assert_show_message(transfer_from_rpt is not None,
-                                              f"It is not possible to find a transfer in RPT cart with transfer note [{transfer_from_po['remittanceInformation']}]")
-                    utils.assert_show_message(transfer_from_po['status'] == 'T_UNREPORTED',
-                                              f"The status of the transfer {transfer_index} must be equals to [T_UNREPORTED]. Current status: [{transfer_from_po['status']}]")
-                    utils.assert_show_message(
+                    assert_show_message(transfer_from_rpt is not None,
+                                        f"It is not possible to find a transfer in RPT cart with transfer note [{transfer_from_po['remittanceInformation']}]")
+                    assert_show_message(transfer_from_po['status'] == 'T_UNREPORTED',
+                                        f"The status of the transfer {transfer_index} must be equals to [T_UNREPORTED]. Current status: [{transfer_from_po['status']}]")
+                    assert_show_message(
                         'transferMetadata' in transfer_from_po and len(transfer_from_po['transferMetadata']) > 0,
                         f'There are not transfer metadata in transfer {transfer_index} but at least one is required.')
-                    utils.assert_show_message('iban' in transfer_from_po,
-                                              f'There is not IBAN definition in transfer {transfer_index} but RPT transfer require it.')
-                    utils.assert_show_message(transfer_from_po['iban'] == transfer_from_rpt['creditor_iban'],
-                                              f"The IBAN defined in transfer {transfer_index} is not equals to the one defined in RPT. GPD's: [{transfer_from_po['iban']}], RPT's: [{transfer_from_rpt['creditor_iban']}]")
-                    utils.assert_show_message(
+                    assert_show_message('iban' in transfer_from_po,
+                                        f'There is not IBAN definition in transfer {transfer_index} but RPT transfer require it.')
+                    assert_show_message(transfer_from_po['iban'] == transfer_from_rpt['creditor_iban'],
+                                        f"The IBAN defined in transfer {transfer_index} is not equals to the one defined in RPT. GPD's: [{transfer_from_po['iban']}], RPT's: [{transfer_from_rpt['creditor_iban']}]")
+                    assert_show_message(
                         int(transfer_from_po['amount']) == round(transfer_from_rpt['amount'] * 100),
                         f"The amount of the transfer {transfer_index} must be equals to the same defined in the payment position. GPD's: [{int(transfer_from_po['amount'])}], RPT's: [{round(transfer_from_rpt['amount'])}]")
 

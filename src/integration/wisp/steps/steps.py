@@ -1,11 +1,16 @@
 import session as session
 from behave import *
+from src.integration.utility.wisp.utils import execute_request
+from src.utility.assertions import assert_show_message
+from src.utility.data_generators import change_last_numeric_char
+from src.utility.data_generators import generate_cart_id
+from src.utility.data_generators import generate_iuv
+from src.utility.indexing import get_index_from_cardinal
 
 import src.integration.utility.wisp.request_generator as requestgen
 import src.integration.utility.wisp.steps_utils as steputils
 from src.integration.utility.wisp import constants
 from src.integration.utility.wisp import routes as router
-from src.integration.utility.wisp import utils
 
 
 @given(
@@ -57,13 +62,13 @@ def generate_single_rpt(context, payment_type, number_of_transfers, number_of_st
 @then('the same cart is used for another try')
 def update_old_nodoInviaCarrelloRPT_request(context):
     cart_id = context.flow_data['common']['cart']['id']
-    context.flow_data['common']['cart']['id'] = utils.change_last_numeric_char(cart_id)
+    context.flow_data['common']['cart']['id'] = change_last_numeric_char(cart_id)
 
     rpts = context.flow_data['common']['rpts']
 
     for rpt in rpts:
         ccp = rpt['payment_data']['ccp']
-        rpt['payment_data']['ccp'] = utils.change_last_numeric_char(ccp)
+        rpt['payment_data']['ccp'] = change_last_numeric_char(ccp)
 
     context.flow_data['common']['rpts'] = rpts
 
@@ -74,7 +79,7 @@ def generate_payment_position(context, index, segregation_code, payment_status):
     session.set_skip_tests(context, False)
     raw_rpts = context.flow_data['common']['rpts']
 
-    payment_notice_index = utils.get_index_from_cardinal(index)
+    payment_notice_index = get_index_from_cardinal(index)
     rpt = raw_rpts[payment_notice_index]
     payment_positions = requestgen.generate_gpd_paymentposition(context, rpt, segregation_code, payment_status)
 
@@ -89,11 +94,11 @@ def generate_payment_position(context, index, segregation_code, payment_status):
 
     req_description = constants.REQ_DESCRIPTION_CREATE_PAYMENT_POSITION.format(step=context.running_step)
 
-    status_code, body, _ = utils.execute_request(url, 'post', headers, payment_positions,
-                                                 type=constants.ResponseType.JSON,
-                                                 description=req_description)
-    utils.assert_show_message(status_code == 201,
-                              f'The debt position for RPT with index [{index}] was not created. Expected status code [201], Current status code [{status_code}]')
+    status_code, body, _ = execute_request(url, 'post', headers, payment_positions,
+                                           type=constants.ResponseType.JSON,
+                                           description=req_description)
+    assert_show_message(status_code == 201,
+                        f'The debt position for RPT with index [{index}] was not created. Expected status code [201], Current status code [{status_code}]')
 
 
 @step('the execution of "{scenario_name}" was successful')
@@ -124,15 +129,15 @@ def generate_empty_cart(context, note):
     )
 
     if is_multibeneficiary_note:
-        iuv = utils.generate_iuv(in_18digit_format=True)
+        iuv = generate_iuv(in_18digit_format=True)
 
-        context.flow_data['common']['cart']['id'] = utils.generate_cart_id(iuv, test_data['creditor_institution'])
+        context.flow_data['common']['cart']['id'] = generate_cart_id(iuv, test_data['creditor_institution'])
 
         context.flow_data['common']['cart']['is_multibeneficiary'] = True
 
         context.flow_data['common']['cart']['iuv_for_multibeneficiary'] = iuv
     else:
-        context.flow_data['common']['cart']['id'] = utils.generate_cart_id(None, test_data['creditor_institution'])
+        context.flow_data['common']['cart']['id'] = generate_cart_id(None, test_data['creditor_institution'])
 
         context.flow_data['common']['cart']['is_multibeneficiary'] = False
 
