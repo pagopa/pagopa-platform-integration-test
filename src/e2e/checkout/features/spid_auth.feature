@@ -1,4 +1,3 @@
-# Created by mpiccolo at 16/04/2026
 # language: it
 
 @FEAT_002_Checkout

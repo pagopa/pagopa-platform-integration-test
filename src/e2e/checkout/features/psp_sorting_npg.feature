@@ -14,9 +14,9 @@ Funzionalità: Ordinamento lista PSP in Checkout
     E L'utente inserisce un codice avviso valido con prefisso "30202"
     E L'utente inserisce un codice fiscale valido del pagatore
 
-  # ──────────────────────────────────────────────
+  # =============================================
   # Ordinamento pagina di riepilogo
-  # ──────────────────────────────────────────────
+  # =============================================
 
   @smoke
   @positive
@@ -83,9 +83,10 @@ Funzionalità: Ordinamento lista PSP in Checkout
     E L'utente clicca il pulsante "ordina per nome"
     Allora La lista dei nomi PSP è ordinata in ordine alfabetico crescente
     E L'utente annulla il pagamento
-  # ──────────────────────────────────────────────
+
+  # =============================================
   # Ordinamento pagina di selezione PSP
-  # ──────────────────────────────────────────────
+  # =============================================
 
   @smoke
   @positive

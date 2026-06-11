@@ -13,9 +13,9 @@ Funzionalità: Attivazione pagamento Checkout
     Dato La pagina di checkout è aperta
     E La lingua è impostata su "it"
 
-  # ──────────────────────────────────────────────
+  # =============================================
   # Happy path: flusso di pagamento completo
-  # ──────────────────────────────────────────────
+  # =============================================
 
   @smoke
   @positive
@@ -43,9 +43,9 @@ Funzionalità: Attivazione pagamento Checkout
       | Wordline    | 30201              | 77777777777 | ecommerce-test-mailgroup@pagopa.it | 5255000260000014 | 12/30           | 123 | BNLIITRR    |
       | Worldpay    | 30201              | 77777777777 | ecommerce-test-mailgroup@pagopa.it | 4242424242424242 | 12/30           | 123 | WOLLNLB1    |
 
-  # ──────────────────────────────────────────────
+  # =============================================
   # Casi di errore: errori di verifica/attivazione pagamento
-  # ──────────────────────────────────────────────
+  # =============================================
 
   @negative
   @FEAT_003_Checkout_scenario_02
