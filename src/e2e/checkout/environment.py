@@ -1,100 +1,52 @@
 import os
+import sys
 import logging
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
-def _load_env_file(env_file: str) -> None:
-    basepath = "src/e2e-test/checkout/"
-    path = Path(basepath + env_file)
-    if not path.is_file():
-        raise RuntimeError(f"File env non trovato: {basepath + env_file}")
+# Behave puo' eseguire questo file con cwd locale; garantiamo l'import di `src.*`.
+REPO_ROOT = Path(__file__).resolve().parents[3]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
-    lines = path.read_text(encoding="utf-8").splitlines()
-    i = 0
+CHECKOUT_ROOT = Path(__file__).resolve().parent
+if str(CHECKOUT_ROOT) not in sys.path:
+    sys.path.insert(0, str(CHECKOUT_ROOT))
 
-    while i < len(lines):
-        raw_line = lines[i]
-        line = raw_line.strip()
+from src.utility.config.config_loader import _parse_config_content
 
-        # Skip empty/comment lines
-        if not line or line.startswith("#"):
-            i += 1
-            continue
+def _resolve_config_file(config_file: str) -> Path:
+    candidate = Path(config_file)
+    if candidate.is_file():
+        return candidate
 
-        # Skip malformed lines without '='
-        if "=" not in raw_line:
-            logging.warning("Skipping malformed env line %d: %r", i + 1, raw_line)
-            i += 1
-            continue
+    local_candidate = Path(__file__).resolve().parent / config_file
+    if local_candidate.is_file():
+        return local_candidate
 
-        key, value = raw_line.split("=", maxsplit=1)
-        key = key.strip()
-        value = value.strip()
+    raise RuntimeError(f"File config non trovato: {config_file}")
 
-        if not key:
-            logging.warning("Skipping env line with empty key at %d: %r", i + 1, raw_line)
-            i += 1
-            continue
 
-        # Quoted value handling (single-line or multi-line)
-        if value.startswith(("'", '"')):
-            quote = value[0]
-
-            # Case A: quoted single-line, e.g. KEY="abc"
-            if len(value) >= 2 and value.endswith(quote):
-                parsed_value = value[1:-1]
-                os.environ.setdefault(key, parsed_value)
-                logging.debug("Loaded env var from file: %s=<quoted single-line>", key)
-                i += 1
-                continue
-
-            # Case B: quoted multi-line
-            buffer = [value[1:]]  # remainder after opening quote on first line
-            i += 1
-            closed = False
-
-            while i < len(lines):
-                current = lines[i]
-                if current.endswith(quote):
-                    buffer.append(current[:-1])  # remove closing quote
-                    closed = True
-                    break
-                buffer.append(current)
-                i += 1
-
-            if not closed:
-                raise RuntimeError(
-                    f"Valore quotato multi-linea non chiuso per chiave '{key}' nel file {env_file}"
-                )
-
-            parsed_value = "\n".join(buffer)
-            os.environ.setdefault(key, parsed_value)
-            logging.debug("Loaded env var from file: %s=<quoted multi-line>", key)
-
-            i += 1
-            continue
-
-        # Unquoted single-line value
-        os.environ.setdefault(key, value)
-        logging.debug("Loaded env var from file: %s=%s", key, value)
-        i += 1
+def _load_test_config(config_file: str) -> dict:
+    path = _resolve_config_file(config_file)
+    raw_content = path.read_text(encoding="utf-8")
+    return _parse_config_content(raw_content, path)
 
 def before_all(context):
     logging.basicConfig(level=logging.INFO,
                         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
                         datefmt="%Y-%m-%d %H:%M:%S",
                         force=True)
-    # Opzionale: carica un file env passando ENV_FILE (es. .\dev.env)
-    env_file = os.getenv("ENV_FILE")
-    if env_file:
-        _load_env_file(env_file)
+    # Opzionale: carica un file config passando ENV_FILE (es. .\dev.env)
+    config_file = os.getenv("ENV_FILE")
+    context.test_config = _load_test_config(config_file) if config_file else {}
 
-    logging.debug("Environment variables after loading env file: %s", dict(os.environ))
-
-    context.timeout_ms = int(os.getenv("E2E_TIMEOUT_MS", "80000"))
+    timeout_raw = context.test_config.get("E2E_TIMEOUT_MS", os.getenv("E2E_TIMEOUT_MS", "80000"))
+    context.timeout_ms = int(timeout_raw)
 
     context._playwright = sync_playwright().start()
-    headless = os.getenv("HEADLESS", "true").lower() in {"1", "true", "yes", "on"}
+    headless_raw = str(context.test_config.get("HEADLESS", os.getenv("HEADLESS", "true"))).lower()
+    headless = headless_raw in {"1", "true", "yes", "on"}
     context.browser = context._playwright.chromium.launch(
         channel="chrome",
         headless=headless,
