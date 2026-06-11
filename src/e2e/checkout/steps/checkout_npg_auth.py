@@ -10,4 +10,5 @@ logger = logging.getLogger(__name__)
 # ──────────────────────────────────────────────
 @given(u'L\'utente è autenticato')
 def step_impl(context):
+    """Authenticate the user through the shared SPID login step."""
     step_click_login_button(context)

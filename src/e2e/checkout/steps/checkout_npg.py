@@ -24,6 +24,7 @@ def step_checkout_page_open(context):
 
 @given('La lingua è impostata su "it"')
 def step_set_language_it(context):
+    """Set the checkout language to Italian."""
     page = get_page(context)
     logger.debug("Imposto lingua a 'it'")
     page.locator("#languageMenu").wait_for(
@@ -287,12 +288,14 @@ def step_error_code_shown(context, error_code):
 
 @then('Il corpo della modale di errore contiene ""')
 def step_error_modal_body_empty(context):
+    """Skip modal body validation for cases where an empty body is expected."""
     # Per il caso PAA_PAGAMENTO_DUPLICATO il body non è previsto.
     # Quindi questo step è un no-op intenzionale.
     logger.debug("Expected empty body for this case (e.g. PAA_PAGAMENTO_DUPLICATO) — skipping body check")
 
 @then('Viene mostrato un messaggio di pagamento completato con successo')
 def step_check_payment_success(context):
+    """Assert that the final confirmation page reports a successful payment."""
     page = get_page(context)
     result_title_selector = "#responsePageMessageTitle"
 

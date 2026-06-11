@@ -299,6 +299,7 @@ def step_name_list_ascending(context):
 
 @then('L\'utente annulla il pagamento')
 def step_cancel_payment(context):
+    """Cancel the payment from check page and wait for the redirection button."""
     page = get_page(context)
 
     page.evaluate("document.querySelector('#paymentCheckPageButtonCancel').click()")

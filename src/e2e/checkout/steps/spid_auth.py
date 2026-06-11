@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 # ──────────────────────────────────────────────
 @given('L\'utente ha effettuato l\'accesso con SPID')
 def step_login_with_spid(context):
+    """Authenticate the user with SPID and verify that login is completed."""
     step_click_login_button(context)
     step_check_account_icon_visible(context)
 
