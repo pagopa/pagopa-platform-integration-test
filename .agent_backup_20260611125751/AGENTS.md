@@ -49,6 +49,6 @@ Each agent reads **only** the instruction files listed for its role. Instruction
 
 ## Git guidelines
 
-Whatever agent may be committing code, follow the rules in [`.github/instructions/git-commit.instructions.md`](.github/instructions/git-commit.instructions.md) for commit message formatting.
+Whatever agent may be committing code, follow the rules in [`.github/instructions/git-commit.instructions.md`](.github/instructions/git-commit.instructions.md) and [`.github/instructions/git-pr.instructions.md`](.github/instructions/git-pr.instructions.md) for commit message formatting, branch naming, and PR creation.
 
 > **Detailed instructions** live in `.github/instructions/`. Do not duplicate content here.
