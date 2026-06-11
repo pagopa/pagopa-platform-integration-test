@@ -5,6 +5,8 @@
 @checkout
 @ui
 Funzionalità: Flusso di accesso con SPID
+  Un utente del sistema checkout vuole autenticarsi tramite SPID e disconnettersi al termine della sessione
+  così da poter completare il pagamento con le proprie credenziali identitarie
 
   Contesto:
     Dato La pagina di checkout è aperta
