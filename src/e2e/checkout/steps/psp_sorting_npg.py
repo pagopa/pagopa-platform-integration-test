@@ -212,14 +212,21 @@ def _get_fee_values(page) -> list:
     page.locator(".pspFeeValue").first.wait_for(state="visible", timeout=5000)
     elements = page.locator(".pspFeeValue").all()
     values = []
-    for elem in elements:
+    for idx, elem in enumerate(elements):
         text = elem.inner_text()
         numbers = re.findall(r"[\d,]+", text)
-        result = "".join(numbers).replace(",", ".") if numbers else ""
+        if not numbers:
+            raise AssertionError(
+                f"Cannot parse PSP fee value at index {idx}. Raw text: '{text}'"
+            )
+
+        result = "".join(numbers).replace(",", ".")
         try:
             values.append(float(result))
-        except ValueError:
-            values.append(0.0)
+        except ValueError as exc:
+            raise AssertionError(
+                f"Invalid parsed PSP fee value at index {idx}: '{result}' from raw text '{text}'"
+            ) from exc
     logger.debug("Extracted fee values: %s", values)
     return values
 
