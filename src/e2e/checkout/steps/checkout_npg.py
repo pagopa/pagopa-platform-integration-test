@@ -147,7 +147,10 @@ def step_select_payment_method(context, method):
 @when(u'The user fills in the card number "{card_number}"')
 def step_fill_card_number(context, card_number):
     """Type the card number into the NPG iframe field."""
-    page = _get_page(context)
+    page = get_page(context)
+    logger.debug("Waiting for NPG iframe to load")
+    page.locator("#frame_CARD_NUMBER").wait_for(state="visible", timeout=30000)
+    page.wait_for_load_state("networkidle")
     logger.debug("Filling card number")
     _locate_and_click(page, "#frame_CARD_NUMBER",3, 10000)
     page.keyboard.type(card_number)
