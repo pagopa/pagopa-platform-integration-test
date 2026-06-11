@@ -224,7 +224,7 @@ def _get_fee_values(page) -> list:
     return values
 
 
-@then('La lista delle commissioni PSP e ordinata in ordine crescente')
+@then('La lista delle commissioni PSP è ordinata in ordine crescente')
 def step_fee_list_ascending(context):
     """Assert that all .pspFeeValue elements are in ascending (non-decreasing) order."""
     page = get_page(context)
@@ -237,7 +237,7 @@ def step_fee_list_ascending(context):
     logger.debug("PSP fee list is correctly sorted ascending")
 
 
-@then('La lista delle commissioni PSP e ordinata in ordine decrescente')
+@then('La lista delle commissioni PSP è ordinata in ordine decrescente')
 def step_fee_list_descending(context):
     """Assert that all .pspFeeValue elements are in descending (non-increasing) order."""
     page = get_page(context)
