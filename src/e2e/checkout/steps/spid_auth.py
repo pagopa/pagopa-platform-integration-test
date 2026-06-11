@@ -65,8 +65,7 @@ def step_confirm_logout(context):
     page = get_page(context)
     logger.debug("Confirming logout")
     locate_and_click(page, "#logoutModalConfirmButton")
-    # Short pause to allow the logout animation/redirect to complete
-    page.wait_for_timeout(500)
+    page.locator("#login-header button").wait_for(state="visible", timeout=10000)
 
 
 # ──────────────────────────────────────────────
@@ -78,8 +77,9 @@ def step_check_account_icon_visible(context):
     """Assert that the user avatar icon is visible after login."""
     page = get_page(context)
     logger.debug("Checking AccountCircleRoundedIcon is visible")
-    icon = page.query_selector("[data-testid='AccountCircleRoundedIcon']")
-    assert icon is not None, "Expected AccountCircleRoundedIcon to be visible after login, but it was not found"
+    icon = page.locator("[data-testid='AccountCircleRoundedIcon']")
+    icon.wait_for(state="visible", timeout=10000)
+    assert icon.is_visible(), "Expected AccountCircleRoundedIcon to be visible after login, but it was not found"
     logger.debug("AccountCircleRoundedIcon found — login confirmed")
 
 
