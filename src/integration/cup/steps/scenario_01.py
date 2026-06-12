@@ -7,13 +7,13 @@ from src.integration.cup.utility.request_builder import build_happy_path
 
 @given('Il PSP ha ricevuto dalla Corporate un file di input valido che include i dati mandatori')
 def step_psp_riceve_input_valido_mandatorio(context):
-    """Initialize a valid CUP input payload context for the happy-path scenario."""
+    """No-op step"""
     pass
 
 
 @given('Il file di input contiene una sola chiave di identificazione Ente')
 def step_file_contiene_una_sola_chiave_ente(context):
-    """Confirm the happy-path input includes exactly one ente identification key."""
+    """No-op step"""
     pass
 
 
