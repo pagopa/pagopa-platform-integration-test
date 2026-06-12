@@ -96,7 +96,7 @@ Funzionalità: L'utente paga carrelli di pagamento con marche da bollo su nodoIn
     Dato un carrello di RPT non-multi-beneficiario
     E una singola RPT di tipo BBT con 6 versamenti di cui 3 sono marche da bollo
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC senza verifica dell'URL di redirect
-    Allora il pagamento fallisce having a quantity of transfers above the limit e viene restituito l'errore PPT_SINTASSI_XSD
+    Allora il pagamento fallisce essendo il numero di versamenti oltre il limite e viene restituito l'errore PPT_SINTASSI_XSD
 
   # ===============================================================================================
   # ===============================================================================================
@@ -108,4 +108,4 @@ Funzionalità: L'utente paga carrelli di pagamento con marche da bollo su nodoIn
     E una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo
     E una singola RPT di tipo BBT con 6 versamenti di cui 2 sono marche da bollo
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC senza verifica dell'URL di redirect
-    Allora il pagamento fallisce having a quantity of transfers above the limit e viene restituito l'errore PPT_SINTASSI_XSD
+    Allora il pagamento fallisce essendo il numero di versamenti oltre il limite e viene restituito l'errore PPT_SINTASSI_XSD
