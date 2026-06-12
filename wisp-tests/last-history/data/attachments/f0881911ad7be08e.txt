@@ -1,0 +1,21 @@
+URL: https://api.uat.platform.pagopa.it/nodo/node-for-psp/v1
+Request:
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:nod="http://pagopa-api.pagopa.gov.it/node/nodeForPsp.xsd">
+	<soapenv:Header />
+	<soapenv:Body>
+		<nod:activatePaymentNoticeV2Request>
+			<idPSP>AGID_01</idPSP>
+			<idBrokerPSP>97735020584</idBrokerPSP>
+			<idChannel>97735020584_03</idChannel>
+			<password>***</password>
+			<idempotencyKey>351178126249305128_8335067429</idempotencyKey>
+			<qrCode>
+				<fiscalCode>15376371009</fiscalCode>
+				<noticeNumber>351178126249305128</noticeNumber>
+			</qrCode>
+			<expirationTime>900000</expirationTime>
+			<amount>958.04</amount>
+			<paymentNote>86fac4b4-d9da-4642-a784-6295c1e324d0</paymentNote>
+		</nod:activatePaymentNoticeV2Request>
+	</soapenv:Body>
+</soapenv:Envelope>
