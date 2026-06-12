@@ -2,14 +2,14 @@ def get_index_from_cardinal(cardinal: str) -> int:
     """Map an English cardinal label to a zero-based index."""
     index = -1
     match cardinal:
-        case 'first':
+        case 'prima':
             index = 0
-        case 'second':
+        case 'seconda':
             index = 1
-        case 'third':
+        case 'terza':
             index = 2
-        case 'fourth':
+        case 'quarta':
             index = 3
-        case 'fifth':
+        case 'quinta':
             index = 4
     return index

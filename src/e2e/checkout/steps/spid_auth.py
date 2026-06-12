@@ -1,13 +1,13 @@
 import logging
 from behave import given, when, then
-from ..helper import _get_page, _get_required_env, _perform_mock_login, _locate_and_click
+from helper import _get_page, _get_required_env, _perform_mock_login, _locate_and_click
 
 logger = logging.getLogger(__name__)
 
 # ──────────────────────────────────────────────
 # GIVEN steps
 # ──────────────────────────────────────────────
-@given('The user is logged in with SPID')
+@given('L\'utente ha effettuato l\'accesso con SPID')
 def step_login_with_spid(context):
     step_click_login_button(context)
     step_check_account_icon_visible(context)
@@ -16,7 +16,7 @@ def step_login_with_spid(context):
 # WHEN steps
 # ──────────────────────────────────────────────
 
-@when('The user clicks on the login button')
+@when('L\'utente clicca sul pulsante di login')
 def step_click_login_button(context):
     """Click the login button in the header and complete the mock/identity login flow."""
     page = _get_page(context)
@@ -33,7 +33,7 @@ def step_click_login_button(context):
         _perform_mock_login(page)
 
 
-@when('The user clicks on user button')
+@when('L\'utente clicca sul pulsante utente')
 def step_click_user_button(context):
     """
     Click the first button (user avatar) to open the user menu.
@@ -46,7 +46,7 @@ def step_click_user_button(context):
     page.evaluate("document.getElementsByTagName('button')[0].click()")
 
 
-@when('The user clicks on exit submenu')
+@when('L\'utente clicca sul sottomenu esci')
 def step_click_exit_submenu(context):
     """
     Click the first list item (exit/logout submenu entry).
@@ -58,7 +58,7 @@ def step_click_exit_submenu(context):
     page.evaluate("document.getElementsByTagName('li')[0].click()")
 
 
-@when('The user confirm the logout action')
+@when('L\'utente conferma l\'azione di logout')
 def step_confirm_logout(context):
     """Click the confirm button in the logout modal."""
     page = _get_page(context)
@@ -72,7 +72,7 @@ def step_confirm_logout(context):
 # THEN steps
 # ──────────────────────────────────────────────
 
-@then('The user is logged in')
+@then('L\'utente ha effettuato l\'accesso')
 def step_check_account_icon_visible(context):
     """Assert that the user avatar icon is visible after login."""
     page = _get_page(context)
@@ -82,7 +82,7 @@ def step_check_account_icon_visible(context):
     logger.debug("AccountCircleRoundedIcon found — login confirmed")
 
 
-@then('The user is succesfully logged out')
+@then('L\'utente ha effettuato correttamente il logout')
 def step_check_login_button_visible_after_logout(context):
     """Assert that the login button reappears after logout."""
     page = _get_page(context)
