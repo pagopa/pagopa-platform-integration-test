@@ -8,6 +8,7 @@ Questa cartella contiene componenti condivisi per i test di integrazione/API: ca
 - `rest/`: client REST con supporto auth (none/basic/api key/oauth2).
 - `json/`: utility per conversione JSON, lettura (`get_attr`) e scrittura (`set_attr`) di valori via path.
 - `soap/`: client SOAP basato su `zeep` con supporto auth (none/basic/wsse) e utility get/set su response.
+- `db/`: client DB-API 2.0 driver-agnostic per query in lettura (`fetch_all`, `fetch_one`, `fetch_value`) e `DELETE` controllate (`execute_delete`).
 
 ## Flusso tipico di utilizzo
 
@@ -39,4 +40,4 @@ print(response.status_code)
 - `src/utility/rest/README.md`
 - `src/utility/json/README.md`
 - `src/utility/soap/README.md`
-
+- `src/utility/db/README.md`
