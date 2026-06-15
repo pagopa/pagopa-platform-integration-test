@@ -1,3 +1,6 @@
+import re
+import xml.etree.ElementTree as ET
+
 from src.utility.soap.soap_raw_client import get_raw_soap_text
 
 
@@ -24,3 +27,13 @@ def get_pa_demand_payment_notice_payment_option_description(xml_root) -> str | N
         return nested_description
 
     return get_raw_soap_text(xml_root, "description")
+
+
+def get_pa_demand_payment_notice_qr_code_fiscal_code(xml_root) -> str | None:
+    """Extract <fiscalCode> from <qrCode> in a paDemandPaymentNotice SOAP response XML root."""
+    return get_raw_soap_text(xml_root, "qrCode/fiscalCode")
+
+
+def get_pa_demand_payment_notice_notice_number(xml_root) -> str | None:
+    """Extract <noticeNumber> from <qrCode> in a paDemandPaymentNotice SOAP response XML root."""
+    return get_raw_soap_text(xml_root, "qrCode/noticeNumber")

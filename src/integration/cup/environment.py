@@ -1,20 +1,8 @@
-import copy
 import logging
 
 from src.conf.configuration import settings
 from src.conf.configuration import secrets
 from src.conf.configuration import commondata
-
-
-EMPTY_FLOW_DATA = {
-    'request': {
-        'body': None,
-    },
-    'response': {
-        'status_code': None,
-        'body': None,
-    }
-}
 
 
 def before_all(context):
@@ -24,8 +12,19 @@ def before_all(context):
     logging.basicConfig(level=logging.DEBUG)
 
 
+def _reset_scenario_context(context):
+    context.demand_status_code = None
+    context.organization_fiscal_code = None
+    context.fiscal_code = None
+    context.notice_number = None
+
+
 def before_scenario(context, scenario):
-    context.flow_data = copy.deepcopy(EMPTY_FLOW_DATA)
+    _reset_scenario_context(context)
+
+
+def after_scenario(context, scenario):
+    _reset_scenario_context(context)
 
 
 def before_step(context, step):

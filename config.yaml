@@ -28,6 +28,12 @@ dev:
     cup_mock:
       url: "https://api.dev.platform.pagopa.it/mock-ec-primary/service/v1/mock"
       soap_action: "paDemandPaymentNotice"
+    gpd:
+      url: "https://api.dev.platform.pagopa.it/gpd/api/v1"
+      subscription_key: "GPD_SUBSCRIPTION_KEY"
+    gpd_external:
+      url: "https://api.dev.platform.pagopa.it/gpd/debt-positions-service/v1"
+      subscription_key: "GPD_SUBSCRIPTION_KEY"
 uat:
   TARGET_ENV: "uat"
   SECRET_PATH: "./config/.secrets.yaml"
@@ -61,3 +67,9 @@ uat:
     cup_mock:
       url: "https://api.dev.platform.pagopa.it/mock-ec-primary/service/v1/mock"
       soap_action: "paDemandPaymentNotice"
+    gpd:
+      url: "https://api.uat.platform.pagopa.it/gpd/api/v1"
+      subscription_key: "GPD_SUBSCRIPTION_KEY"
+    gpd_external:
+      url: "https://api.uat.platform.pagopa.it/gpd/debt-positions-service/v1"
+      subscription_key: "GPD_SUBSCRIPTION_KEY"
