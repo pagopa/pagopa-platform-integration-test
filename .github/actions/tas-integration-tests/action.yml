@@ -47,21 +47,20 @@ inputs:
     description: >-
       GitHub PAT with scopes 'public_repo' + 'actions:read'. Required for
       all modes — it authenticates the workflow_dispatch call against the
-      TAS repository. Pass it explicitly:
-        with:
-          github_token: ${{ secrets.INTEGRATION_TEST_PAT }}
-      Composite actions cannot access caller secrets implicitly.
+      TAS repository. Must be passed explicitly via 'with.github_token'
+      (e.g. from secrets.INTEGRATION_TEST_PAT) — composite actions cannot
+      access caller secrets implicitly.
     required: true
   caller_id:
     description: >-
       Identifier of the calling system (used for traceability).
-      Defaults to '${{ github.repository }}/${{ github.run_id }}'.
+      Defaults to '<github.repository>/<github.run_id>'.
     required: false
     default: ""
   correlation_id:
     description: >-
       Custom correlation ID. Defaults to
-      '${{ github.run_id }}-${{ github.run_attempt }}'.
+      '<github.run_id>-<github.run_attempt>'.
     required: false
     default: ""
   tas_repo:
