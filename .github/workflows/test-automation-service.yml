@@ -150,6 +150,15 @@ jobs:
         id: run_tests
         continue-on-error: true
         run: |
+          set -u
+          # Fail fast if the env var did not propagate to the shell.
+          # The Python config layer (src/conf/configuration.py) reads
+          # os.environ['TARGET_ENV'] at import time, so the value must be
+          # set BEFORE invoking behave.
+          : "${TARGET_ENV:?TARGET_ENV is empty — workflow input 'environment' did not propagate}"
+          echo "::notice title=TARGET_ENV::${TARGET_ENV}"
+          echo "Running behave with TARGET_ENV=${TARGET_ENV}"
+
           behave ${{ steps.test_path.outputs.path }} \
             --tags=@runnable \
             --format json --outfile behave-results.json \
