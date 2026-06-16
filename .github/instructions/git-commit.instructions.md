@@ -48,7 +48,7 @@ git commit -m "<message>"
 
 Return only:
 
-- commit message
+- commit message (do not run commands, use the message already inferred in the workflow)
 - commit hash
 - push result
 

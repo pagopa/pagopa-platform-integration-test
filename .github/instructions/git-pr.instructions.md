@@ -17,6 +17,7 @@
 - Run `git diff main...HEAD --name-only` to list changed files.
 - Run `git diff main...HEAD --shortstat` for compact change size.
 - Compose PR body inline using [`.github/PULL_REQUEST_TEMPLATE.md`](../../.github/PULL_REQUEST_TEMPLATE.md) sections (do not pass template file directly).
+- Infer title: <branch codename> - <short semantic changes analysis>.
 
 ### Fallback for ambiguous scope
 
