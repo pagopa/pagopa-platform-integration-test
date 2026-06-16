@@ -43,6 +43,11 @@ on:
         required: false
         type: string
         default: ""
+      verify_orchestrator:
+        description: "Verify orchestrator SHA-256 against the published sidecar (recommended)"
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -66,6 +71,18 @@ jobs:
 
       - name: Install orchestrator dependencies
         run: pip install requests
+
+      # Even though the script is executed from the local checkout (no download
+      # step here), we verify it against its published sidecar to mirror the
+      # supply-chain check performed by real callers in the example workflows.
+      # Skipped entirely when 'verify_orchestrator' is set to false.
+      - name: Verify tas_orchestrator.py SHA-256
+        if: ${{ inputs.verify_orchestrator != false }}
+        run: |
+          set -euo pipefail
+          cd scripts
+          echo "Verifying tas_orchestrator.py against published sidecar..."
+          sha256sum -c tas_orchestrator.py.sha256
 
       # Exit 0 = all tests passed   → job succeeds → deploy runs
       # Exit 1 = scenarios failed   → job fails    → deploy skipped
