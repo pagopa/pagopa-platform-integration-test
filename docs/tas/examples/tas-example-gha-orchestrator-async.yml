@@ -18,10 +18,20 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      ref:
+        description: "TAS repo branch/tag"
+        type: string
+        default: main
+      verify_orchestrator:
+        description: "Verify orchestrator SHA-256 (recommended)"
+        type: boolean
+        default: true
 
 env:
   TAS_REPO: pagopa/pagopa-platform-integration-test
-  TAS_REF: main
+  # Falls back to 'main' when the workflow is triggered by 'push' (no inputs).
+  TAS_REF: ${{ inputs.ref || 'main' }}
   # ── Supply-chain integrity ────────────────────────────────────────────────
   # Leave empty to verify against the sidecar published on the same ref
   # (scripts/tas_orchestrator.py.sha256). Set to an explicit hex digest to
@@ -55,8 +65,10 @@ jobs:
 
       # Verify the script's SHA-256 before executing it. Pinned digest
       # (TAS_ORCHESTRATOR_SHA256) wins; otherwise the sidecar published on
-      # the same ref is used.
+      # the same ref is used. The step is skipped entirely when the
+      # 'verify_orchestrator' input is set to false.
       - name: Verify tas_orchestrator.py SHA-256
+        if: ${{ inputs.verify_orchestrator != false }}
         run: |
           set -euo pipefail
           if [ -n "${TAS_ORCHESTRATOR_SHA256}" ]; then
@@ -79,6 +91,7 @@ jobs:
           OUTPUT=$(python tas_orchestrator.py \
             --suite wisp \
             --env uat \
+            --ref "${TAS_REF}" \
             --caller-id "${{ github.repository }}")
 
           echo "$OUTPUT"
