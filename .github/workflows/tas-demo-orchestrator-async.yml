@@ -38,6 +38,11 @@ on:
           - dev
           - uat
         default: uat
+      ref:
+        description: "TAS repo branch/tag to run the workflow on (defaults to the current branch)"
+        required: false
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -71,6 +76,7 @@ jobs:
           OUTPUT=$(python scripts/tas_orchestrator.py \
             --suite "${{ inputs.test_suite }}" \
             --env "${{ inputs.environment }}" \
+            --ref "${{ inputs.ref || github.ref_name }}" \
             --caller-id "${{ github.repository }} (demo)")
 
           echo "$OUTPUT"

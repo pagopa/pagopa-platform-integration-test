@@ -18,6 +18,16 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      ref:
+        description: "TAS repo branch/tag"
+        type: string
+        default: main
+
+env:
+  TAS_REPO: pagopa/pagopa-platform-integration-test
+  # Falls back to 'main' when the workflow is triggered by 'push' (no inputs).
+  TAS_REF: ${{ inputs.ref || 'main' }}
 
 jobs:
 
@@ -38,9 +48,9 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.INTEGRATION_TEST_PAT }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/pagopa/pagopa-platform-integration-test/actions/workflows/test-automation-service.yml/dispatches" \
+            "https://api.github.com/repos/${TAS_REPO}/actions/workflows/test-automation-service.yml/dispatches" \
             -d "{
-              \"ref\": \"main\",
+              \"ref\": \"${TAS_REF}\",
               \"inputs\": {
                 \"test_suite\": \"wisp\",
                 \"environment\": \"uat\",
@@ -62,7 +72,7 @@ jobs:
           echo "Tests dispatched — pipeline continues immediately."
           echo "Run name       : tas-${{ steps.dispatch.outputs.correlation_id }}"
           echo "Correlation ID : ${{ steps.dispatch.outputs.correlation_id }}"
-          echo "Monitor at     : https://github.com/pagopa/pagopa-platform-integration-test/actions"
+          echo "Monitor at     : https://github.com/${TAS_REPO}/actions"
 
   # ── 2. Deploy: runs in parallel with the tests ────────────────────────────
   deploy:

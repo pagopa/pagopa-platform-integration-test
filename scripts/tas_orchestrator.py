@@ -204,6 +204,11 @@ def print_summary(summary: dict) -> None:
         print(f"   Suite           : {summary['suite']}")
     if summary.get("environment"):
         print(f"   Environment     : {summary['environment']}")
+    if summary.get("ref"):
+        ref_line = summary["ref"]
+        if summary.get("sha"):
+            ref_line = f"{ref_line} ({summary['sha'][:7]})"
+        print(f"   Ref             : {ref_line}")
     print("-" * 54)
     print(f"   Passed          : {summary['passed']}")
     print(f"   Failed          : {summary['failed']}")
