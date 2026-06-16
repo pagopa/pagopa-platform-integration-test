@@ -837,7 +837,7 @@ Internal refactors that preserve the contract are released on the same tag.
 
 ---
 
-
+## Downloading the full report artifact
 
 The TAS workflow always uploads a `test-results` artifact to the GHA run that executed it.
 The zip contains `test-summary.json`, `behave-results.json`, and the `junit/` folder with
@@ -995,3 +995,6 @@ exit codes:
 | `Timeout: run did not complete within 1800s` | Tests are taking too long | Increase `POLL_TIMEOUT_SECONDS` in the script |
 | All scenarios fail with `health-check systems or subscription-key errors` | The branch in `--ref` does not have updated tests, or the secret is not configured in the `integration-tests` environment | Verify the target branch and check `INTEGRATION_TESTS_SECRETS` in the `integration-tests` environment of the TAS repo |
 | Calling GHA job fails despite `outcome=success` | `outputs:` at job level not propagated | Verify the TAS workflow has `outputs:` defined at the `run_tests` job level |
+| TAS job fails immediately with `TARGET_ENV is empty — workflow input 'environment' did not propagate` | The caller did not pass `environment` to `test-automation-service.yml`, or a wrapper stripped it | Pass `environment` explicitly via `workflow_call` `with:` / `workflow_dispatch` inputs / `tas_orchestrator.py --env`; do not override `TARGET_ENV` in the step `env:` |
+| GHA composite action: numeric outputs (`passed`, `failed`, …) are empty even though tests ran | The action was invoked with `mode: async` or `mode: raw` — those modes only know the dispatch outcome | Switch to `mode: sync` (Option 6 default) to get the parsed counters; use `correlation_id` + run-name `tas-<id>` to download the artifact later in async/raw |
+| GHA composite action manifest error `Unrecognized named-value: 'secrets'` | Action `description:` fields cannot contain `${{ … }}` expressions — only the action body can | Keep `${{ … }}` template expressions out of `inputs.*.description` and `outputs.*.description` (already handled in v1+ of the action) |
