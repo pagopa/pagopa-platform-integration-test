@@ -26,7 +26,6 @@ flowchart TD
     A["GitHub Actions<br/>(workflow_call)"]:::caller
     B["GitHub Actions<br/>(tas_orchestrator)"]:::caller
     C["Azure DevOps<br/>(tas_orchestrator / curl)"]:::caller
-    D["Azure DevOps<br/>(ADO template)"]:::caller
     E["Any other CI/CD<br/>(tas_orchestrator)"]:::caller
   end
 
@@ -59,6 +58,7 @@ flowchart TD
   A == "workflow_call<br/>(sync, native outputs)" ==> WORKFLOW
   SCRIPT == "workflow_dispatch<br/>+ polling & download<br/>(sync / async)" ==> WORKFLOW
   TEMPLATE -. "dispatches (if raw)" .-> WORKFLOW
+  ACTION  -. "dispatches (if raw)" .-> WORKFLOW
 ```
 
 ---
@@ -180,6 +180,7 @@ of the selected mode.
 | `tas_orchestrator.py --sync` | Any CI/CD | ✅ | ✅ via stdout + exit code | Python + requests |
 | `tas_orchestrator.py` (async) | Any CI/CD | ❌ | ❌ (correlation_id printed) | Python + requests |
 | Official ADO template | Azure DevOps only | sync / async / raw (parameter) | ✅ via normalised output variables | GitHub service connection in the ADO project |
+| Official GHA composite action | GHA only | sync / async / raw (input) | ✅ via normalised step outputs | `INTEGRATION_TEST_PAT` secret in the caller's repo |
 
 ---
 
