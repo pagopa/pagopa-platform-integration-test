@@ -1,0 +1,114 @@
+##############################################################################
+# tas-example-gha-using-template.yml
+#
+# Example GitHub Actions workflow showing how to integrate the
+# Test Automation Service via the official GHA composite action.
+#
+# This is the recommended way to integrate from GitHub Actions when the
+# native `workflow_call` integration (Option 1) is not enough — typically
+# because you need to target a feature branch of the TAS repo, or because
+# you want to switch between sync / async / raw modes via a single input.
+# The composite action encapsulates Python setup, orchestrator download,
+# supply-chain verification, secret wiring and output normalisation.
+#
+# ── Prerequisites ───────────────────────────────────────────────────────────
+# 1. INTEGRATION_TEST_PAT — repository secret containing a GitHub PAT with
+#    scopes: public_repo + actions:read. Composite actions cannot read
+#    caller secrets implicitly, so the token must be passed via input.
+##############################################################################
+
+name: Build, Integration Test & Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: "Test suite"
+        type: choice
+        options: [wisp, all]
+        default: wisp
+      environment:
+        description: "Target environment"
+        type: choice
+        options: [dev, uat]
+        default: uat
+      mode:
+        description: "Invocation mode"
+        type: choice
+        options: [sync, async, raw]
+        default: sync
+      ref:
+        description: "TAS repo branch/tag"
+        type: string
+        default: main
+
+permissions:
+  contents: read
+
+jobs:
+
+  # ── 1. Integration tests via composite action ─────────────────────────────
+  integration-tests:
+    name: "Integration Tests (TAS)"
+    runs-on: ubuntu-latest
+    # Re-export ONLY the outputs the downstream `deploy` job actually needs.
+    # The full set is available inside this job as `steps.tas.outputs.*`,
+    # so leave this section out entirely if no other job consumes it.
+    outputs:
+      correlation_id: ${{ steps.tas.outputs.correlation_id }}
+      run_url:        ${{ steps.tas.outputs.run_url }}
+    steps:
+      - name: Run TAS
+        id: tas
+        # Pin to a tag (e.g. @v1) for reproducible builds, or track @main
+        # to always get the latest version of the action.
+        uses: pagopa/pagopa-platform-integration-test/.github/actions/tas-integration-tests@main
+        with:
+          suite:        ${{ inputs.suite       || 'wisp' }}
+          environment:  ${{ inputs.environment || 'uat'  }}
+          mode:         ${{ inputs.mode        || 'sync' }}
+          ref:          ${{ inputs.ref         || 'main' }}
+          github_token: ${{ secrets.INTEGRATION_TEST_PAT }}
+          # Optional overrides (defaults shown for reference):
+          # python_version: "3.11"
+          # tas_repo: "pagopa/pagopa-platform-integration-test"
+          # workflow_file: "test-automation-service.yml"
+          #
+          # Post-step output:
+          # print_summary: "true"           # default — log run summary / dispatch info automatically
+          #
+          # Supply-chain integrity (orchestrator-based modes only):
+          # verify_orchestrator: "true"     # default — verify SHA-256 after download
+          # orchestrator_sha256: ""         # default — use the published sidecar from the same ref
+          #
+          # For strict supply-chain requirements, pin the digest explicitly so the
+          # check survives even tampering of the ref tip (true SRI). Compute it once
+          # against the version you trust and bake it in:
+          #   curl -sSfL https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/refs/tags/v1/scripts/tas_orchestrator.py | sha256sum
+          # orchestrator_sha256: "a68b6c43c98517352c6d182df4a97b67e33a94ed79ae56949b1f6e6a179b5fe1"
+
+
+  # ── 2. Deploy ─────────────────────────────────────────────────────────────
+  # In sync mode the action fails the step on test failure, so `needs:`
+  # automatically gates the deploy. In async/raw modes the step only reflects
+  # the dispatch outcome, so the deploy proceeds in parallel with the tests.
+  deploy:
+    name: "Deploy"
+    needs: integration-tests
+    if: needs.integration-tests.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy application
+        run: |
+          echo "Correlation ID : ${{ needs.integration-tests.outputs.correlation_id }}"
+          # `run_url` is populated only in sync mode; in async/raw it is empty
+          # because the dispatch returns before the TAS run is visible on GitHub.
+          echo "Run URL        : ${{ needs.integration-tests.outputs.run_url }}"
+          echo "Deploying application..."
+          # ./deploy.sh
+
