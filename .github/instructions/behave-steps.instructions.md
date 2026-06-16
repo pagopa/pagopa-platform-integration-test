@@ -23,6 +23,7 @@ These instructions apply to Python files containing behave step definitions.
 - Use parametrized steps to reduce duplication.
 - Store shared data in the `context` object for access across steps, e.g. `context.demand_status_code`, but avoid overcomplex data structures that hinder readability.
 - Make sure that context is cleared or reset between scenarios to prevent state leakage.
+- Use a failfast approach: use early assertions to prevent cascading failures, e.g. `check return status code before processing response body`.
 
 ## Shared utility reuse
 
