@@ -12,10 +12,10 @@ Funzionalità: Creazione di una posizione debitoria per CUP
     Dato Il PSP ha ricevuto dalla Corporate un file di input valido che include i dati mandatori
     E Il file di input contiene una sola chiave di identificazione Ente
     Quando Il PSP Invia la primitiva demandPaymentNotice includendo i dati mandatori e valorizzando un parametro identificativo
-    Allora Viene creata correttamente la posizione debitoria
-    E La posizione debitoria contiene il campo remittanceInformation: /RFB/{IUV}/CNR/{CF_Debitore}/TXT/Canone Unico Patrimoniale Saldo {anno}
-    E La posizione debitoria contiene il campo payment.option.description : Canone Unico Patrimoniale {anno}
-    E Il PSP Riceve la risposta demandPaymentNotice res con l'esito della creazione nel formato previsto per l'output
+    Allora Il PSP Riceve la risposta demandPaymentNotice res con l'esito della creazione nel formato previsto per l'output
+    E Viene creata correttamente la posizione debitoria
+    E La posizione debitoria contiene il campo remittanceInformation: /RFB/<IUV>/CNR/<CF_Debitore>/TXT/Canone Unico Patrimoniale Saldo <anno>
+    E La posizione debitoria contiene il campo paymentOption.description : Canone Unico Patrimoniale <anno>
 
   # ===============================================================================================
   # Casi di errore
