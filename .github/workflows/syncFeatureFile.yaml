@@ -1,0 +1,60 @@
+name: Sync Feature File between github and confluence
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [closed]
+  workflow_dispatch:
+
+jobs:
+  sync_feature_file:
+    environment: test_env
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+          ref: main
+
+      - name: Detect changed Feature file
+        shell: bash
+        run: |
+          FEATURE_FILES=$(git diff --name-only --diff-filter=d HEAD^ HEAD | grep -E '\.feature$' || true)
+
+          if [ -n "$FEATURE_FILES" ]; then
+            {
+              echo "FEATURE_FOUND=true"
+              echo "FEATURE_FILES<<EOF"
+              echo "$FEATURE_FILES"
+              echo "EOF"
+            } >> "$GITHUB_ENV"
+          else
+            echo "FEATURE_FOUND=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: Set up Python
+        if: env.FEATURE_FOUND == 'true'
+        uses: actions/setup-python@v4
+        with: 
+          python-version: '3.x'
+
+      - name: Install dependencies
+        if: env.FEATURE_FOUND == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Sync Feature File
+        if: env.FEATURE_FOUND == 'true'
+        env:
+          CONFLUENCE_KEY: ${{ secrets.CONFLUENCE_KEY }}
+          CONFLUENCE_EMAIL: ${{ secrets.CONFLUENCE_EMAIL }}
+        run: |
+          while IFS= read -r FEATURE_FILE; do
+            [ -z "$FEATURE_FILE" ] && continue
+            python -u .github/scripts/auto_sync_feature_page.py "$FEATURE_FILE"
+          done <<< "${{ env.FEATURE_FILES }}"
+
