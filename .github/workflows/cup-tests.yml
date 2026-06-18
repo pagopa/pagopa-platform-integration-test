@@ -1,0 +1,60 @@
+name: Run CUP Integration Tests
+
+on:
+  workflow_call:
+
+jobs:
+  cup_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: 3.x
+
+      - name: Setup Java
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
+        with:
+          distribution: zulu
+          java-version: 17
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          sudo apt-get install -y jq
+
+      - name: Load secrets
+        run: echo "$SECRETS" >> ./config/.secrets.yaml
+        env:
+          SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS }}
+
+      - name: Run CUP tests
+        id: run_tests
+        continue-on-error: true
+        run: |
+          behave src/integration/cup --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+
+      - name: Load previous allure history
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Build CUP Allure report
+        uses: simple-elf/allure-report-action@53ebb757a2097edc77c53ecef4d454fc2f2f774c # v1.13
+        with:
+          gh_pages: gh-pages
+          allure_results: allure-results
+          allure_report: allure-report-cup
+          allure_history: allure-history
+          subfolder: cup-tests
+          keep_reports: 30
+
+      - name: Upload CUP report artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: allure-report-cup
+          path: allure-report-cup

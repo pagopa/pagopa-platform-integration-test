@@ -18,6 +18,11 @@
 - Run `git diff main...HEAD --shortstat` for compact change size.
 - Compose PR body inline using [`.github/PULL_REQUEST_TEMPLATE.md`](../../.github/PULL_REQUEST_TEMPLATE.md) sections (do not pass template file directly).
 - Infer title: <branch codename> - <short semantic changes analysis>.
+- Infer labels based on commit prefixes and changed files (e.g., `docs` prefix -> `documentation` label). Available labels:       
+  - `bug`, 
+  - `documentation`, 
+  - `size/large`, 
+  - `size/small`.
 
 ### Fallback for ambiguous scope
 
@@ -29,10 +34,11 @@ git diff main...HEAD --stat
 
 ## PR creation
 
-Resolve assignee with:
+Resolve assignee and reviewers with:
 
 ```bash
-gh api user --jq ".login"
+$ghUser = gh api user --jq ".login"
+$reviewers = "aferracci,cristianosticca-pagopa,marcopiccoloalten-hash,marcods02,daniele-quero"
 ```
 
 Create PR with:
@@ -43,7 +49,7 @@ gh pr create \
   --head <current-branch> \
   --title "<human-readable title>" \
   --body "<filled PR body>" \
-  --label <one or more: bug,documentation,size/large,size/small> \
-  --reviewer aferracci,cristianosticca-pagopa,marcopiccoloalten-hash,marcods02,daniele-quero \
-  --assignee <gh-user>
+  --label <one or more among the available labels> \
+  --reviewer $reviewers \
+  --assignee $ghUser
 ```
