@@ -59,8 +59,10 @@ pagopa-platform-integration-test/
 │   │   └── utility/                 # hook comuni e helpers
 │   ├── integration/                 # suite integrazione Behave/Cucumber
 │   │   ├── wisp/
+│   │   │   └── utility/             # helpers SOAP, request builder, routing
 │   │   ├── fdr/
 │   │   ├── ebollo/
+│   │   │   └── utility/             # helpers API MBD, UI Playwright, generators
 │   │   └── gpd/
 │   └── e2e/
 │       └── checkout/                # Checkout E2E Behave/Playwright
