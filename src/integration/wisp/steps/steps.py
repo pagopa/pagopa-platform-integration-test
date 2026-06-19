@@ -1,16 +1,16 @@
 import session as session
 from behave import *
-from src.integration.utility.wisp.utils import execute_request
+from src.integration.wisp.utility.utils import execute_request
 from src.utility.assertions import assert_show_message
 from src.utility.data_generators import change_last_numeric_char
 from src.utility.data_generators import generate_cart_id
 from src.utility.data_generators import generate_iuv
 from src.utility.indexing import get_index_from_cardinal
 
-import src.integration.utility.wisp.request_generator as requestgen
-import src.integration.utility.wisp.steps_utils as steputils
-from src.integration.utility.wisp import constants
-from src.integration.utility.wisp import routes as router
+import src.integration.wisp.utility.request_generator as requestgen
+import src.integration.wisp.utility.steps_utils as steputils
+from src.integration.wisp.utility import constants
+from src.integration.wisp.utility import routes as router
 
 
 @given(

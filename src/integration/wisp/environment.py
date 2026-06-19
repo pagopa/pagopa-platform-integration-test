@@ -7,8 +7,8 @@ import time
 from src.conf.configuration import commondata
 from src.conf.configuration import secrets
 from src.conf.configuration import settings
-from src.integration.utility.wisp import constants
-from src.integration.utility.wisp.constants import empty_flow_data
+from src.integration.wisp.utility import constants
+from src.integration.wisp.utility.constants import empty_flow_data
 
 # Delay between scenarios (seconds) to reduce backend contention on UAT.
 # Set to 0 to disable. Override via -D scenario_delay=<seconds> at runtime.
