@@ -29,20 +29,28 @@ Every commit message must start with one of:
 1. Read allowed prefixes.
 2. Inspect staged changes with:
 
-```bash
-git diff --cached --name-only
-git diff --cached --shortstat
-```
+    ```bash
+    git diff --cached --name-only
+    git diff --cached --shortstat
+    ```
 
 3. If no files are staged, stage intended files (use user-provided paths when available, otherwise `git add -A`) and re-check.
 4. If a valid override message is provided, use it; otherwise infer `<prefix>: <concise summary>` from staged changes.
 5. Create commit:
 
-```bash
-git commit -m "<message>"
-```
+    ```bash
+    git commit -m "<message>"
+    ```
 
 6. Push branch according to upstream status (see Push section).
+    - If branch has no upstream: 
+        ```bash 
+        git push --set-upstream origin <current-branch>
+        ```
+    - Otherwise:
+        ```bash 
+        git push
+        ```
 
 ## Output
 
@@ -59,8 +67,3 @@ Use detailed per-file stats only if needed to disambiguate the summary:
 ```bash
 git diff --cached --stat
 ```
-
-## Push
-
-- If branch has no upstream: `git push --set-upstream origin <current-branch>`
-- Otherwise: `git push`
