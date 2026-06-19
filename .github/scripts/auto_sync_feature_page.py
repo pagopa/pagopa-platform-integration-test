@@ -158,7 +158,7 @@ def build_page_content(data,feature_file):
                     link_to_add = scenario_link.replace('{anchor}',link_vars[0]).replace('{space}',link_vars[1]).replace('{page}',link_vars[2])
                 elif line.startswith(KEYWORD_CONTEXT):
                     is_context = True
-                elif line.startswith(KEYWORD_GIVEN) or (line.startswith(KEYWORD_GIVEN[0:len(KEYWORD_GIVEN)-1]) and is_context):
+                elif line.startswith(KEYWORD_GIVEN[0:len(KEYWORD_GIVEN)-1]):
                     data, last_ins = add_step_content(content_to_add,KEYWORD_GIVEN,last_ins,line,data)
                 elif line.startswith(KEYWORD_WHEN):
                     data, last_ins = add_step_content(content_to_add,KEYWORD_WHEN,last_ins,line,data)
