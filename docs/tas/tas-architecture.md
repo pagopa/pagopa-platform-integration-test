@@ -15,26 +15,31 @@ based on the results.
 ## Architecture diagram
 
 ```mermaid
-flowchart TD
-%% Impostazioni di stile per migliorare la leggibilità
-  classDef caller fill:#fafafa,stroke:#9e9e9e,stroke-width:1px,color:#333
+flowchart TB
+%% Stile per migliorare la leggibilità
+  classDef caller  fill:#fafafa,stroke:#9e9e9e,stroke-width:1px,color:#333
   classDef gateway fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000
-  classDef work fill:#fff8e1,stroke:#ffa000,stroke-width:1px,color:#000
-  classDef art fill:#f1f8e9,stroke:#558b2f,stroke-width:1px,color:#000
+  classDef work    fill:#fff8e1,stroke:#ffa000,stroke-width:1px,color:#000
+  classDef art     fill:#f1f8e9,stroke:#558b2f,stroke-width:1px,color:#000
 
   subgraph CALLERS["Callers (External Systems)"]
+    direction TB
     A["GitHub Actions<br/>(workflow_call)"]:::caller
+    GHA_TPL["GitHub Actions<br/>(GHA composite action)"]:::caller
     B["GitHub Actions<br/>(tas_orchestrator)"]:::caller
-    C["Azure DevOps<br/>(tas_orchestrator / curl)"]:::caller
     D["Azure DevOps<br/>(ADO template)"]:::caller
+    C["Azure DevOps<br/>(tas_orchestrator / curl)"]:::caller
     E["Any other CI/CD<br/>(tas_orchestrator)"]:::caller
   end
 
   subgraph TAS["pagopa-platform-integration-test (GitHub repo)"]
+    direction TB
     TEMPLATE{{"ADO template<br/>(tas-integration-tests.yml)"}}:::gateway
+    ACTION{{"GHA composite action<br/>(tas-integration-tests/action.yml)"}}:::gateway
     SCRIPT{{"tas_orchestrator.py<br/>(Python CLI bridge)"}}:::gateway
 
     subgraph WORKFLOW["test-automation-service.yml (GHA)"]
+      direction TB
       W1["Checkout + Setup"]:::work
       W2["Behave execution"]:::work
       W3["Result parsing"]:::work
@@ -48,17 +53,22 @@ flowchart TD
     W3 -. "generates" .-> RESULTS
   end
 
-%% Connessioni dai Callers ai Gateway
-  D -- "consumes<br/>(sync/async/raw)" --> TEMPLATE
+%% Callers → Gateways
+  D       -- "consumes (sync/async/raw)" --> TEMPLATE
+  GHA_TPL -- "consumes (sync/async/raw)" --> ACTION
   B -. "uses" .-> SCRIPT
   C -. "uses" .-> SCRIPT
   E -. "uses" .-> SCRIPT
-  TEMPLATE -. "wraps" .-> SCRIPT
 
-%% Connessioni verso il Workflow
-  A == "workflow_call<br/>(sync, native outputs)" ==> WORKFLOW
-  SCRIPT == "workflow_dispatch<br/>+ polling & download<br/>(sync / async)" ==> WORKFLOW
+%% Gateways wrap script
+  TEMPLATE -. "wraps" .-> SCRIPT
+  ACTION   -. "wraps" .-> SCRIPT
+
+%% Callers / Gateways → Workflow
+  A        == "workflow_call<br/>(sync, native outputs)"           ==> WORKFLOW
+  SCRIPT   == "workflow_dispatch<br/>+ polling & download<br/>(sync / async)" ==> WORKFLOW
   TEMPLATE -. "dispatches (if raw)" .-> WORKFLOW
+  ACTION   -. "dispatches (if raw)" .-> WORKFLOW
 ```
 
 ---
@@ -150,6 +160,48 @@ of the selected mode.
 - [`docs/tas/examples/tas-example-ado-using-template.yml`](./examples/tas-example-ado-using-template.yml)
   — ready-to-copy consumer pipeline.
 
+### 4. `.github/actions/tas-integration-tests/` — Official GHA composite action
+
+The GitHub Actions counterpart of the ADO template: a reusable composite action
+published by the TAS team. It encapsulates the boilerplate that a GHA consumer
+would otherwise have to write by hand (Python setup, orchestrator download,
+SHA-256 verification, secret wiring, stdout parsing for normalised outputs,
+post-step summary) behind a single `uses:` step. Consumers reference it from
+any job in their own workflow via
+`uses: pagopa/pagopa-platform-integration-test/.github/actions/tas-integration-tests@<ref>`,
+or pin a tag (`@v1`) for reproducible builds.
+
+| Aspect | Value |
+|---|---|
+| Path | `.github/actions/tas-integration-tests/action.yml` |
+| Supported modes (`mode` input) | `sync`, `async`, `raw` |
+| Normalised step outputs | `correlation_id`, `run_id`, `run_url`, `outcome`, `passed`, `failed`, `skipped`, `total`, `duration` |
+| Token input | `github_token` (composite actions cannot read caller secrets implicitly) |
+| Built-in post-step summary | Sync: full counter; async/raw: dispatch info (toggle via `print_summary`) |
+
+Internally the action selects the underlying invocation strategy:
+
+- `mode: sync` and `mode: async` → wrap `tas_orchestrator.py`
+- `mode: raw` → directly invoke `workflow_dispatch` via `curl`
+
+In all three cases the action publishes outputs under the same step ID with the
+same names, so the caller's `steps.<id>.outputs.*` paths are identical regardless
+of the selected mode. In `sync` mode the action propagates the orchestrator's
+exit code, so the calling job fails on test failure exactly like Option 1.
+
+Option 6 is the recommended choice for GHA callers that cannot use Option 1 —
+typically because they need to target a feature branch at runtime, or because
+they want a single switchable entry point across the three orchestrator-style
+modes.
+
+**Companion documentation:**
+- [`.github/actions/tas-integration-tests/README.md`](../../.github/actions/tas-integration-tests/README.md) — public
+  contract, prerequisites, versioning policy.
+- [`docs/tas/tas-developer-guide.md`](./tas-developer-guide.md) — "Option 6 —
+  Official GitHub Actions composite action" section.
+- [`docs/tas/examples/tas-example-gha-using-template.yml`](./examples/tas-example-gha-using-template.yml)
+  — ready-to-copy consumer workflow.
+
 ---
 
 ## Artifact schema — `test-summary.json`
@@ -160,6 +212,8 @@ of the selected mode.
   "caller_id":      "pagopa-checkout",
   "suite":          "wisp",
   "environment":    "uat",
+  "ref":            "refs/heads/main",
+  "sha":            "a1b2c3d4e5f6...",
   "passed":         42,
   "failed":         0,
   "skipped":        3,
@@ -168,6 +222,10 @@ of the selected mode.
   "outcome":        "success"
 }
 ```
+
+`ref` and `sha` reflect the TAS repository commit on which the workflow actually
+ran — useful in async/parallel-development scenarios to confirm which branch
+produced the results.
 
 ---
 
@@ -180,6 +238,7 @@ of the selected mode.
 | `tas_orchestrator.py --sync` | Any CI/CD | ✅ | ✅ via stdout + exit code | Python + requests |
 | `tas_orchestrator.py` (async) | Any CI/CD | ❌ | ❌ (correlation_id printed) | Python + requests |
 | Official ADO template | Azure DevOps only | sync / async / raw (parameter) | ✅ via normalised output variables | GitHub service connection in the ADO project |
+| Official GHA composite action | GHA only | sync / async / raw (input) | ✅ via normalised step outputs | `INTEGRATION_TEST_PAT` secret in the caller's repo |
 
 ---
 
@@ -195,4 +254,13 @@ of the selected mode.
   `repo` (to read run data) and `actions:read` (to list and download artifacts). It must be
   stored as a secret in the caller's CI/CD system and must never be hardcoded in plain text.
 - The `correlation_id` is used exclusively to locate the run and contains no sensitive information.
+- **Supply-chain integrity:** `tas_orchestrator.py` is downloaded at job time from
+  `raw.githubusercontent.com` by both the ADO template and the GHA composite action.
+  Both wrappers verify the SHA-256 digest of the script before executing it, either
+  against the sidecar `scripts/tas_orchestrator.py.sha256` published on the same `ref`
+  (default, "sidecar mode") or against an explicit hex digest provided by the consumer
+  (`orchestratorSha256` / `orchestrator_sha256`, "pinned mode" — true Subresource
+  Integrity that survives tampering of the ref tip). Verification can be disabled per
+  invocation with `verifyOrchestrator: false` / `verify_orchestrator: "false"`, but
+  this is discouraged.
 

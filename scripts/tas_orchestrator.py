@@ -46,8 +46,8 @@ DEFAULT_REF = "main"
 
 # Interval between run status polls (seconds)
 POLL_INTERVAL_SECONDS = 15
-# Maximum timeout waiting for run completion (30 minutes)
-POLL_TIMEOUT_SECONDS = 1800
+# Maximum timeout waiting for run completion (60 minutes)
+POLL_TIMEOUT_SECONDS = 3600
 # Number of retries to locate the run after dispatch
 RUN_LOOKUP_RETRIES = 20
 # Wait between run lookup attempts (seconds)
@@ -204,6 +204,11 @@ def print_summary(summary: dict) -> None:
         print(f"   Suite           : {summary['suite']}")
     if summary.get("environment"):
         print(f"   Environment     : {summary['environment']}")
+    if summary.get("ref"):
+        ref_line = summary["ref"]
+        if summary.get("sha"):
+            ref_line = f"{ref_line} ({summary['sha'][:7]})"
+        print(f"   Ref             : {ref_line}")
     print("-" * 54)
     print(f"   Passed          : {summary['passed']}")
     print(f"   Failed          : {summary['failed']}")
@@ -322,6 +327,17 @@ def run(args: argparse.Namespace) -> int:
     zip_content = client.download_artifact(artifact_id)
 
     summary = parse_summary_from_zip(zip_content)
+
+    # Emit machine-readable key=value lines BEFORE the formatted summary so
+    # callers (composite actions, ADO templates, shell scripts) can capture
+    # them with a simple grep, regardless of locale or terminal width.
+    print(f"OUTCOME={summary['outcome']}")
+    print(f"PASSED={summary['passed']}")
+    print(f"FAILED={summary['failed']}")
+    print(f"SKIPPED={summary['skipped']}")
+    print(f"TOTAL={summary['total']}")
+    print(f"DURATION={summary['duration_seconds']}")
+
     print_summary(summary)
 
     return 0 if summary["outcome"] == "success" else 1
