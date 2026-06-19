@@ -149,7 +149,7 @@ def build_page_content(data,feature_file):
                 line = line.strip()
                 line = replace_inline_code(line)
                 if SUITE_SCENARIO_ID.match(line):
-                    scenario_id = line.split('_')[2]
+                    scenario_id = line.split('_').pop()
                 elif line.startswith(KEYWORD_SCENARIO):
                     data += scenario_header.replace("{scenario_title}", line.replace('Scenario',f'Scenario {scenario_id}')).replace("{link}", link_to_add)
                     data += table_header
