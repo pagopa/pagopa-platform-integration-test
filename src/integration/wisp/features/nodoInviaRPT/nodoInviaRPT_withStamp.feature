@@ -2,7 +2,7 @@
 #language:it
 @NodoInviaRPT_WithStamp_002
 Funzionalità: Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT
- 
+  
   Contesto:
     Dati i sistemi sono operativi
 

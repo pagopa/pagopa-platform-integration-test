@@ -2,7 +2,7 @@
 #language:it
 @NodoInviaRPT_NoStamp_001
 Funzionalità: Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT
- 
+  
   Contesto:
     Dati i sistemi sono operativi
 

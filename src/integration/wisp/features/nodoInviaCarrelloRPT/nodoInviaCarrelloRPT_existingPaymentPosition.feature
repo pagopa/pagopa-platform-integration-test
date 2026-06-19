@@ -2,7 +2,7 @@
 #language:it
 @NodoInviaCarrelloRPT_ExistingPaymentPosition_006
 Funzionalità: L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT
- 
+  
   Contesto:
     Dati i sistemi sono operativi
 
