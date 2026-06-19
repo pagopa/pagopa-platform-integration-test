@@ -614,6 +614,8 @@ documented in
 | `tasRepo` | string | `pagopa/pagopa-platform-integration-test` | TAS repository (rarely overridden) |
 | `workflowFile` | string | `test-automation-service.yml` | TAS workflow file (rarely overridden) |
 | `poolVmImage` | string | `ubuntu-latest` | Agent image used by the test job |
+| `publishTests` | boolean | `true` | Publish JUnit results to the ADO **Tests** tab via `PublishTestResults@2` (sync only — silently ignored in async/raw) |
+| `testRunTitle` | string | `""` | Title of the published test run. Empty = `TAS — <suite> / <env> (<ref>)` |
 
 ### Public contract (output variables)
 
@@ -629,6 +631,7 @@ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.<NAME>']
 | `CORRELATION_ID` | ✅ | ✅ | ✅ | Identifier used to locate the run (`run-name: tas-<id>`) |
 | `RUN_ID` | ✅ | — | — | GHA workflow run numeric ID (useful to fetch artifacts) |
 | `RUN_URL` | ✅ | — | — | Direct URL to the GHA run |
+| `ARTIFACT_DIR` | ✅ | — | — | On-agent path where the TAS artifact (`test-summary.json`, `behave-results.json`, `junit/*.xml`) is extracted |
 
 In modes where a variable is not produced, the value is an **empty string**:
 downstream jobs can branch on it with `condition: ne(variables.RUN_ID, '')`.
@@ -672,6 +675,31 @@ on the same tag.
 | Risk of leaking the PAT into the rendered shell script | Possible if `$(VAR)` is used instead of `$VAR` | None (template uses the safe pattern) |
 | Output variable path depends on the mode chosen | Yes (`trigger.*` vs `dispatch.*` vs n/a) | No (always `tas.*`) |
 | Centralised upgrade when the orchestrator CLI evolves | Each caller must update its YAML | All callers benefit transparently |
+| Native ADO **Tests** tab populated automatically | No (caller must wire `PublishTestResults@2`, find the JUnit path, …) | Yes — built-in in sync mode |
+
+### Test reporting (ADO "Tests" tab)
+
+In `mode: sync` the template enables the Azure DevOps **Tests** tab on the
+build summary out of the box:
+
+1. The orchestrator step downloads the TAS artifact and extracts it under
+   `$(Agent.TempDirectory)/tas-artifact` (`test-summary.json`,
+   `behave-results.json`, `junit/*.xml`). The path is also exposed as the
+   output variable `ARTIFACT_DIR`.
+2. A `PublishTestResults@2` task runs with `condition: always()` against
+   `junit/*.xml`, so the tab is populated even when the orchestrator step
+   exits 1 on test failure — that is exactly the case the developer wants
+   to inspect from the portal.
+
+Customise the title shown on the portal with the `testRunTitle` parameter
+(empty = `TAS — <suite> / <env> (<ref>)`). Opt out entirely with
+`publishTests: false` (the artifact is still extracted, so `ARTIFACT_DIR`
+remains usable for custom downstream logic).
+
+> The publish step is added at compile time only when both `mode == 'sync'`
+> and `publishTests == true`. In `async` / `raw` the dispatch returns before
+> the artifact exists, so there is nothing to publish — the parameter is
+> silently ignored in those modes.
 
 ---
 
@@ -957,6 +985,7 @@ usage: tas_orchestrator.py [-h]
                                [--repo REPO]
                                [--workflow WORKFLOW]
                                [--ref REF]
+                               [--artifact-dir ARTIFACT_DIR]
 
 arguments:
   --suite           Test suite to run: wisp | all
@@ -969,6 +998,10 @@ arguments:
   --ref             Branch or tag of the TAS repo to run the tests from (default: main).
                     Useful during parallel development to point to a feature branch
                     not yet merged into main.
+  --artifact-dir    Sync mode only: directory where the 'test-results' artifact is
+                    extracted (test-summary.json, behave-results.json, junit/*.xml).
+                    Feed it to PublishTestResults@2 on Azure DevOps or to
+                    actions/upload-artifact on GitHub Actions. Skipped when empty.
 
 environment variables:
   GITHUB_TOKEN      Required. PAT with scopes repo + actions:read.

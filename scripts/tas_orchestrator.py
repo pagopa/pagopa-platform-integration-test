@@ -326,6 +326,17 @@ def run(args: argparse.Namespace) -> int:
              artifact_id, results_artifact.get("size_in_bytes", "?"))
     zip_content = client.download_artifact(artifact_id)
 
+    # Optionally extract the full artifact (test-summary.json, behave-results.json,
+    # junit/*.xml) on disk so the caller can publish JUnit reports natively
+    # (e.g. PublishTestResults@2 on Azure DevOps).
+    if args.artifact_dir:
+        out_dir = os.path.abspath(args.artifact_dir)
+        os.makedirs(out_dir, exist_ok=True)
+        with zipfile.ZipFile(BytesIO(zip_content)) as zf:
+            zf.extractall(out_dir)
+        log.info("Extracted artifact contents to %s", out_dir)
+        print(f"ARTIFACT_DIR={out_dir}")
+
     summary = parse_summary_from_zip(zip_content)
 
     # Emit machine-readable key=value lines BEFORE the formatted summary so
@@ -382,6 +393,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--ref", default=DEFAULT_REF,
         help=f"Git branch or ref to run the workflow on (default: {DEFAULT_REF})"
+    )
+    parser.add_argument(
+        "--artifact-dir", default="",
+        help=(
+            "Sync mode only: directory where the 'test-results' artifact is "
+            "extracted (test-summary.json, behave-results.json, junit/*.xml). "
+            "Useful to feed PublishTestResults@2 on Azure DevOps or "
+            "actions/upload-artifact on GitHub Actions. Skipped when empty."
+        )
     )
     return parser
 
