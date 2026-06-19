@@ -42,6 +42,12 @@
 ##############################################################################
 
 parameters:
+  - name: testType
+    displayName: "Test category"
+    type: string
+    default: integration
+    values: [integration, e2e, api]
+
   - name: suite
     displayName: "Test suite"
     type: string
@@ -201,6 +207,7 @@ stages:
                   mkdir -p "${ARTIFACT_DIR}"
 
                   python tas_orchestrator.py \
+                    --type "${{ parameters.testType }}" \
                     --suite "${{ parameters.suite }}" \
                     --env "${{ parameters.environment }}" \
                     --ref "${{ parameters.ref }}" \
@@ -258,6 +265,7 @@ stages:
               - script: |
                   set -euo pipefail
                   python tas_orchestrator.py \
+                    --type "${{ parameters.testType }}" \
                     --suite "${{ parameters.suite }}" \
                     --env "${{ parameters.environment }}" \
                     --ref "${{ parameters.ref }}" \
@@ -303,6 +311,7 @@ stages:
                     -d "{
                       \"ref\": \"${{ parameters.ref }}\",
                       \"inputs\": {
+                        \"test_type\": \"${{ parameters.testType }}\",
                         \"test_suite\": \"${{ parameters.suite }}\",
                         \"environment\": \"${{ parameters.environment }}\",
                         \"caller_id\": \"$(Build.Repository.Name)/$(Build.BuildId)\",

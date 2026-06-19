@@ -74,6 +74,7 @@ stages:
                 -d "{
                   \"ref\": \"${{ parameters.ref }}\",
                   \"inputs\": {
+                    \"test_type\": \"integration\",
                     \"test_suite\": \"${{ parameters.suite }}\",
                     \"environment\": \"${{ parameters.environment }}\",
                     \"caller_id\": \"$(Build.Repository.Name)/$(Build.BuildId)\",

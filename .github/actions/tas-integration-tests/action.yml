@@ -28,6 +28,10 @@ branding:
   color: "blue"
 
 inputs:
+  test_type:
+    description: "Test category to run (integration | e2e | api). Maps to src/<test_type>/<suite> on the TAS workflow."
+    required: false
+    default: "integration"
   suite:
     description: "Test suite to run (wisp | FDR | ...)"
     required: false
@@ -183,6 +187,7 @@ runs:
         # into the rendered script body, to avoid masking gaps in logs.
         GITHUB_TOKEN: ${{ inputs.github_token }}
         TAS_MODE: ${{ inputs.mode }}
+        TAS_TYPE: ${{ inputs.test_type }}
         TAS_SUITE: ${{ inputs.suite }}
         TAS_ENV: ${{ inputs.environment }}
         TAS_REF: ${{ inputs.ref }}
@@ -203,6 +208,7 @@ runs:
         case "$TAS_MODE" in
           sync)
             python tas_orchestrator.py \
+              --type "$TAS_TYPE" \
               --suite "$TAS_SUITE" \
               --env "$TAS_ENV" \
               --ref "$TAS_REF" \
@@ -229,6 +235,7 @@ runs:
 
           async)
             python tas_orchestrator.py \
+              --type "$TAS_TYPE" \
               --suite "$TAS_SUITE" \
               --env "$TAS_ENV" \
               --ref "$TAS_REF" \
@@ -269,6 +276,7 @@ runs:
               -d "{
                 \"ref\": \"${TAS_REF}\",
                 \"inputs\": {
+                  \"test_type\": \"${TAS_TYPE}\",
                   \"test_suite\": \"${TAS_SUITE}\",
                   \"environment\": \"${TAS_ENV}\",
                   \"caller_id\": \"${TAS_CALLER_ID}\",

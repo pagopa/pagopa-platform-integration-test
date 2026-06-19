@@ -26,6 +26,7 @@ jobs:
     # to pin to a different version of the TAS workflow (e.g. '@refs/tags/v1').
     uses: pagopa/pagopa-platform-integration-test/.github/workflows/test-automation-service.yml@main
     with:
+      test_type:      integration   # integration | e2e | api
       test_suite:     wisp
       environment:    uat
       caller_id:      ${{ github.repository }}
