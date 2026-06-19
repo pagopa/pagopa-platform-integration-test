@@ -54,6 +54,7 @@ resources:
 stages:
   - template: .azuredevops/templates/tas-integration-tests.yml@tas
     parameters:
+      testType: integration         # integration | e2e | api
       suite: wisp
       environment: uat
       mode: sync                    # sync | async | raw
@@ -90,6 +91,7 @@ same tag.
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
+| `testType` | string | `integration` | Test category: `integration`, `e2e`, or `api` (maps to `src/<testType>/<suite>` on the TAS workflow) |
 | `suite` | string | `wisp` | Test suite: `wisp` or `all` |
 | `environment` | string | `uat` | Target environment: `dev` or `uat` |
 | `mode` | string | `sync` | Invocation mode: `sync`, `async`, or `raw` |

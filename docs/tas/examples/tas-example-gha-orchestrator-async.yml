@@ -89,6 +89,7 @@ jobs:
           #   CORRELATION_ID=<uuid>
           #   RUN_NAME=tas-<uuid>
           OUTPUT=$(python tas_orchestrator.py \
+            --type integration \
             --suite wisp \
             --env uat \
             --ref "${TAS_REF}" \

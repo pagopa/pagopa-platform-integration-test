@@ -24,6 +24,11 @@ trigger: none
 pr: none
 
 parameters:
+  - name: testType
+    displayName: "Test category"
+    type: string
+    default: integration
+    values: [integration, e2e, api]
   - name: suite
     displayName: "Test suite"
     type: string
@@ -68,6 +73,7 @@ stages:
   # ── Stage 1: Integration tests (provided entirely by the template) ───────
   - template: .azuredevops/templates/tas-integration-tests.yml@tas
     parameters:
+      testType:           ${{ parameters.testType }}
       suite:              ${{ parameters.suite }}
       environment:        ${{ parameters.environment }}
       mode:               ${{ parameters.mode }}

@@ -113,6 +113,7 @@ stages:
               #   CORRELATION_ID=<uuid>
               #   RUN_NAME=tas-<uuid>
               python tas_orchestrator.py \
+                --type integration \
                 --suite "${{ parameters.suite }}" \
                 --env "${{ parameters.environment }}" \
                 --ref "${{ parameters.ref }}" \

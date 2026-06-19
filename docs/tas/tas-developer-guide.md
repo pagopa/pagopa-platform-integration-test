@@ -134,6 +134,7 @@ jobs:
   integration-tests:
     uses: pagopa/pagopa-platform-integration-test/.github/workflows/test-automation-service.yml@main
     with:
+      test_type: integration     # integration | e2e | api
       test_suite: wisp           # wisp | all
       environment: uat           # dev | uat
       caller_id: ${{ github.repository }}
@@ -226,10 +227,12 @@ jobs:
       - name: Run integration tests (sync)
         run: |
           python tas_orchestrator.py \
+            --type integration \
             --suite wisp \
             --env uat \
             --caller-id "${{ github.repository }}" \
             --sync
+            # Add --type {integration|e2e|api} to target a different test category
             # Add --ref <feature-branch> if tests are not yet on main
         env:
           GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_PAT }}
@@ -251,6 +254,7 @@ jobs:
    Correlation ID  : 3f2a1b4c-...
    Caller          : pagopa/pagopa-checkout
    Suite           : wisp
+   Type            : integration
    Environment     : uat
 ------------------------------------------------------
    Passed          : 42
@@ -320,11 +324,13 @@ stages:
 
           - script: |
               python tas_orchestrator.py \
+                --type integration \
                 --suite "${{ parameters.suite }}" \
                 --env "${{ parameters.environment }}" \
                 --ref "$(TAS_REF)" \
                 --caller-id "$(Build.Repository.Name)/$(Build.BuildId)" \
                 --sync
+              # Add --type {integration|e2e|api} to target a different test category
             displayName: "Run integration tests (sync)"
             env:
               GITHUB_TOKEN: $(INTEGRATION_TEST_PAT)
@@ -466,6 +472,7 @@ steps:
         -d '{
           "ref": "main",
           "inputs": {
+            "test_type": "integration",
             "test_suite": "wisp",
             "environment": "uat",
             "caller_id": "${{ github.repository }}"
@@ -485,6 +492,7 @@ steps:
       -d '{
         "ref": "main",
         "inputs": {
+          "test_type": "integration",
           "test_suite": "wisp",
           "environment": "uat",
           "caller_id": "my-ado-pipeline"
@@ -605,6 +613,7 @@ documented in
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
+| `testType` | string | `integration` | Test category: `integration`, `e2e`, or `api` (maps to `src/<testType>/<suite>` on the TAS workflow) |
 | `suite` | string | `wisp` | Test suite: `wisp` or `all` |
 | `environment` | string | `uat` | Target environment: `dev` or `uat` |
 | `mode` | string | `sync` | Invocation mode: `sync`, `async`, or `raw` |
@@ -797,6 +806,7 @@ documented in
 
 | Input | Default | Required | Description |
 |---|---|:---:|---|
+| `test_type` | `integration` | — | Test category: `integration`, `e2e`, or `api` (maps to `src/<test_type>/<suite>` on the TAS workflow) |
 | `suite` | `wisp` | — | Test suite: `wisp` or `all` |
 | `environment` | `uat` | — | Target environment: `dev` or `uat` |
 | `mode` | `sync` | — | Invocation mode: `sync`, `async`, or `raw` |
@@ -977,6 +987,7 @@ parameters and search by run-name as shown in the async section above.
 
 ```
 usage: tas_orchestrator.py [-h]
+                               [--type {integration,e2e,api}]
                                --suite {wisp,all}
                                --env {dev,uat}
                                --caller-id CALLER_ID
@@ -988,6 +999,9 @@ usage: tas_orchestrator.py [-h]
                                [--artifact-dir ARTIFACT_DIR]
 
 arguments:
+  --type            Test category to run: integration | e2e | api
+                    (default: integration). Maps to src/<type>/<suite>
+                    on the TAS workflow.
   --suite           Test suite to run: wisp | all
   --env             Target environment: dev | uat
   --caller-id       Identifier of the calling system (e.g. repository name)

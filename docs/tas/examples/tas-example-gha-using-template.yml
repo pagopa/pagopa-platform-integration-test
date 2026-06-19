@@ -24,6 +24,11 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
+      test_type:
+        description: "Test category"
+        type: choice
+        options: [integration, e2e, api]
+        default: integration
       suite:
         description: "Test suite"
         type: choice
@@ -66,6 +71,7 @@ jobs:
         # to always get the latest version of the action.
         uses: pagopa/pagopa-platform-integration-test/.github/actions/tas-integration-tests@main
         with:
+          test_type:    ${{ inputs.test_type || 'integration' }}
           suite:        ${{ inputs.suite       || 'wisp' }}
           environment:  ${{ inputs.environment || 'uat'  }}
           mode:         ${{ inputs.mode        || 'sync' }}

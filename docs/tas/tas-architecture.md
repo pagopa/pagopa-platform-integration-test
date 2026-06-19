@@ -88,6 +88,7 @@ The central GHA workflow that runs the test suites. It supports two trigger mech
 
 | Name | Type | Required | Description |
 |---|---|---|---|
+| `test_type` | string | ❌ | Test category to run (`integration`, `e2e`, `api`). Maps to `src/<test_type>/<suite>`. Default: `integration` |
 | `test_suite` | string | ✅ | Test suite to run (`wisp`, `all`) |
 | `environment` | string | ✅ | Target environment (`dev`, `uat`) |
 | `caller_id` | string | ❌ | Identifier of the calling system for traceability |
@@ -210,6 +211,7 @@ modes.
 {
   "correlation_id": "550e8400-e29b-41d4-a716-446655440000",
   "caller_id":      "pagopa-checkout",
+  "test_type":      "integration",
   "suite":          "wisp",
   "environment":    "uat",
   "ref":            "refs/heads/main",
