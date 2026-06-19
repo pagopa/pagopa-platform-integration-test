@@ -10,6 +10,9 @@
 #
 # In a real calling repository, the "uses" directive becomes:
 #   uses: pagopa/pagopa-platform-integration-test/.github/workflows/test-automation-service.yml@main
+# NOTE: GitHub Actions does not allow expressions in 'uses:', so the ref
+# after '@' must be a literal branch, tag or commit SHA — it cannot be
+# parameterised at runtime.
 ##############################################################################
 
 name: ↔️ TAS Demo - workflow_call

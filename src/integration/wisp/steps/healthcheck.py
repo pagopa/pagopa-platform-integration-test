@@ -7,7 +7,7 @@ from src.integration.utility.wisp import constants
 from src.integration.utility.wisp import utils
 
 
-@given('systems up')
+@given('i sistemi sono operativi')
 def system_up(context):
     responses = True
 

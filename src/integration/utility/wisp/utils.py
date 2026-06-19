@@ -105,15 +105,15 @@ def get_current_date():
 def get_index_from_cardinal(cardinal):
     index = -1
     match cardinal:
-        case 'first':
+        case 'prima':
             index = 0
-        case 'second':
+        case 'seconda':
             index = 1
-        case 'third':
+        case 'terza':
             index = 2
-        case 'fourth':
+        case 'quarta':
             index = 3
-        case 'fifth':
+        case 'quinta':
             index = 4
     return index
 
