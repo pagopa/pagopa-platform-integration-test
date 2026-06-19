@@ -2,7 +2,7 @@
 #language:it
 @NodoInviaRPT_ExistingPaymentPosition_003
 Funzionalità: Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT
-
+ 
   Contesto:
     Dati i sistemi sono operativi
 

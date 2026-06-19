@@ -2,7 +2,7 @@
 #language:it
 @NodoInviaCarrelloRPT_NoStamp_004
 Funzionalità: L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT
-
+ 
   Contesto:
     Dati i sistemi sono operativi
 

@@ -2,7 +2,7 @@
 #language:it
 @NodoInviaCarrelloRPT_MultiBeneficiario_007
 Funzionalità: L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT
-
+ 
   Contesto:
     Dati i sistemi sono operativi
 

@@ -2,7 +2,7 @@
 #language:it
 @NodoInviaCarrelloRPT_WithStamp_005
 Funzionalità: L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT
-
+ 
   Contesto:
     Dati i sistemi sono operativi
 
