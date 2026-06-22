@@ -25,6 +25,7 @@ flowchart TB
   subgraph CALLERS["Callers (External Systems)"]
     direction TB
     A["GitHub Actions<br/>(workflow_call)"]:::caller
+    GHA_RAW["GitHub Actions<br/>(raw workflow_dispatch / curl)"]:::caller
     GHA_TPL["GitHub Actions<br/>(GHA composite action)"]:::caller
     B["GitHub Actions<br/>(tas_orchestrator)"]:::caller
     D["Azure DevOps<br/>(ADO template)"]:::caller
@@ -67,6 +68,7 @@ flowchart TB
 %% Callers / Gateways → Workflow
   A        == "workflow_call<br/>(sync, native outputs)"           ==> WORKFLOW
   SCRIPT   == "workflow_dispatch<br/>+ polling & download<br/>(sync / async)" ==> WORKFLOW
+  GHA_RAW  -. "workflow_dispatch (raw, fire-and-forget)" .-> WORKFLOW
   TEMPLATE -. "dispatches (if raw)" .-> WORKFLOW
   ACTION   -. "dispatches (if raw)" .-> WORKFLOW
 ```
