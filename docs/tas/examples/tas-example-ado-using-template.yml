@@ -58,20 +58,27 @@ parameters:
     default: true
 
 # ── Remote template source ──────────────────────────────────────────────────
-# 'tas' is a logical alias used in the 'template:' directive below. Pin 'ref'
-# to a tag (e.g. refs/tags/v1) for reproducible builds, or to refs/heads/main
-# to always get the latest template version.
+# 'tas' is a logical alias used in the 'template:' directive below.
+#
+# IMPORTANT — two distinct 'ref' values are involved, do not confuse them:
+#   • resources.repositories[].ref (here)  → branch/tag of the repo that HOSTS
+#     the template YAML (where ADO fetches the template file from).
+#   • parameters.ref (in the 'template:' block below) → branch of the TAS repo
+#     (pagopa-platform-integration-test) the tests actually run from.
+#
+# Use the full form: refs/heads/<branch> for a branch, refs/tags/<tag> for a tag
+# (a bare branch name does not resolve reliably for ADO repository resources).
 resources:
   repositories:
     - repository: tas
       type: github
-      name: pagopa/pagopa-platform-integration-test
-      ref: refs/heads/main
+      name: pagopa/azure-pipeline-templates
+      ref: refs/heads/PQ-456-add-qa-tas-template   # template repo branch (→ refs/tags/v1 once merged)
       endpoint: pagoPA-projects   # ← GitHub service connection name (Project settings → Service connections)
 
 stages:
   # ── Stage 1: Integration tests (provided entirely by the template) ───────
-  - template: .azuredevops/templates/tas-integration-tests.yml@tas
+  - template: templates/qa-tas/tas-integration-tests.yml@tas
     parameters:
       testType:           ${{ parameters.testType }}
       suite:              ${{ parameters.suite }}
