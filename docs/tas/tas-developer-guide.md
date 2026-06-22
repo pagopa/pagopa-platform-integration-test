@@ -52,14 +52,14 @@ flowchart TD
     GHA -- Yes --> D{Are the tests already on main,\nor do you need to target\na feature branch?}
     GHA -- No --> GHA_ASYNC{Switch between modes\nfrom a single input?}
 
-    D -- "Only main\n(no parallel development)" --> F([Option 1\nworkflow_call])
+    D -- "Only main\n(no parallel development)" --> F([Option 3\nworkflow_call])
     D -- "Feature branch\n(parallel development\nwith the TAS team)" --> GHA_TPL([Option 2\nOfficial GHA composite action\nrecommended for sync on a feature branch])
 
     GHA_ASYNC -- Yes --> GHA_TPL
-    GHA_ASYNC -- No  --> E([Option 4\ntas_orchestrator async\nfrom GHA])
+    GHA_ASYNC -- No  --> E([Option 5\ntas_orchestrator async\nfrom GHA])
 
-    G2 -- Yes --> I([Option 3\ntas_orchestrator --sync\nfrom any CI/CD])
-    G2 -- No --> L([Option 5\nraw workflow_dispatch])
+    G2 -- Yes --> I([Option 4\ntas_orchestrator --sync\nfrom any CI/CD])
+    G2 -- No --> L([Option 6\nraw workflow_dispatch])
 ```
 
 ### Quick reference
@@ -69,9 +69,9 @@ flowchart TD
 | **1** | Official ADO template | sync / async / raw (parameter) | Any branch ✅ | Azure DevOps only | ✅ Normalised output variables |
 | **2** | Official GHA composite action | sync / async / raw (parameter) | Any branch ✅ | GitHub Actions only | ✅ Normalised step outputs |
 | **3** | `workflow_call` | Synchronous | `main` only (fixed) | GitHub Actions only | ✅ Native GHA outputs |
-| **4** | `workflow_dispatch` (raw) | Asynchronous | Configurable in payload | Any | ❌ |
-| **2** | `tas_orchestrator.py --sync` | Synchronous | Any branch ✅ | GHA / Azure DevOps / any | ✅ stdout + exit code |
-| **3** | `tas_orchestrator.py` (async) | Asynchronous | Any branch ✅ | GHA / Azure DevOps / any | ❌ correlation_id only |
+| **4** | `tas_orchestrator.py --sync` | Synchronous | Any branch ✅ | GHA / Azure DevOps / any | ✅ stdout + exit code |
+| **5** | `tas_orchestrator.py` (async) | Asynchronous | Any branch ✅ | GHA / Azure DevOps / any | ❌ correlation_id only |
+| **6** | `workflow_dispatch` (raw) | Asynchronous | Configurable in payload | Any | ❌ |
 
 ---
 
@@ -539,7 +539,7 @@ jobs:
 
 ---
 
-## Option 3 — `tas_orchestrator.py --sync` (synchronous)
+## Option 4 — `tas_orchestrator.py --sync` (synchronous)
 
 **When to use it:** you want synchronous behaviour with the full summary visible in the step
 log, your pipeline is not GitHub Actions, or — a very common case during parallel development —
@@ -715,7 +715,7 @@ stages:
 
 ---
 
-## Option 4 — `tas_orchestrator.py` (async)
+## Option 5 — `tas_orchestrator.py` (async)
 
 **When to use it:** you want to trigger tests without waiting for their outcome — for example
 to run them in parallel with other jobs, to gain observability without blocking the deploy,
@@ -813,7 +813,7 @@ stages:
 
 ---
 
-## Option 5 — Raw `workflow_dispatch` (fire-and-forget, no script)
+## Option 6 — Raw `workflow_dispatch` (fire-and-forget, no script)
 
 **When to use it:** maximum simplicity, no results needed, just trigger the tests.
 This is the option with the fewest dependencies: no Python, no additional script required.
