@@ -12,6 +12,9 @@ Usage:
   # Synchronous mode (blocks until completion and returns the outcome)
   python tas_orchestrator.py --suite wisp --env uat --caller-id my-service --sync
 
+  # Targeting a different test category (default: integration)
+  python tas_orchestrator.py --type e2e --suite checkout --env uat --caller-id my-service --sync
+
 Exit codes:
   0  — Tests completed successfully (or dispatch sent in async mode)
   1  — One or more scenarios failed
@@ -202,6 +205,8 @@ def print_summary(summary: dict) -> None:
         print(f"   Caller          : {summary['caller_id']}")
     if summary.get("suite"):
         print(f"   Suite           : {summary['suite']}")
+    if summary.get("test_type"):
+        print(f"   Type            : {summary['test_type']}")
     if summary.get("environment"):
         print(f"   Environment     : {summary['environment']}")
     if summary.get("ref"):
@@ -241,6 +246,7 @@ def run(args: argparse.Namespace) -> int:
     client = GitHubClient(token=token, repo=repo)
 
     inputs = {
+        "test_type":      args.type,
         "test_suite":     args.suite,
         "environment":    args.env,
         "caller_id":      args.caller_id,
@@ -248,8 +254,8 @@ def run(args: argparse.Namespace) -> int:
     }
 
     log.info("Sending dispatch to '%s' (workflow: %s, ref: %s)", repo, workflow_file, args.ref)
-    log.info("Suite: %s | Env: %s | Caller: %s | Correlation ID: %s",
-             args.suite, args.env, args.caller_id, correlation_id)
+    log.info("Type: %s | Suite: %s | Env: %s | Caller: %s | Correlation ID: %s",
+             args.type, args.suite, args.env, args.caller_id, correlation_id)
 
     client.trigger_workflow(workflow_file=workflow_file, ref=args.ref, inputs=inputs)
     log.info("Dispatch sent successfully (HTTP 204).")
@@ -361,6 +367,13 @@ def build_parser() -> argparse.ArgumentParser:
         description="Test Automation Service — CLI Bridge",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
+    )
+    parser.add_argument(
+        "--type", default="integration", choices=["integration", "e2e", "api"],
+        help=(
+            "Test category to run (default: integration). Maps to "
+            "src/<type>/<suite> on the TAS workflow."
+        )
     )
     parser.add_argument(
         "--suite", required=True, choices=["wisp", "all"],
