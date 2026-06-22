@@ -2,7 +2,7 @@ import logging
 
 from behave import given
 
-from src.conf.configuration import secrets
+from src.integration.conf.configuration import secrets
 from src.integration.wisp.utility import constants
 from src.integration.wisp.utility import utils
 

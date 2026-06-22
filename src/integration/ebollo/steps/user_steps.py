@@ -1,6 +1,6 @@
 from behave import when
 
-from src.conf.configuration import secrets
+from src.integration.conf.configuration import secrets
 from src.integration.ebollo.utility.api import post_mbd
 from src.integration.ebollo.utility.ui import mbd_checkout_payment
 from src.integration.ebollo.utility.utils import generate_mbd_payload

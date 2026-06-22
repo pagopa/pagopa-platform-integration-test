@@ -4,9 +4,9 @@ import subprocess
 import sys
 import time
 
-from src.conf.configuration import commondata
-from src.conf.configuration import secrets
-from src.conf.configuration import settings
+from src.integration.conf.configuration import commondata
+from src.integration.conf.configuration import secrets
+from src.integration.conf.configuration import settings
 from src.integration.wisp.utility import constants
 from src.integration.wisp.utility.constants import empty_flow_data
 

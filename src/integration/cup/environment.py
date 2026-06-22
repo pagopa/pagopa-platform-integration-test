@@ -1,8 +1,8 @@
 import logging
 
-from src.conf.configuration import settings
-from src.conf.configuration import secrets
-from src.conf.configuration import commondata
+from src.integration.conf.configuration import settings
+from src.integration.conf.configuration import secrets
+from src.integration.conf.configuration import commondata
 
 
 def before_all(context):
