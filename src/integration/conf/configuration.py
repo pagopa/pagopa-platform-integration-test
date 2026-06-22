@@ -10,11 +10,14 @@ ENV_VAR_PREFIX = 'WISP_DISMANTLING'
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+# Resolve paths relative to this file so tests can be run from any working directory.
+_INTEGRATION_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 # `envvar_prefix` = export envvars with ENV_VAR_PREFIX as prefix.
 # `settings_files` = Load settings files in the order.
 settings = Dynaconf(
     envvar_prefix=ENV_VAR_PREFIX,
-    settings_files=['config.yaml'],
+    settings_files=[os.path.join(_INTEGRATION_ROOT, 'config.yaml')],
 )
 
 if 'TARGET_ENV' not in os.environ:
@@ -34,7 +37,7 @@ except AttributeError as e:
     exit()
 
 commondata = Dynaconf(
-    settings_files=['commondata.yaml'],
+    settings_files=[os.path.join(_INTEGRATION_ROOT, 'commondata.yaml')],
 )
 
 try:
