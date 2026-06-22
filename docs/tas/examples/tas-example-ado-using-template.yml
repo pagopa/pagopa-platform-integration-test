@@ -78,7 +78,7 @@ resources:
 
 stages:
   # ── Stage 1: Integration tests (provided entirely by the template) ───────
-  - template: templates/qa-tas/tas-integration-tests.yml@tas
+  - template: templates/qa-tas/tas-integration-test.yml@tas
     parameters:
       testType:           ${{ parameters.testType }}
       suite:              ${{ parameters.suite }}
