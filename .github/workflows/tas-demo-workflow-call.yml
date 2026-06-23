@@ -20,6 +20,15 @@ name: ↔️ TAS Demo - workflow_call
 on:
   workflow_dispatch:
     inputs:
+      test_type:
+        description: "Test category"
+        required: true
+        type: choice
+        options:
+          - integration
+          - e2e
+          - api
+        default: integration
       test_suite:
         description: "Test suite to run"
         required: true
@@ -48,6 +57,7 @@ jobs:
     uses: ./.github/workflows/test-automation-service.yml
     secrets: inherit
     with:
+      test_type:      ${{ inputs.test_type }}
       test_suite:     ${{ inputs.test_suite }}
       environment:    ${{ inputs.environment }}
       caller_id:      "${{ github.repository }} (demo)"

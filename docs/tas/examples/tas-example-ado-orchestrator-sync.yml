@@ -86,6 +86,7 @@ stages:
           # Exit 2 = orchestration error (token, timeout, API error, etc.)
           - script: |
               python tas_orchestrator.py \
+                --type integration \
                 --suite "${{ parameters.suite }}" \
                 --env "${{ parameters.environment }}" \
                 --ref "${{ parameters.ref }}" \

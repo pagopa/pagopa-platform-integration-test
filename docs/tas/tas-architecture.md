@@ -25,6 +25,7 @@ flowchart TB
   subgraph CALLERS["Callers (External Systems)"]
     direction TB
     A["GitHub Actions<br/>(workflow_call)"]:::caller
+    GHA_RAW["GitHub Actions<br/>(raw workflow_dispatch / curl)"]:::caller
     GHA_TPL["GitHub Actions<br/>(GHA composite action)"]:::caller
     B["GitHub Actions<br/>(tas_orchestrator)"]:::caller
     D["Azure DevOps<br/>(ADO template)"]:::caller
@@ -67,6 +68,7 @@ flowchart TB
 %% Callers / Gateways → Workflow
   A        == "workflow_call<br/>(sync, native outputs)"           ==> WORKFLOW
   SCRIPT   == "workflow_dispatch<br/>+ polling & download<br/>(sync / async)" ==> WORKFLOW
+  GHA_RAW  -. "workflow_dispatch (raw, fire-and-forget)" .-> WORKFLOW
   TEMPLATE -. "dispatches (if raw)" .-> WORKFLOW
   ACTION   -. "dispatches (if raw)" .-> WORKFLOW
 ```
@@ -88,6 +90,7 @@ The central GHA workflow that runs the test suites. It supports two trigger mech
 
 | Name | Type | Required | Description |
 |---|---|---|---|
+| `test_type` | string | ❌ | Test category to run (`integration`, `e2e`, `api`). Maps to `src/<test_type>/<suite>`. Default: `integration` |
 | `test_suite` | string | ✅ | Test suite to run (`wisp`, `all`) |
 | `environment` | string | ✅ | Target environment (`dev`, `uat`) |
 | `caller_id` | string | ❌ | Identifier of the calling system for traceability |
@@ -210,6 +213,7 @@ modes.
 {
   "correlation_id": "550e8400-e29b-41d4-a716-446655440000",
   "caller_id":      "pagopa-checkout",
+  "test_type":      "integration",
   "suite":          "wisp",
   "environment":    "uat",
   "ref":            "refs/heads/main",
