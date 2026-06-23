@@ -27,6 +27,15 @@ name: ↔️ TAS Demo — composite action
 on:
   workflow_dispatch:
     inputs:
+      test_type:
+        description: "Test category"
+        required: true
+        type: choice
+        options:
+          - integration
+          - e2e
+          - api
+        default: integration
       test_suite:
         description: "Test suite to run"
         required: true
@@ -90,6 +99,7 @@ jobs:
         id: tas
         uses: ./.github/actions/tas-integration-tests
         with:
+          test_type:           ${{ inputs.test_type }}
           suite:               ${{ inputs.test_suite }}
           environment:         ${{ inputs.environment }}
           mode:                ${{ inputs.mode }}
