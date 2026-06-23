@@ -1,7 +1,8 @@
-# language: it
-@FEAT_002_NodoInviaRPT_WithStamp
+#3119448801
+#language:it
+@NodoInviaRPT_WithStamp_002
 Funzionalità: Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT
-
+  
   Contesto:
     Dati i sistemi sono operativi
 
@@ -9,7 +10,7 @@ Funzionalità: Utente paga un pagamento singolo con marca da bollo tramite nodoI
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  @FEAT_002_NodoInviaRPT_WithStamp_SCENARIO_01
+  @NodoInviaRPT_WithStamp_002_01
   Scenario: Utente paga un pagamento singolo con nessun versamento semplice e una marca da bollo
     Data una singola RPT di tipo BBT con 1 versamenti di cui 1 sono marche da bollo
     Quando l'utente tenta di pagare la RPT sul sito dell'EC
@@ -19,7 +20,7 @@ Funzionalità: Utente paga un pagamento singolo con marca da bollo tramite nodoI
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  @FEAT_002_NodoInviaRPT_WithStamp_SCENARIO_02
+  @NodoInviaRPT_WithStamp_002_02
   Scenario: Utente paga un pagamento singolo con un versamento semplice e una marca da bollo
     Data una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo
     Quando l'utente tenta di pagare la RPT sul sito dell'EC
@@ -29,7 +30,7 @@ Funzionalità: Utente paga un pagamento singolo con marca da bollo tramite nodoI
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  @FEAT_002_NodoInviaRPT_WithStamp_SCENARIO_03
+  @NodoInviaRPT_WithStamp_002_03
   Scenario: Utente paga un pagamento singolo con due versamenti semplici e una marca da bollo
     Data una singola RPT di tipo BBT con 3 versamenti di cui 1 sono marche da bollo
     Quando l'utente tenta di pagare la RPT sul sito dell'EC
@@ -39,7 +40,7 @@ Funzionalità: Utente paga un pagamento singolo con marca da bollo tramite nodoI
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  @FEAT_002_NodoInviaRPT_WithStamp_SCENARIO_04
+  @NodoInviaRPT_WithStamp_002_04
   Scenario: Utente paga un pagamento singolo con due versamenti semplici e due marche da bollo
     Data una singola RPT di tipo BBT con 4 versamenti di cui 2 sono marche da bollo
     Quando l'utente tenta di pagare la RPT sul sito dell'EC
@@ -49,7 +50,7 @@ Funzionalità: Utente paga un pagamento singolo con marca da bollo tramite nodoI
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  @FEAT_002_NodoInviaRPT_WithStamp_SCENARIO_05
+  @NodoInviaRPT_WithStamp_002_05
   Scenario: Utente paga un pagamento singolo di tipo PO con nessun versamento semplice e una marca da bollo
     Data una singola RPT di tipo PO con 1 versamenti di cui 1 sono marche da bollo
     Quando l'utente tenta di pagare la RPT sul sito dell'EC
@@ -59,7 +60,7 @@ Funzionalità: Utente paga un pagamento singolo con marca da bollo tramite nodoI
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @unhappy_path
-  @FEAT_002_NodoInviaRPT_WithStamp_SCENARIO_06
+  @NodoInviaRPT_WithStamp_002_06
   Scenario: Utente paga un pagamento singolo di tipo PO con un versamento semplice e una marca da bollo, ma fallisce la validazione semantica
     Data una singola RPT di tipo PO con 2 versamenti di cui 1 sono marche da bollo
     Quando l'utente tenta di pagare la RPT sul sito dell'EC ma il pagamento fallisce

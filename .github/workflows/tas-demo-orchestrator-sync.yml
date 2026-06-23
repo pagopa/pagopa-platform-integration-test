@@ -22,6 +22,15 @@ name: ↔️ TAS Demo — orchestrator sync
 on:
   workflow_dispatch:
     inputs:
+      test_type:
+        description: "Test category"
+        required: true
+        type: choice
+        options:
+          - integration
+          - e2e
+          - api
+        default: integration
       test_suite:
         description: "Test suite to run"
         required: true
@@ -91,6 +100,7 @@ jobs:
         id: run
         run: |
           python scripts/tas_orchestrator.py \
+            --type "${{ inputs.test_type }}" \
             --suite "${{ inputs.test_suite }}" \
             --env "${{ inputs.environment }}" \
             --caller-id "${{ github.repository }} (demo)" \

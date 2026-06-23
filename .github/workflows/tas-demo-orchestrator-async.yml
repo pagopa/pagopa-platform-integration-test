@@ -22,6 +22,15 @@ name: ↔️ TAS Demo — orchestrator async
 on:
   workflow_dispatch:
     inputs:
+      test_type:
+        description: "Test category"
+        required: true
+        type: choice
+        options:
+          - integration
+          - e2e
+          - api
+        default: integration
       test_suite:
         description: "Test suite to run"
         required: true
@@ -91,6 +100,7 @@ jobs:
           #   CORRELATION_ID=<uuid>
           #   RUN_NAME=tas-<uuid>
           OUTPUT=$(python scripts/tas_orchestrator.py \
+            --type "${{ inputs.test_type }}" \
             --suite "${{ inputs.test_suite }}" \
             --env "${{ inputs.environment }}" \
             --ref "${{ inputs.ref || github.ref_name }}" \

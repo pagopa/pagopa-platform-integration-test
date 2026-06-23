@@ -40,10 +40,10 @@ class AzureKeyVaultSecretResolver(SecretResolver):
             context.test_config = load_test_config(context.secret_resolver)
     """
 
-    def __init__(self):
+    def __init__(self, credential = None):
         self._client = SecretClient(
             os.environ["AZURE_KEY_VAULT_URL"],
-            DefaultAzureCredential()
+            credential or DefaultAzureCredential()#to change credential manager
         )
 
     def resolve(self, secret_name: str) -> Any:

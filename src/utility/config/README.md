@@ -14,6 +14,11 @@ Questa cartella gestisce il caricamento configurazioni test e la risoluzione dei
     - `load_json_config(path, secret_resolver)`
     - `load_test_config(secret_resolver)` (usa env var `TEST_CONFIG_FILE`)
 
+      Nota: `secret_resolver` può essere un singolo oggetto con metodo
+      `resolve(name)` oppure una lista/tupla di resolver. Se è una lista,
+      i resolver verranno interrogati in ordine e la prima risoluzione
+      non-`None` sarà utilizzata.
+
 - `secrets/__init__.py`
   - Re-export dei resolver disponibili.
 
@@ -40,9 +45,20 @@ resolver = DictSecretResolver({
     "client_secret": "super-secret",
     "api_key": "test-key",
 })
-
 config = load_test_config(resolver)
 print(config["service"]["url"])
+
+## Esempio con più resolver
+
+```python
+# prova prima il resolver locale, poi il KeyVault se non presente
+resolver_list = [
+  DictSecretResolver({"client_secret": "local-secret"}),
+  AzureKeyVaultSecretResolver(),
+]
+
+config = load_test_config(resolver_list)
+```
 ```
 
 ## Esempio CI/cloud (Azure Key Vault)
