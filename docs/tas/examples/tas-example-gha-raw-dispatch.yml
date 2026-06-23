@@ -52,6 +52,7 @@ jobs:
             -d "{
               \"ref\": \"${TAS_REF}\",
               \"inputs\": {
+                \"test_type\": \"integration\",
                 \"test_suite\": \"wisp\",
                 \"environment\": \"uat\",
                 \"caller_id\": \"${{ github.repository }}\",

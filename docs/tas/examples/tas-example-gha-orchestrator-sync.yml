@@ -82,6 +82,7 @@ jobs:
       - name: Run integration tests (sync)
         run: |
           python tas_orchestrator.py \
+            --type integration \
             --suite wisp \
             --env uat \
             --ref "${TAS_REF}" \
