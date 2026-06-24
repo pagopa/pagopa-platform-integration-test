@@ -9,6 +9,7 @@
 1. Verify `gh` exists: `gh --version`
 2. Verify auth: `gh auth status`
 3. Stop if checks fail.
+4. Ensure all commit messages and PR descriptions are in English.
 
 ## PR data collection
 
@@ -34,22 +35,36 @@ git diff main...HEAD --stat
 
 ## PR creation
 
-Resolve assignee and reviewers with:
+1. Resolve assignee and reviewers with:
 
-```bash
-$ghUser = gh api user --jq ".login"
-$reviewers = "aferracci,cristianosticca-pagopa,marcopiccoloalten-hash,marcods02,daniele-quero"
-```
+  ```bash
+  $ghUser = gh api user --jq ".login"
+  $reviewers = "aferracci,cristianosticca-pagopa,marcopiccoloalten-hash,marcods02,daniele-quero"
+  ```
 
-Create PR with:
+2. Store title and body in variables for later use:
 
-```bash
-gh pr create \
-  --base main \
-  --head <current-branch> \
-  --title "<human-readable title>" \
-  --body "<filled PR body>" \
-  --label <one or more among the available labels> \
-  --reviewer $reviewers \
-  --assignee $ghUser
-```
+  ```bash
+  $title = "<inferred human-readable title>"
+  $body = "<filled PR template body>"
+  ```
+
+3. Store labels and current branch in a variable for later use:
+
+  ```bash
+  $labels = "<comma-separated list of inferred labels>"
+  $branch =  `git branch --show-current`
+  ```
+
+4. Create PR with:
+
+  ```bash
+  gh pr create \
+    --base main \
+    --head $branch \
+    --title "$title" \
+    --body "$body" \
+    --label "$labels" \
+    --reviewer $reviewers \
+    --assignee $ghUser
+  ```
