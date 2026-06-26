@@ -42,5 +42,6 @@ Each agent reads **only** the instruction files listed for its role. Instruction
 | `QA-runner` | [`run-tests.instructions.md`](.github/instructions/run-tests.instructions.md) |
 | `QA-closer` | [`git-commit.instructions.md`](.github/instructions/git-commit.instructions.md), [`git-pr.instructions.md`](.github/instructions/git-pr.instructions.md) |
 | `QA-orchestrator` | all of the above (delegates to sub-agents) |
+| `any` | [`github-commit.instructions.md`](.github/instructions/github-actions.instructions.md) | -> any agent should read this file to understand the GitHub commitworkflow.
 
 > **Detailed instructions** live in `.github/instructions/`. Do not duplicate content here.
