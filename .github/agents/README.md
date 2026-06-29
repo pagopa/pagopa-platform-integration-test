@@ -20,6 +20,8 @@ gli eventuali handoff verso altri agenti.
 | [QA-runner.agent.md](QA-runner.agent.md) | Esecuzione test e diagnosi failure | Quando bisogna eseguire suite, analizzare errori e aprire loop di fix |
 | [QA-closer.agent.md](QA-closer.agent.md) | Chiusura task QA | Quando serve aggiornare docs/report e completare git commit/PR |
 | [QA-orchestrator.agent.md](QA-orchestrator.agent.md) | Coordinamento end-to-end | Quando si vuole orchestrare il ciclo completo QA |
+| [Mermaid-flow-engineer.agent.md](Mermaid-flow-engineer.agent.md) | Generazione diagrammi Mermaid (Markdown, opzionale SVG) | Quando servono flow diagram dei file `.github/agents`, `.github/prompts`, `.github/instructions` o di altri Markdown |
+| [Marp-presentation-engineer.agent.md](Marp-presentation-engineer.agent.md) | Autoring di presentazioni Marp con stile e palette guidati | Quando bisogna scaffoldare o aggiornare un deck Marp con interview (stile/tono/colori) |
 
 ## Flusso di lavoro consigliato
 
