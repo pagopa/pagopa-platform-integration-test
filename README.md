@@ -553,6 +553,7 @@ Input:
 
 | Input | Valori | Descrizione |
 |---|---|---|
+| `test_type` | `integration`, `e2e`, `api` | categoria di test (default `integration`, mappa su `src/<test_type>/<suite>`) |
 | `test_suite` | `wisp`, `all` | suite da eseguire |
 | `environment` | `dev`, `uat` | ambiente target |
 | `caller_id` | stringa libera | sistema chiamante |
@@ -599,10 +600,14 @@ python scripts/tas_orchestrator.py \
   --caller-id my-service
 ```
 
+Per selezionare una categoria diversa da `integration` aggiungere `--type {integration|e2e|api}`
+(default: `integration`, mappa su `src/<type>/<suite>`).
+
 Esecuzione sincrona:
 
 ```bash
 python scripts/tas_orchestrator.py \
+  --type integration \
   --suite wisp \
   --env uat \
   --caller-id my-service \

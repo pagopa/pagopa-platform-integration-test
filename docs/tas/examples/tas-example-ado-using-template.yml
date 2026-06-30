@@ -24,6 +24,11 @@ trigger: none
 pr: none
 
 parameters:
+  - name: testType
+    displayName: "Test category"
+    type: string
+    default: integration
+    values: [integration, e2e, api]
   - name: suite
     displayName: "Test suite"
     type: string
@@ -43,39 +48,55 @@ parameters:
     displayName: "TAS repo branch/tag"
     type: string
     default: main
+  - name: verifyOrchestrator
+    displayName: "Verify tas_orchestrator.py SHA-256 integrity (recommended)"
+    type: boolean
+    default: true
+  - name: publishTests
+    displayName: "Publish JUnit results to the 'Tests' tab (sync only)"
+    type: boolean
+    default: true
 
 # ── Remote template source ──────────────────────────────────────────────────
-# 'tas' is a logical alias used in the 'template:' directive below. Pin 'ref'
-# to a tag (e.g. refs/tags/v1) for reproducible builds, or to refs/heads/main
-# to always get the latest template version.
+# 'tas' is a logical alias used in the 'template:' directive below.
+#
+# IMPORTANT — two distinct 'ref' values are involved, do not confuse them:
+#   • resources.repositories[].ref (here)  → branch/tag of the repo that HOSTS
+#     the template YAML (where ADO fetches the template file from).
+#   • parameters.ref (in the 'template:' block below) → branch of the TAS repo
+#     (pagopa-platform-integration-test) the tests actually run from.
+#
+# Use the full form: refs/heads/<branch> for a branch, refs/tags/<tag> for a tag
+# (a bare branch name does not resolve reliably for ADO repository resources).
 resources:
   repositories:
     - repository: tas
       type: github
-      name: pagopa/pagopa-platform-integration-test
-      ref: refs/heads/main
+      name: pagopa/azure-pipeline-templates
+      ref: refs/heads/PQ-456-add-qa-tas-template   # template repo branch (→ refs/tags/v1 once merged)
       endpoint: pagoPA-projects   # ← GitHub service connection name (Project settings → Service connections)
 
 stages:
   # ── Stage 1: Integration tests (provided entirely by the template) ───────
-  - template: .azuredevops/templates/tas-integration-tests.yml@tas
+  - template: templates/qa-tas/tas-integration-test.yml@tas
     parameters:
-      suite:       ${{ parameters.suite }}
-      environment: ${{ parameters.environment }}
-      mode:        ${{ parameters.mode }}
-      ref:         ${{ parameters.ref }}
-      # Optional overrides (defaults shown):
-      # secretsGroup: tas-integration-secrets
+      testType:           ${{ parameters.testType }}
+      suite:              ${{ parameters.suite }}
+      environment:        ${{ parameters.environment }}
+      mode:               ${{ parameters.mode }}
+      ref:                ${{ parameters.ref }}
+      verifyOrchestrator: ${{ parameters.verifyOrchestrator }}
+      publishTests:       ${{ parameters.publishTests }}
+      # Optional overrides — exposed inline because they are typically
+      # set-once-and-forget (not toggled from the portal at run-time):
+      # secretsGroup:  tas-integration-secrets
       # pythonVersion: "3.11"
-      # poolVmImage: "ubuntu-latest"
+      # poolVmImage:   "ubuntu-latest"
+      # testRunTitle:  ""                # default — auto-generated as "TAS — <suite> / <env> (<ref>)"
       #
-      # Supply-chain integrity (orchestrator-based modes only):
-      #   verifyOrchestrator: true     # default — verify SHA-256 after download
-      #   orchestratorSha256: ""       # default — use the published sidecar from the same ref
-      #
-      # For strict supply-chain requirements, pin the digest explicitly so the
-      # check survives even tampering of the ref tip (true SRI). Compute it once
-      # against the version you trust and bake it in:
+      # Supply-chain integrity, pinned mode (true SRI). When set, the sidecar
+      # verification is replaced by a check against this explicit digest.
+      # Compute it once against the version you trust and bake it in:
       #   curl -sSfL https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/refs/tags/v1/scripts/tas_orchestrator.py | sha256sum
       # orchestratorSha256: "a68b6c43c98517352c6d182df4a97b67e33a94ed79ae56949b1f6e6a179b5fe1"
 

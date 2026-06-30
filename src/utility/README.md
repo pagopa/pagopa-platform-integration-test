@@ -16,6 +16,9 @@ Questa cartella contiene componenti condivisi per i test di integrazione/API: ca
 ## Flusso tipico di utilizzo
 
 1. Carica la configurazione con `load_test_config(...)` o `load_json_config(...)`.
+	Nota: è possibile passare a `load_test_config` un singolo resolver o una
+	lista/tupla di resolver; in quest'ultimo caso vengono interrogati in
+	ordine e la prima risoluzione non-`None` viene utilizzata.
 2. Costruisci la strategia auth con funzioni in `rest_auth_factory.py`.
 3. Crea il client con `build_rest_client(...)`.
 4. Usa `client.get/post/put/patch/delete(...)` negli step Behave.

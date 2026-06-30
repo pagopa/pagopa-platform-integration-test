@@ -45,8 +45,38 @@ def _resolve_value(value: Any, secret_resolver: Any) -> Any:
         match = SECRET_PLACEHOLDER_PATTERN.match(value)
         if match:
             secret_name = match.group("name")
-            secret_value = secret_resolver.resolve(secret_name)
-            return secret_value
+            # Support both a single resolver and a list/tuple of resolvers.
+            resolvers = (
+                list(secret_resolver)
+                if isinstance(secret_resolver, (list, tuple))
+                else [secret_resolver]
+            )
+
+            last_exc: Exception | None = None
+            for resolver in resolvers:
+                if resolver is None:
+                    continue
+                try:
+                    resolve_fn = getattr(resolver, "resolve", None)
+                    if not callable(resolve_fn):
+                        continue
+                    secret_value = resolve_fn(secret_name)
+                except Exception as exc:  # defensive: skip resolver on error
+                    last_exc = exc
+                    continue
+
+                # Treat any non-None return as a successful resolution.
+                if secret_value is not None:
+                    return secret_value
+
+            # If none of the resolvers returned a value, raise an informative error.
+            if last_exc:
+                raise JsonConfigLoaderError(
+                    f"Secret '{secret_name}' not resolved by any resolver (last error: {last_exc})."
+                )
+            raise JsonConfigLoaderError(
+                f"Secret '{secret_name}' not found in any provided resolver."
+            )
         return value
 
     # Ricorsione su oggetti JSON annidati.
@@ -142,7 +172,7 @@ def _parse_config_content(raw_content: str, file_path: Path) -> Dict[str, Any]:
         return _parse_key_value_config(raw_content)
 
 
-def load_json_config(path: str | Path, secret_resolver: Any) -> Dict[str, Any]:
+def load_json_config(path: str | Path, secret_resolver: Any | list[Any]) -> Dict[str, Any]:
     """
     Legge un file di configurazione e risolve i placeholder "$var_name".
 
@@ -158,6 +188,10 @@ def load_json_config(path: str | Path, secret_resolver: Any) -> Dict[str, Any]:
         default_headers:{"Content-Type":"application/json"}
         oauth2:{"client_id":"my-client","client_secret":"$oauth_client_secret"}
     """
+    # Notes:
+    #     `secret_resolver` può essere un singolo resolver oppure una lista/tupla
+    #     di resolver; in quest'ultimo caso vengono interrogati in ordine e la
+    #     prima risoluzione non-`None` viene utilizzata.
     file_path = Path(path)
 
     if not file_path.exists():
@@ -169,7 +203,7 @@ def load_json_config(path: str | Path, secret_resolver: Any) -> Dict[str, Any]:
     return _resolve_value(raw, secret_resolver)
 
 
-def load_test_config(secret_resolver: Any) -> Dict[str, Any]:
+def load_test_config(secret_resolver: Any | list[Any]) -> Dict[str, Any]:
     """
     Carica il file JSON di configurazione il cui percorso è definito
     nella variabile d'ambiente TEST_CONFIG_FILE.
@@ -179,7 +213,9 @@ def load_test_config(secret_resolver: Any) -> Dict[str, Any]:
     configurazioni diverse (es. ambienti dev/uat/prod).
 
     Args:
-        secret_resolver: oggetto con metodo resolve(secret_name: str) -> Any.
+        secret_resolver: oggetto (o lista di oggetti) con metodo
+            `resolve(secret_name: str) -> Any`. Se viene passata una lista, i
+            resolver vengono interrogati in ordine.
 
     Returns:
         Dizionario Python con segreti già sostituiti.
