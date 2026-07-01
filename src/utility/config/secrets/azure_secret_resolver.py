@@ -43,8 +43,10 @@ class AzureKeyVaultSecretResolver(SecretResolver):
     def __init__(self, credential = None):
         self._client = SecretClient(
             os.environ["AZURE_KEY_VAULT_URL"],
-            credential or DefaultAzureCredential()#to change credential manager
+            credential or DefaultAzureCredential()
         )
+        if not self._client:
+            raise RuntimeError("AZURE_KEY_VAULT_URL must be set (or pass credential).")
 
     def resolve(self, secret_name: str) -> Any:
         """
@@ -68,5 +70,8 @@ class AzureKeyVaultSecretResolver(SecretResolver):
             resolver = AzureKeyVaultSecretResolver()
             password = resolver.resolve("db-password")
         """
+
+        secret_name = secret_name.replace('_','-')
         secret = self._client.get_secret(secret_name)
+        self._client.close()
         return secret.value
