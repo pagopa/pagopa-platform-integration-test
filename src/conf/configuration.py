@@ -34,14 +34,13 @@ settings = settings[os.environ['TARGET_ENV']]
 
 # Load the secrets for the specified environment
 secrets = {}
-secrets_resolver = list()
+secrets_resolver = None
 
 # select the type of secret resolver based on the environment (CI or local testing)
 if os.getenv("AZURE_KEY_VAULT_URL") is not None and os.getenv("AZURE_KEY_VAULT_URL") != "":
     # resolve secrets from Azure Key Vault in CI, otherwise use DictSecretResolver for local testing
-    secrets_resolver.append(AzureKeyVaultSecretResolver())
-    if check_apim_variables():
-        secrets_resolver.append(ApimSubscriptionResolver())
+    secrets_resolver = AzureKeyVaultSecretResolver()
+  
 else:
     # resolve secrets from DictSecretResolver for local testing, takes a dictonary of secrets which he uses to resolve secrets founds in the test config file
     try:
@@ -53,6 +52,8 @@ else:
         exit()
 
 secrets = load_json_config(secrets_resolver)
+if isinstance(secrets_resolver, AzureKeyVaultSecretResolver):
+    secrets_resolver.close_client()
 
 commondata = Dynaconf(
     settings_files=['commondata.yaml'],

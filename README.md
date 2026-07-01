@@ -220,23 +220,16 @@ I secret utilizzati dall'applicazione possono essere:
 - risolti da un file di secret (per il testing in locale);
 - risolti dal key vault Azure relativo all'ambiente di test (dev, uat).
 
-Inoltre, è presente l'`ApimSubscriptionResolver`, utilizzato per risolvere le subscription key dei servizi, leggendole dal servizio APIM di Azure relativo all'ambiente di test (dev,uat).
-
-I resolver (che siano di secret o di subscription keys) possono essere usati in maniera sequenziale in quanto il sistema di risoluzione accetta, oltre al singolo resolver, una lista.
-
-La lista permette al sistema di provare la risoluzione di un secret più di una volta, siccome in caso di mancata risoluzione con un resolver, si passerà al successivo; la mancata risoluzione definitiva di un secret solleva un eccezione, interrompendo il flusso applicativo.
+Inoltre, è presente l'`ApimSubscriptionResolver`, utilizzato per risolvere le subscription key dei servizi, leggendole dal servizio APIM di Azure relativo all'ambiente di test (dev,uat), al momento però **non è impiegato**.
 
 
 #### Requisiti comuni
-Per entrambe le casistiche, è necessario che nel workspace siano presenti:
-- un file denominato "common_placeholders.json" contenente i secret comuni a più suite di test;
-- un file specifico per la singola suite, denominato "{suite}_placeholders.json" (es. wisp_placeholders.json).
+Per entrambe le casistiche, è necessario che nel workspace sia presente:
+- un file specifico per la singola suite, denominato "{suite}_config.json" (es. wisp_config.json), contenente sia i secrets della suite che le sue configurazioni (es. url di un servizio, timeout, ecc...)
 
+L'applicazione risolverà poi i secret presenti nel file e li assegnerà nell'attributo secret presente nell'oggetto context, per accedere al secret bisognerà richiamarlo utilizzando il nome ad esso associato nel file in cui è presente. es. `context.secret.NOME_SECRET` 
 
-
-L'applicazione risolverà poi i secret presenti in entrambi i file e li assegnerà nell'attributo secret presente nell'oggetto context, per accedere al secret bisognerà richiamarlo utilizzando il nome ad esso associato nel file in cui è presente. es. `context.secret.NOME_SECRET` 
-
-In locale è necessario che entrambi i file siano inseriti manualmente nel workspace, rispettivamente sotto la cartelle `./config/` e `./config/suites/`; invece durante l'esecuzione della suite di test tramite github i file saranno iniettati in quelle locations dal runner github. 
+È necessario che il file sia inserito manualmente nel workspace, sotto la cartelle `./config/suites_config/`.
 
 
 Il formato dei secret da risolvere all'interno dei file JSON **DEVE** essere il seguente:
@@ -258,10 +251,12 @@ Esempio:
 ```
 {
   "uat":{
-    "EXAMPLE_SECRET": "$EXAMPLE_SECRET"
+    "EXAMPLE_SECRET": "$EXAMPLE_SECRET",
+    "EXAMPLE_CONFIG": "CONFIG"
   },
   "dev":{
-    "EXAMPLE_SECRET": "$EXAMPLE_SECRET"
+    "EXAMPLE_SECRET": "$EXAMPLE_SECRET",
+    "EXAMPLE_CONFIG": "CONFIG"
   }
 }
 ```
@@ -271,7 +266,7 @@ L'applicazione ha bisogno che siano settate le seguenti variabili d'ambiente:
 - `TARGET_ENV` -> Utilizzata per indicare l'env da cui leggere i placeholders, sia per i secret   comuni che per quelli specifici per la suite;
 
 #### Risoluzione secret in locale
-Per la risoluzione locale dei secret è necessario che sia presente un file `secrets.yaml` sotto `./config/`, affinchè il sistema possa utilizzarlo per risolvere i secret presenti in entrambi i file di placeholders.
+Per la risoluzione locale dei secret è necessario che sia presente un file `secrets.yaml` sotto `./config/`, affinchè il sistema possa utilizzarlo per risolvere i secret presenti nel file di config.
 
 #### Autenticazione Azure
 L'autenticazione verso Azure avviene tramite `DefaultAzureCredential`, che prova in sequenza le credenziali disponibili nell'ambiente di esecuzione fino a trovare un'identità valida. Questo meccanismo viene usato sia per la risoluzione dei secret dal Key Vault Azure sia per il recupero delle subscription key da APIM, così da avere un unico modello di autenticazione per entrambi i resolver.
@@ -299,9 +294,6 @@ Per la risoluzione dei secret dal Key vault è necessario che sia presente la va
 
 #### Risoluzione secret da APIM
 Per la risoluzione delle subscription key da APIM è necessario che siano presenti le variabili d'ambiente `AZURE_SUBSCRIPTION_ID`, `APIM_RESOURCE_GROUP` e `APIM_SERVICE_NAME`, così che il resolver possa creare il client di management e recuperare la subscription key corretta dal servizio APIM. Il nome del secret può essere un nome logico mappato tramite la variabile `APIM_SUBSCRIPTION_<NAME>` oppure direttamente l'identificativo della subscription APIM; inoltre, è possibile richiedere la chiave `primary` o `secondary` usando il suffisso `:primary` o `:secondary`.
-
-
-
 
 ## Suite disponibili
 

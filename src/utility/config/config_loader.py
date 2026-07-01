@@ -18,11 +18,9 @@ from typing import Any, Dict
 #   TEST_CONFIG_FILE=config/tests/my_service.json behave src/...
 #
 # ============================================================================
-TEST_CONFIG_FILE_ENV_VAR = "TEST_CONFIG_FILE"
 TARGET_ENV_VAR = "TARGET_ENV"
 SUITE_ENV_VAR = "suite"
-COMMON_FILE_PATH = "config/common_placeholders.json"
-SUITE_FILE_PATH_PREFIX = "config/{suite}_placeholders.json"
+SUITE_FILE_PATH_PREFIX = "config/{suite}_config.json"
 
 # ============================================================================
 # Placeholder format
@@ -160,16 +158,13 @@ def load_json_config(secret_resolver: Any | list[Any]) -> Dict[str, Any]:
     if(os.getenv(TARGET_ENV_VAR) is None or os.getenv(TARGET_ENV_VAR) == "") or (os.getenv(SUITE_ENV_VAR) is None or os.getenv(SUITE_ENV_VAR) == ""):
         raise JsonConfigLoaderError(f"Environment variable '{TARGET_ENV_VAR}' or '{SUITE_ENV_VAR}' is not set. Set them to the target environment (e.g., 'uat', 'dev') and suite (e.g., 'wisp', 'cup').")
 
-    common_file_path = Path(COMMON_FILE_PATH)
     suite_file_path = Path(SUITE_FILE_PATH_PREFIX.replace("{suite}", os.getenv(SUITE_ENV_VAR)))
-    if not common_file_path.exists() or not suite_file_path.exists():
-        raise JsonConfigLoaderError(f"Config file not found: {common_file_path} or {suite_file_path}")
+    if not suite_file_path.exists():
+        raise JsonConfigLoaderError(f"Config file not found: {suite_file_path}")
 
-    common_content = common_file_path.read_text(encoding="utf-8")
     suite_content = suite_file_path.read_text(encoding="utf-8")
    
-    parsed_content = _parse_config_content(common_content, common_file_path).get(os.getenv(TARGET_ENV_VAR), {})
-    parsed_content.update(_parse_config_content(suite_content, suite_file_path).get(os.getenv(TARGET_ENV_VAR), {}))
+    parsed_content = _parse_config_content(suite_content, suite_file_path).get(os.getenv(TARGET_ENV_VAR), {})
 
     if not parsed_content:
         raise JsonConfigLoaderError(

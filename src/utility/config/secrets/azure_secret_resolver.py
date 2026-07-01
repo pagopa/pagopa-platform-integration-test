@@ -45,8 +45,14 @@ class AzureKeyVaultSecretResolver(SecretResolver):
             os.environ["AZURE_KEY_VAULT_URL"],
             credential or DefaultAzureCredential()
         )
+
         if not self._client:
             raise RuntimeError("AZURE_KEY_VAULT_URL must be set (or pass credential).")
+        
+    def close_client(self):
+        """Chiude il client di Azure Key Vault."""
+        if self._client:
+            self._client.close()
 
     def resolve(self, secret_name: str) -> Any:
         """
@@ -73,5 +79,4 @@ class AzureKeyVaultSecretResolver(SecretResolver):
 
         secret_name = secret_name.replace('_','-')
         secret = self._client.get_secret(secret_name)
-        self._client.close()
         return secret.value
