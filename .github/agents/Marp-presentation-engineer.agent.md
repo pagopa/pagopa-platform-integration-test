@@ -17,7 +17,7 @@ their HTML renders under `reports/`.
 
 ## Workflow
 
-1. Load the skill before any action: read
+1. Load the skill before any action: call `read_file` on
    [`.github/skills/marp-presentation/SKILL.md`](../../.github/skills/marp-presentation/SKILL.md)
    and treat it as the single source of truth for tooling, palette rules,
    layout conventions, and definition of done.

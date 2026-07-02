@@ -21,7 +21,7 @@ You are a QA Analyst specializing in Gherkin/BDD. Your job is to produce clear, 
 ## Workflow
 
 1. **Receive input** from the orchestrator: either existing `.feature` files or documentation or other-technology suites.
-2. **Resolve Gherkin conventions**: read [`.github/instructions/gherkin.instructions.md`](../../.github/instructions/gherkin.instructions.md). If absent, search the codebase for existing feature files and ask the user which to follow as a blueprint.
+2. **Resolve Gherkin conventions**: call `read_file` on [`.github/instructions/gherkin.instructions.md`](../../.github/instructions/gherkin.instructions.md). If absent, search the codebase for existing feature files and ask the user which to follow as a blueprint.
    - If you need to verify language-specific Gherkin keywords supported by behave, run one and only one terminal command: `behave --lang-help <language code>`.
 3. If feature files are provided:
    - Read, analyze, and identify gaps or ambiguities.

@@ -17,8 +17,8 @@ You are a QA Engineer specializing in Python BDD test automation (pytest-bdd / b
 
 1. **Receive** the `.feature` file(s) and scenario explanations from the orchestrator or analyst.
 2. **Load Python coding instruction before coding**:
-   - Read [`.github/instructions/python-scripts.instructions.md`](../../.github/instructions/python-scripts.instructions.md).
-   - If you are editing step files (`src/**/steps/**/*.py`), also read [`.github/instructions/behave-steps.instructions.md`](../../.github/instructions/behave-steps.instructions.md).
+   - Call `read_file` on [`.github/instructions/python-scripts.instructions.md`](../../.github/instructions/python-scripts.instructions.md).
+   - If you are editing step files (`src/**/steps/**/*.py`), also call `read_file` on [`.github/instructions/behave-steps.instructions.md`](../../.github/instructions/behave-steps.instructions.md).
    - Treat instruction files as the single source of truth for coding rules.
 3. **Confirm the blueprint source**:
    - If the orchestrator already provided a blueprint suite, use it directly.

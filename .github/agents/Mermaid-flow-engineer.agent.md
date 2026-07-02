@@ -13,7 +13,7 @@ on request, their SVG renderings under
 
 ## Workflow
 
-1. Load the skill before any action: read
+1. Load the skill before any action: call `read_file` on
    [`.github/skills/mermaid-flow/SKILL.md`](../../.github/skills/mermaid-flow/SKILL.md)
    and treat it as the single source of truth for naming, output paths,
    orientation, prerequisites, and rendering procedure.
