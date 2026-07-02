@@ -139,6 +139,27 @@ style: |
     margin: 0 auto;
     object-fit: contain;
   }
+
+  
+  section.video-slide {
+    padding-top: 44px;
+  }
+
+  section.video-slide h1 {
+    font-size: 1.35em;
+    margin-bottom: 0.25em;
+  }
+
+  section.video-slide video {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    max-height: 70vh;
+    height: auto;
+    margin: 0 auto;
+    border-radius: 10px;
+    background: #000000;
+  }
 ---
 
 <!--
@@ -154,6 +175,7 @@ Obiettivo narrativo: spiegare cosa abbiamo costruito, perché funziona, come vie
 <br><br><br>
 
 **pagopa-platform-integration-test**
+*AI-enhanced presentation deck* 
 
 <!--
 Speaker note (1:00): Aprire con il messaggio principale: non stiamo presentando un singolo prompt, ma uno stack operativo. Lo stack consente a un modello di lavorare dentro regole, ruoli e processi verificabili.
@@ -163,9 +185,9 @@ Speaker note (1:00): Aprire con il messaggio principale: non stiamo presentando 
 
 # Obiettivo della presentazione
 
-1. Capire quali risorse AI sono state introdotte nel repository
+1. Esplorare le risorse AI introdotte nel repository
 2. Chiarire come prompt, agenti e instruction cooperano
-3. Comprendere front matter, Markdown e handoff
+3. Comprendere dettagli tecnici
 4. Sintetizzare il lavoro che ha portato al risultato
 5. Mostrare potenzialità, limiti e prossimi passi
 
@@ -175,20 +197,17 @@ Speaker note (0:50): Impostare le aspettative: sarà una lettura tecnica, ma gui
 
 ---
 
-# Perché serve uno stack AI
+# A cosa serve uno stack AI
 
-Nel repository convivono test API, integrazione ed end-to-end.
+Molte attività sono *ripetitive*, *noiose* e *prone a errori*. L'AI può aiutare a concentrarci sull'aspetto `creativo` del lavoro.
 
-I flussi QA richiedono:
+Nel repository convivono test API, integrazione ed end-to-end. I flussi QA richiedono:
 
 - analisi di requisiti e scenari Gherkin
-- implementazione di step Python
+- implementazione di step (Python)
 - esecuzione Behave e diagnosi dei failure
 - reportistica Allure
 - commit e pull request coerenti con policy di progetto
-
-
-## Senza governance, un agente AI tende a essere utile ma **imprevedibile**.
 
 ```markdown
 Utente
@@ -198,8 +217,8 @@ Utente
 2. .github/agents        ruoli operativi: Analyst, Engineer, Runner, Closer
   |
 3. .github/instructions  policy applicate per tipo file o workflow
-
 ```
+## Senza governance, un agente AI tende a essere utile ma **imprevedibile**.
 
 <!--
 Speaker note (1:05): Collegare al contesto reale del repo: Behave, Gherkin, Python, Allure, workflow GitHub Actions. Il problema non è solo generare codice: è coordinare responsabilità, scope, test, report e chiusura.
@@ -221,7 +240,7 @@ Esempi:
 
 <br>
 
-## Il **valore**: l'utente non deve ricordare ogni dettaglio procedurale.
+## Il **valore**: l'utente non deve ricordare ogni dettaglio procedurale da digitare in chat.
 
 <!--
 Speaker note (1:00): Spiegare che un prompt file è come un comando di alto livello. Non sostituisce il processo: lo incapsula e lo rende ripetibile.
@@ -232,14 +251,15 @@ Speaker note (1:00): Spiegare che un prompt file è come un comando di alto live
 # Com'è fatto un prompt file
 
 ## `/qa`
-```markdown
-<!-- Front matter (yml) -->
+```yaml
 ---
+#Front matter (yml)
 description: 'Iterative quality assurance process using the QA Loop'
 agent: "QA-orchestrator"
 argument-hint: "Task ID, suite name, and objective"
 ---
-
+```
+```markdown
 <!-- Prompt (md)-->
 If no text prompt is provided with the `/qa` command,
 use the chat context to determine the implicit request.
@@ -247,42 +267,31 @@ use the chat context to determine the implicit request.
 ${input:Describe the QA task or process to execute}
 ```
 
-Il prompt contiene:
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
 
-- metadati per VS Code/Copilot (`front matter`)
-- istruzioni testuali per il modello
-- placeholder per input utente
+<div>
+
+**Il prompt contiene:**
+• metadati per VS Code/Copilot (`front matter`)
+• istruzioni testuali per il modello
+• placeholder per input utente
+
+</div>
+
+<div>
+
+**Il front matter serve a dichiarare:**
+• quale `modello` preferire
+• quali `tool` sono consentiti
+• quali `agenti` possono essere coinvolti
+• se sono previsti `handoffs` verso altri agenti
+
+</div>
+
+</div>
 
 <!--
 Speaker note (1:15): Qui introdurre il concetto di file Markdown eseguibile dal punto di vista operativo: non è codice, ma diventa contesto strutturato che il modello riceve quando il prompt viene invocato.
--->
-
----
-
-# Cos'è il front matter
-
-Il front matter è un blocco YAML all'inizio del file Markdown.
-
-## `from Python-utility-engineer.agent.md`
-```yaml
----
-description: "Use when: Python step definitions need to be implemented"
-model: "GPT-5.3-Codex"
-tools: [read/readFile, edit/createFile, edit/editFiles]
-agents: [Python-utility-engineer]
-user-invocable: true
----
-```
-
-Serve a dichiarare dati che non sono contenuto narrativo:
-
-- quando usare un asset
-- quale modello preferire
-- quali tool sono consentiti
-- quali agenti possono essere coinvolti
-
-<!--
-Speaker note (1:20): Rendere chiaro che il front matter è metadata, non slide/testo normale. I sistemi agentici lo leggono per configurare il comportamento: routing, modello, tool e invocabilità.
 -->
 
 ---
@@ -295,19 +304,27 @@ Un **agente** è un sistema in cui un LLM non risponde solo una volta, ma **oper
   - Osservare risultati
   - Adattare il piano
   - Ripetere fino al completamento
-
-
+  
+<center>Ogni <code>.agent.md</code> definisce una responsabilità specifica.</center>
 
 <div style="display:flex;gap:24px;align-items:flex-start;margin-top:0.4em;">
-<div style="flex:1;background:#e3f2fd;border-left:4px solid #1565c0;border-radius:6px;padding:14px 16px;font-size:0.9em;">
-<strong>Il modello non deve "fare tutto"</strong>: deve agire nello specifico ruolo corretto.<br><br>
+<div style="flex:27;">
+Un agente combina tre parti:<br>
+• <strong>Front matter</strong> (yaml)<br>
+• <strong>Workflow</strong> (md): passi <code>da seguire</code><br>
+• <strong>Constraints</strong> (md): cosa <code>non fare</code>
+</div>
+<div style="flex:28;background:#e3f2fd;border-left:4px solid #1565c0;border-radius:6px;padding:14px 16px;font-size:0.9em;">
+<strong>Il modello non deve "fare tutto"</strong>, ma interpretare uno specifico ruolo.<br>
 Indicazioni generiche portano a:<br>
 • <strong>modifiche fuori scope</strong><br>
 • <strong>perdita di contesto</strong><br>
-• <strong>scarsa precisione</strong>
+• <strong>scarsa precisione</strong><br>
+<br>
+Definire ruoli senza overlap riduce side effect e aumenta ripetibilità.
 </div>
-<div style="flex:2;">
-Ogni <code>.agent.md</code> definisce una responsabilità specifica. Esempi:
+<div style="flex:45;">
+
 <table>
 <thead><tr><th>Agente</th><th>Responsabilità principale</th></tr></thead>
 <tbody>
@@ -316,7 +333,6 @@ Ogni <code>.agent.md</code> definisce una responsabilità specifica. Esempi:
 <tr><td><code>QA-engineer</code></td><td>implementa step Python</td></tr>
 <tr><td><code>QA-runner</code></td><td>esegue test e diagnostica failure</td></tr>
 <tr><td><code>QA-closer</code></td><td>aggiorna docs, commit, push e PR</td></tr>
-<tr><td><code>Python-utility-engineer</code></td><td>cura utility Python condivise o di suite</td></tr>
 </tbody>
 </table>
 </div>
@@ -326,35 +342,6 @@ Ogni <code>.agent.md</code> definisce una responsabilità specifica. Esempi:
 Speaker note (1:10): Evidenziare la separazione dei ruoli. Questo riduce side effect: il runner non modifica codice, l'analyst non scrive Python, il closer non cambia feature.
 -->
 
----
-
-# Anatomy di un agente
-
-Un agente combina tre parti:
-
-1. **Front matter**: metadati come modello, tool, handoff, invocabilità
-2. **Workflow**: passi da seguire in ordine
-3. **Constraints**: cosa non deve fare
-
-<br>
-
-Esempio dal `QA-runner`:
-
-Handoff da QA-orchestrator
-  ├─► scopre le istruzioni di run 
-  ├─► mostra il comando e chiede conferma
-  ├─► esegue i test
-  └─►   in caso di failure avvia un fix loop massimo di **5 iterazioni**
-
-    - delegando le modifiche al `QA-engineer`
-    - verificando ad ogni iterazione se la fix ha risolto il problema
-    - cedendo il testimone all'utente se il fix loop non risolve il problema (entro 5 iterazioni) 
-
-
-
-<!--
-Speaker note (1:05): Spiegare che gli agenti sono contratti operativi. Il modello riceve un perimetro: strumenti ammessi, responsabilità, stop condition e forma dell'output.
--->
 
 ---
 
@@ -372,13 +359,13 @@ handoffs:
     send: false
 ```
 
-Nel repository esistono due modalità:
+Ne esistono due modalità:
 
-- **invisibile**: orchestratore delega a sub-agent senza click utente
+- **invisibile**: orchestratore delega a sub-agent senza intervento utente
     ```text
-    esplicitamente indicato nel suo workflow o, più raramente, desunto dall'analisi del contesto.
+    esplicitamente indicato nel suo workflow o desunto dall'analisi del contesto.
     ```
-- **visibile**: agente standalone propone un passaggio (vedi `send: false/true`)
+- **visibile**: agente propone un passaggio può avverarsi tramite intervento umano o in automatico (vedi `send: false/true`)
     ```text
     definendo la property handoff.
     ```
@@ -393,22 +380,33 @@ Speaker note (1:20): Spiegare bene send: false: l'agente prepara un'azione sugge
 # Livello 3: instruction come policy
 
 Gli `.instructions.md` sono regole applicate per scope.
-Nel front matter si dichiara `applyTo: <pattern>` per indicare a quali file o workflow si applicano, ma non è obbligatorio.
+Nel *front matter* si dichiara `applyTo: <pattern>` per indicare a quali file o percorsi si applicano, ma *non è obbligatorio.*
 
-Esempi:
+Alcuni esempi:
 
 - `python-scripts.instructions.md` si applica a `**/*.py`  - **istruzioni generali per script Python**
 - `behave-steps.instructions.md` si applica a `src/**/steps/**/*.py` - **istruzioni per step Python di Behave**
 - `gherkin.instructions.md` si applica a `src/**/*.feature` - **linee guida per file Gherkin**
-- `run-tests.instructions.md` viene caricato esplicitamente dal runner - **istruzioni per eseguire i test e diagnosticare failure**
-- `git-commit.instructions.md` e `git-pr.instructions.md` governano chiusura e PR - **istruzioni per commit e PR coerenti con le policy di progetto**
+- `git-pr.instructions.md` governa PR - **istruzioni per PR coerenti con le policy di progetto**
 
 <br>
 
-## Le regole diventano una memoria operativa condivisa. 
-Applicate automaticamente in caso di presenza di `applyTo`, oppure **caricate esplicitamente** da un agente (ad esempio il `QA-orchestrator`, nella sua struttura).
+## Le regole diventano una memoria operativa condivisa e versionata. 
 
-Più pulito rispetto a istruzioni di sistema (`AGENTS.md` e `INSTRUCTIONS.md`)
+Più pulite e specifiche rispetto a istruzioni di sistema:
+
+<div style="display:flex;gap:24px;align-items:flex-start;margin-top:0.4em;">
+<div style="flex:1;">
+<div style="background:#e8f5e9;border-left:4px solid #2e7d32;border-radius:6px;padding:12px 16px;font-size:0.88em;">
+Gli <code>.instructions.md</code> valgono per i <strong>pattern</strong> indicati o per i <strong>workflow</strong> che ne sepecificano la <strong>necessità</strong>.
+</div>
+</div>
+<div style="flex:1;">
+<div style="background:#fce4ec;border-left:4px solid #c62828;border-radius:6px;padding:12px 16px;font-size:0.88em;">
+I file <code>AGENTS.md</code> e <code>INSTRUCTIONS.md</code> valgono per <strong>tutti</strong> gli agenti, sia che ne abbiano bisogno esplicitamente o meno.
+</div>
+</div>
+</div>
 
 <!--
 Speaker note (1:15): Chiarire applyTo: è una regola di scope. Quando un agente lavora su un file che matcha quel pattern, deve caricare quelle istruzioni e seguirle.
@@ -481,8 +479,7 @@ Lo stack abilita:<br>
 • <strong>onboarding</strong> più rapido su convenzioni QA<br>
 • automazione di attività <strong>ripetitive</strong>, <strong>noiose</strong>, <strong>prone a errori</strong><br>
 • riduzione di <strong>errori</strong> su commit, PR, run test e report<br>
-• <strong>separazione chiara</strong> tra analisi, implementazione, verifica e chiusura<br>
-• <strong>miglioramento incrementale</strong>: ogni regola utile diventa instruction o agente<br>
+• <strong>miglioramento incrementale</strong> successivo: nuove instruction, agenti, prompt<br>
 • <strong>tracciabilità</strong>: gli asset AI sono versionati accanto al codice<br><br>
 <em>Meno variabilità, meno conoscenza tribale, più ripetibilità.</em>
 </div>
@@ -492,11 +489,11 @@ Lo stack abilita:<br>
 <strong style="color:#c62828;">⚠ Criticità</strong><br><br>
 Lo stack richiede <strong>manutenzione</strong>:<br>
 • <strong>instruction duplicate</strong> o divergenti → conflitti<br>
-• <strong>front matter errato</strong> → routing o modello rotto<br>
-• <strong>handoff troppo generici</strong> → contesto insufficiente<br>
+• <strong>front matter errato</strong> → agente non performa come atteso<br>
+• <strong>handoff troppo generici</strong> → output di bassa qualità<br>
 • <strong>agenti troppo permissivi</strong> → modifiche fuori scope<br>
-• <strong>comandi e path</strong> devono restare allineati al repo<br><br><br><br>
-<em>Governare l'AI significa mantenere aggiornato il suo contesto.</em>
+• <strong>comandi e path</strong> devono restare allineati al repo<br><br><br>
+<em>Governare l'AI significa mantenere al meglio il suo contesto.</em>
 </div>
 </div>
 </div>
@@ -508,24 +505,139 @@ Speaker note (1:05): Bilanciare potenziale e limiti. Il messaggio pratico: meno 
 ---
 
 # Prossimi passi consigliati
-**Breve termine:**
-1. Allineare periodicamente README, AGENTS e instruction operative
-3. Misurare metriche semplici: tempi di completamento, failure ricorrenti, fix loop, costo in crediti
-4. Esplicitare più possibile i casi in cui l'agente deve fermarsi e chiedere conferma
-
-<br>
-
-## Obiettivo: far crescere lo stack come prodotto interno, non come esperimento isolato.
-
-**Medio termine:**
-1. Aggiungere agenti per **altri ruoli**
-2. **Introdurre AI** nelle logiche di test e diagnostica (es. analizzare report NRT)
-3. Migrare stack su server **MCP**:
-    - generalizzando il concetto di orchestratore e agenti a più repository
-    - rendendo configurabili (anche con UI) le policy e le istruzioni operative
+```text
+ Obiettivo: far crescere lo stack come prodotto interno, non come esperimento isolato.
+ ```
+ <br>
+ <div style="display:flex;gap:24px;align-items:flex-start;margin-top:0.4em;">
+<div style="flex:1;">
+<div style="background:#e1f5fe;border-left:4px solid #0277bd;border-radius:6px;padding:12px 16px;font-size:0.88em;">
+<strong style="color:#0277bd;">⏰ Breve termine:</strong><br><br>
+<ol>
+<li>Ampliare lo stack con altri ruoli/istruzioni utili</li>
+<li>Misurare metriche semplici: tempi di completamento, failure ricorrenti, fix loop, costo in crediti</li>
+</ol>
+</div>
+</div>
+<div style="flex:1;">
+<div style="background: #0b0069;border-left:4px solid #0277bd;border-radius:6px;padding:12px 16px;font-size:0.88em;">
+<strong style="color: #83d6f0;">⏰⏰ Medio termine:</strong><br><br>
+<ol>
+<li style="color:white;"><strong style="color:#83d6f0;">Introdurre AI</strong> nelle logiche di test e diagnostica (es. analizzare report NRT)</li>
+<li style="color:white;">Migrare stack su server <strong style="color:#83d6f0;">MCP</strong> generale e configurabile
+</li>
+</ol>
+</div>
+</div>
+</div>
 
 <!--
 Speaker note (1:00): Chiudere con una prospettiva realistica. Il sistema è già utile, ma diventa più forte se misurato, curato e integrato nel modo di lavorare quotidiano.
+-->
+---
+
+<!-- _class: extra-slide -->
+<!-- _footer: "" -->
+<!-- _paginate: false -->
+
+# EXTRA
+
+<!--
+Speaker note (0:10): Slide separatoria per passare all'appendice tecnica dei flussi.
+-->
+---
+
+<!-- _class: video-slide -->
+
+# Demo /promptize
+
+<video controls preload="metadata" style="width:100%;max-height:70vh;border-radius:10px;">
+  <source src="../docs/videos/promptize_test.mp4" type="video/mp4" />
+  Il browser non supporta la riproduzione video integrata.
+</video>
+
+<!--
+Speaker note (0:45): Mostrare una breve demo del flusso agentico. Se necessario, aggiornare il path del file video in base alla posizione reale dell'asset.
+-->
+---
+
+<!-- _class: video-slide -->
+
+# Demo /qa test case completo
+
+<video controls preload="metadata" style="width:100%;max-height:70vh;border-radius:10px;">
+  <source src="../docs/videos/qa_dry_api_test.mp4" type="video/mp4" />
+  Il browser non supporta la riproduzione video integrata.
+</video>
+
+<!--
+Speaker note (0:45): Mostrare una breve demo del flusso agentico. Se necessario, aggiornare il path del file video in base alla posizione reale dell'asset.
+-->
+---
+
+<!-- _class: video-slide -->
+
+# Demo QA-analyst -> handodff -> QA-engineer
+
+<video controls preload="metadata" style="width:100%;max-height:70vh;border-radius:10px;">
+  <source src="../docs/videos/test2_analyst_handoff_engineer.mp4" type="video/mp4" />
+  Il browser non supporta la riproduzione video integrata.
+</video>
+
+<!--
+Speaker note (0:45): Mostrare una breve demo del flusso agentico. Se necessario, aggiornare il path del file video in base alla posizione reale dell'asset.
+-->
+
+---
+
+# Esempio di front matter
+
+Il front matter è un blocco YAML all'inizio del file Markdown.
+
+## `from Python-utility-engineer.agent.md`
+```yaml
+---
+description: "Use when: Python step definitions need to be implemented"
+model: "GPT-5.3-Codex"
+tools: [read/readFile, edit/createFile, edit/editFiles]
+agents: [Python-utility-engineer]
+user-invocable: true
+---
+```
+
+Serve a dichiarare dati che non sono contenuto narrativo:
+
+- quando usare un asset
+- quale modello preferire
+- quali tool sono consentiti
+- quali agenti possono essere coinvolti
+- se sono previsti handoffs verso altri agenti
+
+<!--
+Speaker note (1:20): Rendere chiaro che il front matter è metadata, non slide/testo normale. I sistemi agentici lo leggono per configurare il comportamento: routing, modello, tool e invocabilità.
+-->
+
+---
+
+# Fix Loop del QA-runner
+
+
+Workflow del `QA-runner`:
+
+Handoff da QA-orchestrator
+  ├─► scopre le istruzioni di run 
+  ├─► mostra il comando e chiede conferma
+  ├─► esegue i test
+  └─►   in caso di failure avvia un fix loop massimo di **5 iterazioni**
+
+```text
+  •  delegando le modifiche al QA-engineer
+  •  verificando ad ogni iterazione se la fix ha risolto il problema
+  •  cedendo il testimone all'utente se il fix loop non risolve il problema (entro 5 iterazioni)
+``` 
+
+<!--
+Speaker note (1:05): Spiegare che gli agenti sono contratti operativi. Il modello riceve un perimetro: strumenti ammessi, responsabilità, stop condition e forma dell'output.
 -->
 
 ---
@@ -693,7 +805,6 @@ Speaker note (0:10): Separatore introduttivo per il nuovo stack prompt/agent/ski
 # Nuovo stack: `mermaid-flow`
 
 ## Obiettivo
-
 Generare in modo ripetibile i **flow diagram Mermaid** degli asset del repo, con Markdown sempre prodotto e SVG opzionale.
 
 ## Tre asset, tre responsabilita
