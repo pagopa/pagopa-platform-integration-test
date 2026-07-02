@@ -20,7 +20,7 @@ from typing import Any, Dict
 # ============================================================================
 TARGET_ENV_VAR = "TARGET_ENV"
 SUITE_ENV_VAR = "suite"
-SUITE_FILE_PATH_PREFIX = "config/{suite}_config.json"
+SUITE_FILE_PATH_PREFIX = "config/suites/{suite}_config.json"
 
 # ============================================================================
 # Placeholder format

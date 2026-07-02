@@ -229,7 +229,7 @@ Per entrambe le casistiche, è necessario che nel workspace sia presente:
 
 L'applicazione risolverà poi i secret presenti nel file e li assegnerà nell'attributo secret presente nell'oggetto context, per accedere al secret bisognerà richiamarlo utilizzando il nome ad esso associato nel file in cui è presente. es. `context.secret.NOME_SECRET` 
 
-È necessario che il file sia inserito manualmente nel workspace, sotto la cartelle `./config/suites_config/`.
+È necessario che il file sia inserito manualmente nel workspace, sotto la cartelle `./config/suites/`.
 
 
 Il formato dei secret da risolvere all'interno dei file JSON **DEVE** essere il seguente:
