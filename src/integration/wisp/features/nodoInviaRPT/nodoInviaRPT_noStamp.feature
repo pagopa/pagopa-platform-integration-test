@@ -1,4 +1,4 @@
-#3171877032
+#3171877032 
 #language:it
 @NodoInviaRPT_NoStamp_001
 Funzionalità: Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT
