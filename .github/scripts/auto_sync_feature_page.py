@@ -31,7 +31,7 @@ KEYWORD_PIPE = '|'
 LINK_PREFIX = '#link:'
 TABLE_CLOSURE = '</tr></tbody></table>'
 INLINE_CODE_PATTERN = re.compile(r'<\s*([A-Za-z0-9_]+)\s*>')
-SUITE_SCENARIO_ID = re.compile(r'^@[A-Z]+_\d{3}_\d{2}$')
+SUITE_SCENARIO_ID = re.compile(r'^@([A-Za-z0-9]+_(?:[A-Za-z0-9]+)*)_(\d{3})_(\d{2})$')
 EMPTY_TABLE_CELL = '<td data-highlight-colour="#ffffff"></td>'
 
 auth = None
@@ -149,7 +149,7 @@ def build_page_content(data,feature_file):
                 line = line.strip()
                 line = replace_inline_code(line)
                 if SUITE_SCENARIO_ID.match(line):
-                    scenario_id = line.split('_')[2]
+                    scenario_id = line.split('_').pop()
                 elif line.startswith(KEYWORD_SCENARIO):
                     data += scenario_header.replace("{scenario_title}", line.replace('Scenario',f'Scenario {scenario_id}')).replace("{link}", link_to_add)
                     data += table_header
@@ -158,7 +158,7 @@ def build_page_content(data,feature_file):
                     link_to_add = scenario_link.replace('{anchor}',link_vars[0]).replace('{space}',link_vars[1]).replace('{page}',link_vars[2])
                 elif line.startswith(KEYWORD_CONTEXT):
                     is_context = True
-                elif line.startswith(KEYWORD_GIVEN) or (line.startswith(KEYWORD_GIVEN[0:len(KEYWORD_GIVEN)-1]) and is_context):
+                elif line.startswith(KEYWORD_GIVEN[0:len(KEYWORD_GIVEN)-1]):
                     data, last_ins = add_step_content(content_to_add,KEYWORD_GIVEN,last_ins,line,data)
                 elif line.startswith(KEYWORD_WHEN):
                     data, last_ins = add_step_content(content_to_add,KEYWORD_WHEN,last_ins,line,data)

@@ -80,6 +80,7 @@ jobs:
         id: tas
         uses: pagopa/pagopa-platform-integration-test/.github/actions/tas-integration-tests@main
         with:
+          test_type: integration           # integration | e2e | api
           suite: wisp
           environment: uat
           mode: sync                       # sync | async | raw
@@ -112,6 +113,7 @@ same tag.
 
 | Name | Default | Required | Description |
 |---|---|:---:|---|
+| `test_type` | `integration` | — | Test category: `integration`, `e2e`, or `api` (maps to `src/<test_type>/<suite>` on the TAS workflow) |
 | `suite` | `wisp` | — | Test suite: `wisp` or `all` |
 | `environment` | `uat` | — | Target environment: `dev` or `uat` |
 | `mode` | `sync` | — | Invocation mode: `sync`, `async` or `raw` |
