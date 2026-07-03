@@ -2,7 +2,7 @@ import logging
 import random
 
 from behave import given, when, then
-from helper import _get_page, _get_required_env, _generate_random_notice_code, _locate_and_click
+from src.e2e.checkout import get_page, get_required_config, generate_random_notice_code, locate_and_click, locate_click_and_type
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 @given('La pagina di checkout è aperta')
 def step_checkout_page_open(context):
     """Navigate to the checkout URL."""
-    page = _get_page(context)
-    checkout_url = _get_required_env("CHECKOUT_URL")
+    page = get_page(context)
+    checkout_url = get_required_config(context, "CHECKOUT_URL")
     logger.debug("Opening checkout page: %s", checkout_url)
     page.goto(checkout_url, wait_until="domcontentloaded")
     # Initialise context storage for state shared between steps
@@ -24,7 +24,8 @@ def step_checkout_page_open(context):
 
 @given('La lingua è impostata su "it"')
 def step_set_language_it(context):
-    page = _get_page(context)
+    """Set the checkout language to Italian."""
+    page = get_page(context)
     logger.debug("Imposto lingua a 'it'")
     page.locator("#languageMenu").wait_for(
         state="visible", timeout=5000
@@ -42,16 +43,14 @@ def step_enter_notice_random(context, notice_code_prefix):
     Click the keyboard icon to open the manual form,
     then generate and type a random notice code for the given prefix.
     """
-    page = _get_page(context)
-    context.notice_code = _generate_random_notice_code(notice_code_prefix)
+    page = get_page(context)
+    context.notice_code = generate_random_notice_code(notice_code_prefix)
     logger.debug("Generated notice code: %s (prefix: %s)", context.notice_code, notice_code_prefix)
 
     logger.debug("Clicking keyboard icon")
-    _locate_and_click(page, "[data-testid='KeyboardIcon']")
+    locate_and_click(page, "[data-testid='KeyboardIcon']")
 
-    _locate_and_click(page, "#billCode")
-
-    page.keyboard.type(context.notice_code)
+    locate_click_and_type(page, "#billCode", context.notice_code)
     logger.debug("Notice code typed: %s", context.notice_code)
 
 
@@ -61,7 +60,7 @@ def step_enter_notice_in_range(context, range_start, range_end):
     Click the keyboard icon and type a notice code within the given numeric range.
     When range_start == range_end (e.g. PAA_PAGAMENTO_DUPLICATO), uses the fixed value.
     """
-    page = _get_page(context)
+    page = get_page(context)
 
     start = int(range_start)
     end = int(range_end)
@@ -72,29 +71,26 @@ def step_enter_notice_in_range(context, range_start, range_end):
     )
 
     logger.debug("Clicking keyboard icon")
-    _locate_and_click(page, "[data-testid='KeyboardIcon']")
+    locate_and_click(page, "[data-testid='KeyboardIcon']")
 
-    _locate_and_click(page, "#billCode")
-
-    page.keyboard.type(context.notice_code)
+    locate_click_and_type(page, "#billCode", context.notice_code)
 
 
 @when(u'L\'utente inserisce il codice fiscale del pagatore "{fiscal_code}"')
 def step_enter_fiscal_code(context, fiscal_code):
     """Type the taxpayer fiscal code into the #cf field."""
-    page = _get_page(context)
+    page = get_page(context)
     context.fiscal_code = fiscal_code
     logger.debug("Typing fiscal code: %s", fiscal_code)
-    _locate_and_click(page, "#cf")
-    page.keyboard.type(fiscal_code)
+    locate_click_and_type(page, "#cf", fiscal_code)
 
 
 @when('L\'utente clicca il pulsante verifica')
 def step_click_verify(context):
     """Click the continue/verify button on the notice form."""
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Clicking verify/continue button")
-    _locate_and_click(page, "#paymentNoticeButtonContinue")
+    locate_and_click(page, "#paymentNoticeButtonContinue")
 
 # ──────────────────────────────────────────────
 # WHEN steps — summary & email
@@ -103,29 +99,27 @@ def step_click_verify(context):
 @when('L\'utente clicca il pulsante paga')
 def step_click_pay_on_summary(context):
     """Click the pay button on the payment summary page."""
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Clicking pay button on summary page")
-    _locate_and_click(page, "#paymentSummaryButtonPay")
+    locate_and_click(page, "#paymentSummaryButtonPay")
 
 
 @when('L\'utente inserisce l\'email "{email}"')
 def step_enter_email(context, email):
     """Type the email address into the email field."""
-    page = _get_page(context)
+    page = get_page(context)
     context.email = email
     logger.debug("Typing email: %s", email)
-    _locate_and_click(page, "#email")
-    page.keyboard.type(email)
+    locate_click_and_type(page, "#email", email)
 
 
 @when('L\'utente conferma l\'email "{email}"')
 def step_confirm_email(context, email):
     """Type the email into the confirm field and click continue."""
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Confirming email: %s", email)
-    _locate_and_click(page, "#confirmEmail")
-    page.keyboard.type(email)
-    _locate_and_click(page, "#paymentEmailPageButtonContinue")
+    locate_click_and_type(page, "#confirmEmail", email)
+    locate_and_click(page, "#paymentEmailPageButtonContinue")
 
 
 # ──────────────────────────────────────────────
@@ -135,9 +129,9 @@ def step_confirm_email(context, email):
 @when('L\'utente seleziona il metodo di pagamento "{method}"')
 def step_select_payment_method(context, method):
     """Select the desired payment method by its data-qaid attribute."""
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Selecting payment method: %s", method)
-    _locate_and_click(page, f"[data-qaid={method}]")
+    locate_and_click(page, f"[data-qaid={method}]")
 
 
 # ──────────────────────────────────────────────
@@ -147,39 +141,35 @@ def step_select_payment_method(context, method):
 @when(u'L\'utente inserisce il numero carta "{card_number}"')
 def step_fill_card_number(context, card_number):
     """Type the card number into the NPG iframe field."""
-    page = _get_page(context)
+    page = get_page(context)
+    logger.debug("Waiting for NPG iframe to load")
+    page.locator("#frame_CARD_NUMBER").wait_for(state="visible", timeout=30000)
+    page.wait_for_load_state("networkidle")
     logger.debug("Filling card number")
-    _locate_and_click(page, "#frame_CARD_NUMBER",3, 10000)
-    page.keyboard.type(card_number)
+    locate_click_and_type(page, "#frame_CARD_NUMBER", card_number, click_count=3, timeout=10000)
 
 
 @when(u'L\'utente inserisce la data di scadenza "{expiration_date}"')
 def step_fill_expiration_date(context, expiration_date):
     """Type the expiration date into the NPG iframe field."""
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Filling expiration date: %s", expiration_date)
-    _locate_and_click(page, "#frame_EXPIRATION_DATE",3)
-    page.keyboard.type(expiration_date)
+    locate_click_and_type(page, "#frame_EXPIRATION_DATE", expiration_date, click_count=3)
 
 
 @when(u'L\'utente inserisce il codice di sicurezza "{cvv}"')
 def step_fill_security_code(context, cvv):
     """Type the CVV into the NPG iframe field."""
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Filling security code (CVV)")
-    _locate_and_click(page, "#frame_SECURITY_CODE",3)
-    page.keyboard.type(cvv)
+    locate_click_and_type(page, "#frame_SECURITY_CODE", cvv, click_count=3)
 
 @when(u'L\'utente inserisce il nome dell\'intestatario carta "{holder_name}"')
 def step_fill_cardholder_name(context, holder_name):
-    """
-    Type the cardholder name and retry until the submit button becomes enabled.
-    Mirrors the TypeScript while-loop that retypes all fields if the button stays disabled.
-    """
-    page = _get_page(context)
-    logger.debug("Filling cardholder name '%s', holder_name")
-    _locate_and_click(page, "#frame_CARDHOLDER_NAME",3)
-    page.keyboard.type(holder_name)
+    """Type the cardholder name into the NPG iframe field."""
+    page = get_page(context)
+    logger.debug("Filling cardholder name: %s", holder_name)
+    locate_click_and_type(page, "#frame_CARDHOLDER_NAME", holder_name, click_count=3)
 
 # ──────────────────────────────────────────────
 # WHEN steps — PSP selection
@@ -191,27 +181,27 @@ def step_select_psp(context, psp_id):
     Click the card form continue button to reach the PSP list,
     then select the radio button for the given PSP id.
     """
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Clicking card form continue button")
-    _locate_and_click(page, "button[type=submit]")
+    locate_and_click(page, "button[type=submit]")
     logger.debug("Selecting PSP radio: %s", psp_id)
-    _locate_and_click(page, f"#psp-radio-{psp_id}")
+    locate_and_click(page, f"#psp-radio-{psp_id}")
 
 
 @when('L\'utente conferma la selezione del PSP')
 def step_confirm_psp(context):
     """Click the continue button on the PSP list page."""
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Confirming PSP selection")
-    _locate_and_click(page, "#paymentPspListPageButtonContinue")
+    locate_and_click(page, "#paymentPspListPageButtonContinue")
 
 
 @when('L\'utente clicca il pulsante paga finale')
 def step_click_final_pay(context):
     """Click the final pay button and wait for the NPG mock auto-authorisation."""
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Clicking final pay button")
-    _locate_and_click(page, "#paymentCheckPageButtonPay")
+    locate_and_click(page, "#paymentCheckPageButtonPay")
     logger.debug("Final pay button clicked — waiting for load (NPG mock auto-authorises)")
     page.wait_for_load_state("load")
 
@@ -226,7 +216,7 @@ def step_error_modal_visible_after(context, seconds = 5):
     Selector: #verifyPaymentTitleError (from constants.ts — all error cases use this).
     """
     timeout_ms = int(float(seconds) * 1000)
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Checking error modal title is displayed")
     page.locator("#verifyPaymentTitleError").wait_for(state="visible", timeout=timeout_ms)
     logger.debug("Error modal is visible")
@@ -246,7 +236,7 @@ def step_error_modal_header(context, expected_header):
     Assert the error modal header text using the selector from constants.ts.
     Selector: #verifyPaymentTitleError
     """
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Checking error modal header contains: '%s'", expected_header)
     header_elem = page.locator("#verifyPaymentTitleError")
     header_elem.wait_for(state="visible", timeout=5000)
@@ -264,7 +254,7 @@ def step_error_modal_body(context, expected_body):
     Selector: #verifyPaymentBodyError
     NOTE: PAA_PAGAMENTO_DUPLICATO has no body (empty string in Examples table) — step is skipped.
     """
-    page = _get_page(context)
+    page = get_page(context)
 
     if not expected_body:
         logger.debug("No expected body text provided (e.g. PAA_PAGAMENTO_DUPLICATO) — skipping body check")
@@ -286,7 +276,7 @@ def step_error_code_shown(context, error_code):
     Assert the error code in the modal.
     Selector: #verifyPaymentErrorId (only used for PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE).
     """
-    page = _get_page(context)
+    page = get_page(context)
     logger.debug("Checking error code contains: '%s'", error_code)
     error_code_elem = page.locator("#verifyPaymentErrorId")
     error_code_elem.wait_for(state="visible", timeout=5000)
@@ -298,13 +288,15 @@ def step_error_code_shown(context, error_code):
 
 @then('Il corpo della modale di errore contiene ""')
 def step_error_modal_body_empty(context):
+    """Skip modal body validation for cases where an empty body is expected."""
     # Per il caso PAA_PAGAMENTO_DUPLICATO il body non è previsto.
     # Quindi questo step è un no-op intenzionale.
     logger.debug("Expected empty body for this case (e.g. PAA_PAGAMENTO_DUPLICATO) — skipping body check")
 
 @then('Viene mostrato un messaggio di pagamento completato con successo')
 def step_check_payment_success(context):
-    page = _get_page(context)
+    """Assert that the final confirmation page reports a successful payment."""
+    page = get_page(context)
     result_title_selector = "#responsePageMessageTitle"
 
     logger.debug("Waiting for result page title (max 120s)...")
