@@ -1,7 +1,7 @@
 ---
 description: 'Create a commit with a compliant message from staged changes and push the current branch'
 argument-hint: "Optional: message override, scope hint, or extra context"
-model: "GPT-5 mini"
+model: "Auto"
 agent: agent
 ---
 
