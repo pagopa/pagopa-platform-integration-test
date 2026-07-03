@@ -54,20 +54,6 @@ def generate_single_rpt(context, payment_type, number_of_transfers, number_of_st
     context.flow_data['common']['rpts'] = rpts
 
 
-@then('the same cart is used for another try')
-def update_old_nodoInviaCarrelloRPT_request(context):
-    cart_id = context.flow_data['common']['cart']['id']
-    context.flow_data['common']['cart']['id'] = utils.change_last_numeric_char(cart_id)
-
-    rpts = context.flow_data['common']['rpts']
-
-    for rpt in rpts:
-        ccp = rpt['payment_data']['ccp']
-        rpt['payment_data']['ccp'] = utils.change_last_numeric_char(ccp)
-
-    context.flow_data['common']['rpts'] = rpts
-
-
 @given(
     'una posizione debitoria esistente relativa alla {index} RPT con segregation code uguale a {segregation_code} e stato uguale a {payment_status}')
 def generate_payment_position(context, index, segregation_code, payment_status):
@@ -94,19 +80,6 @@ def generate_payment_position(context, index, segregation_code, payment_status):
                                                  description=req_description)
     utils.assert_show_message(status_code == 201,
                               f'The debt position for RPT with index [{index}] was not created. Expected status code [201], Current status code [{status_code}]')
-
-
-@step('the execution of "{scenario_name}" was successful')
-def step_impl(context, scenario_name):
-    all_scenarios = [scenario
-                     for feature in context._runner.features
-                     for scenario in feature.walk_scenarios()]
-
-    phase = ([scenario for scenario in all_scenarios if scenario_name in scenario.name] or [None])[0]
-
-    text_step = ''.join(
-        [step.keyword + ' ' + step.name + "\n\"\"\"\n" + (step.text or '') + "\n\"\"\"\n" for step in phase.steps])
-    context.execute_steps(text_step)
 
 
 @given('un carrello di RPT {note}')
@@ -257,13 +230,13 @@ def nm1_to_nmu_succeeds(context):
     steputils.exec_nm1_to_nmu(context, 'user')
 
 
-@then('the notice numbers are retrieved from redirect')
 def retrieve_notice_numbers_from_redirect(context):
+    """Retrieve the related notice numbers from the redirect URL."""
     steputils.retrieve_related_notice_numbers_from_redirect(context)
 
 
-@then('the checkPosition request was successful')
 def checkposition_request(context):
+    """Send the checkPosition request via the shared step utility."""
     steputils.send_checkposition_request(context)
 
 
@@ -305,8 +278,3 @@ def fails_trying_to_pay(context):
 @when(u'la risposta contiene il campo {field_name} con valore {field_value}')
 def check_field(context, field_name, field_value):
     steputils.check_field(context, field_name, field_value)
-
-
-@then('the response contains the {url_type} URL')
-def check_redirect_url(context, url_type):
-    steputils.check_redirect_url(context, url_type)
