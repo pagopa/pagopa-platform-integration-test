@@ -21,6 +21,8 @@ import urllib.parse
 import urllib.request
 from typing import List, Optional, Tuple
 
+from src.conf.configuration import secrets
+
 
 def extract_token_from_text(text: str) -> Optional[str]:
     """Extract a likely GitHub PAT from the provided text.
@@ -206,7 +208,6 @@ def main(argv: Optional[List[str]] = None) -> int:
     `pagopa/pagopa-api` into `tmp_fetched/`, using UAT branch mapping.
     """
     parser = argparse.ArgumentParser(description="Fetch files from GitHub using PAT from a YAML secret.")
-    parser.add_argument("--secret", default="config/github.bot.cd.pat.secrets.yaml", help="Path to YAML secret file containing the PAT")
     parser.add_argument("--owner", default="pagopa", help="GitHub owner/org")
     parser.add_argument("--repo", default="pagopa-api", help="GitHub repo name")
     parser.add_argument(
@@ -220,7 +221,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     args = parser.parse_args(argv)
 
     try:
-        token = extract_token_from_yaml(args.secret)
+        token = secrets.gh_token
     except Exception as e:
         print(f"ERROR: could not extract token from {args.secret}: {e}")
         return 2
