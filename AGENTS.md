@@ -31,18 +31,6 @@ Applies to custom agents and non-custom coding agents working in this repository
 1. Before creating or editing any `.py` file, read [`.github/instructions/python-scripts.instructions.md`](.github/instructions/python-scripts.instructions.md).
 2. When editing behave step files (`src/**/steps/**/*.py`), also read [`.github/instructions/behave-steps.instructions.md`](.github/instructions/behave-steps.instructions.md).
 
-## Agent-to-Instructions mapping
+## Agent instruction loading policy
 
-Each agent reads **only** the instruction files listed for its role. Instructions not listed are out of scope for that agent.
-
-| Agent | Instruction files |
-|-------|-------------------|
-| `QA-analyst` | [`gherkin.instructions.md`](.github/instructions/gherkin.instructions.md) |
-| `QA-engineer` | [`python-scripts.instructions.md`](.github/instructions/python-scripts.instructions.md), [`behave-steps.instructions.md`](.github/instructions/behave-steps.instructions.md) |
-| `QA-runner` | [`run-tests.instructions.md`](.github/instructions/run-tests.instructions.md) |
-| `QA-closer` | [`git-commit.instructions.md`](.github/instructions/git-commit.instructions.md), [`git-pr.instructions.md`](.github/instructions/git-pr.instructions.md) |
-| `QA-orchestrator` | all of the above (delegates to sub-agents) |
-| `Mermaid-flow-engineer` | [`.github/skills/mermaid-flow/SKILL.md`](.github/skills/mermaid-flow/SKILL.md) |
-| `Marp-presentation-engineer` | [`.github/skills/marp-presentation/SKILL.md`](.github/skills/marp-presentation/SKILL.md) |
-
-> **Detailed instructions** live in `.github/instructions/`. Skills live in `.github/skills/<name>/SKILL.md`. Do not duplicate content here.
+Each agent loads **only** the instruction and skill files explicitly referenced in its own `.agent.md` via `read_file`. The `applyTo` patterns in `.instructions.md` files apply to non-agent contexts (inline Copilot, default mode); they do not restrict or extend what an agent reads. For the exact list of files each agent consumes, see [`.github/agents/`](.github/agents/).
