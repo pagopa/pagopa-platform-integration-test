@@ -18,8 +18,9 @@ from typing import Any, Dict
 #   TEST_CONFIG_FILE=config/tests/my_service.json behave src/...
 #
 # ============================================================================
-TEST_CONFIG_FILE_ENV_VAR = "TEST_CONFIG_FILE"
-
+TARGET_ENV_VAR = "TARGET_ENV"
+SUITE_ENV_VAR = "suite"
+SUITE_FILE_PATH_PREFIX = "config/suites/{suite}_config.json"
 
 # ============================================================================
 # Placeholder format
@@ -31,12 +32,43 @@ TEST_CONFIG_FILE_ENV_VAR = "TEST_CONFIG_FILE"
 # corrispondente recuperato tramite il resolver passato al loader.
 
 
-SECRET_PLACEHOLDER_PATTERN = re.compile(r"^\$(?P<name>[A-Za-z0-9_]+)$")
+SECRET_PLACEHOLDER_PATTERN = re.compile(r"^\$(?P<name>[A-Za-z0-9_-]+)$")
 
 
 class JsonConfigLoaderError(Exception):
     """Eccezione del loader di configurazione JSON."""
     pass
+
+
+class AttributeDict(dict):
+    """Dictionary with recursive attribute-style access support."""
+
+    def __getattr__(self, item: str) -> Any:
+        """Return dictionary items using attribute access."""
+        try:
+            return self[item]
+        except KeyError as exc:
+            raise AttributeError(item) from exc
+
+    def __setattr__(self, key: str, value: Any) -> None:
+        """Allow assigning dictionary items via attributes."""
+        self[key] = value
+
+    def __delattr__(self, item: str) -> None:
+        """Allow deleting dictionary items via attributes."""
+        try:
+            del self[item]
+        except KeyError as exc:
+            raise AttributeError(item) from exc
+
+
+def _to_attribute_dict(value: Any) -> Any:
+    """Recursively convert dict and list nodes to AttributeDict."""
+    if isinstance(value, dict):
+        return AttributeDict({k: _to_attribute_dict(v) for k, v in value.items()})
+    if isinstance(value, list):
+        return [_to_attribute_dict(item) for item in value]
+    return value
 
 
 def _resolve_value(value: Any, secret_resolver: Any) -> Any:
@@ -45,6 +77,7 @@ def _resolve_value(value: Any, secret_resolver: Any) -> Any:
         match = SECRET_PLACEHOLDER_PATTERN.match(value)
         if match:
             secret_name = match.group("name")
+
             # Support both a single resolver and a list/tuple of resolvers.
             resolvers = (
                 list(secret_resolver)
@@ -89,76 +122,7 @@ def _resolve_value(value: Any, secret_resolver: Any) -> Any:
     # Numeri, booleani, null ecc. restano invariati.
     return value
 
-
-def _parse_key_value_config(raw_content: str) -> Dict[str, Any]:
-    """Parse formato key:value o key=value, con supporto valori JSON/stringa."""
-    parsed: Dict[str, Any] = {}
-
-    lines = raw_content.splitlines()
-    i = 0
-    while i < len(lines):
-        raw_line = lines[i]
-        line_number = i + 1
-        line = raw_line.strip()
-        if not line or line.startswith("#"):
-            i += 1
-            continue
-
-        idx_colon = raw_line.find(":")
-        idx_equal = raw_line.find("=")
-        if idx_colon == -1 and idx_equal == -1:
-            raise JsonConfigLoaderError(
-                f"Invalid config line at {line_number}: '{raw_line}'. Expected 'key:value' or 'key=value'."
-            )
-
-        if idx_equal != -1 and (idx_colon == -1 or idx_equal < idx_colon):
-            key, raw_value = raw_line.split("=", 1)
-        else:
-            key, raw_value = raw_line.split(":", 1)
-
-        key = key.strip()
-        value_text = raw_value.strip()
-
-        if not key:
-            raise JsonConfigLoaderError(
-                f"Invalid empty key at line {line_number}: '{raw_line}'."
-            )
-
-        if value_text.startswith(("'", '"')):
-            quote = value_text[0]
-            if len(value_text) >= 2 and value_text.endswith(quote):
-                value_text = value_text[1:-1]
-            else:
-                buffer = [value_text[1:]]
-                i += 1
-                closed = False
-                while i < len(lines):
-                    current = lines[i]
-                    if current.endswith(quote):
-                        buffer.append(current[:-1])
-                        closed = True
-                        break
-                    buffer.append(current)
-                    i += 1
-
-                if not closed:
-                    raise JsonConfigLoaderError(
-                        f"Unclosed multiline quoted value for key '{key}' at line {line_number}."
-                    )
-                value_text = "\n".join(buffer)
-
-        # Se il valore e' JSON valido lo converte, altrimenti resta stringa raw.
-        try:
-            value = json.loads(value_text)
-        except json.JSONDecodeError:
-            value = value_text
-
-        parsed[key] = value
-        i += 1
-
-    return parsed
-
-
+    
 def _parse_config_content(raw_content: str, file_path: Path) -> Dict[str, Any]:
     """Parse JSON object completo, altrimenti fallback a key:value."""
     try:
@@ -169,10 +133,12 @@ def _parse_config_content(raw_content: str, file_path: Path) -> Dict[str, Any]:
             )
         return parsed
     except json.JSONDecodeError:
-        return _parse_key_value_config(raw_content)
+        raise JsonConfigLoaderError(
+            f"Invalid JSON format in file {file_path}."
+        )
 
 
-def load_json_config(path: str | Path, secret_resolver: Any | list[Any]) -> Dict[str, Any]:
+def load_json_config(secret_resolver: Any | list[Any]) -> Dict[str, Any]:
     """
     Legge un file di configurazione e risolve i placeholder "$var_name".
 
@@ -188,68 +154,23 @@ def load_json_config(path: str | Path, secret_resolver: Any | list[Any]) -> Dict
         default_headers:{"Content-Type":"application/json"}
         oauth2:{"client_id":"my-client","client_secret":"$oauth_client_secret"}
     """
-    # Notes:
-    #     `secret_resolver` può essere un singolo resolver oppure una lista/tupla
-    #     di resolver; in quest'ultimo caso vengono interrogati in ordine e la
-    #     prima risoluzione non-`None` viene utilizzata.
-    file_path = Path(path)
+   
+    if(os.getenv(TARGET_ENV_VAR) is None or os.getenv(TARGET_ENV_VAR) == "") or (os.getenv(SUITE_ENV_VAR) is None or os.getenv(SUITE_ENV_VAR) == ""):
+        raise JsonConfigLoaderError(f"Environment variable '{TARGET_ENV_VAR}' or '{SUITE_ENV_VAR}' is not set. Set them to the target environment (e.g., 'uat', 'dev') and suite (e.g., 'wisp', 'cup').")
 
-    if not file_path.exists():
-        raise JsonConfigLoaderError(f"Config file not found: {file_path}")
+    suite_file_path = Path(SUITE_FILE_PATH_PREFIX.replace("{suite}", os.getenv(SUITE_ENV_VAR)))
+    if not suite_file_path.exists():
+        raise JsonConfigLoaderError(f"Config file not found: {suite_file_path}")
 
-    raw_content = file_path.read_text(encoding="utf-8")
-    raw = _parse_config_content(raw_content, file_path)
+    suite_content = suite_file_path.read_text(encoding="utf-8")
+   
+    parsed_content = _parse_config_content(suite_content, suite_file_path).get(os.getenv(TARGET_ENV_VAR), {})
 
-    return _resolve_value(raw, secret_resolver)
-
-
-def load_test_config(secret_resolver: Any | list[Any]) -> Dict[str, Any]:
-    """
-    Carica il file JSON di configurazione il cui percorso è definito
-    nella variabile d'ambiente TEST_CONFIG_FILE.
-
-    Permette di selezionare il file di test al momento del lancio senza
-    modificare il codice, rendendo la stessa suite eseguibile con
-    configurazioni diverse (es. ambienti dev/uat/prod).
-
-    Args:
-        secret_resolver: oggetto (o lista di oggetti) con metodo
-            `resolve(secret_name: str) -> Any`. Se viene passata una lista, i
-            resolver vengono interrogati in ordine.
-
-    Returns:
-        Dizionario Python con segreti già sostituiti.
-
-    Raises:
-        JsonConfigLoaderError: se TEST_CONFIG_FILE non è impostata o il file non esiste.
-
-    Esempio di lancio (PowerShell)::
-
-        $env:TEST_CONFIG_FILE = "config/tests/service_dev.json"
-        behave src/api/my-service
-
-    Esempio di lancio (bash)::
-
-        TEST_CONFIG_FILE=config/tests/service_uat.json behave src/api/my-service
-
-    Esempio in environment.py di Behave::
-
-        from src.utility.config.config_loader import load_test_config
-        from src.utility.config.secrets import DictSecretResolver, AzureKeyVaultSecretResolver
-
-        def before_all(context):
-            # In locale usa DictSecretResolver, in CI usa AzureKeyVaultSecretResolver
-            if os.environ.get("CI"):
-                resolver = AzureKeyVaultSecretResolver()
-            else:
-                resolver = DictSecretResolver({"client_secret": "local-secret"})
-
-            context.test_config = load_test_config(resolver)
-    """
-    config_file = os.environ.get(TEST_CONFIG_FILE_ENV_VAR)
-    if not config_file:
+    if not parsed_content:
         raise JsonConfigLoaderError(
-            f"Environment variable '{TEST_CONFIG_FILE_ENV_VAR}' is not set. "
-            f"Set it to the path of the JSON config file to use for the tests."
+            f"Impossible to find or parse configuration for environment '{os.getenv(TARGET_ENV_VAR)}' and suite '{os.getenv(SUITE_ENV_VAR)}' in file {file_path}."
         )
-    return load_json_config(config_file, secret_resolver)
+
+    resolved = _resolve_value(parsed_content, secret_resolver)
+    return _to_attribute_dict(resolved)
+    
