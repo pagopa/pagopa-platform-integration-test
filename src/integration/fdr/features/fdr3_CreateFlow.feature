@@ -51,7 +51,7 @@ Funzionalità: Creazione di un nuovo flusso di rendicontazione
   @negative
   @Fdr3_001_03
   Scenario: Tentativo di creazione di un nuovo flusso da parte di un PSP non abilitato (not ENABLED)
-    Dato il PSP "PSPDEMO2" con pspId "ABIDEMO2" è censito a sistema
+    Dato il PSP "PSPDEMO2" con pspId "ABIDEMO2" correttamente censito a sistema
     E il PSP "PSPDEMO2" non è in stato "ENABLED"
     Quando il PSP invia una richiesta di creazione flusso tramite l'api "Create a new flow structure"
     Allora il sistema risponde con il codice di stato HTTP 400
