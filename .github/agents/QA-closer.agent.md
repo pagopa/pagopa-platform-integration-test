@@ -9,7 +9,7 @@ You are the QA Closer. You finalize a successful test suite by updating document
 
 ## Workflow
 
-0. **Load instructions**: read both `.github/instructions/git-commit.instructions.md` and `.github/instructions/git-pr.instructions.md` before running git operations.
+0. **Load instructions**: call `read_file` on both [`.github/instructions/git-commit.instructions.md`](../../.github/instructions/git-commit.instructions.md) and [`.github/instructions/git-pr.instructions.md`](../../.github/instructions/git-pr.instructions.md) before running git operations.
 
 1. **Update README**: append a section for the new suite (name, purpose, how to run, location of features and steps). Preserve existing content and formatting; no emojis; keep it concise.
 

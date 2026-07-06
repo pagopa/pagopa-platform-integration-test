@@ -24,6 +24,9 @@ Ogni file `.prompt.md` definisce:
 | [commit.prompt.md](commit.prompt.md) | Guida commit e push conformi alle linee guida | `agent` |
 | [pr.prompt.md](pr.prompt.md) | Guida creazione PR conforme a template e policy | `agent` |
 | [promptize.prompt.md](promptize.prompt.md) | Converte una richiesta libera in template operativo completo | `Ask` |
+| [sync-folder.prompt.md](sync-folder.prompt.md) | Fetch branch remoto e checkout selettivo di una cartella nel working tree | `agent` |
+| [mermaid-flow.prompt.md](mermaid-flow.prompt.md) | Genera/aggiorna flow diagram Mermaid (Markdown sempre, SVG opzionale) | `Mermaid-flow-engineer` |
+| [marp-presentation.prompt.md](marp-presentation.prompt.md) | Crea/aggiorna deck Marp con interview su stile, tono e palette | `Marp-presentation-engineer` |
 
 ## Come usare i prompt
 
@@ -35,6 +38,9 @@ In una configurazione slash tipica, l'uso e:
 /commit <eventuale override del messaggio>
 /pr <eventuale titolo o note PR>
 /promptize <richiesta da strutturare>
+/sync-folder <branch> [folder]
+/mermaid-flow <source files or categories> [orientation=TD|LR] [svg=yes|no]
+/marp-presentation <topic> [audience] [duration] [style] [tone] [colors]
 ```
 
 Se il prompt non riceve input esplicito, alcuni file sono progettati per usare il contesto chat corrente.

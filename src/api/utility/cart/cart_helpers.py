@@ -39,12 +39,12 @@ INVALID_CART_BODY = {
 }
 
 MULTIPLE_PAYMENT_NOTICES = [
-    {"noticeNumber": "302000100440009421", "fiscalCode": "11111111111", "amount": 10000, "companyName": "AA", "description": "BB"},
-    {"noticeNumber": "302000100440009422", "fiscalCode": "11111111111", "amount": 10000, "companyName": "CC", "description": "DD"},
-    {"noticeNumber": "302000100440009423", "fiscalCode": "11111111111", "amount": 10000, "companyName": "EE", "description": "FF"},
-    {"noticeNumber": "302000100440009424", "fiscalCode": "11111111111", "amount": 10000, "companyName": "GG", "description": "HH"},
-    {"noticeNumber": "302000100440009425", "fiscalCode": "11111111111", "amount": 10000, "companyName": "JJ", "description": "KK"},
-    {"noticeNumber": "302000100440009426", "fiscalCode": "11111111111", "amount": 10000, "companyName": "II", "description": "LL"},
+    {"noticeNumber": "302010000000000001", "fiscalCode": "77777777777", "amount": 10000, "companyName": "Nome EC", "description": "Oggetto del pagamento"},
+    {"noticeNumber": "302010000000000002", "fiscalCode": "77777777777", "amount": 10000, "companyName": "Nome EC", "description": "Oggetto del pagamento"},
+    {"noticeNumber": "302010000000000003", "fiscalCode": "77777777777", "amount": 10000, "companyName": "Nome EC", "description": "Oggetto del pagamento"},
+    {"noticeNumber": "302010000000000004", "fiscalCode": "77777777777", "amount": 10000, "companyName": "Nome EC", "description": "Oggetto del pagamento"},
+    {"noticeNumber": "302010000000000005", "fiscalCode": "77777777777", "amount": 10000, "companyName": "Nome EC", "description": "Oggetto del pagamento"},
+    {"noticeNumber": "302010000000000006", "fiscalCode": "77777777777", "amount": 10000, "companyName": "Nome EC", "description": "Oggetto del pagamento"},
 ]
 
 

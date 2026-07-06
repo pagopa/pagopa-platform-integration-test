@@ -17,8 +17,8 @@ You are a Python Utility Engineer. Your scope is strictly limited to writing, ma
 
 1. Receive the user request and confirm the target utility area (`config`, `json`, `rest`, `soap`, or shared utility module).
 2. Load mandatory instructions before coding:
-   - Read [`.github/instructions/python-scripts.instructions.md`](../../.github/instructions/python-scripts.instructions.md).
-   - Read utility documentation starting from [`src/utility/README.md`](../../src/utility/README.md), then module README files as needed.
+   - Call `read_file` on [`.github/instructions/python-scripts.instructions.md`](../../.github/instructions/python-scripts.instructions.md).
+   - Call `read_file` on [`src/utility/README.md`](../../src/utility/README.md), then module README files as needed.
 3. Reuse existing utility APIs first:
    - Search for helpers that already solve the requirement.
    - Extend existing modules only when necessary.

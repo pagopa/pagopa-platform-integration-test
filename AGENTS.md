@@ -46,9 +46,7 @@ Each agent reads **only** the instruction files listed for its role. Instruction
 | `QA-runner` | [`run-tests.instructions.md`](.github/instructions/run-tests.instructions.md) |
 | `QA-closer` | [`git-commit.instructions.md`](.github/instructions/git-commit.instructions.md), [`git-pr.instructions.md`](.github/instructions/git-pr.instructions.md) |
 | `QA-orchestrator` | all of the above (delegates to sub-agents) |
+| `Mermaid-flow-engineer` | [`.github/skills/mermaid-flow/SKILL.md`](.github/skills/mermaid-flow/SKILL.md) |
+| `Marp-presentation-engineer` | [`.github/skills/marp-presentation/SKILL.md`](.github/skills/marp-presentation/SKILL.md) |
 
-## Git guidelines
-
-Whatever agent may be committing code, follow the rules in [`.github/instructions/git-commit.instructions.md`](.github/instructions/git-commit.instructions.md) for commit message formatting.
-
-> **Detailed instructions** live in `.github/instructions/`. Do not duplicate content here.
+> **Detailed instructions** live in `.github/instructions/`. Skills live in `.github/skills/<name>/SKILL.md`. Do not duplicate content here.
