@@ -96,25 +96,22 @@ Scenario: Cancellazione dei pagamenti di un FdR in stato PUBLISHED
 
 
 #======================================================
+#========== NON APPLICABILI ===========================
 #======================================================
-#Da controllare. Non è possibile creader FdR per PSP non censito a sistema. Il test non è corretto.
-@CancellazioneDiUnooPiuPagamentiFdR_004_07
-@Crea_FdR(id_fdr="2016-08-16pspTest-1178",id_psp="pspTest")
-Scenario:  Cancellazione dei pagamenti per PSP non presente a sistema
- Dato Il PSP "pspTest" con pspId "pspTest" non è censito a sistema
- E che il flusso di rendicontazione "2016-08-16pspTest-1178" esiste in stato "INSERTED"
- Quando Il PSP invia una richiesta di cancellazione dei pagamenti attraverso l'API "Delete one or more payments from an existing flow"
- Allora Il PSP riceve il codice di stato HTTP 400
+#Non è possibile creader FdR per PSP non censito a sistema. Il test non è corretto.
+#@CancellazioneDiUnooPiuPagamentiFdR_004_07
+#@Crea_FdR(id_fdr="2016-08-16pspTest-1178",id_psp="pspTest")
+#Scenario:  Cancellazione dei pagamenti per PSP non presente a sistema
+# Dato Il PSP "pspTest" con pspId "pspTest" non è censito a sistema
+# E che il flusso di rendicontazione "2016-08-16pspTest-1178" esiste in stato "INSERTED"
+# Quando Il PSP invia una richiesta di cancellazione dei pagamenti attraverso l'API "Delete one or more payments from an existing flow"
+# Allora Il PSP riceve il codice di stato HTTP 400
 
-
-#======================================================
-#======================================================
-#======================================================
-#Da controllare. Non è possibile creare FdR per PSP in stato non ENABLED. Il test non è riproducibile senza un FdR già censito a sistema.
-@CancellazioneDiUnooPiuPagamentiFdR_004_08
-Scenario: Il PSP è presente a sistema ma non è in stato ENABLED
- Dato Il PSP "pspTest" con pspId "pspTest" è censito a sistema
- E il PSP non è nello stato "ENABLED"
- E che il flusso di rendicontazione "2016-08-16pspTest-1178" esiste in stato "INSERTED"
- Quando Il PSP invia una richiesta di cancellazione dei pagamenti attraverso l'API "Delete one or more payments from an existing flow"
- Allora Il PSP riceve il codice di stato HTTP 400
+#Non è possibile creare FdR per PSP in stato non ENABLED. Il test non è riproducibile senza un FdR già censito a sistema.
+#@CancellazioneDiUnooPiuPagamentiFdR_004_08
+#Scenario: Il PSP è presente a sistema ma non è in stato ENABLED
+# Dato Il PSP "pspTest" con pspId "pspTest" è censito a sistema
+# E il PSP non è nello stato "ENABLED"
+# E che il flusso di rendicontazione "2016-08-16pspTest-1178" esiste in stato "INSERTED"
+# Quando Il PSP invia una richiesta di cancellazione dei pagamenti attraverso l'API "Delete one or more payments from an existing flow"
+# Allora Il PSP riceve il codice di stato HTTP 400

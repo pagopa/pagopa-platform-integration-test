@@ -56,22 +56,20 @@ Scenario: Cancellazione di un FdR in stato PUBLISHED
 
 
 #======================================================
+#========== NON APPLICABILI ===========================
 #======================================================
-#Da controllare. Non è possibile creare FdR per PSP non censito a sistema. Il test non è riproducibile senza un FdR già censito a sistema.
-@CancellazioneDiUnFdR_006_05
-Scenario:  Cancellazione di un FdR per PSP non presente a sistema
- Dato Il PSP "pspTest" con pspId "pspTest" non è censito a sistema
- Quando Il PSP invia una richiesta di cancellazione di un flusso attraverso l'API "Delete an existing draft flow and all related payments"
- Allora il sistema risponde con il codice di stato HTTP 400
+#Non è possibile creare FdR per PSP non censito a sistema. Il test non è riproducibile senza un FdR già censito a sistema.
+#@CancellazioneDiUnFdR_006_05
+#Scenario:  Cancellazione di un FdR per PSP non presente a sistema
+# Dato Il PSP "pspTest" con pspId "pspTest" non è censito a sistema
+# Quando Il PSP invia una richiesta di cancellazione di un flusso attraverso l'API "Delete an existing draft flow and all related payments"
+# Allora il sistema risponde con il codice di stato HTTP 400
 
-
-#======================================================
-#======================================================
-#Da controllare. Non è possibile creare FdR per PSP in stato non ENABLED. Il test non è riproducibile senza un FdR già censito a sistema.
-@CancellazioneDiUnFdR_006_06
-Scenario: Il PSP è presente a sistema ma non è in stato ENABLED
- Dato Il PSP "pspTest" con pspId "pspTest" è censito a sistema 
- E il PSP non è nello stato "ENABLED"
- E che il flusso di rendicontazione "2016-08-16pspTest-11788" esiste a sistema
- Quando Il PSP invia una richiesta di cancellazione di un flusso attraverso l'API "Delete an existing draft flow and all related payments"
- Allora il sistema risponde con il codice di stato HTTP 400
+#Non è possibile creare FdR per PSP in stato non ENABLED. Il test non è riproducibile senza un FdR già censito a sistema.
+#@CancellazioneDiUnFdR_006_06
+#Scenario: Il PSP è presente a sistema ma non è in stato ENABLED
+# Dato Il PSP "pspTest" con pspId "pspTest" è censito a sistema 
+# E il PSP non è nello stato "ENABLED"
+# E che il flusso di rendicontazione "2016-08-16pspTest-11788" esiste a sistema
+# Quando Il PSP invia una richiesta di cancellazione di un flusso attraverso l'API "Delete an existing draft flow and all related payments"
+# Allora il sistema risponde con il codice di stato HTTP 400

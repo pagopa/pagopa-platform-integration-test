@@ -64,22 +64,21 @@ Scenario: Pubblicazione di un FdR in stato PUBLISHED
   Allora il sistema risponde con il codice di stato HTTP 400
 
 #======================================================
+#========== NON APPLICABILI ===========================
 #======================================================
-#Da Controllare. Non è possibile creare FdR per PSP non censito a sistema. Il test non è riproducibile senza un FdR già censito a sistema.
-@PubblicazioneFdR_003_05
-Scenario:  Pubblicazione del flusso per PSP non presente a sistema
- Dato il PSP "pspTest" con pspId "pspTest" non è censito a sistema
- E il PSP vuole pubblicare un flusso di rendicontazione con id "2016-08-16pspTest-1178"
- Quando il PSP avvia una richiesta di pubblicazione flusso attraverso l'API "Publish an existing flow in draft status"
- Allora il sistema risponde con il codice di stato HTTP 400
+#Non è possibile creare FdR per PSP non censito a sistema. Il test non è riproducibile senza un FdR già censito a sistema.
+#@PubblicazioneFdR_003_05
+#Scenario:  Pubblicazione del flusso per PSP non presente a sistema
+# Dato il PSP "pspTest" con pspId "pspTest" non è censito a sistema
+# E il PSP vuole pubblicare un flusso di rendicontazione con id "2016-08-16pspTest-1178"
+# Quando il PSP avvia una richiesta di pubblicazione flusso attraverso l'API "Publish an existing flow in draft status"
+# Allora il sistema risponde con il codice di stato HTTP 400
 
-#======================================================
-#======================================================
-#Da controllare. Non è possibile creare FdR per PSP in stato non ENABLED. Il test non è riproducibile senza un FdR già censito a sistema.
-@PubblicazioneFdR_003_06
-@Crea_FdR(id_fdr="2016-08-16pspTest-1178",id_psp="pspTest")
-Scenario: Il PSP è presente a sistema ma non è in stato ENABLED
- Dato il PSP "pspTest" con pspId "pspTest" è censito a sistema ma non è nello stato "ENABLED"
- E il PSP vuole pubblicare un flusso di rendicontazione con id "2016-08-16pspTest-1178"
- Quando il PSP avvia una richiesta di pubblicazione flusso attraverso l'API "Publish an existing flow in draft status"
- Allora il sistema risponde con il codice di stato HTTP 400
+#Non è possibile creare FdR per PSP in stato non ENABLED. Il test non è riproducibile senza un FdR già censito a sistema.
+#@PubblicazioneFdR_003_06
+#@Crea_FdR(id_fdr="2016-08-16pspTest-1178",id_psp="pspTest")
+#Scenario: Il PSP è presente a sistema ma non è in stato ENABLED
+# Dato il PSP "pspTest" con pspId "pspTest" è censito a sistema ma non è nello stato "ENABLED"
+# E il PSP vuole pubblicare un flusso di rendicontazione con id "2016-08-16pspTest-1178"
+# Quando il PSP avvia una richiesta di pubblicazione flusso attraverso l'API "Publish an existing flow in draft status"
+# Allora il sistema risponde con il codice di stato HTTP 400
