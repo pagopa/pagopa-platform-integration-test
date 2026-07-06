@@ -10,6 +10,8 @@ Funzionalità: Cancellazione del flusso completo
 #======================================================
 
 @CancellazioneDiUnFdR_006_01
+@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSPDEMO")
+@Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
 Scenario: Cancellazione di un flusso completo FdR 
   Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "INSERTED" 
@@ -32,6 +34,7 @@ Scenario: Cancellazione di un FdR inesistente
 #======================================================
 
 @CancellazioneDiUnFdR_006_03
+@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSPDEMO")
 Scenario:  Cancellazione di un FdR in stato  CREATED
   Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "CREATED"
@@ -42,6 +45,9 @@ Scenario:  Cancellazione di un FdR in stato  CREATED
 #======================================================
 
 @CancellazioneDiUnFdR_006_04
+@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSPDEMO")
+@Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
+@Pubblica_FdR
 Scenario: Cancellazione di un FdR in stato PUBLISHED
  Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
  E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "PUBLISHED"
@@ -51,7 +57,7 @@ Scenario: Cancellazione di un FdR in stato PUBLISHED
 
 #======================================================
 #======================================================
-
+#Da controllare. Non è possibile creare FdR per PSP non censito a sistema. Il test non è riproducibile senza un FdR già censito a sistema.
 @CancellazioneDiUnFdR_006_05
 Scenario:  Cancellazione di un FdR per PSP non presente a sistema
  Dato Il PSP "pspTest" con pspId "pspTest" non è censito a sistema
@@ -61,7 +67,7 @@ Scenario:  Cancellazione di un FdR per PSP non presente a sistema
 
 #======================================================
 #======================================================
-
+#Da controllare. Non è possibile creare FdR per PSP in stato non ENABLED. Il test non è riproducibile senza un FdR già censito a sistema.
 @CancellazioneDiUnFdR_006_06
 Scenario: Il PSP è presente a sistema ma non è in stato ENABLED
  Dato Il PSP "pspTest" con pspId "pspTest" è censito a sistema 

@@ -10,6 +10,8 @@ Funzionalità: Cancellazione di uno o più pagamenti
 #======================================================
 
 @CancellazioneDiUnooPiuPagamentiFdR_004_01
+@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSPDEMO")
+@Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
 Scenario: Cancellazione di un pagamento all’interno dell’FdR
   Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "INSERTED"
@@ -27,6 +29,8 @@ Scenario: Cancellazione di un pagamento all’interno dell’FdR
 #======================================================
 
 @CancellazioneDiUnooPiuPagamentiFdR_004_02
+@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSPDEMO")
+@Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
 Scenario: Cancellazione di tutti i pagamenti all’interno dell’FdR 
   Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "INSERTED"
@@ -55,6 +59,8 @@ Scenario: Cancellazione di pagamenti con FdR KO
 #======================================================
 
 @CancellazioneDiUnooPiuPagamentiFdR_004_04
+@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSPDEMO")
+@Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
 Scenario:  Cancellazione di più pagamenti di quanti presenti nell' FdR
   Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "INSERTED"
@@ -67,6 +73,7 @@ Scenario:  Cancellazione di più pagamenti di quanti presenti nell' FdR
 #======================================================
 
 @CancellazioneDiUnooPiuPagamentiFdR_004_05
+@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSPDEMO")
 Scenario:  Cancellazione dei pagamenti di un FdR in stato  CREATED
   Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "CREATED"
@@ -78,6 +85,9 @@ Scenario:  Cancellazione dei pagamenti di un FdR in stato  CREATED
 #======================================================
 
 @CancellazioneDiUnooPiuPagamentiFdR_004_06
+@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSPDEMO")
+@Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
+@Pubblica_FdR
 Scenario: Cancellazione dei pagamenti di un FdR in stato PUBLISHED
  Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
  E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "PUBLISHED"
@@ -87,8 +97,9 @@ Scenario: Cancellazione dei pagamenti di un FdR in stato PUBLISHED
 
 #======================================================
 #======================================================
-
+#Da controllare. Non è possibile creader FdR per PSP non censito a sistema. Il test non è corretto.
 @CancellazioneDiUnooPiuPagamentiFdR_004_07
+@Crea_FdR(id_fdr="2016-08-16pspTest-1178",id_psp="pspTest")
 Scenario:  Cancellazione dei pagamenti per PSP non presente a sistema
  Dato Il PSP "pspTest" con pspId "pspTest" non è censito a sistema
  E che il flusso di rendicontazione "2016-08-16pspTest-1178" esiste in stato "INSERTED"
@@ -98,7 +109,8 @@ Scenario:  Cancellazione dei pagamenti per PSP non presente a sistema
 
 #======================================================
 #======================================================
-
+#======================================================
+#Da controllare. Non è possibile creare FdR per PSP in stato non ENABLED. Il test non è riproducibile senza un FdR già censito a sistema.
 @CancellazioneDiUnooPiuPagamentiFdR_004_08
 Scenario: Il PSP è presente a sistema ma non è in stato ENABLED
  Dato Il PSP "pspTest" con pspId "pspTest" è censito a sistema
