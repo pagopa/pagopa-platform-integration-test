@@ -3,16 +3,18 @@
 @CancellazioneDiUnFdR_006
 Funzionalità: Cancellazione del flusso completo
 
+  Contesto:
+    Dati i sistemi sono operativi
+
 #======================================================
 #======================================================
 
 @CancellazioneDiUnFdR_006_01
 Scenario: Cancellazione di un flusso completo FdR 
-  Dato I sistemi sono avviati
-  E Il PSP PSPDEMO è correttamente censito a sistema
-  E L’FDR 2025-01-01PSPDEMO-0001 è presente all’interno della flow table
-  Quando Il PSP  invia una richiesta di cancellazione di un flusso attraverso la chiamata delete /psps/{pspId}/fdrs/{fdr} 
-  Allora Il PSP riceve un codice 200 OK
+  Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
+  E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "INSERTED" 
+  Quando Il PSP invia una richiesta di cancellazione di un flusso attraverso l'API "Delete an existing draft flow and all related payments"
+  Allora il sistema risponde con il codice di stato HTTP 200
   E L’fdr non è più presente
 
 #======================================================
@@ -20,10 +22,10 @@ Scenario: Cancellazione di un flusso completo FdR
 
 @CancellazioneDiUnFdR_006_02
 Scenario: Cancellazione di un FdR inesistente
-  Dato I sistemi sono avviati
-  E Il PSP PSPDEMO correttamente censito a sistema
-  Quando Il PSP  invia una richiesta di cancellazione di un flusso attraverso la delete /psps/{pspId}/fdrs/{fdr}  inserendo un valore di {fdr} inesistente
-  Allora il PSP riceve un errore 404 Not Found
+  Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
+  E che il flusso di rendicontazione "2025-01-01PSPDEMO-9999" non esiste a sistema
+  Quando Il PSP invia una richiesta di cancellazione di un flusso attraverso l'API "Delete an existing draft flow and all related payments"
+  Allora il sistema risponde con il codice di stato HTTP 404
 
 
 #======================================================
@@ -31,23 +33,20 @@ Scenario: Cancellazione di un FdR inesistente
 
 @CancellazioneDiUnFdR_006_03
 Scenario:  Cancellazione di un FdR in stato  CREATED
-  Dato I sistemi sono avviati
-  E Il PSP PSPDEMO è correttamente censito a sistema
-  E L’FDR 2025-01-01PSPDEMO-0001 è presente all’interno della flow table con stato CREATED
-  Quando Il PSP  invia una richiesta di cancellazione di un flusso attraverso la chiamata delete /psps/{pspId}/fdrs/{fdr}
-  Allora il PSP riceve un errore 400 Bad Request
-     
+  Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
+  E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "CREATED"
+  Quando Il PSP invia una richiesta di cancellazione di un flusso attraverso l'API "Delete an existing draft flow and all related payments"
+  Allora il sistema risponde con il codice di stato HTTP 400
 
 #======================================================
 #======================================================
 
 @CancellazioneDiUnFdR_006_04
 Scenario: Cancellazione di un FdR in stato PUBLISHED
- Dato I sistemi sono avviati
- E Il PSP PSPDEMO è correttamente censito a sistema
- E L’FDR 2025-01-01PSPDEMO-0001 è presente all’interno della flow table con stato PUBLISHED
- Quando Il PSP  invia una richiesta di cancellazione di un flusso attraverso la chiamata delete /psps/{pspId}/fdrs/{fdr}
- Allora il PSP riceve un errore 400 Bad Request
+ Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
+ E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "PUBLISHED"
+ Quando Il PSP invia una richiesta di cancellazione di un flusso attraverso l'API "Delete an existing draft flow and all related payments"
+ Allora il sistema risponde con il codice di stato HTTP 400
 
 
 #======================================================
@@ -55,11 +54,9 @@ Scenario: Cancellazione di un FdR in stato PUBLISHED
 
 @CancellazioneDiUnFdR_006_05
 Scenario:  Cancellazione di un FdR per PSP non presente a sistema
- Dato I sistemi sono avviati
- E Il pspTest non è censito a sistema
- E Il PSP vuole cancellare un flusso di rendicontazione con id 2016-08-16pspTest-1178
- Quando Il PSP  invia una richiesta di cancellazione di un flusso attraverso la chiamata delete /psps/{pspId}/fdrs/{fdr}
- Allora il PSP riceve un errore 400 Bad Request
+ Dato Il PSP "pspTest" con pspId "pspTest" non è censito a sistema
+ Quando Il PSP invia una richiesta di cancellazione di un flusso attraverso l'API "Delete an existing draft flow and all related payments"
+ Allora il sistema risponde con il codice di stato HTTP 400
 
 
 #======================================================
@@ -67,8 +64,8 @@ Scenario:  Cancellazione di un FdR per PSP non presente a sistema
 
 @CancellazioneDiUnFdR_006_06
 Scenario: Il PSP è presente a sistema ma non è in stato ENABLED
- Dato I sistemi sono avviati
- E Il PSP pspTest è censito a sistema ma non è nello stato ENABLED
- E Il PSP vuole cancellare un flusso di rendicontazione con id 2016-08-16pspTest-11788
- Quando Il PSP  invia una richiesta di cancellazione di un flusso attraverso la chiamata delete /psps/{pspId}/fdrs/{fdr}
- Allora il PSP riceve un errore 400 Bad Request
+ Dato Il PSP "pspTest" con pspId "pspTest" è censito a sistema 
+ E il PSP non è nello stato "ENABLED"
+ E che il flusso di rendicontazione "2016-08-16pspTest-11788" esiste a sistema
+ Quando Il PSP invia una richiesta di cancellazione di un flusso attraverso l'API "Delete an existing draft flow and all related payments"
+ Allora il sistema risponde con il codice di stato HTTP 400
