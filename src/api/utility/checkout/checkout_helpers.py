@@ -6,7 +6,6 @@ Helper specifici per i checkout-tests NPG:
 - Polling transazione
 """
 import os
-import random
 import time
 import uuid
 from typing import Any
@@ -14,6 +13,7 @@ from urllib.parse import parse_qs, urlparse
 
 import requests
 
+from src.api.utility.api_env_helpers import generate_notice_code, get_checkout_host, get_required_env
 from src.api.utility.http_client import request as http_request
 
 
@@ -41,19 +41,8 @@ NPG_TEXT_FILL = "/fe/build/text/"
 # Environment helpers
 # ---------------------------------------------------------------------------
 
-def get_checkout_host() -> str:
-    return os.environ.get("CHECKOUT_HOST", "https://api.dev.platform.pagopa.it")
-
-
 def get_npg_host() -> str:
     return os.environ.get("NPG_HOST", "https://stg-ta.nexigroup.com")
-
-
-def get_required_env(name: str) -> str:
-    value = os.environ.get(name)
-    if not value:
-        raise EnvironmentError(f"Environment variable {name!r} not set.")
-    return value
 
 
 def get_deployment_header() -> dict[str, str]:
@@ -68,14 +57,6 @@ def get_specific_deployment_header(env_key: str) -> dict[str, str]:
     if not value:
         return get_deployment_header()
     return {"deployment": value}
-
-
-def generate_notice_code() -> str:
-    """Genera un notice code casuale a partire dal prefisso NOTICE_CODE_PREFIX."""
-    prefix = get_required_env("NOTICE_CODE_PREFIX")
-    min_val = int(prefix + "10000000000000")
-    max_val = int(prefix + "19999999999999")
-    return str(random.randint(min_val, max_val))
 
 
 def build_rpt_id(fiscal_code: str, notice_code: str) -> str:
