@@ -3,6 +3,10 @@
 Scope: pagopa-platform-integration-test root.
 Canonical agent instructions for this repo (Copilot/Claude); use [README.md](README.md) for general project context and keep this file focused on operative rules.
 
+## Assess terminal
+
+Whatever agent may be using the terminal, should always check the terminal type first (PowerShell, Bash, zsh, etc.).
+
 ## Repository quick map
 
 - Test suites: `src/api/<suite>`, `src/integration/<suite>`, `src/e2e/<suite>`.

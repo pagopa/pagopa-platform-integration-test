@@ -1,10 +1,5 @@
-import datetime
 import json
-import logging
-import random
 import re
-import string
-import time
 import xml.etree.ElementTree as xmlutils
 
 import requests
@@ -65,77 +60,6 @@ def remove_namespace(content):
     return content_without_ns
 
 
-def generate_iuv(in_18digit_format=False):
-    iuv = ''
-    if in_18digit_format:
-        iuv = '348' + get_random_digit_string(15)
-    else:
-        iuv = get_random_digit_string(15)
-    return iuv;
-
-
-def get_random_digit_string(length):
-    return ''.join(random.choice(string.digits) for i in range(length))
-
-
-def generate_random_monetary_amount(min, max):
-    random_amount = random.uniform(min, max)
-    return round(random_amount, 2)
-
-
-def get_current_datetime():
-    today = datetime.datetime.today().astimezone()
-    return today.strftime('%Y-%m-%dT%H:%M:%S')
-
-
-def generate_ccp():
-    return get_random_digit_string(16)
-
-
-def get_current_datetime():
-    today = datetime.datetime.today().astimezone()
-    return today.strftime('%Y-%m-%dT%H:%M:%S')
-
-
-def get_current_date():
-    today = datetime.datetime.today().astimezone()
-    return today.strftime('%Y-%m-%d')
-
-
-def get_index_from_cardinal(cardinal):
-    index = -1
-    match cardinal:
-        case 'prima':
-            index = 0
-        case 'seconda':
-            index = 1
-        case 'terza':
-            index = 2
-        case 'quarta':
-            index = 3
-        case 'quinta':
-            index = 4
-    return index
-
-
-def generate_nav(segregation_code):
-    return f'3{segregation_code}{int(time.time() * 100000)}'
-
-
-def get_tomorrow_datetime():
-    today = datetime.datetime.today().astimezone()
-    tomorrow = today + datetime.timedelta(days=1)
-    return tomorrow.strftime('%Y-%m-%dT%H:%M:%S')
-
-
-def assert_show_message(assertion_value, message):
-    try:
-        assert assertion_value, message
-    except AssertionError as e:
-        logging.error(f'[Assert Error] {e}')
-        raise
-
-
 def get_nested_field(object, field_name):
     try:
         nested_fields = field_name.split('.')
@@ -148,21 +72,3 @@ def get_nested_field(object, field_name):
         return analyzed_object
     except Exception as e:
         return None
-
-
-def get_random_alphanumeric_string(length):
-    return ''.join(random.choice(string.ascii_letters + string.digits) for i in range(length))
-
-def generate_cart_id(iuv, creditor_institution):
-    cart_id = ''
-    if iuv is not None:
-        cart_id = creditor_institution + iuv + '-' + get_random_digit_string(5)
-    else:
-        cart_id = get_random_digit_string(32)
-    return cart_id
-
-def change_last_numeric_char(value):
-    last_char = value[-1]
-    other_char = value[:-1]
-    new_last_char = str((int(last_char) + 1) % 10)
-    return other_char + new_last_char
