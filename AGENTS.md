@@ -35,7 +35,7 @@ Applies to custom agents and non-custom coding agents working in this repository
 1. Before creating or editing any `.py` file, read [`.github/instructions/python-scripts.instructions.md`](.github/instructions/python-scripts.instructions.md).
 2. When editing behave step files (`src/**/steps/**/*.py`), also read [`.github/instructions/behave-steps.instructions.md`](.github/instructions/behave-steps.instructions.md).
 
-## Agent-to-Instructions mapping
+## Agent instruction loading policy
 
 Each agent reads **only** the instruction files listed for its role. Instructions not listed are out of scope for that agent.
 
