@@ -7,19 +7,36 @@ on:
         description: 'Prompt to send to the AI model'
         required: false
         default: 'di che colore era il cavallo bianco di napoleone?'
+      max_tokens:
+        description: 'Max output tokens'
+        required: false
+        default: '32'
   workflow_call:
     inputs:
       prompt:
-        description: 'Prompt to send to the AI model'
+        description: 'Prompt string (ignored if prompt_artifact is provided)'
         required: false
         type: string
-        default: 'di che colore era il cavallo bianco di napoleone?'
+        default: ''
+      prompt_artifact:
+        description: 'Name of an artifact containing prompt.txt to use as prompt'
+        required: false
+        type: string
+        default: ''
+      analysis_artifact_name:
+        description: 'Name of the artifact to upload with the model response'
+        required: false
+        type: string
+        default: ''
+      max_tokens:
+        description: 'Max output tokens'
+        required: false
+        type: string
+        default: '32'
 
 env:
   BASE_URL: "https://models.github.ai"
   MODEL: "openai/gpt-4.1"
-  MAX_TOKENS: "32"
-  PROMPT: ${{ inputs.prompt || 'di che colore era il cavallo bianco di napoleone?' }}
 
 jobs:
   check-model-catalog:
@@ -57,13 +74,40 @@ jobs:
     needs: check-model-catalog
     runs-on: ubuntu-latest
     steps:
+      - name: Download prompt artifact
+        if: ${{ inputs.prompt_artifact != '' }}
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ${{ inputs.prompt_artifact }}
+          path: ai-prompt-input
+
+      - name: Resolve prompt
+        env:
+          INPUT_PROMPT: ${{ inputs.prompt }}
+          PROMPT_ARTIFACT: ${{ inputs.prompt_artifact }}
+        run: |
+          mkdir -p ai-analysis-output
+          if [ -n "$PROMPT_ARTIFACT" ] && [ -f "ai-prompt-input/prompt.txt" ]; then
+            echo "Using prompt from artifact '$PROMPT_ARTIFACT'"
+            cp ai-prompt-input/prompt.txt ai-analysis-output/prompt.txt
+          elif [ -n "$INPUT_PROMPT" ]; then
+            echo "Using prompt from input"
+            printf '%s' "$INPUT_PROMPT" > ai-analysis-output/prompt.txt
+          else
+            echo "Using default prompt"
+            printf '%s' "di che colore era il cavallo bianco di napoleone?" > ai-analysis-output/prompt.txt
+          fi
+          echo "Prompt size (chars): $(wc -c < ai-analysis-output/prompt.txt)"
+
       - name: Call chat completions
         env:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN_GITHUB_MODELS }}
+          MAX_TOKENS: ${{ inputs.max_tokens || '32' }}
         run: |
+          PROMPT_CONTENT=$(cat ai-analysis-output/prompt.txt)
           BODY=$(jq -n \
             --arg model "$MODEL" \
-            --arg content "$PROMPT" \
+            --arg content "$PROMPT_CONTENT" \
             --argjson max_tokens "$MAX_TOKENS" \
             '{"model":$model,"messages":[{"role":"user","content":$content}],"max_tokens":$max_tokens}')
 
@@ -77,5 +121,17 @@ jobs:
             -d "$BODY" \
             "$BASE_URL/inference/chat/completions")
 
-          echo "Response:"
-          echo "$RESPONSE" | jq .
+          echo "$RESPONSE" > ai-analysis-output/response.json
+          echo "$RESPONSE" | jq -r '.choices[0].message.content // ""' > ai-analysis-output/analysis.md
+
+          echo "--- Response metadata ---"
+          echo "$RESPONSE" | jq '{model, usage, finish_reason: .choices[0].finish_reason}'
+          echo "--- Analysis content ---"
+          cat ai-analysis-output/analysis.md
+
+      - name: Upload analysis artifact
+        if: ${{ inputs.analysis_artifact_name != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ${{ inputs.analysis_artifact_name }}
+          path: ai-analysis-output

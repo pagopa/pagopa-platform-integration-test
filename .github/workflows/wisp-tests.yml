@@ -40,6 +40,21 @@ jobs:
         run: |
           behave src/integration/wisp --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
 
+      - name: Build AI analysis prompt
+        if: always()
+        env:
+          ALLURE_RESULTS_DIR: allure-results
+          PROMPT_OUTPUT: ai-analysis-input/prompt.txt
+          SUITE_LABEL: WISP
+        run: python3 .github/scripts/build_ai_prompt.py
+
+      - name: Upload AI prompt artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ai-prompt-wisp
+          path: ai-analysis-input
+
       - name: Load previous allure history
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
@@ -66,5 +81,7 @@ jobs:
     needs: wisp_tests
     uses: ./.github/workflows/ai-report-analysis.yml
     with:
-      prompt: "ciao sto testando la comunicazione tra action"
+      prompt_artifact: ai-prompt-wisp
+      analysis_artifact_name: ai-analysis-wisp
+      max_tokens: '2048'
     secrets: inherit
