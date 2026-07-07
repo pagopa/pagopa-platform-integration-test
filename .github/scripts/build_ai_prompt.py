@@ -68,20 +68,19 @@ def build_prompt(
     """Render the Markdown prompt sent to the AI model."""
     if not failures:
         return (
-            f"Nessun test fallito nella suite {suite_label}. "
-            "Conferma che l'esecuzione sia stata completa e non ci siano test skippati "
-            "non intenzionali. Rispondi in italiano, in una singola frase."
+            f"No test failures found in the '{suite_label}' suite. "
+            "Confirm that the execution was complete and that no tests were unintentionally skipped. "
+            "Reply in English, in a single sentence."
         )
 
     header = (
-        f"Sei un QA engineer senior. Analizza i fallimenti della suite di integration test '{suite_label}'.\n"
-        "Per ciascun fallimento fornisci:\n"
-        "- probabile causa in 1-2 righe\n"
-        "- categoria: bug applicativo | dato di test | ambiente | intermittente\n"
-        "- azione consigliata\n\n"
-        "A fine analisi, aggiungi una sezione 'Pattern comuni' se emergono cause ricorrenti.\n"
-        "Rispondi in italiano, in Markdown, sintetico.\n\n"
-        f"Numero fallimenti totali: {len(failures)}\n\n"
+        f"You are a senior QA engineer. Analyse the failures from the '{suite_label}' integration test suite.\n"
+        "For each failure provide a concise Markdown response using this structure:\n"
+        "## Root cause (1-2 lines)\n"
+        "## Category ( application bug | test data | environment | flaky )\n"
+        "## Recommended action (1-2 lines)\n\n"
+        "At the end, add a **Common patterns** section if recurring root causes emerge.\n\n"
+        f"**Total failures: {len(failures)}**\n\n"
     )
 
     parts: List[str] = [header]
@@ -96,7 +95,7 @@ def build_prompt(
         )
 
     if len(failures) > max_failures:
-        parts.append(f"\n_... altri {len(failures) - max_failures} fallimenti omessi._\n")
+        parts.append(f"\n_... {len(failures) - max_failures} more failures omitted._\n")
 
     return "\n".join(parts)
 
