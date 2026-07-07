@@ -1,7 +1,7 @@
 ---
 description: 'Create a commit with a compliant message from staged changes and push the current branch'
 argument-hint: "Optional: message override, scope hint, or extra context"
-model: Claude Haiku 4.5 (copilot)
+model: GPT-5 mini (copilot)
 agent: agent
 ---
 
