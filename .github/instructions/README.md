@@ -17,7 +17,6 @@ Gherkin, commit e pull request.
 | [python-scripts.instructions.md](python-scripts.instructions.md) | Script Python | `applyTo: **/*.py` |
 | [behave-steps.instructions.md](behave-steps.instructions.md) | Step behave | `applyTo: src/**/steps/**/*.py` |
 | [gherkin.instructions.md](gherkin.instructions.md) | Feature Gherkin | `applyTo: src/**/*.feature` |
-| [gherkin-confluence-sync.instructions.md](gherkin-confluence-sync.instructions.md) | Sincronizzazione Confluence dei feature file | `applyTo: src/**/*.feature` |
 | [run-tests.instructions.md](run-tests.instructions.md) | Esecuzione test | Caricato esplicitamente da QA Runner |
 | [git-commit.instructions.md](git-commit.instructions.md) | Commit policy | Caricato esplicitamente da `/commit` e QA Closer |
 | [git-pr.instructions.md](git-pr.instructions.md) | PR policy | Caricato esplicitamente da `/pr` e QA Closer |
@@ -32,8 +31,7 @@ Esempio tipico:
    - prima si applica [python-scripts.instructions.md](python-scripts.instructions.md),
    - poi si applica [behave-steps.instructions.md](behave-steps.instructions.md).
 2. File `.feature`:
-   - si applica [gherkin.instructions.md](gherkin.instructions.md);
-   - si applica anche [gherkin-confluence-sync.instructions.md](gherkin-confluence-sync.instructions.md) per i metadati Confluence.
+   - si applica [gherkin.instructions.md](gherkin.instructions.md).
 
 Per workflow git/test:
 
