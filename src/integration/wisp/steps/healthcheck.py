@@ -2,9 +2,9 @@ import logging
 
 from behave import given
 
-from src.conf.configuration import secrets
-from src.integration.utility.wisp import constants
-from src.integration.utility.wisp import utils
+from src.integration.conf.configuration import secrets
+from src.integration.wisp.utility import constants
+from src.integration.wisp.utility import utils
 
 
 @given('i sistemi sono operativi')
