@@ -1,5 +1,7 @@
 import os
 
+from urllib.parse import unquote
+from src.integration.fdr import common
 from src.utility.config.config_loader import load_json_config
 from src.utility.config.secrets.azure_secret_resolver import AzureKeyVaultSecretResolver
 from src.utility.rest.rest_auth_factory import build_api_key_auth_from_config
@@ -24,6 +26,27 @@ def before_all(context):
 
 def before_scenario(context, scenario):
     clear_context(context)
+    for tag in scenario.tags:
+        if tag.startswith("Crea_FdR"):
+            # Extract parameters from the tag and create a FdR
+            params_str = tag[tag.find("(") + 1:tag.find(")")].split(",")
+            params = dict(item.split("=") for item in params_str.split(", "))
+            context.fdr_id = unquote(params["id_fdr"])
+            context.psp_id = unquote(params["id_psp"])
+            common.create_fdr(context, context.fdr_id, context.psp_id)
+        elif tag.startswith("Inserisci_Pagamenti"):
+            # Extract parameters from the tag and insert payments
+            params_str = tag[tag.find("(") + 1:tag.find(")")].split(",")
+            params = dict(item.split("=") for item in params_str.split(", "))
+            context.tot_payments = int(params["totPayments"])
+            context.sum_payments = int(params["sumPayments"])
+            common.insert_payments(context, context.tot_payments, context.sum_payments)
+        elif tag.startswith("Pubblica_FdR"):
+            # Publish the FdR
+            common.publish_fdr(context)
+
+    
+            
 
 def after_scenario(context, scenario):
     clear_context(context)
