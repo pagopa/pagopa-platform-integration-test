@@ -75,8 +75,11 @@ Funzionalità: Creazione di un nuovo flusso di rendicontazione
   @runnable 
   @positive 
   @Fdr3_001_05
+  @Crea_FdR(id_fdr="2025-06-30ABI50004-1178",id_psp="PSP%20DEMO")
+  @Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
+  @Pubblica_FdR
   Scenario: Creazione di un flusso con ID già esistente in stato PUBLISHED 
-    Dato il PSP "PSPDEMO" con pspId "ABI50004" correttamente censito a sistema
+    Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
     E che il flusso di rendicontazione "2025-06-30ABI50004-1178" esiste già in stato "PUBLISHED"
     Quando il PSP invia una richiesta di creazione flusso tramite l'api "Create a new flow structure"
     Allora il sistema risponde con il codice di stato HTTP 201
@@ -93,8 +96,10 @@ Funzionalità: Creazione di un nuovo flusso di rendicontazione
   @runnable 
   @negative
   @Fdr3_001_06
+  @Crea_FdR(id_fdr="2025-06-30ABI50004-1178",id_psp="PSP%20DEMO")
+  @from_outline
   Schema dello scenario: Tentativo di creazione di un flusso con ID già esistente in uno stato non ammesso
-    Dato il PSP "PSPDEMO" con pspId "ABI50004" correttamente censito a sistema
+    Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
     E che il flusso di rendicontazione "2025-06-30ABI50004-1178" esiste già in stato "<stato_esistente>"
     Quando il PSP invia una richiesta di creazione flusso tramite l'api "Create a new flow structure"
     Allora il sistema risponde con il codice di stato HTTP 400
