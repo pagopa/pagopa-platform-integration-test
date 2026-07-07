@@ -6,6 +6,7 @@ from urllib.parse import parse_qs, urlparse
 
 import requests
 
+from src.api.utility.api_env_helpers import get_checkout_host, get_required_env
 from src.api.utility.http_client import request as http_request
 
 
@@ -14,17 +15,6 @@ TOKEN_ENDPOINT = "/checkout/auth-service/v1/auth/token"
 USERS_ENDPOINT = "/checkout/auth-service/v1/auth/users"
 LOGOUT_ENDPOINT = "/checkout/auth-service/v1/auth/logout"
 PAYMENT_REQUESTS_ENDPOINT_TEMPLATE = "/ecommerce/checkout/v3/auth/payment-requests/77777777777302016{suffix}"
-
-
-def get_checkout_host() -> str:
-    return os.environ.get("CHECKOUT_HOST", "https://api.dev.platform.pagopa.it")
-
-
-def get_required_env(name: str) -> str:
-    value = os.environ.get(name)
-    if not value:
-        raise EnvironmentError(f"Environment variable {name} not set.")
-    return value
 
 
 def get_deployment_headers() -> dict[str, str]:

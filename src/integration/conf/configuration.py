@@ -11,6 +11,7 @@ import urllib3
 from dynaconf import Dynaconf
 
 ENV_VAR_PREFIX = 'WISP_DISMANTLING'
+_INTEGRATION_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -24,7 +25,7 @@ def check_apim_variables():
 # `settings_files` = Load settings files in the order.
 settings = Dynaconf(
     envvar_prefix=ENV_VAR_PREFIX,
-    settings_files=['config.yaml'],
+    settings_files=[os.path.join(_INTEGRATION_ROOT, 'config.yaml')],
 )
 
 if 'TARGET_ENV' not in os.environ:
@@ -56,7 +57,7 @@ if isinstance(secrets_resolver, AzureKeyVaultSecretResolver):
     secrets_resolver.close_client()
 
 commondata = Dynaconf(
-    settings_files=['commondata.yaml'],
+    settings_files=[os.path.join(_INTEGRATION_ROOT, 'commondata.yaml')],
 )
 
 try:
