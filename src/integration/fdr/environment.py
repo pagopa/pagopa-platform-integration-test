@@ -45,6 +45,12 @@ def before_scenario(context, scenario):
             # Publish the FdR
             common.publish_fdr(context)
 
+    if hasattr(scenario, 'row') and scenario.row:
+        # Check if the scenario has a "stato_esistente" column
+        stato_esistente = scenario.row.get("stato_esistente")
+        # If the "stato_esistente" column is present and its value is "INSERTED", insert payments
+        if stato_esistente == "INSERTED":
+            common.insert_payments(context, 3, 3000)
     
             
 
