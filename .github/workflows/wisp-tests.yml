@@ -58,3 +58,10 @@ jobs:
         with:
           name: allure-report-wisp
           path: allure-report-wisp
+
+  ai-analysis:
+    needs: wisp_tests
+    uses: ./.github/workflows/ai-report-analysis.yml
+    with:
+      prompt: "ciao sto testando la comunicazione tra action"
+    secrets: inherit

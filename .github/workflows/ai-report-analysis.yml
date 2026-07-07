@@ -2,15 +2,24 @@ name: AI Report Analysis
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - PQ-569-github-models-implementation
+    inputs:
+      prompt:
+        description: 'Prompt to send to the AI model'
+        required: false
+        default: 'di che colore era il cavallo bianco di napoleone?'
+  workflow_call:
+    inputs:
+      prompt:
+        description: 'Prompt to send to the AI model'
+        required: false
+        type: string
+        default: 'di che colore era il cavallo bianco di napoleone?'
 
 env:
   BASE_URL: "https://models.github.ai"
   MODEL: "openai/gpt-4.1"
   MAX_TOKENS: "32"
-  PROMPT: "di che colore era il cavallo bianco di napoleone?"
+  PROMPT: ${{ inputs.prompt || 'di che colore era il cavallo bianco di napoleone?' }}
 
 jobs:
   check-model-catalog:
