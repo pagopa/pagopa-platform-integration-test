@@ -10,7 +10,7 @@ Funzionalità: Pubblicazione di un FdR
 #======================================================
 
 @PubblicazioneFdR_003_01
-@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSPDEMO")
+@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSP%20DEMO")
 @Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
 Scenario: Pubblicazione di un Fdr
   Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
@@ -43,7 +43,7 @@ Scenario outline: Pubblicazione FdR KO
 #======================================================
 
 @PubblicazioneFdR_003_03
-@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001")
+@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSP%20DEMO")
 Scenario:  Pubblicazione di un FdR in stato  CREATED
   Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "CREATED"
@@ -54,7 +54,7 @@ Scenario:  Pubblicazione di un FdR in stato  CREATED
 #======================================================
 
 @PubblicazioneFdR_003_04
-@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSPDEMO")
+@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSP%20DEMO")
 @Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
 @Pubblica_FdR
 Scenario: Pubblicazione di un FdR in stato PUBLISHED
