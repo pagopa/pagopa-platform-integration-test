@@ -59,3 +59,12 @@ def build_create_fdr_request_payload(context):
             f"{context.sum_payments}"
         ]
     }
+
+def create_fdr(context, fdr_id, psp_id):
+    pass
+
+def insert_payments(context, tot_payments, sum_payments):
+    pass
+
+def publish_fdr(context):
+    pass
