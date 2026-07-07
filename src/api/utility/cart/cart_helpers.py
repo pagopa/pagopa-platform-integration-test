@@ -4,30 +4,10 @@ Helper specifici per i cart-test:
 - data builders (build_cart_body, build_multiple_notices_body)
 - utility di generazione dati (generate_notice_code, get_checkout_host)
 """
-import os
-import random
-
 import requests
 
+from src.api.utility.api_env_helpers import generate_notice_code, get_checkout_host
 from src.api.utility.http_client import request as http_request
-
-
-# ---------------------------------------------------------------------------
-# Utility — environment readers
-# ---------------------------------------------------------------------------
-
-def get_checkout_host() -> str:
-    return os.environ.get("CHECKOUT_HOST", "https://api.dev.platform.pagopa.it")
-
-
-def generate_notice_code(prefix_env_var: str = "NOTICE_CODE_PREFIX") -> str:
-    """Genera un notice code casuale valido dal prefisso letto da una env var."""
-    prefix = os.environ.get(prefix_env_var)
-    if not prefix:
-        raise EnvironmentError(f"Environment variable {prefix_env_var} not set.")
-    min_val = int(prefix + "10000000000000")
-    max_val = int(prefix + "19999999999999")
-    return str(random.randint(min_val, max_val))
 
 
 # ---------------------------------------------------------------------------
@@ -59,12 +39,12 @@ INVALID_CART_BODY = {
 }
 
 MULTIPLE_PAYMENT_NOTICES = [
-    {"noticeNumber": "302000100440009421", "fiscalCode": "11111111111", "amount": 10000, "companyName": "AA", "description": "BB"},
-    {"noticeNumber": "302000100440009422", "fiscalCode": "11111111111", "amount": 10000, "companyName": "CC", "description": "DD"},
-    {"noticeNumber": "302000100440009423", "fiscalCode": "11111111111", "amount": 10000, "companyName": "EE", "description": "FF"},
-    {"noticeNumber": "302000100440009424", "fiscalCode": "11111111111", "amount": 10000, "companyName": "GG", "description": "HH"},
-    {"noticeNumber": "302000100440009425", "fiscalCode": "11111111111", "amount": 10000, "companyName": "JJ", "description": "KK"},
-    {"noticeNumber": "302000100440009426", "fiscalCode": "11111111111", "amount": 10000, "companyName": "II", "description": "LL"},
+    {"noticeNumber": "302010000000000001", "fiscalCode": "77777777777", "amount": 10000, "companyName": "Nome EC", "description": "Oggetto del pagamento"},
+    {"noticeNumber": "302010000000000002", "fiscalCode": "77777777777", "amount": 10000, "companyName": "Nome EC", "description": "Oggetto del pagamento"},
+    {"noticeNumber": "302010000000000003", "fiscalCode": "77777777777", "amount": 10000, "companyName": "Nome EC", "description": "Oggetto del pagamento"},
+    {"noticeNumber": "302010000000000004", "fiscalCode": "77777777777", "amount": 10000, "companyName": "Nome EC", "description": "Oggetto del pagamento"},
+    {"noticeNumber": "302010000000000005", "fiscalCode": "77777777777", "amount": 10000, "companyName": "Nome EC", "description": "Oggetto del pagamento"},
+    {"noticeNumber": "302010000000000006", "fiscalCode": "77777777777", "amount": 10000, "companyName": "Nome EC", "description": "Oggetto del pagamento"},
 ]
 
 

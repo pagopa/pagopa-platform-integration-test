@@ -22,6 +22,15 @@ name: ↔️ TAS Demo — orchestrator async
 on:
   workflow_dispatch:
     inputs:
+      test_type:
+        description: "Test category"
+        required: true
+        type: choice
+        options:
+          - integration
+          - e2e
+          - api
+        default: integration
       test_suite:
         description: "Test suite to run"
         required: true
@@ -38,6 +47,16 @@ on:
           - dev
           - uat
         default: uat
+      ref:
+        description: "TAS repo branch/tag to run the workflow on (defaults to the current branch)"
+        required: false
+        type: string
+        default: ""
+      verify_orchestrator:
+        description: "Verify orchestrator SHA-256 against the published sidecar (recommended)"
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -62,6 +81,18 @@ jobs:
       - name: Install orchestrator dependencies
         run: pip install requests
 
+      # Even though the script is executed from the local checkout (no download
+      # step here), we verify it against its published sidecar to mirror the
+      # supply-chain check performed by real callers in the example workflows.
+      # Skipped entirely when 'verify_orchestrator' is set to false.
+      - name: Verify tas_orchestrator.py SHA-256
+        if: ${{ inputs.verify_orchestrator != false }}
+        run: |
+          set -euo pipefail
+          cd scripts
+          echo "Verifying tas_orchestrator.py against published sidecar..."
+          sha256sum -c tas_orchestrator.py.sha256
+
       - name: Dispatch tests (fire-and-forget)
         id: trigger
         run: |
@@ -69,8 +100,10 @@ jobs:
           #   CORRELATION_ID=<uuid>
           #   RUN_NAME=tas-<uuid>
           OUTPUT=$(python scripts/tas_orchestrator.py \
+            --type "${{ inputs.test_type }}" \
             --suite "${{ inputs.test_suite }}" \
             --env "${{ inputs.environment }}" \
+            --ref "${{ inputs.ref || github.ref_name }}" \
             --caller-id "${{ github.repository }} (demo)")
 
           echo "$OUTPUT"

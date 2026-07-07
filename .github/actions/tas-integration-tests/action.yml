@@ -1,0 +1,345 @@
+##############################################################################
+# tas-integration-tests — Official GitHub Actions composite action
+#
+# Encapsulates all three orchestrator-style invocation modes (sync, async,
+# raw) of the Test Automation Service (TAS) behind a single, parameterised
+# entry point. Consumers reference this action from any job in their own
+# workflow via `uses: pagopa/pagopa-platform-integration-test/.github/actions/tas-integration-tests@<ref>`.
+#
+# For native `workflow_call` integration (Option 1 in the developer guide)
+# use `.github/workflows/test-automation-service.yml` directly — it remains
+# the lightest and most idiomatic option when the caller is GitHub Actions
+# and the tests are already merged on `main`.
+#
+# ── PUBLIC CONTRACT ─────────────────────────────────────────────────────────
+# Inputs / outputs documented below are the stable API of the action. Any
+# breaking change to them is released under a new major tag (e.g. v1 → v2).
+##############################################################################
+
+name: "TAS — Integration Tests"
+description: >-
+  Run pagoPA Test Automation Service (TAS) integration tests from any GitHub
+  Actions workflow. Wraps the sync / async / raw invocation modes of
+  tas_orchestrator.py behind a single composite action with normalised
+  outputs.
+
+branding:
+  icon: "check-circle"
+  color: "blue"
+
+inputs:
+  test_type:
+    description: "Test category to run (integration | e2e | api). Maps to src/<test_type>/<suite> on the TAS workflow."
+    required: false
+    default: "integration"
+  suite:
+    description: "Test suite to run (wisp | FDR | ...)"
+    required: false
+  environment:
+    description: "Target environment (dev | uat)"
+    required: false
+    default: "uat"
+  mode:
+    description: "Invocation mode: sync | async | raw"
+    required: false
+    default: "sync"
+  ref:
+    description: "TAS repo branch/tag to run the tests from"
+    required: false
+    default: "main"
+  github_token:
+    description: >-
+      GitHub PAT with scopes 'public_repo' + 'actions:read'. Required for
+      all modes — it authenticates the workflow_dispatch call against the
+      TAS repository. Must be passed explicitly via 'with.github_token'
+      (e.g. from secrets.INTEGRATION_TEST_PAT) — composite actions cannot
+      access caller secrets implicitly.
+    required: true
+  caller_id:
+    description: >-
+      Identifier of the calling system (used for traceability).
+      Defaults to '<github.repository>/<github.run_id>'.
+    required: false
+    default: ""
+  correlation_id:
+    description: >-
+      Custom correlation ID. Defaults to
+      '<github.run_id>-<github.run_attempt>'.
+    required: false
+    default: ""
+  tas_repo:
+    description: "TAS repository (rarely overridden)"
+    required: false
+    default: "pagopa/pagopa-platform-integration-test"
+  workflow_file:
+    description: "TAS workflow file (rarely overridden)"
+    required: false
+    default: "test-automation-service.yml"
+  python_version:
+    description: "Python version used for orchestrator-based modes"
+    required: false
+    default: "3.11"
+  # ── Supply-chain integrity (orchestrator-based modes only) ──────────────
+  verify_orchestrator:
+    description: >-
+      Verify the SHA-256 of tas_orchestrator.py after download. Set to
+      'false' to opt out (not recommended).
+    required: false
+    default: "true"
+  orchestrator_sha256:
+    description: >-
+      Pinned SHA-256 hex digest of tas_orchestrator.py. When set, it
+      overrides the published sidecar and provides true SRI even if the
+      'ref' is mutated.
+    required: false
+    default: ""
+  print_summary:
+    description: >-
+      Print a human-readable summary of the run after the dispatch:
+      full counters in sync mode, dispatch info (correlation_id, run-name,
+      Actions URL) in async/raw mode. Set to 'false' to opt out and handle
+      the outputs yourself.
+    required: false
+    default: "true"
+
+outputs:
+  correlation_id:
+    description: "Identifier used to locate the run (always set)"
+    value: ${{ steps.tas.outputs.correlation_id }}
+  run_id:
+    description: "GHA workflow run numeric ID (sync mode only, empty otherwise)"
+    value: ${{ steps.tas.outputs.run_id }}
+  run_url:
+    description: "Direct URL to the GHA run (sync mode only, empty otherwise)"
+    value: ${{ steps.tas.outputs.run_url }}
+  outcome:
+    description: "'success' or 'failure' (sync mode only, empty otherwise)"
+    value: ${{ steps.tas.outputs.outcome }}
+  passed:
+    description: "Number of passed scenarios (sync mode only)"
+    value: ${{ steps.tas.outputs.passed }}
+  failed:
+    description: "Number of failed scenarios (sync mode only)"
+    value: ${{ steps.tas.outputs.failed }}
+  skipped:
+    description: "Number of skipped scenarios (sync mode only)"
+    value: ${{ steps.tas.outputs.skipped }}
+  total:
+    description: "Total number of scenarios (sync mode only)"
+    value: ${{ steps.tas.outputs.total }}
+  duration:
+    description: "Total test duration in seconds (sync mode only)"
+    value: ${{ steps.tas.outputs.duration }}
+
+runs:
+  using: "composite"
+  steps:
+
+    # ── Common bootstrap (only for orchestrator-based modes) ────────────────
+    - name: Setup Python ${{ inputs.python_version }}
+      if: inputs.mode != 'raw'
+      uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      with:
+        python-version: ${{ inputs.python_version }}
+
+    - name: Install orchestrator dependencies
+      if: inputs.mode != 'raw'
+      shell: bash
+      run: pip install requests
+
+    - name: Download tas_orchestrator.py
+      if: inputs.mode != 'raw'
+      shell: bash
+      run: |
+        set -euo pipefail
+        curl -sSfL \
+          "https://raw.githubusercontent.com/${{ inputs.tas_repo }}/${{ inputs.ref }}/scripts/tas_orchestrator.py" \
+          -o tas_orchestrator.py
+
+    # Pinned digest (orchestrator_sha256) wins over the sidecar when both
+    # are available. Step is skipped entirely when verify_orchestrator=false.
+    - name: Verify tas_orchestrator.py SHA-256
+      if: inputs.mode != 'raw' && inputs.verify_orchestrator != 'false'
+      shell: bash
+      run: |
+        set -euo pipefail
+        PINNED="${{ inputs.orchestrator_sha256 }}"
+        if [ -n "${PINNED}" ]; then
+          echo "Verifying tas_orchestrator.py against pinned SHA-256..."
+          echo "${PINNED}  tas_orchestrator.py" | sha256sum -c -
+        else
+          echo "Verifying tas_orchestrator.py against published sidecar..."
+          curl -sSfL \
+            "https://raw.githubusercontent.com/${{ inputs.tas_repo }}/${{ inputs.ref }}/scripts/tas_orchestrator.py.sha256" \
+            -o tas_orchestrator.py.sha256
+          sha256sum -c tas_orchestrator.py.sha256
+        fi
+
+    # ── Unified dispatch step (all three modes publish under `steps.tas`) ──
+    # The three modes share a single shell block so the outputs path is
+    # stable for the caller (steps.tas.outputs.*) regardless of `mode`.
+    - name: Run TAS (${{ inputs.mode }})
+      id: tas
+      shell: bash
+      env:
+        # Token used by tas_orchestrator.py (sync/async) AND by the raw
+        # curl branch. Always read from the shell env, never interpolated
+        # into the rendered script body, to avoid masking gaps in logs.
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        TAS_MODE: ${{ inputs.mode }}
+        TAS_TYPE: ${{ inputs.test_type }}
+        TAS_SUITE: ${{ inputs.suite }}
+        TAS_ENV: ${{ inputs.environment }}
+        TAS_REF: ${{ inputs.ref }}
+        TAS_REPO: ${{ inputs.tas_repo }}
+        TAS_WORKFLOW: ${{ inputs.workflow_file }}
+        TAS_CALLER_ID: ${{ inputs.caller_id != '' && inputs.caller_id || format('{0}/{1}', github.repository, github.run_id) }}
+        TAS_CORRELATION_ID: ${{ inputs.correlation_id != '' && inputs.correlation_id || format('{0}-{1}', github.run_id, github.run_attempt) }}
+      run: |
+        # `pipefail` only — we want to capture orchestrator exit codes AND
+        # publish outputs before propagating the failure to the step.
+        set -o pipefail
+
+        emit() {
+          # $1 = name, $2 = value (may be empty)
+          printf '%s=%s\n' "$1" "$2" >> "$GITHUB_OUTPUT"
+        }
+
+        case "$TAS_MODE" in
+          sync)
+            python tas_orchestrator.py \
+              --type "$TAS_TYPE" \
+              --suite "$TAS_SUITE" \
+              --env "$TAS_ENV" \
+              --ref "$TAS_REF" \
+              --repo "$TAS_REPO" \
+              --workflow "$TAS_WORKFLOW" \
+              --caller-id "$TAS_CALLER_ID" \
+              --correlation-id "$TAS_CORRELATION_ID" \
+              --sync \
+              | tee tas_output.txt
+            EXIT_CODE=${PIPESTATUS[0]}
+
+            emit correlation_id "$(grep -E '^CORRELATION_ID=' tas_output.txt | tail -n1 | cut -d= -f2-)"
+            emit run_id         "$(grep -E '^RUN_ID='         tas_output.txt | tail -n1 | cut -d= -f2-)"
+            emit run_url        "$(grep -E '^RUN_URL='        tas_output.txt | tail -n1 | cut -d= -f2-)"
+            emit outcome        "$(grep -E '^OUTCOME='        tas_output.txt | tail -n1 | cut -d= -f2-)"
+            emit passed         "$(grep -E '^PASSED='         tas_output.txt | tail -n1 | cut -d= -f2-)"
+            emit failed         "$(grep -E '^FAILED='         tas_output.txt | tail -n1 | cut -d= -f2-)"
+            emit skipped        "$(grep -E '^SKIPPED='        tas_output.txt | tail -n1 | cut -d= -f2-)"
+            emit total          "$(grep -E '^TOTAL='          tas_output.txt | tail -n1 | cut -d= -f2-)"
+            emit duration       "$(grep -E '^DURATION='       tas_output.txt | tail -n1 | cut -d= -f2-)"
+
+            exit "$EXIT_CODE"
+            ;;
+
+          async)
+            python tas_orchestrator.py \
+              --type "$TAS_TYPE" \
+              --suite "$TAS_SUITE" \
+              --env "$TAS_ENV" \
+              --ref "$TAS_REF" \
+              --repo "$TAS_REPO" \
+              --workflow "$TAS_WORKFLOW" \
+              --caller-id "$TAS_CALLER_ID" \
+              --correlation-id "$TAS_CORRELATION_ID" \
+              | tee tas_output.txt
+
+            CID="$(grep -E '^CORRELATION_ID=' tas_output.txt | tail -n1 | cut -d= -f2-)"
+            if [ -z "$CID" ]; then
+              echo "::error::CORRELATION_ID not found in orchestrator output"
+              exit 1
+            fi
+            emit correlation_id "$CID"
+            emit run_id  ""
+            emit run_url ""
+            emit outcome ""
+            emit passed  ""
+            emit failed  ""
+            emit skipped ""
+            emit total   ""
+            emit duration ""
+            echo "Correlation ID : $CID"
+            echo "Monitor at     : https://github.com/${TAS_REPO}/actions"
+            ;;
+
+          raw)
+            set -euo pipefail
+            CID="$TAS_CORRELATION_ID"
+
+            HTTP=$(curl -s -o /dev/null -w "%{http_code}" \
+              -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/${TAS_REPO}/actions/workflows/${TAS_WORKFLOW}/dispatches" \
+              -d "{
+                \"ref\": \"${TAS_REF}\",
+                \"inputs\": {
+                  \"test_type\": \"${TAS_TYPE}\",
+                  \"test_suite\": \"${TAS_SUITE}\",
+                  \"environment\": \"${TAS_ENV}\",
+                  \"caller_id\": \"${TAS_CALLER_ID}\",
+                  \"correlation_id\": \"${CID}\"
+                }
+              }")
+
+            if [ "$HTTP" != "204" ]; then
+              echo "::error::Dispatch failed with HTTP $HTTP"
+              exit 1
+            fi
+
+            emit correlation_id "$CID"
+            emit run_id  ""
+            emit run_url ""
+            emit outcome ""
+            emit passed  ""
+            emit failed  ""
+            emit skipped ""
+            emit total   ""
+            emit duration ""
+            echo "Tests dispatched (raw API). Run name: tas-${CID}"
+            echo "Monitor at: https://github.com/${TAS_REPO}/actions"
+            ;;
+
+          *)
+            echo "::error::Invalid mode '$TAS_MODE' (expected: sync | async | raw)"
+            exit 1
+            ;;
+        esac
+
+    # ── Post-step summary (opt-out via print_summary: 'false') ──────────────
+    # Two mutually exclusive steps so the caller does not have to add this
+    # boilerplate to their own workflow. They run with `if: always()` so the
+    # summary is emitted even when sync mode exits 1 on test failure.
+    - name: TAS — Print summary (sync mode)
+      if: always() && inputs.print_summary != 'false' && steps.tas.outputs.outcome != ''
+      shell: bash
+      run: |
+        echo ""
+        echo "── TAS run summary (sync) ────────────────────────────────────"
+        echo "  Correlation ID : ${{ steps.tas.outputs.correlation_id }}"
+        echo "  Run ID         : ${{ steps.tas.outputs.run_id }}"
+        echo "  Run URL        : ${{ steps.tas.outputs.run_url }}"
+        echo "  Outcome        : ${{ steps.tas.outputs.outcome }}"
+        echo "  Passed         : ${{ steps.tas.outputs.passed }}"
+        echo "  Failed         : ${{ steps.tas.outputs.failed }}"
+        echo "  Skipped        : ${{ steps.tas.outputs.skipped }}"
+        echo "  Total          : ${{ steps.tas.outputs.total }}"
+        echo "  Duration       : ${{ steps.tas.outputs.duration }}s"
+        echo "──────────────────────────────────────────────────────────────"
+
+    - name: TAS — Print dispatch info (async / raw mode)
+      if: always() && inputs.print_summary != 'false' && steps.tas.outputs.outcome == '' && steps.tas.outputs.correlation_id != ''
+      shell: bash
+      env:
+        TAS_REPO: ${{ inputs.tas_repo }}
+      run: |
+        echo ""
+        echo "── TAS dispatch info (${{ inputs.mode }}) ──────────────────────────────"
+        echo "  Tests dispatched — results are not available synchronously."
+        echo "  Correlation ID : ${{ steps.tas.outputs.correlation_id }}"
+        echo "  Run name       : tas-${{ steps.tas.outputs.correlation_id }}"
+        echo "  Monitor at     : https://github.com/${TAS_REPO}/actions"
+        echo "──────────────────────────────────────────────────────────────"
+

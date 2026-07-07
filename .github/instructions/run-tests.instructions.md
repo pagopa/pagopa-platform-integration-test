@@ -9,9 +9,10 @@
 Placeholders: `<suite>` = `cart` | `auth-service` | `checkout-npg` | `ecommerce-cdc` — `<env>` = `dev` | `uat`
 
 ```powershell
+$env:TARGET_ENV = "<env>"
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "reports\allure-results\<suite>-<env>"
 New-Item "reports\allure-results\<suite>-<env>" -ItemType Directory -Force | Out-Null
-behave src\api\<suite> -D env=<env> `
+behave src\api\<suite> `
     -f allure_behave.formatter:AllureFormatter -o reports\allure-results\<suite>-<env> `
     -f progress --summary --show-timings
 ```

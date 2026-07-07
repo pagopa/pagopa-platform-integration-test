@@ -7,6 +7,11 @@ name: ↔️ Test Automation Service
 on:
   workflow_call:
     inputs:
+      test_type:
+        description: "Test category to run: integration | e2e | api (maps to src/<test_type>/...)"
+        required: false
+        type: string
+        default: "integration"
       test_suite:
         description: "Test suite to run"
         required: true
@@ -47,6 +52,15 @@ on:
 
   workflow_dispatch:
     inputs:
+      test_type:
+        description: "Test category"
+        required: true
+        type: choice
+        options:
+          - integration
+          - e2e
+          - api
+        default: integration
       test_suite:
         description: "Test suite to run"
         required: true
@@ -95,7 +109,12 @@ jobs:
         run: |
           echo "::notice title=Caller::${{ inputs.caller_id }}"
           echo "::notice title=Correlation ID::${{ inputs.correlation_id }}"
-          echo "::notice title=Suite::${{ inputs.test_suite }} | Env: ${{ inputs.environment }}"
+          echo "::notice title=Type/Suite::${{ inputs.test_type }} / ${{ inputs.test_suite }} | Env: ${{ inputs.environment }}"
+          # The ref is a top-level workflow_dispatch parameter (not a workflow input):
+          # callers select it via the GitHub API payload ('ref' field) or via the
+          # tas_orchestrator.py '--ref' flag. GitHub uses it to locate both the
+          # workflow YAML and the code checked out below — they are always aligned.
+          echo "::notice title=Ref::${{ github.ref }} (sha: ${{ github.sha }})"
 
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
@@ -133,10 +152,21 @@ jobs:
       - name: Determine test path
         id: test_path
         run: |
+          set -u
+          TEST_TYPE="${{ inputs.test_type }}"
+          # Whitelist the test_type to avoid path injection from arbitrary callers
+          # (workflow_call accepts free strings; workflow_dispatch is already a choice).
+          case "$TEST_TYPE" in
+            integration|e2e|api) ;;
+            *)
+              echo "::error::Invalid test_type '$TEST_TYPE' (expected: integration | e2e | api)"
+              exit 1
+              ;;
+          esac
           if [ "${{ inputs.test_suite }}" = "all" ]; then
-            echo "path=src/integration" >> $GITHUB_OUTPUT
+            echo "path=src/${TEST_TYPE}" >> $GITHUB_OUTPUT
           else
-            echo "path=src/integration/${{ inputs.test_suite }}" >> $GITHUB_OUTPUT
+            echo "path=src/${TEST_TYPE}/${{ inputs.test_suite }}" >> $GITHUB_OUTPUT
           fi
 
       # continue-on-error=true: the workflow must not stop on test failures;
@@ -145,6 +175,15 @@ jobs:
         id: run_tests
         continue-on-error: true
         run: |
+          set -u
+          # Fail fast if the env var did not propagate to the shell.
+          # The Python config layer (src/conf/configuration.py) reads
+          # os.environ['TARGET_ENV'] at import time, so the value must be
+          # set BEFORE invoking behave.
+          : "${TARGET_ENV:?TARGET_ENV is empty — workflow input 'environment' did not propagate}"
+          echo "::notice title=TARGET_ENV::${TARGET_ENV}"
+          echo "Running behave with TARGET_ENV=${TARGET_ENV}"
+
           behave ${{ steps.test_path.outputs.path }} \
             --tags=@runnable \
             --format json --outfile behave-results.json \
@@ -191,8 +230,11 @@ jobs:
           summary = {
               "correlation_id": "${{ inputs.correlation_id }}",
               "caller_id":      "${{ inputs.caller_id }}",
+              "test_type":      "${{ inputs.test_type }}",
               "suite":          "${{ inputs.test_suite }}",
               "environment":    "${{ inputs.environment }}",
+              "ref":            "${{ github.ref }}",
+              "sha":            "${{ github.sha }}",
               "passed":         passed,
               "failed":         failed,
               "skipped":        skipped,
@@ -224,8 +266,10 @@ jobs:
           echo "|---|---|" >> $GITHUB_STEP_SUMMARY
           echo "| **Caller** | ${{ inputs.caller_id || '—' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Correlation ID** | \`${{ inputs.correlation_id || github.run_id }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Test type** | ${{ inputs.test_type }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Suite** | ${{ inputs.test_suite }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Environment** | ${{ inputs.environment }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Ref** | \`${{ github.ref }}\` (sha \`${{ github.sha }}\`) |" >> $GITHUB_STEP_SUMMARY
           echo "| **Passed** | ${{ steps.summary.outputs.passed }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Failed** | ${{ steps.summary.outputs.failed }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Skipped** | ${{ steps.summary.outputs.skipped }} |" >> $GITHUB_STEP_SUMMARY

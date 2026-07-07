@@ -3,6 +3,10 @@
 Scope: pagopa-platform-integration-test root.
 Canonical agent instructions for this repo (Copilot/Claude); use [README.md](README.md) for general project context and keep this file focused on operative rules.
 
+## Assess terminal
+
+Whatever agent may be using the terminal, should always check the terminal type first (PowerShell, Bash, zsh, etc.).
+
 ## Repository quick map
 
 - Test suites: `src/api/<suite>`, `src/integration/<suite>`, `src/e2e/<suite>`.
@@ -42,5 +46,7 @@ Each agent reads **only** the instruction files listed for its role. Instruction
 | `QA-runner` | [`run-tests.instructions.md`](.github/instructions/run-tests.instructions.md) |
 | `QA-closer` | [`git-commit.instructions.md`](.github/instructions/git-commit.instructions.md), [`git-pr.instructions.md`](.github/instructions/git-pr.instructions.md) |
 | `QA-orchestrator` | all of the above (delegates to sub-agents) |
+| `Mermaid-flow-engineer` | [`.github/skills/mermaid-flow/SKILL.md`](.github/skills/mermaid-flow/SKILL.md) |
+| `Marp-presentation-engineer` | [`.github/skills/marp-presentation/SKILL.md`](.github/skills/marp-presentation/SKILL.md) |
 
-> **Detailed instructions** live in `.github/instructions/`. Do not duplicate content here.
+> **Detailed instructions** live in `.github/instructions/`. Skills live in `.github/skills/<name>/SKILL.md`. Do not duplicate content here.

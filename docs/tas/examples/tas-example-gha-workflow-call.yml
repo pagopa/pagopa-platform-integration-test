@@ -21,8 +21,12 @@ jobs:
   # ── 1. Integration tests ──────────────────────────────────────────────────
   integration-tests:
     name: Integration Tests (WISP / UAT)
+    # NOTE: GitHub Actions does not allow expressions in 'uses:' — the ref
+    # after '@' must be a literal branch, tag or commit SHA. Update it manually
+    # to pin to a different version of the TAS workflow (e.g. '@refs/tags/v1').
     uses: pagopa/pagopa-platform-integration-test/.github/workflows/test-automation-service.yml@main
     with:
+      test_type:      integration   # integration | e2e | api
       test_suite:     wisp
       environment:    uat
       caller_id:      ${{ github.repository }}

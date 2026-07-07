@@ -8,6 +8,12 @@ Espone i resolver disponibili per il recupero dei secret:
 
 from src.utility.config.secrets.secret_resolver import DictSecretResolver, SecretResolver
 from src.utility.config.secrets.azure_secret_resolver import AzureKeyVaultSecretResolver
+from src.utility.config.secrets.apim_subscription_resolver import ApimSubscriptionResolver
 
-__all__ = ["SecretResolver", "DictSecretResolver", "AzureKeyVaultSecretResolver"]
+__all__ = [
+	"SecretResolver",
+	"DictSecretResolver",
+	"AzureKeyVaultSecretResolver",
+	"ApimSubscriptionResolver",
+]
 

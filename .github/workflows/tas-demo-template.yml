@@ -1,0 +1,127 @@
+##############################################################################
+# TAS DEMO — official composite action (Option 6)
+#
+# Demonstrative workflow showing how a calling system integrates the
+# Test Automation Service via the official GHA composite action.
+#
+# A single step (`uses: ./.github/actions/tas-integration-tests`) replaces
+# the entire boilerplate that the orchestrator-async / sync / raw demos
+# implement by hand. The composite action exposes the same outputs
+# regardless of `mode`, so the downstream `deploy` job reads from the
+# same path no matter how the tests were invoked.
+#
+# In a real calling repository, the local path becomes a remote reference:
+#   uses: pagopa/pagopa-platform-integration-test/.github/actions/tas-integration-tests@main
+#
+# Can be triggered manually from the GitHub UI
+# (Actions → "TAS Demo — composite action").
+#
+# Prerequisites:
+#   - INTEGRATION_TEST_PAT secret configured in this repository.
+#     (workflow_dispatch via API cannot use the built-in GITHUB_TOKEN
+#      to trigger another workflow in the same repo.)
+##############################################################################
+
+name: ↔️ TAS Demo — composite action
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: "Test category"
+        required: true
+        type: choice
+        options:
+          - integration
+          - e2e
+          - api
+        default: integration
+      test_suite:
+        description: "Test suite to run"
+        required: true
+        type: choice
+        options:
+          - wisp
+          - all
+        default: wisp
+      environment:
+        description: "Target environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - uat
+        default: uat
+      mode:
+        description: "Invocation mode"
+        required: true
+        type: choice
+        options:
+          - sync
+          - async
+          - raw
+        default: sync
+      ref:
+        description: "TAS repo branch/tag to run the workflow on (defaults to the current branch)"
+        required: false
+        type: string
+        default: ""
+      verify_orchestrator:
+        description: "Verify orchestrator SHA-256 against the published sidecar (recommended)"
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+
+  # ── 1. Run TAS via the composite action ───────────────────────────────────
+  integration-tests:
+    name: "Integration Tests (${{ inputs.test_suite }} / ${{ inputs.environment }} — ${{ inputs.mode }})"
+    runs-on: ubuntu-latest
+    # Job-level `outputs:` are declared ONLY when a downstream job consumes
+    # them via `needs.<job>.outputs.*`. Here the `deploy` job reads just two
+    # of them; the remaining `steps.tas.outputs.*` are available inside this
+    # job anyway and do not need to be re-exported.
+    outputs:
+      correlation_id: ${{ steps.tas.outputs.correlation_id }}
+      run_url:        ${{ steps.tas.outputs.run_url }}
+    steps:
+      # The composite action is referenced via a local path; this requires
+      # the repository to be checked out first. In a real consumer the path
+      # is replaced by a remote reference (see file header).
+      - name: Checkout (to expose the local composite action)
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Run TAS integration tests
+        id: tas
+        uses: ./.github/actions/tas-integration-tests
+        with:
+          test_type:           ${{ inputs.test_type }}
+          suite:               ${{ inputs.test_suite }}
+          environment:         ${{ inputs.environment }}
+          mode:                ${{ inputs.mode }}
+          ref:                 ${{ inputs.ref || github.ref_name }}
+          github_token:        ${{ secrets.INTEGRATION_TEST_PAT }}
+          caller_id:           "${{ github.repository }} (demo)"
+          verify_orchestrator: ${{ inputs.verify_orchestrator }}
+          # `print_summary` defaults to "true": the action automatically logs
+          # the run summary (sync) or dispatch info (async/raw). Set to
+          # "false" to suppress and handle the outputs yourself.
+
+  # ── 2. Deploy (simulated) — gated by the test outcome ────────────────────
+  deploy:
+    name: "Deploy (simulated)"
+    needs: integration-tests
+    if: needs.integration-tests.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Simulate deploy
+        run: |
+          echo "Mode           : ${{ inputs.mode }}"
+          echo "Correlation ID : ${{ needs.integration-tests.outputs.correlation_id }}"
+          echo "Run URL        : ${{ needs.integration-tests.outputs.run_url }}"
+          echo "Deploy would proceed here."
+

@@ -1,0 +1,62 @@
+name: Sync Feature File between github and confluence
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [closed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync_feature_file:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+        with:
+          fetch-depth: 2
+          ref: ${{ github.event_name == 'pull_request' && 'main' || github.ref }}
+
+      - name: Detect changed Feature file
+        shell: bash
+        run: |
+          FEATURE_FILES=$(git diff --name-only --diff-filter=d HEAD^ HEAD | grep -E '\.feature$' || true)
+
+          if [ -n "$FEATURE_FILES" ]; then
+            {
+              echo "FEATURE_FOUND=true"
+              echo "FEATURE_FILES<<EOF"
+              echo "$FEATURE_FILES"
+              echo "EOF"
+            } >> "$GITHUB_ENV"
+          else
+            echo "FEATURE_FOUND=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: Set up Python
+        if: env.FEATURE_FOUND == 'true'
+        uses: actions/setup-python@7f4fc3e22c37d6ff65e88745f38bd3157c663f7c # v4
+        with: 
+          python-version: '3.x'
+
+      - name: Install dependencies
+        if: env.FEATURE_FOUND == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Sync Feature File
+        if: env.FEATURE_FOUND == 'true'
+        env:
+          CONFLUENCE_KEY: ${{ secrets.CONFLUENCE_KEY }}
+          CONFLUENCE_EMAIL: ${{ secrets.CONFLUENCE_EMAIL }}
+        run: |
+          while IFS= read -r FEATURE_FILE; do
+            [ -z "$FEATURE_FILE" ] && continue
+            python -u .github/scripts/auto_sync_feature_page.py "$FEATURE_FILE"
+          done <<< "${{ env.FEATURE_FILES }}"
+
