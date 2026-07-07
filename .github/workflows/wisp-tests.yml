@@ -34,6 +34,9 @@ jobs:
       - name: Run WISP tests
         id: run_tests
         continue-on-error: true
+        env:
+          TARGET_ENV: uat
+          suite: wisp
         run: |
           behave src/integration/wisp --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
 
