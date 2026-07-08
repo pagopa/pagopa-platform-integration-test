@@ -27,7 +27,7 @@ jobs:
     uses: pagopa/pagopa-platform-integration-test/.github/workflows/test-automation-service.yml@main
     with:
       test_type:      integration   # integration | e2e | api
-      test_suite:     wisp
+      test_suite:     tas_pass      
       environment:    uat
       caller_id:      ${{ github.repository }}
       # Unique correlation_id for this run: useful for retrieving the TAS

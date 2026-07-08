@@ -40,7 +40,7 @@ jobs:
 
   # ── 1. Integration tests ──────────────────────────────────────────────────
   integration-tests:
-    name: "Integration Tests (WISP / UAT)"
+    name: "Integration Tests (tas_pass / UAT)"
     runs-on: ubuntu-latest
     steps:
       - name: Setup Python
@@ -83,7 +83,7 @@ jobs:
         run: |
           python tas_orchestrator.py \
             --type integration \
-            --suite wisp \
+            --suite tas_pass \
             --env uat \
             --ref "${TAS_REF}" \
             --caller-id "${{ github.repository }}" \
