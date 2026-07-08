@@ -1,3 +1,5 @@
+from behave import given, when, then
+
 @given(u'contiene {totPayments:d} pagamenti con amount {sumPayments:f}')
 def step_check_payments_number_and_amounts(context, totPayments, sumPayments):
     raise NotImplementedError(u'STEP: Given contiene {totPayments:d} pagamenti con amount {sumPayments:f}')
