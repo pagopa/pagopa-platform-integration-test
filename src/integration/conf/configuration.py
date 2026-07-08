@@ -11,6 +11,7 @@ import urllib3
 from dynaconf import Dynaconf
 
 ENV_VAR_PREFIX = 'WISP_DISMANTLING'
+_INTEGRATION_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 

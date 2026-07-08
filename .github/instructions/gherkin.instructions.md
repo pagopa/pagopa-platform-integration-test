@@ -15,8 +15,11 @@ applyTo: "src/**/*.feature"
 - Search the codebase for existing feature files to match style and language; ask the user which to follow as a blueprint.
 - `Examples` should never have columns with only one value; if a column has only one value, it should be moved to the scenario outline as a *parameter*.
 - Empty cells in `Examples` tables (i.e. `| |`) represent a `null` (`None`) value for that parameter.
+- `Examples` should never have columns with only one value; if a column has only one value, it should be moved to the scenario outline as a *parameter*.
+- Empty cells in `Examples` tables (i.e. `| |`) represent a `null` (`None`) value for that parameter.
 
 
+## Feature file style & indentation
 ## Feature file style & indentation
 
 - `Scenario` / `Scenario Outline`: indented by 2 spaces.
