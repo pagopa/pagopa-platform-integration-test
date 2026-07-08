@@ -75,19 +75,32 @@ def build_prompt(
 
     header = (
         f"You are a senior QA engineer. Analyse the failures from the '{suite_label}' integration test suite.\n"
-        "For each failure provide a concise Markdown response using this structure:\n"
-        "## Root cause (1-2 lines)\n"
-        "## Category ( application bug | test data | environment | flaky )\n"
-        "## Recommended action (1-2 lines)\n\n"
-        "At the end, add a **Common patterns** section if recurring root causes emerge.\n\n"
+        "For each failure, produce a Markdown block with EXACTLY this structure (preserve heading levels):\n\n"
+        "# <number>. <failure name — copy it verbatim from the input>\n"
+        "- **status**: <value>\n"
+        "- **fullName**: `<value>`\n"
+        "- **message**: <value>\n"
+        "- **trace**:\n"
+        "```\n"
+        "<trace — copy verbatim, truncate to 10 lines if longer>\n"
+        "```\n"
+        "### Root cause\n"
+        "<1-2 lines>\n\n"
+        "### Category\n"
+        "<one of: application bug | test data | environment | flaky>\n\n"
+        "### Recommended action\n"
+        "<1-2 lines>\n\n"
+        "---\n\n"
+        "After all failures, add a ## Common patterns section if recurring root causes emerge.\n\n"
         f"**Total failures: {len(failures)}**\n\n"
+        "--- FAILURES ---\n\n"
     )
 
     parts: List[str] = [header]
     for idx, failure in enumerate(failures[:max_failures], start=1):
         trace = failure["trace"][:max_trace_chars]
         parts.append(
-            f"## {idx}. {failure['name']}\n"
+            f"# {idx}. {failure['name']}\n"
             f"- **status**: {failure['status']}\n"
             f"- **fullName**: `{failure['fullName']}`\n"
             f"- **message**: {failure['message']}\n"
