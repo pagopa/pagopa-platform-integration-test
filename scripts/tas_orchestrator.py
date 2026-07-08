@@ -376,7 +376,7 @@ def build_parser() -> argparse.ArgumentParser:
         )
     )
     parser.add_argument(
-        "--suite", required=True, #choices=["wisp", "all", "tas_pass", "tas_fail"],
+        "--suite", required=True, choices=["wisp", "all", "tas_pass", "tas_fail", "tas_mixed"],
         help="Test suite to run"
     )
     parser.add_argument(
