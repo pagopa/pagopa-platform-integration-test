@@ -14,7 +14,7 @@ Funzionalità: Cancellazione del flusso completo
 @Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
 Scenario: Cancellazione di un flusso completo FdR 
   Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
-  E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "INSERTED" 
+  E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste già in stato "INSERTED" 
   Quando Il PSP invia una richiesta di cancellazione di un flusso attraverso l'API "Delete an existing draft flow and all related payments"
   Allora il sistema risponde con il codice di stato HTTP 200
   E L’fdr non è più presente
@@ -37,7 +37,7 @@ Scenario: Cancellazione di un FdR inesistente
 @Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSPDEMO")
 Scenario:  Cancellazione di un FdR in stato  CREATED
   Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
-  E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "CREATED"
+  E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste già in stato "CREATED"
   Quando Il PSP invia una richiesta di cancellazione di un flusso attraverso l'API "Delete an existing draft flow and all related payments"
   Allora il sistema risponde con il codice di stato HTTP 400
 
@@ -50,7 +50,7 @@ Scenario:  Cancellazione di un FdR in stato  CREATED
 @Pubblica_FdR
 Scenario: Cancellazione di un FdR in stato PUBLISHED
  Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
- E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "PUBLISHED"
+ E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste già in stato "PUBLISHED"
  Quando Il PSP invia una richiesta di cancellazione di un flusso attraverso l'API "Delete an existing draft flow and all related payments"
  Allora il sistema risponde con il codice di stato HTTP 400
 

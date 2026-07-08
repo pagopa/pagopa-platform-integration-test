@@ -14,20 +14,20 @@ Funzionalità: Pubblicazione di un FdR
 @Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
 Scenario: Pubblicazione di un Fdr
   Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
-  E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "INSERTED"
+  E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste già in stato "INSERTED"
   Quando il PSP avvia una richiesta di pubblicazione flusso attraverso l'API "Publish an existing flow in draft status"
   Allora il sistema risponde con il codice di stato HTTP 200
   E il parametro is_Latest viene settato a "TRUE"
-  E La data corrente viene impostata come publish date
-  E La data corrente viene impostata come last update dates
-  E Lo stato dell’FDR viene impostato a "PUBLISHED"
+  E il campo "last_update_date" è aggiornato all'ora corrente
+  E il campo "creation_date" è aggiornato all'ora corrente
+  E il flusso è in stato "PUBLISHED"
 
 
 #======================================================
 #======================================================
 
 @PubblicazioneFdR_003_02
-Scenario outline: Pubblicazione FdR KO
+Schema dello scenario: Pubblicazione FdR KO
   Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
   E il PSP vuole recuperare un FdR con identificativo diverso da "<data_regolamento><istituto_mittente>-<flusso>"
   Quando il PSP avvia una richiesta di pubblicazione flusso attraverso l'API "Publish an existing flow in draft status"
@@ -46,7 +46,7 @@ Scenario outline: Pubblicazione FdR KO
 @Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001")
 Scenario:  Pubblicazione di un FdR in stato  CREATED
   Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
-  E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "CREATED"
+  E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste già in stato "CREATED"
   Quando il PSP avvia una richiesta di pubblicazione flusso attraverso l'API "Publish an existing flow in draft status"
   Allora il sistema risponde con il codice di stato HTTP 400
 
@@ -59,7 +59,7 @@ Scenario:  Pubblicazione di un FdR in stato  CREATED
 @Pubblica_FdR
 Scenario: Pubblicazione di un FdR in stato PUBLISHED
   Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
-  E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "PUBLISHED"
+  E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste già in stato "PUBLISHED"
   Quando il PSP avvia una richiesta di pubblicazione flusso attraverso l'API "Publish an existing flow in draft status"
   Allora il sistema risponde con il codice di stato HTTP 400
 
