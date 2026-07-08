@@ -1,4 +1,4 @@
-name: AI Report Analysis
+name: 🤖 AI Report Analysis
 
 on:
   workflow_dispatch:
@@ -7,6 +7,18 @@ on:
         description: 'Prompt to send to the AI model'
         required: false
         default: 'di che colore era il cavallo bianco di napoleone?'
+      prompt_artifact:
+        description: 'Artifact name containing prompt.txt (optional, overrides prompt)'
+        required: false
+        default: ''
+      source_run_id:
+        description: 'Run ID to download prompt_artifact from (optional)'
+        required: false
+        default: ''
+      analysis_artifact_name:
+        description: 'Name of the output artifact containing response.json and analysis.md'
+        required: false
+        default: ''
       max_tokens:
         description: 'Max output tokens'
         required: false
@@ -20,6 +32,11 @@ on:
         default: ''
       prompt_artifact:
         description: 'Name of an artifact containing prompt.txt to use as prompt'
+        required: false
+        type: string
+        default: ''
+      source_run_id:
+        description: 'Run ID to download prompt_artifact from (optional)'
         required: false
         type: string
         default: ''
@@ -40,7 +57,7 @@ env:
 
 jobs:
   check-model-catalog:
-    name: "Job 1 - Verify model in catalog"
+    name: "Verify model in catalog"
     runs-on: ubuntu-latest
     outputs:
       model_found: ${{ steps.check.outputs.model_found }}
@@ -70,16 +87,25 @@ jobs:
           fi
 
   call-inference:
-    name: "Job 2 - Call inference endpoint"
+    name: "Call inference endpoint"
     needs: check-model-catalog
     runs-on: ubuntu-latest
     steps:
-      - name: Download prompt artifact
-        if: ${{ inputs.prompt_artifact != '' }}
+      - name: Download prompt artifact (same run)
+        if: ${{ inputs.prompt_artifact != '' && inputs.source_run_id == '' }}
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: ${{ inputs.prompt_artifact }}
           path: ai-prompt-input
+
+      - name: Download prompt artifact (specific run)
+        if: ${{ inputs.prompt_artifact != '' && inputs.source_run_id != '' }}
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ${{ inputs.prompt_artifact }}
+          path: ai-prompt-input
+          run-id: ${{ inputs.source_run_id }}
+          github-token: ${{ github.token }}
 
       - name: Resolve prompt
         env:
