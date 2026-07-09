@@ -1,0 +1,33 @@
+[checks]
+enabled = true
+positive_data_acceptance.expected-statuses = [200, 401, 403, 404, 500]
+
+[dictionaries.payments]
+values = [10.0,100.0]
+
+[dictionaries.iuvs]
+values = ["1000"]
+
+# Global parameters
+[parameters]
+pspId = "88888888888"
+fdr = '2025-01-0188888888888-0001'
+organizationId = "15376371009"
+"body.pay" = { dictionary = "payments" }
+"body.[*].pay" = { dictionary = "payments" }
+"body.payments[*].pay" = { dictionary = "payments" }
+"body.payment.pay" = { dictionary = "payments" }
+"body.payments[*].payment.pay" = { dictionary = "payments" }
+"body.addPaymentToExistingFlow.request.payments[*].pay" = { dictionary = "payments" }
+
+[phases]
+enabled = false
+fuzzing.enabled = true
+fuzzing.generation.max-examples = 10
+
+[generation]
+allow-extra-parameters = false
+
+[reports.allure]
+enabled = true
+path = "./test-reports/schemathesis-results.xml"
