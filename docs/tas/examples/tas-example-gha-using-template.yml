@@ -71,7 +71,7 @@ jobs:
         uses: pagopa/pagopa-platform-integration-test/.github/actions/tas-integration-tests@main
         with:
           test_type:    ${{ inputs.test_type || 'integration' }}
-          suite:        ${{ inputs.suite       || 'wisp' }}
+          suite:        ${{ inputs.suite       || 'tas_pass' }}
           environment:  ${{ inputs.environment || 'uat'  }}
           mode:         ${{ inputs.mode        || 'sync' }}
           ref:          ${{ inputs.ref         || 'main' }}
