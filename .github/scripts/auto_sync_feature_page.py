@@ -26,7 +26,7 @@ KEYWORD_GIVEN = 'Dato'
 KEYWORD_EXAMPLES = 'Esempi'
 KEYWORD_AND = 'E'
 KEYWORD_SCENARIO = 'Scenario'
-KEYWORD_LANGUAGE = '#language:'
+KEYWORD_LANGUAGE = 'language:'
 KEYWORD_PIPE = '|'
 LINK_PREFIX = '#link:'
 TABLE_CLOSURE = '</tr></tbody></table>'
@@ -99,7 +99,7 @@ def get_existing_page_content(fileIn):
     try:
         with open(fileIn, "r", encoding="utf-8") as f:
             confluencePageId = f.readline()[1:].strip('\n ')
-            check_language(f.readline().strip('\n '), fileIn)
+            check_language(f.readline()[1:].strip('\n '), fileIn)
         url = f'{CONFLUENCE_BASE_URL}{confluencePageId}'
         response = requests.request(
             "GET",

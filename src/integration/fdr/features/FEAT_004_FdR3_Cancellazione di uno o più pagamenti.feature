@@ -98,7 +98,7 @@ Scenario: Cancellazione dei pagamenti di un FdR in stato PUBLISHED
 #======================================================
 #========== NON APPLICABILI ===========================
 #======================================================
-#Non è possibile creader FdR per PSP non censito a sistema. Il test non è corretto.
+#Non è possibile creare FdR per PSP non censito a sistema. Il test non è corretto.
 #@CancellazioneDiUnooPiuPagamentiFdR_004_07
 #@Crea_FdR(id_fdr="2016-08-16pspTest-1178",id_psp="pspTest")
 #Scenario:  Cancellazione dei pagamenti per PSP non presente a sistema
