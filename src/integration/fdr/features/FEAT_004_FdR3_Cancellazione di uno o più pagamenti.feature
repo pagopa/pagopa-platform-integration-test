@@ -1,5 +1,5 @@
 #3078946877
-#language:it
+#language:it 
 @CancellazioneDiUnooPiuPagamentiFdR_004
 Funzionalità: Cancellazione di uno o più pagamenti
 
