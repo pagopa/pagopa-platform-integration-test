@@ -31,7 +31,7 @@ KEYWORD_PIPE = '|'
 LINK_PREFIX = '#link:'
 TABLE_CLOSURE = '</tr></tbody></table>'
 INLINE_CODE_PATTERN = re.compile(r'<\s*([A-Za-z0-9_]+)\s*>')
-SUITE_SCENARIO_ID = re.compile(r'^@([A-Za-z0-9]+_(?:[A-Za-z0-9]+)*)_(\d{3})_(\d{2})$')
+SUITE_SCENARIO_ID = re.compile(r'^@([A-Za-z0-9]*)(_[A-Za-z0-9]*)*_(\d{3})_(\d{2})$')
 EMPTY_TABLE_CELL = '<td data-highlight-colour="#ffffff"></td>'
 
 auth = None

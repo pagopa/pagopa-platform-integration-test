@@ -1,4 +1,4 @@
-#3078946877
+#3078946877 
 #language:it 
 @CancellazioneDiUnooPiuPagamentiFdR_004
 Funzionalità: Cancellazione di uno o più pagamenti
