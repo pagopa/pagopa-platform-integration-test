@@ -27,12 +27,14 @@ import argparse
 import json
 import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path
 
 from src.conf.configuration import secrets
 
 API_KEY_HEADER: str = "Ocp-Apim-Subscription-Key"
 DEFAULT_OPENAPI_DIR: Path = Path("tmp_fetched")
+DEFAULT_REPORT_BASE_DIR: Path = Path("schemathesis- test-reports")
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -79,7 +81,47 @@ def build_arg_parser() -> argparse.ArgumentParser:
         default=[],
         help="Any extra arguments forwarded verbatim to 'schemathesis run'.",
     )
+    parser.add_argument(
+        "--report-base-dir",
+        default=DEFAULT_REPORT_BASE_DIR,
+        type=Path,
+        metavar="DIR",
+        help=(
+            "Base directory where run report folders are created. "
+            f"Defaults to '{DEFAULT_REPORT_BASE_DIR}'."
+        ),
+    )
+   
     return parser
+
+
+def build_report_directory(base_dir: Path) -> Path:
+    """Create and return a unique report directory for the current execution.
+
+    The resulting path is structured as ``<base>/<YYYY-MM-DD>/<run-name>``.
+    When *run_name* is missing, a timestamp-based name is used.
+    """
+    day_folder = datetime.now().strftime("%Y-%m-%d")
+    time = datetime.now().strftime("run %H-%M")
+    for openApi_file in Path("tmp_fetched").glob("*.json"):
+            file_stem = openApi_file.stem
+            if file_stem:
+                name = fr"{file_stem} {time}"
+            else:
+                name = time
+            target = base_dir / day_folder / name
+            if not target.exists():
+                target.mkdir(parents=True, exist_ok=False)
+            return target
+
+    # Avoid collisions when the same run name is reused in a single day.
+    counter = 1
+    while True:
+        candidate = base_dir / day_folder / f"{name}-{counter}"
+        if not candidate.exists():
+            candidate.mkdir(parents=True, exist_ok=False)
+            return candidate
+        counter += 1
 
 
 def extract_server_url(openapi_file: Path) -> str | None:
@@ -105,6 +147,7 @@ def build_schemathesis_command(
     openapi_file: Path,
     api_key: str,
     server_url: str,
+    report_directory: Path,
     extra_args: list[str],
 ) -> list[str]:
     """Assemble the 'schemathesis run' command for a single OpenAPI file."""
@@ -114,6 +157,8 @@ def build_schemathesis_command(
         str(openapi_file),
         "--url",
         server_url,
+        "--report-dir",
+        str(report_directory),
         "--header",
         f"{API_KEY_HEADER}: {api_key}",
     ]
@@ -124,6 +169,7 @@ def build_schemathesis_command(
 def run_spec(
     openapi_file: Path,
     api_key: str,
+    report_directory: Path,
     extra_args: list[str],
     url_override: str | None = None,
 ) -> int:
@@ -132,7 +178,9 @@ def run_spec(
     if not server_url:
         print(f"[SKIP] No server URL found in '{openapi_file.name}'. Pass --url to override.")
         return 1
-    command = build_schemathesis_command(openapi_file, api_key, server_url, extra_args)
+    command = build_schemathesis_command(
+        openapi_file, api_key, server_url, report_directory, extra_args
+    )
     print(f"\n{'=' * 60}")
     print(f"Testing: {openapi_file.name}")
     print(f"{'=' * 60}\n")
@@ -150,6 +198,9 @@ def main() -> int:
         print(f"No OpenAPI files found in '{args.openapi_dir}'. Nothing to test.")
         return 0
 
+    report_directory = build_report_directory(args.report_base_dir)
+    print(f"Report directory for this run: {report_directory}")
+
     exit_codes: list[int] = []
 
     for openapi_file in openapi_files:
@@ -162,7 +213,13 @@ def main() -> int:
             )
             continue
 
-        code = run_spec(openapi_file, api_key, args.schemathesis_args, args.url)
+        code = run_spec(
+            openapi_file,
+            api_key,
+            report_directory,
+            args.schemathesis_args,
+            args.url,
+        )
         exit_codes.append(code)
 
     failures = sum(1 for c in exit_codes if c != 0)
