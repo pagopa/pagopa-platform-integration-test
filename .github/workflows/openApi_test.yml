@@ -26,7 +26,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests schemathesis
       
-       if : matrix.env == 'dev'
+       if: matrix.env == 'dev'
     -  name: Fetch and test openApi dev
        env:
           TARGET_ENV: ${{ matrix.env }}
@@ -35,7 +35,7 @@ jobs:
        run: |
           python -u .github/scripts/openApi_test.py
 
-       if : matrix.env == 'uat'
+       if: matrix.env == 'uat'
     -  name: Fetch and test openApi uat
        env:
           TARGET_ENV: ${{ matrix.env }}
