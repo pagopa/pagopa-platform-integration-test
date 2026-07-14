@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from datetime import datetime
@@ -102,26 +103,17 @@ def build_report_directory(base_dir: Path) -> Path:
     When *run_name* is missing, a timestamp-based name is used.
     """
     day_folder = datetime.now().strftime("%Y-%m-%d")
-    time = datetime.now().strftime("run %H-%M")
+    time = datetime.now().strftime("run %H-%M-%S")
     for openApi_file in Path("tmp_fetched").glob("*.json"):
             file_stem = openApi_file.stem
             if file_stem:
                 name = fr"{file_stem} {time}"
             else:
                 name = time
-            target = base_dir / day_folder / name
+            target = base_dir / day_folder / name / os.getenv("TARGET_ENV", "N/A")
             if not target.exists():
                 target.mkdir(parents=True, exist_ok=False)
             return target
-
-    # Avoid collisions when the same run name is reused in a single day.
-    counter = 1
-    while True:
-        candidate = base_dir / day_folder / f"{name}-{counter}"
-        if not candidate.exists():
-            candidate.mkdir(parents=True, exist_ok=False)
-            return candidate
-        counter += 1
 
 
 def extract_server_url(openapi_file: Path) -> str | None:

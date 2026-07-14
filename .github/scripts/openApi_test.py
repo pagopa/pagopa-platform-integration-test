@@ -5,6 +5,12 @@ import shutil
 from datetime import datetime, timedelta
 from pathlib import Path
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+# Repository root is two levels above this script (..\.github -> repo root)
+REPO_ROOT = os.path.dirname(os.path.dirname(SCRIPT_DIR))
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
+
 import scripts.fetch_github_files as fetch_github_files
 import scripts.schemathesis_runner as schemathesis_runner
 

@@ -1,10 +1,10 @@
 name: Fetch openApi files from github and then test them with schemathesis
 
 on:
-   pull_request:
+   push:
       branches:
-      - main
-      types: [closed]
+         - main
+         - PQ-556-fdr-api-test
    schedule:
       - cron: '0 1 * * *' # Runs every day at 1 AM
    workflow_dispatch:
@@ -18,9 +18,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
        matrix:
-        env: [ "dev", "uat" ]
+          env: [ "dev", "uat" ]
     
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+          fetch-depth: 2
+          ref: ${{ github.ref }}
+
+
     - name: Set up Python
       uses: actions/setup-python@7f4fc3e22c37d6ff65e88745f38bd3157c663f7c # v4
       with: 
@@ -29,30 +36,22 @@ jobs:
     -  name: Install dependencies
        run: |
           python -m pip install --upgrade pip
-          pip install requests schemathesis
+          pip install requests schemathesis azure-identity azure-keyvault-secrets azure-mgmt-apimanagement dynaconf allure-python-commons
 
-    -  name: Load secrets
-       run: echo "$SECRETS" >> ./config/.secrets.yaml
-       env:
-          SECRETS: ${{ secrets.FDR_INTEGRATION_TESTS_SECRETS }}
+    - name: Load secrets
+      run: |
+        mkdir -p config
+        echo "$SECRETS" > ./config/.secrets.yaml
+      env:
+        SECRETS: ${{ secrets.FDR_INTEGRATION_TESTS_SECRETS }}
 
-       if: matrix.env == 'dev'
-    -  name: Fetch and test openApi dev
-       env:
-          TARGET_ENV: ${{ matrix.env }}
-          suite: 'fdr'
-          #AZURE_KEY_VAULT_URL: ${{ secrets.AZURE_KEY_VAULT_DEV_URL }}
-       run: |
-          python -u .github/scripts/openApi_test.py
-
-       if: matrix.env == 'uat'
-    -  name: Fetch and test openApi uat
-       env:
-          TARGET_ENV: ${{ matrix.env }}
-          suite: 'fdr'
-          #AZURE_KEY_VAULT_URL: ${{ secrets.AZURE_KEY_VAULT_UAT_URL }}
-       run: |
-          python -u .github/scripts/openApi_test.py
+    - name: Fetch and test openApi
+      env:
+        TARGET_ENV: ${{ matrix.env }}
+        suite: 'fdr'
+        #AZURE_KEY_VAULT_URL: ${{ case(matrix.env == 'dev', secrets.AZURE_KEY_VAULT_DEV_URL, secrets.AZURE_KEY_VAULT_UAT_URL) }}
+      run: |
+        python -u .github/scripts/openApi_test.py
 
 
      
