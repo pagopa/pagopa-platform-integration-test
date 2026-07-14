@@ -157,11 +157,11 @@ def resolve_branch_for_target_env(target_env: str, latest_sanp_branch: Optional[
       - UAT -> develop
       - DEV -> latest SANPx.y.z
     """
-    if target_env == "PROD":
-                return "master"
-    if target_env == "UAT":
+    if target_env == "prod":
+        return "master"
+    if target_env == "uat":
         return "develop"
-    if target_env == "DEV":
+    if target_env == "dev":
         if latest_sanp_branch is None:
             raise RuntimeError("No SANPx.y.z branch found while DEV environment was requested")
         return latest_sanp_branch
@@ -238,12 +238,13 @@ def main(argv: Optional[List[str]] = None) -> int:
             print(f"Latest SANP branch detected: {latest_sanp_branch}")
         else:
             print("No SANPx.y.z branches detected")
-        branch = resolve_branch_for_target_env(args.target_env, latest_sanp_branch)
+        target_env= str(os.getenv("TARGET_ENV", args.target_env)).lower()
+        branch = resolve_branch_for_target_env(target_env, latest_sanp_branch)
     except Exception as e:
         print(f"ERROR: could not resolve source branch: {e}")
         return 3
 
-    print(f"Target environment: {args.target_env}")
+    print(f"Target environment: {target_env}")
     print(f"Using branch: {branch}")
 
     results = []
