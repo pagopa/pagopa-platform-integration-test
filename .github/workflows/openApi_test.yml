@@ -52,6 +52,11 @@ jobs:
         #AZURE_KEY_VAULT_URL: ${{ case(matrix.env == 'dev', secrets.AZURE_KEY_VAULT_DEV_URL, secrets.AZURE_KEY_VAULT_UAT_URL) }}
       run: |
         python -u .github/scripts/openApi_test.py
+    - uses: actions/upload-artifact@v4
+      with:
+          name: schemathesis-test-reports
+          path: schemathesis-test-reports
+          retention-days: 30
 
 
      
