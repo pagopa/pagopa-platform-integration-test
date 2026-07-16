@@ -40,6 +40,8 @@ jobs:
         SECRETS: ${{ secrets.FDR_INTEGRATION_TESTS_SECRETS }}
 
     - name: Fetch and test openApi
+      id: run_tests
+      continue-on-error: true
       env:
         TARGET_ENV: ${{ matrix.env }}
         suite: 'fdr'

@@ -79,6 +79,85 @@ def extract_stats_from_stats_file(stats_json_path):
         print(f"[INFO][extract_stats_from_stats_file] stats.json {stats_json_path} not found")
         return {'passed': 0, 'failed': 0, 'skipped': 0}
 
+def find_schemathesis_reports(artifact_dir):
+    """Recursively find all schemathesis report directories in artifacts.
+    
+    Returns a list of tuples: (report_path, date_folder, run_name, env_name)
+    """
+    reports = []
+    print(f"[INFO][find_schemathesis_reports] artifact_dir {artifact_dir}")
+    
+    # Check if artifact_dir exists
+    if not os.path.isdir(artifact_dir):
+        print(f"[INFO][find_schemathesis_reports] artifact_dir {artifact_dir} does not exist, skipping schemathesis reports")
+        return reports
+    
+    # Look for schemathesis-test-reports-<env> folders
+    for env_artifact in os.listdir(artifact_dir):
+        if not env_artifact.startswith("schemathesis-test-reports-"):
+            continue
+        
+        print(f"[INFO][find_schemathesis_reports] found artifact folder: {env_artifact}")
+        
+        env_name = env_artifact.split("schemathesis-test-reports-")[1]
+        base_path = os.path.join(artifact_dir, env_artifact)
+        print(f"[INFO][find_schemathesis_reports] env_name: {env_name}, base_path: {base_path}")
+        
+        if not os.path.isdir(base_path):
+            print(f"[INFO][find_schemathesis_reports] base_path {base_path} is not a directory, skipping")
+            continue
+        
+        # Look for date folders (YYYY-MM-DD)
+        for date_folder in os.listdir(base_path):
+            date_path = os.path.join(base_path, date_folder)
+            
+            if not os.path.isdir(date_path):
+                print(f"[INFO][find_schemathesis_reports] date_path {date_path} is not a directory, skipping")
+                continue
+            
+            if not re.match(r"^\d{4}-\d{2}-\d{2}$", date_folder):
+                print(f"[INFO][find_schemathesis_reports] date_folder {date_folder} does not match YYYY-MM-DD pattern, skipping")
+                continue
+            
+            print(f"[INFO][find_schemathesis_reports] processing date_folder: {date_folder}")
+            
+            # Look for run folders (<name> run HH-MM-SS)
+            for run_folder in os.listdir(date_path):
+                run_path = os.path.join(date_path, run_folder)
+                
+                if not os.path.isdir(run_path):
+                    print(f"[INFO][find_schemathesis_reports] run_path {run_path} is not a directory, skipping")
+                    continue
+                
+                if " run " not in run_folder:
+                    print(f"[INFO][find_schemathesis_reports] run_folder {run_folder} does not contain ' run ', skipping")
+                    continue
+                
+                print(f"[INFO][find_schemathesis_reports] processing run_folder: {run_folder}")
+                
+                # The report is inside run_path/env_name/
+                report_path = os.path.join(run_path, env_name)
+                index_html_path = os.path.join(report_path, "index.html")
+                
+                if not os.path.isdir(report_path):
+                    print(f"[INFO][find_schemathesis_reports] report_path {report_path} does not exist, skipping")
+                    continue
+                
+                if not os.path.exists(index_html_path):
+                    print(f"[INFO][find_schemathesis_reports] index.html {index_html_path} not found, skipping")
+                    continue
+                
+                reports.append({
+                    'report_path': report_path,
+                    'date_folder': date_folder,
+                    'run_folder': run_folder,
+                    'env_name': env_name
+                })
+                print(f"[INFO][find_schemathesis_reports] Found report: {report_path}")
+    
+    print(f"[INFO][find_schemathesis_reports] Total schemathesis reports found: {len(reports)}")
+    return reports
+
 def build_index_page(root_dir):
 
     reports = []
@@ -113,13 +192,46 @@ def build_index_page(root_dir):
         f.write(template.render(reports=reports))
     print(f"[INFO][build_index_page] written index page to {output_path}")
 
+def build_index_page_schemathesis(root_dir):
+    """Build index page for schemathesis reports (simpler structure, no stats.json)."""
+    reports = []
+    for name in os.listdir(root_dir):
+        report_dir = os.path.join(root_dir, name)
+        index_html = os.path.join(report_dir, "index.html")
+        if os.path.isdir(report_dir) and os.path.exists(index_html) and name not in ("last-history", "index.html"):
+            report_entry = {
+                "name": name,
+                "passed": 0,
+                "failed": 0,
+                "link": f"./{name}/index.html",
+                "sort_key": name
+            }
+            print(f"[INFO][build_index_page_schemathesis] Adding report entry: {report_entry}")
+            reports.append(report_entry)
+
+    # Order by timestamp desc
+    print(f"[INFO][build_index_page_schemathesis] sorting reports by date descending")
+    reports.sort(key=lambda r: r["sort_key"], reverse=True)
+
+    # load index template and render template
+    print(f"[INFO][build_index_page_schemathesis] applying history-index-template.html template")
+    env = Environment(loader=FileSystemLoader(".github/templates"))
+    template = env.get_template("history-index-template.html")
+    output_path = os.path.join(root_dir, "index.html")
+    with open(output_path, "w") as f:
+        print(f"[INFO][build_index_page_schemathesis] Writing index page to {output_path} ...")
+        f.write(template.render(reports=reports))
+    print(f"[INFO][build_index_page_schemathesis] written index page to {output_path}")
+
 def main():
-    apps = ["wisp"]
     artifact_dir = os.path.join("artifacts") # /artifacts
     print(f"[INFO][main] artifact_dir {artifact_dir}")
-    for app in apps:
+    
+    # Process Allure reports (wisp)
+    allure_apps = ["wisp"]
+    for app in allure_apps:
         root_dir = f"public/{app}-tests"
-        print(f"[INFO][main] processing directory {root_dir}")
+        print(f"[INFO][main] processing Allure directory {root_dir}")
 
         # extract stats form allure reports inside artifacts
         artifact_app_dir = os.path.join(artifact_dir, "allure-report-" + app) # /artifacts/allure-report-<app>
@@ -152,6 +264,50 @@ def main():
 
         # build index page
         build_index_page(root_dir)
+
+    # Process Schemathesis reports (openapi-fdr)
+    print(f"[INFO][main] Processing Schemathesis reports")
+    schemathesis_reports = find_schemathesis_reports(artifact_dir)
+    
+    if not schemathesis_reports:
+        print(f"[INFO][main] No schemathesis reports found, skipping schemathesis processing")
+    else:
+        root_dir = "public/openapi-fdr-tests"
+        print(f"[INFO][main] processing Schemathesis directory {root_dir}")
+        
+        # Create root directory if needed
+        os.makedirs(root_dir, exist_ok=True)
+        
+        for report_info in schemathesis_reports:
+            # Construct destination folder name: <date>_<run_name>_<env>
+            # run_name format is: "<api_name> run HH-MM-SS"
+            run_name = report_info['run_folder']
+            # Extract just the time part
+            time_match = re.search(r'run (\d{2}-\d{2}-\d{2})$', run_name)
+            if time_match:
+                time_part = time_match.group(1).replace('-', '')
+                folder_name = f"{report_info['date_folder']}_{time_part}_{report_info['env_name']}"
+            else:
+                folder_name = f"{report_info['date_folder']}_{run_name}_{report_info['env_name']}"
+            
+            source_dir = Path(report_info['report_path'])
+            destination_dir = Path(root_dir) / folder_name
+            
+            print(f"[INFO][main] Copying schemathesis report from {source_dir} to {destination_dir}")
+            
+            # Copy the report
+            if destination_dir.exists():
+                shutil.rmtree(destination_dir)
+            shutil.copytree(source_dir, destination_dir)
+            
+            # Also update last-history for this env
+            last_history_env = Path(root_dir) / f"last-history-{report_info['env_name']}"
+            if last_history_env.exists():
+                shutil.rmtree(last_history_env)
+            shutil.copytree(source_dir, last_history_env)
+        
+        # Build index page for schemathesis
+        build_index_page_schemathesis(root_dir)
 
 if __name__ == "__main__":
     main()
