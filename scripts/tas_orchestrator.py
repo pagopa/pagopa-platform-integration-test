@@ -21,9 +21,11 @@ Exit codes:
   2  — Orchestration error (configuration, timeout, GitHub API)
 
 Required environment variables:
-  GITHUB_TOKEN   : Personal Access Token with 'repo' and 'actions:read' permissions
+  TAS_GITHUB_TOKEN : Personal Access Token with 'repo' and 'actions:read' permissions.
+                     Falls back to GITHUB_TOKEN for backward compatibility.
 
 Optional environment variables:
+  GITHUB_TOKEN   : Legacy name for the PAT, used only if TAS_GITHUB_TOKEN is unset
   GITHUB_REPO    : Target repo in "owner/repo" format (overrides the default)
   WORKFLOW_FILE  : Workflow filename (overrides the default)
 """
@@ -229,10 +231,12 @@ def print_summary(summary: dict) -> None:
 # ── Main orchestration logic ────────────────────────────────────────────────────
 
 def run(args: argparse.Namespace) -> int:
-    # Token validation
-    token = os.environ.get("GITHUB_TOKEN")
+    # Token validation. Prefer the TAS-scoped name to avoid clashing with a
+    # generic GITHUB_TOKEN that may already exist in the caller's environment;
+    # fall back to GITHUB_TOKEN for backward compatibility with older callers.
+    token = os.environ.get("TAS_GITHUB_TOKEN") or os.environ.get("GITHUB_TOKEN")
     if not token:
-        log.error("The GITHUB_TOKEN environment variable is not set.")
+        log.error("Neither TAS_GITHUB_TOKEN nor GITHUB_TOKEN environment variable is set.")
         return 2
 
     repo = os.environ.get("GITHUB_REPO", args.repo)

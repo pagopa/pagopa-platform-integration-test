@@ -10,10 +10,11 @@
 # JSON dispatch, output normalisation) lives inside the template.
 #
 # ── Prerequisites ───────────────────────────────────────────────────────────
-# 1. Variable group 'tas-integration-secrets' containing:
-#      INTEGRATION_TEST_PAT — GitHub PAT (secret), scopes public_repo + actions:read
-#    Authorise this pipeline to consume the group:
-#      Library → tas-integration-secrets → Pipeline permissions → +
+# 1. A GitHub PAT (scopes public_repo + actions:read) made available to this
+#    pipeline as a SECRET variable, then forwarded to the template through the
+#    'githubToken' parameter. Define it as a secret pipeline variable (or a
+#    secret from an Azure Key Vault–linked variable group) so it stays masked
+#    in the logs — never hard-code the token in this YAML.
 #
 # 2. A 'GitHub' service connection (Project settings → Service connections)
 #    pointing to github.com. The name of the connection goes into
@@ -86,9 +87,12 @@ stages:
       ref:                ${{ parameters.ref }}
       verifyOrchestrator: ${{ parameters.verifyOrchestrator }}
       publishTests:       ${{ parameters.publishTests }}
+      # GitHub PAT forwarded to the orchestrator as GITHUB_TOKEN. Source it
+      # from a SECRET pipeline variable (here 'INTEGRATION_TEST_PAT') so it is
+      # masked in the logs — do not paste the raw token into this file.
+      githubToken:        $(INTEGRATION_TEST_PAT)
       # Optional overrides — exposed inline because they are typically
       # set-once-and-forget (not toggled from the portal at run-time):
-      # secretsGroup:  tas-integration-secrets
       # pythonVersion: "3.11"
       # poolVmImage:   "ubuntu-latest"
       # testRunTitle:  ""                # default — auto-generated as "TAS — <suite> / <env> (<ref>)"
