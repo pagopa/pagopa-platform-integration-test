@@ -40,6 +40,6 @@ jobs:
     secrets: inherit
 
   deploy:
-    needs: [trigger_wisp] #, trigger_fdr]
+    needs: [trigger_wisp, trigger_openApi_fdr]
     uses: ./.github/workflows/deploy-test-report.yml
     secrets: inherit
