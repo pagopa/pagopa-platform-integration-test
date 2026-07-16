@@ -44,6 +44,11 @@ on:
           - dev
           - uat
         default: uat
+      tags:
+        description: "Behave tag expression (e.g. @runnable, @e2e). Empty = all scenarios."
+        required: false
+        type: string
+        default: "@runnable"
       ref:
         description: "TAS repo branch/tag to run the workflow on (defaults to the current branch)"
         required: false
@@ -74,6 +79,13 @@ jobs:
           CORRELATION_ID="${{ steps.correlation.outputs.correlation_id }}"
           TAS_REF="${{ inputs.ref || github.ref_name }}"
 
+          # Include the 'tags' input only when set, so the payload stays
+          # compatible with older workflow refs lacking that input.
+          TAGS_JSON=""
+          if [ -n "${{ inputs.tags }}" ]; then
+            TAGS_JSON=", \"tags\": \"${{ inputs.tags }}\""
+          fi
+
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
             -X POST \
             -H "Accept: application/vnd.github+json" \
@@ -87,7 +99,7 @@ jobs:
                 \"test_suite\": \"${{ inputs.test_suite }}\",
                 \"environment\": \"${{ inputs.environment }}\",
                 \"caller_id\": \"${{ github.repository }}\",
-                \"correlation_id\": \"$CORRELATION_ID\"
+                \"correlation_id\": \"$CORRELATION_ID\"${TAGS_JSON}
               }
             }")
 

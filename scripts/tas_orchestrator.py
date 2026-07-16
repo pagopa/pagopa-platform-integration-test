@@ -257,6 +257,13 @@ def run(args: argparse.Namespace) -> int:
         "correlation_id": correlation_id,
     }
 
+    # Forward an explicit Behave tag expression only when provided. When
+    # omitted the workflow keeps its own default (@runnable); this also avoids
+    # a 422 'Unexpected inputs' error against older workflow refs that do not
+    # declare the 'tags' input.
+    if args.tags:
+        inputs["tags"] = args.tags
+
     log.info("Sending dispatch to '%s' (workflow: %s, ref: %s)", repo, workflow_file, args.ref)
     log.info("Type: %s | Suite: %s | Env: %s | Caller: %s | Correlation ID: %s",
              args.type, args.suite, args.env, args.caller_id, correlation_id)
@@ -394,6 +401,14 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--correlation-id", default="",
         help="Custom correlation ID (auto-generated if omitted)"
+    )
+    parser.add_argument(
+        "--tags", default="",
+        help=(
+            "Behave tag expression to filter scenarios (e.g. '@runnable', "
+            "'@e2e', '@a,@b'). When omitted the workflow keeps its own "
+            "default (@runnable)."
+        )
     )
     parser.add_argument(
         "--sync", action="store_true",

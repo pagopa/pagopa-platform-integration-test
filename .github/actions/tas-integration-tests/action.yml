@@ -67,6 +67,13 @@ inputs:
       '<github.run_id>-<github.run_attempt>'.
     required: false
     default: ""
+  tags:
+    description: >-
+      Behave tag expression to filter scenarios (e.g. '@runnable', '@e2e',
+      '@a,@b'). When omitted the TAS workflow keeps its own default
+      (@runnable).
+    required: false
+    default: ""
   tas_repo:
     description: "TAS repository (rarely overridden)"
     required: false
@@ -195,6 +202,7 @@ runs:
         TAS_WORKFLOW: ${{ inputs.workflow_file }}
         TAS_CALLER_ID: ${{ inputs.caller_id != '' && inputs.caller_id || format('{0}/{1}', github.repository, github.run_id) }}
         TAS_CORRELATION_ID: ${{ inputs.correlation_id != '' && inputs.correlation_id || format('{0}-{1}', github.run_id, github.run_attempt) }}
+        TAS_TAGS: ${{ inputs.tags }}
       run: |
         # `pipefail` only — we want to capture orchestrator exit codes AND
         # publish outputs before propagating the failure to the step.
@@ -216,6 +224,7 @@ runs:
               --workflow "$TAS_WORKFLOW" \
               --caller-id "$TAS_CALLER_ID" \
               --correlation-id "$TAS_CORRELATION_ID" \
+              --tags "$TAS_TAGS" \
               --sync \
               | tee tas_output.txt
             EXIT_CODE=${PIPESTATUS[0]}
@@ -243,6 +252,7 @@ runs:
               --workflow "$TAS_WORKFLOW" \
               --caller-id "$TAS_CALLER_ID" \
               --correlation-id "$TAS_CORRELATION_ID" \
+              --tags "$TAS_TAGS" \
               | tee tas_output.txt
 
             CID="$(grep -E '^CORRELATION_ID=' tas_output.txt | tail -n1 | cut -d= -f2-)"
@@ -267,6 +277,13 @@ runs:
             set -euo pipefail
             CID="$TAS_CORRELATION_ID"
 
+            # Include the 'tags' input only when set, so the payload stays
+            # compatible with older workflow refs lacking that input.
+            TAGS_JSON=""
+            if [ -n "${TAS_TAGS}" ]; then
+              TAGS_JSON=", \"tags\": \"${TAS_TAGS}\""
+            fi
+
             HTTP=$(curl -s -o /dev/null -w "%{http_code}" \
               -X POST \
               -H "Accept: application/vnd.github+json" \
@@ -280,7 +297,7 @@ runs:
                   \"test_suite\": \"${TAS_SUITE}\",
                   \"environment\": \"${TAS_ENV}\",
                   \"caller_id\": \"${TAS_CALLER_ID}\",
-                  \"correlation_id\": \"${CID}\"
+                  \"correlation_id\": \"${CID}\"${TAGS_JSON}
                 }
               }")
 
