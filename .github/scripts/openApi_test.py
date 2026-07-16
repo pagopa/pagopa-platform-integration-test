@@ -15,7 +15,7 @@ import scripts.fetch_github_files as fetch_github_files
 import scripts.schemathesis_runner as schemathesis_runner
 
 OPENAPI_FOLDER = "tmp_fetched"
-SCHEMATHESIS_RUNS_BASE_DIR = "schemathesis- test-reports"
+SCHEMATHESIS_RUNS_BASE_DIR = "schemathesis-test-reports"
 SCHEMATHESIS_RUN_RETENTION_DAYS = 30
 
 
