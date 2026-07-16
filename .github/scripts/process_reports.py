@@ -137,14 +137,9 @@ def find_schemathesis_reports(artifact_dir):
                 
                 # The report is inside run_path/env_name/
                 report_path = os.path.join(run_path, env_name)
-                index_html_path = os.path.join(report_path, "index.html")
                 
                 if not os.path.isdir(report_path):
                     print(f"[INFO][find_schemathesis_reports] report_path {report_path} does not exist, skipping")
-                    continue
-                
-                if not os.path.exists(index_html_path):
-                    print(f"[INFO][find_schemathesis_reports] index.html {index_html_path} not found, skipping")
                     continue
                 
                 reports.append({
@@ -153,7 +148,7 @@ def find_schemathesis_reports(artifact_dir):
                     'run_folder': run_folder,
                     'env_name': env_name
                 })
-                print(f"[INFO][find_schemathesis_reports] Found report: {report_path}")
+                print(f"[INFO][find_schemathesis_reports] Found report folder: {report_path}")
     
     print(f"[INFO][find_schemathesis_reports] Total schemathesis reports found: {len(reports)}")
     return reports
