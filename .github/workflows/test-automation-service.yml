@@ -210,6 +210,18 @@ jobs:
             echo "::notice title=Behave tags::(none — running all scenarios)"
           fi
 
+          # Some suites (e.g. e2e checkout) load per-environment configuration
+          # from a <env>.env file, resolved via the ENV_FILE variable in their
+          # environment.py. Expose it automatically when a matching file exists
+          # for the selected suite/environment; harmless for suites that ignore it.
+          ENV_FILE_CANDIDATE="${{ steps.test_path.outputs.path }}/${TARGET_ENV}.env"
+          if [ -f "${ENV_FILE_CANDIDATE}" ]; then
+            export ENV_FILE="${ENV_FILE_CANDIDATE}"
+            echo "::notice title=ENV_FILE::${ENV_FILE}"
+          else
+            echo "::notice title=ENV_FILE::(none — no ${TARGET_ENV}.env in ${{ steps.test_path.outputs.path }})"
+          fi
+
           behave ${{ steps.test_path.outputs.path }} \
             "${TAGS_ARG[@]}" \
             --format json --outfile behave-results.json \
