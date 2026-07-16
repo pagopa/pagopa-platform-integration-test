@@ -131,6 +131,17 @@ jobs:
           pip install -r requirements.txt
           sudo apt-get install -y jq
 
+      # Playwright (Python package + branded Chrome) is only required by the
+      # e2e suites (src/e2e/checkout uses channel="chrome"). Installing it for
+      # integration/api runs would only add download time, so it is gated on
+      # test_type. Keep the pin aligned with @playwright/test in
+      # src/e2e/checkout/package.json.
+      - name: Install Playwright (e2e suites only)
+        if: ${{ inputs.test_type == 'e2e' }}
+        run: |
+          pip install playwright==1.55.0
+          python -m playwright install --with-deps chrome
+
       - name: Load secrets
         run: echo "$SECRETS" >> ./config/.secrets.yaml
         env:
