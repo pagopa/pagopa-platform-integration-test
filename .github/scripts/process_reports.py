@@ -154,27 +154,47 @@ def find_schemathesis_reports(artifact_dir):
     return reports
 
 def build_index_page(root_dir):
-
+    """Build index page for reports (handles both allure and schemathesis reports).
+    
+    For allure (wisp, openapi): extracts stats from stats.json if available
+    For schemathesis: uses default stats (0 passed/failed)
+    Excludes: index.html, last-history, and last-history-* folders
+    """
     reports = []
+    print(f"[INFO][build_index_page] processing root_dir {root_dir}")
+    
     for name in os.listdir(root_dir):
         report_dir = os.path.join(root_dir, name)
+        
+        # Skip index.html and last-history folders (including env-specific: last-history-dev, etc)
+        if name == "index.html" or name == "last-history" or name.startswith("last-history-"):
+            print(f"[INFO][build_index_page] skipping excluded folder: {name}")
+            continue
+        
+        if not os.path.isdir(report_dir):
+            print(f"[INFO][build_index_page] skipping non-directory: {name}")
+            continue
+        
+        # Try to get stats from stats.json (allure reports)
         stats_json = os.path.join(report_dir, "stats.json")
-        if os.path.isdir(report_dir) and os.path.exists(stats_json) and name not in ("last-history", "index.html"):
+        if os.path.exists(stats_json):
             stats = extract_stats_from_stats_file(stats_json)
-            report_entry = {
-                "name": name,
-                "passed": stats["passed"],
-                "failed": stats["failed"],
-                "link": f"./{name}/index.html",
-                "sort_key": name
-            }
-            print(f"[INFO][build_index_page] Adding report entry: {report_entry}")
-            reports.append(report_entry)
         else:
-            print(f"[INFO][build_index_page] skipping dir {report_dir} not found")
+            # Default stats for schemathesis or other reports without stats.json
+            stats = {'passed': 0, 'failed': 0, 'skipped': 0}
+        
+        report_entry = {
+            "name": name,
+            "passed": stats["passed"],
+            "failed": stats["failed"],
+            "link": f"./{name}/index.html",
+            "sort_key": name
+        }
+        print(f"[INFO][build_index_page] Adding report entry: {report_entry}")
+        reports.append(report_entry)
 
     # Order by timestamp desc
-    print(f"[INFO][build_index_page] sorting badge by date descending")
+    print(f"[INFO][build_index_page] sorting reports by date descending")
     reports.sort(key=lambda r: r["sort_key"], reverse=True)
 
     # load index template and render template
@@ -187,43 +207,12 @@ def build_index_page(root_dir):
         f.write(template.render(reports=reports))
     print(f"[INFO][build_index_page] written index page to {output_path}")
 
-def build_index_page_schemathesis(root_dir):
-    """Build index page for schemathesis reports (simpler structure, no stats.json)."""
-    reports = []
-    for name in os.listdir(root_dir):
-        report_dir = os.path.join(root_dir, name)
-        index_html = os.path.join(report_dir, "index.html")
-        if os.path.isdir(report_dir) and os.path.exists(index_html) and name not in ("last-history", "index.html"):
-            report_entry = {
-                "name": name,
-                "passed": 0,
-                "failed": 0,
-                "link": f"./{name}/index.html",
-                "sort_key": name
-            }
-            print(f"[INFO][build_index_page_schemathesis] Adding report entry: {report_entry}")
-            reports.append(report_entry)
-
-    # Order by timestamp desc
-    print(f"[INFO][build_index_page_schemathesis] sorting reports by date descending")
-    reports.sort(key=lambda r: r["sort_key"], reverse=True)
-
-    # load index template and render template
-    print(f"[INFO][build_index_page_schemathesis] applying history-index-template.html template")
-    env = Environment(loader=FileSystemLoader(".github/templates"))
-    template = env.get_template("history-index-template.html")
-    output_path = os.path.join(root_dir, "index.html")
-    with open(output_path, "w") as f:
-        print(f"[INFO][build_index_page_schemathesis] Writing index page to {output_path} ...")
-        f.write(template.render(reports=reports))
-    print(f"[INFO][build_index_page_schemathesis] written index page to {output_path}")
-
 def main():
     artifact_dir = os.path.join("artifacts") # /artifacts
     print(f"[INFO][main] artifact_dir {artifact_dir}")
     
-    # Process Allure reports (wisp)
-    allure_apps = ["wisp"]
+    # Process Allure reports (wisp, openapi)
+    allure_apps = ["wisp", "openapi"]
     for app in allure_apps:
         root_dir = f"public/{app}-tests"
         print(f"[INFO][main] processing Allure directory {root_dir}")
@@ -301,8 +290,8 @@ def main():
                 shutil.rmtree(last_history_env)
             shutil.copytree(source_dir, last_history_env)
         
-        # Build index page for schemathesis
-        build_index_page_schemathesis(root_dir)
+        # Build index page for schemathesis (uses generic method)
+        build_index_page(root_dir)
 
 if __name__ == "__main__":
     main()

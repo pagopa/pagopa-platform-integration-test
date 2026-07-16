@@ -48,9 +48,20 @@ jobs:
         #AZURE_KEY_VAULT_URL: ${{ case(matrix.env == 'dev', secrets.AZURE_KEY_VAULT_DEV_URL, secrets.AZURE_KEY_VAULT_UAT_URL) }}
       run: |
         python -u .github/scripts/openApi_test.py
+
+    - name: Build OpenApi Allure report
+      uses: simple-elf/allure-report-action@53ebb757a2097edc77c53ecef4d454fc2f2f774c # v1.13
+      with:
+          gh_pages: gh-pages
+          allure_results: allure-results
+          allure_report: allure-report-openapi
+          allure_history: allure-history
+          subfolder: openapi-tests
+          keep_reports: 30
+
     - uses: actions/upload-artifact@v4
       with:
-          name: schemathesis-test-reports-${{ matrix.env }}
+          name: allure-report-openapi-${{ matrix.env }}
           path: schemathesis-test-reports
           retention-days: 30
           if-no-files-found: error
