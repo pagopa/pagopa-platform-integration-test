@@ -35,7 +35,7 @@ from src.conf.configuration import secrets
 
 API_KEY_HEADER: str = "Ocp-Apim-Subscription-Key"
 DEFAULT_OPENAPI_DIR: Path = Path("tmp_fetched")
-DEFAULT_REPORT_BASE_DIR: Path = Path("schemathesis- test-reports")
+DEFAULT_REPORT_BASE_DIR: Path = Path("schemathesis-test-reports")
 
 
 def build_arg_parser() -> argparse.ArgumentParser:

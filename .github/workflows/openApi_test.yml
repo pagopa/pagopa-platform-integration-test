@@ -48,7 +48,7 @@ jobs:
         python -u .github/scripts/openApi_test.py
     - uses: actions/upload-artifact@v4
       with:
-          name: schemathesis-test-reports
+          name: schemathesis-test-reports-${{ matrix.env }}
           path: schemathesis-test-reports
           retention-days: 30
 
