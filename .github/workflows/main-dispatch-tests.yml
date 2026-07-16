@@ -36,7 +36,7 @@ jobs:
     if: |
       github.event_name == 'schedule' ||
       github.event.inputs.services == 'openApi_fdr' || github.event.inputs.services == 'all'
-    uses: ./.github/workflows/openApi-test.yml
+    uses: ./.github/workflows/openApi_test.yml
     secrets: inherit
 
   deploy:
