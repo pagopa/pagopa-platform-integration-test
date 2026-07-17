@@ -25,20 +25,13 @@ def extract_stats(artifact_app_dir):
             time = time_raw[0] if isinstance(time_raw, list) else time_raw
             print(f"[INFO][extract_stats] extracted statistic section {statistic}")
             print(f"[INFO][extract_stats] extracted time section {time}")
-
+            
             # calculate duration in milliseconds
             start = time.get("start", 0)
             end = time.get("end", 0)
-            duration_ms = abs(end - start)  # use abs to handle edge cases where end < start
-            duration = timedelta(milliseconds=duration_ms)
-            print(f"[INFO][extract_stats] duration in millis {duration}")
-
-            # format duration as hh:mm:ss
-            total_seconds = int(duration_ms / 1000)
-            hours, remainder = divmod(total_seconds, 3600)
-            minutes, seconds = divmod(remainder, 60)
-            formatted_duration = f"{hours:02}:{minutes:02}:{seconds:02}"
-            print(f"[INFO][extract_stats] formatted duration {formatted_duration}")
+            duration = timedelta(milliseconds=end-start)
+            print(f"[INFO][extract_stats] formatted duration {duration}")
+          
 
             # compute start date
             start_datetime = datetime.fromtimestamp(start / 1000)
@@ -50,7 +43,7 @@ def extract_stats(artifact_app_dir):
                 "passed": statistic.get("passed", 0),
                 "failed": statistic.get("failed", 0),
                 "skipped": statistic.get("skipped", 0),
-                "duration": formatted_duration,
+                "duration": str(duration),
                 "start": formatted_start,
             }
 
