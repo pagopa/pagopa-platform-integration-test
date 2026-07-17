@@ -45,16 +45,9 @@
         <div class="stats" id="openApi-stats-dev">
           <div class="spinner-border text-primary" role="status">
             <p>DEV:<span class="visually-hidden">Loading...</span></p>
-          </div>
-        </div>
-      </div>
-       <div class="stats" id="openApi-stats-uat">
-          <div class="spinner-border text-primary" role="status">
             <p>UAT:<span class="visually-hidden">Loading...</span></p>
           </div>
         </div>
-      </div>
-
       <div class="col-md-5 text-center mb-4">
         <a href="./fdr-tests/index.html" class="btn btn-primary btn-lg card-link">
           🔗 FdR Tests
@@ -71,8 +64,8 @@
 
   <script>
     async function loadStats(app, elementId) {
-      let env = app.startsWith('openApi-fdr') ? '-' + app.split('-')[2] : ''
-      app = app.startsWith('openApi-fdr') ? 'openApi-fdr' : app
+      let env = app.startsWith('openapi-fdr') ? '-' + app.split('-')[2] : ''
+      app = app.startsWith('openapi-fdr') ? 'openapi-fdr' : app
       try {
         const statsResponse = await fetch(`./${app}-tests/last-history${env}/stats.json`);
         const summaryResponse = await fetch(`./${app}-tests/last-history${env}/widgets/summary.json`);
@@ -102,8 +95,8 @@
 
     loadStats('wisp', 'wisp-stats');
     loadStats('fdr', 'fdr-stats');
-    loadStats('openApi-fdr-env','openApi-stats-dev')
-    loadStats('openApi-fdr-uat','openApi-stats-uat')
+    loadStats('openapi-fdr-env','openapi-stats-dev')
+    loadStats('openapi-fdr-uat','openapi-stats-uat')
   </script>
 
 </body>
