@@ -227,8 +227,8 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     try:
         token = secrets.gh_token
-    except Exception as e:
-        print(f"ERROR: could not extract token from {args.secret}: {e}")
+    except Exception:
+        print("ERROR: could not extract GitHub token from configured secret source.")
         return 2
 
     try:
