@@ -84,7 +84,8 @@
           const seconds = durationSeconds % 60;
           const timeFormatted = `${minutes}m ${seconds}s`;
 
-          let envHtml = env != ''? `🌍 ENV: ${env} ` : ''
+          let envHtml = env != ''? ` <span class="badge bg-dark">🌍 ENV: ${env.replace('-','')}</span>` : ''
+         
 
           document.getElementById(elementId).innerHTML = `
             <span class="badge bg-success">✅ Passed: ${statsData.passed}</span>
