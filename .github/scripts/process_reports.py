@@ -34,11 +34,11 @@ def extract_stats(artifact_app_dir):
             print(f"[INFO][extract_stats] duration in millis {duration}")
 
             # format duration as hh:mm:ss
-            total_seconds = int(duration.total_seconds())
+            total_seconds = int(duration_ms / 1000)
             hours, remainder = divmod(total_seconds, 3600)
             minutes, seconds = divmod(remainder, 60)
             formatted_duration = f"{hours:02}:{minutes:02}:{seconds:02}"
-            print(f"[INFO][extract_stats] formatted duration {duration}")
+            print(f"[INFO][extract_stats] formatted duration {formatted_duration}")
 
             # compute start date
             start_datetime = datetime.fromtimestamp(start / 1000)
