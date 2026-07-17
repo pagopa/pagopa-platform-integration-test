@@ -21,9 +21,11 @@ Exit codes:
   2  — Orchestration error (configuration, timeout, GitHub API)
 
 Required environment variables:
-  GITHUB_TOKEN   : Personal Access Token with 'repo' and 'actions:read' permissions
+  TAS_GITHUB_TOKEN : Personal Access Token with 'repo' and 'actions:read' permissions.
+                     Falls back to GITHUB_TOKEN for backward compatibility.
 
 Optional environment variables:
+  GITHUB_TOKEN   : Legacy name for the PAT, used only if TAS_GITHUB_TOKEN is unset
   GITHUB_REPO    : Target repo in "owner/repo" format (overrides the default)
   WORKFLOW_FILE  : Workflow filename (overrides the default)
 """
@@ -229,10 +231,12 @@ def print_summary(summary: dict) -> None:
 # ── Main orchestration logic ────────────────────────────────────────────────────
 
 def run(args: argparse.Namespace) -> int:
-    # Token validation
-    token = os.environ.get("GITHUB_TOKEN")
+    # Token validation. Prefer the TAS-scoped name to avoid clashing with a
+    # generic GITHUB_TOKEN that may already exist in the caller's environment;
+    # fall back to GITHUB_TOKEN for backward compatibility with older callers.
+    token = os.environ.get("TAS_GITHUB_TOKEN") or os.environ.get("GITHUB_TOKEN")
     if not token:
-        log.error("The GITHUB_TOKEN environment variable is not set.")
+        log.error("Neither TAS_GITHUB_TOKEN nor GITHUB_TOKEN environment variable is set.")
         return 2
 
     repo = os.environ.get("GITHUB_REPO", args.repo)
@@ -252,6 +256,13 @@ def run(args: argparse.Namespace) -> int:
         "caller_id":      args.caller_id,
         "correlation_id": correlation_id,
     }
+
+    # Forward an explicit Behave tag expression only when provided. When
+    # omitted the workflow keeps its own default (@runnable); this also avoids
+    # a 422 'Unexpected inputs' error against older workflow refs that do not
+    # declare the 'tags' input.
+    if args.tags:
+        inputs["tags"] = args.tags
 
     log.info("Sending dispatch to '%s' (workflow: %s, ref: %s)", repo, workflow_file, args.ref)
     log.info("Type: %s | Suite: %s | Env: %s | Caller: %s | Correlation ID: %s",
@@ -376,7 +387,7 @@ def build_parser() -> argparse.ArgumentParser:
         )
     )
     parser.add_argument(
-        "--suite", required=True, #choices=["wisp", "all", "tas_pass", "tas_fail"],
+        "--suite", required=True, #choices=["wisp", "all", "tas_pass", "tas_fail", "tas_mixed"],
         help="Test suite to run"
     )
     parser.add_argument(
@@ -390,6 +401,14 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--correlation-id", default="",
         help="Custom correlation ID (auto-generated if omitted)"
+    )
+    parser.add_argument(
+        "--tags", default="",
+        help=(
+            "Behave tag expression to filter scenarios (e.g. '@runnable', "
+            "'@e2e', '@a,@b'). When omitted the workflow keeps its own "
+            "default (@runnable)."
+        )
     )
     parser.add_argument(
         "--sync", action="store_true",

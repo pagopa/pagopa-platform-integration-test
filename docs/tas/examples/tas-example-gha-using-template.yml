@@ -47,6 +47,10 @@ on:
         description: "TAS repo branch/tag"
         type: string
         default: main
+      tags:
+        description: "Behave tag expression (e.g. @runnable, @e2e)"
+        type: string
+        default: "@runnable"
 
 permissions:
   contents: read
@@ -71,11 +75,14 @@ jobs:
         uses: pagopa/pagopa-platform-integration-test/.github/actions/tas-integration-tests@main
         with:
           test_type:    ${{ inputs.test_type || 'integration' }}
-          suite:        ${{ inputs.suite       || 'wisp' }}
+          suite:        ${{ inputs.suite       || 'tas_pass' }}
           environment:  ${{ inputs.environment || 'uat'  }}
           mode:         ${{ inputs.mode        || 'sync' }}
           ref:          ${{ inputs.ref         || 'main' }}
           github_token: ${{ secrets.INTEGRATION_TEST_PAT }}
+          # Behave tag filter. Leave empty to keep the workflow default
+          # (@runnable); set to @e2e (with test_type: e2e) for the e2e suite.
+          tags:         ${{ inputs.tags || '@runnable' }}
           # Optional overrides (defaults shown for reference):
           # python_version: "3.11"
           # tas_repo: "pagopa/pagopa-platform-integration-test"

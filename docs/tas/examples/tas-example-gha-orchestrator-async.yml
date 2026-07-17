@@ -93,6 +93,7 @@ jobs:
             --suite tas_pass \
             --env uat \
             --ref "${TAS_REF}" \
+            --tags "@runnable" \
             --caller-id "${{ github.repository }}")
 
           echo "$OUTPUT"

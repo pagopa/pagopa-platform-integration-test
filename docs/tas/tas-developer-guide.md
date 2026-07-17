@@ -159,6 +159,9 @@ parameters:
   - name: ref
     type: string
     default: main
+  - name: tags
+    type: string
+    default: "@runnable"
 
 resources:
   repositories:
@@ -175,6 +178,8 @@ stages:
       environment: ${{ parameters.environment }}
       mode:        ${{ parameters.mode }}
       ref:         ${{ parameters.ref }}
+      tags:        ${{ parameters.tags }}
+      githubToken: $(INTEGRATION_TEST_PAT)   # secret pipeline variable / KV-linked group
 
   - stage: Deploy
     dependsOn: TAS_IntegrationTests
@@ -211,7 +216,8 @@ documented in
 | `environment` | string | `uat` | Target environment: `dev` or `uat` |
 | `mode` | string | `sync` | Invocation mode: `sync`, `async`, or `raw` |
 | `ref` | string | `main` | TAS repo branch/tag to run the tests from |
-| `secretsGroup` | string | `tas-integration-secrets` | Variable group containing `INTEGRATION_TEST_PAT` |
+| `tags` | string | `""` | Behave tag expression to filter scenarios (e.g. `@runnable`, `@e2e`, `@a,@b`). Empty = workflow default (`@runnable`) |
+| `githubToken` | string | — | GitHub PAT (`public_repo` + `actions:read`) forwarded to the orchestrator as `TAS_GITHUB_TOKEN`. Source it from a secret pipeline variable / Key Vault–linked group |
 | `pythonVersion` | string | `3.11` | Python version used for orchestrator-based modes |
 | `tasRepo` | string | `pagopa/pagopa-platform-integration-test` | TAS repository (rarely overridden) |
 | `workflowFile` | string | `test-automation-service.yml` | TAS workflow file (rarely overridden) |
@@ -372,6 +378,7 @@ jobs:
           environment:  uat
           mode:         ${{ inputs.mode || 'sync' }}
           ref:          ${{ inputs.ref  || 'main' }}
+          tags:         "@runnable"          # e.g. @e2e (with test_type: e2e); empty = workflow default
           github_token: ${{ secrets.INTEGRATION_TEST_PAT }}
         # The action automatically logs a run summary (sync) or dispatch
         # info (async/raw) at the end. Set `print_summary: "false"` to
@@ -404,6 +411,7 @@ documented in
 | `environment` | `uat` | — | Target environment: `dev` or `uat` |
 | `mode` | `sync` | — | Invocation mode: `sync`, `async`, or `raw` |
 | `ref` | `main` | — | TAS repo branch/tag to run the tests from |
+| `tags` | `""` | — | Behave tag expression (e.g. `@runnable`, `@e2e`, `@a,@b`). Empty = workflow default (`@runnable`) |
 | `github_token` | — | ✅ | GitHub PAT (`public_repo` + `actions:read`) |
 | `caller_id` | `${{ github.repository }}/${{ github.run_id }}` | — | Identifier of the calling system |
 | `correlation_id` | `${{ github.run_id }}-${{ github.run_attempt }}` | — | Unique ID to correlate the run |
@@ -989,6 +997,7 @@ usage: tas_orchestrator.py [-h]
                                --env {dev,uat}
                                --caller-id CALLER_ID
                                [--correlation-id CORRELATION_ID]
+                               [--tags TAGS]
                                [--sync]
                                [--repo REPO]
                                [--workflow WORKFLOW]
@@ -1003,6 +1012,9 @@ arguments:
   --env             Target environment: dev | uat
   --caller-id       Identifier of the calling system (e.g. repository name)
   --correlation-id  Custom correlation ID (auto-generated UUID if omitted)
+  --tags            Behave tag expression to filter scenarios (e.g. '@runnable',
+                    '@e2e', '@a,@b' for OR, '~@wip' to exclude). Omitted =
+                    the workflow keeps its own default (@runnable).
   --sync            Wait for completion and exit with the test outcome
   --repo            GitHub repo in owner/repo format (default: pagopa/pagopa-platform-integration-test)
   --workflow        Workflow filename to trigger (default: test-automation-service.yml)
@@ -1015,7 +1027,9 @@ arguments:
                     actions/upload-artifact on GitHub Actions. Skipped when empty.
 
 environment variables:
-  GITHUB_TOKEN      Required. PAT with scopes repo + actions:read.
+  TAS_GITHUB_TOKEN  Required. PAT with scopes repo + actions:read. Falls back
+                    to GITHUB_TOKEN when unset (backward compatibility).
+  GITHUB_TOKEN      Legacy name for the PAT, used only if TAS_GITHUB_TOKEN is unset.
   GITHUB_REPO       Optional. Overrides --repo.
   WORKFLOW_FILE     Optional. Overrides --workflow.
 
