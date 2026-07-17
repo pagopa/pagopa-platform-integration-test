@@ -44,13 +44,13 @@
         </a>
         <div class="stats" id="openApi-stats-dev">
           <div class="spinner-border text-primary" role="status">
-            <p>DEV:</p><span class="visually-hidden">Loading...</span>
+            <p>DEV:<span class="visually-hidden">Loading...</span></p>
           </div>
         </div>
       </div>
        <div class="stats" id="openApi-stats-uat">
           <div class="spinner-border text-primary" role="status">
-            <p>UAT:</p><span class="visually-hidden">Loading...</span>
+            <p>UAT:<span class="visually-hidden">Loading...</span></p>
           </div>
         </div>
       </div>
@@ -71,7 +71,8 @@
 
   <script>
     async function loadStats(app, elementId) {
-      let env = app.startsWith('openApi-fdr') ? app.split('-')[2] : ''
+      let env = app.startsWith('openApi-fdr') ? '-' + app.split('-')[2] : ''
+      app = app.startsWith('openApi-fdr') ? 'openApi-fdr' : app
       try {
         const statsResponse = await fetch(`./${app}-tests/last-history${env}/stats.json`);
         const summaryResponse = await fetch(`./${app}-tests/last-history${env}/widgets/summary.json`);
