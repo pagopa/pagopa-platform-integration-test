@@ -53,7 +53,7 @@ jobs:
       uses: simple-elf/allure-report-action@53ebb757a2097edc77c53ecef4d454fc2f2f774c # v1.13
       with:
           gh_pages: gh-pages
-          allure_results: schemathesis-test-reports
+          allure_results: schemathesis-raw-test-result
           allure_report: allure-report-openapi
           allure_history: allure-history
           subfolder: openapi-tests
@@ -62,7 +62,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
           name: allure-report-openapi-${{ matrix.env }}
-          path: schemathesis-test-reports
+          path: allure-report-openapi
           retention-days: 30
           if-no-files-found: error
 

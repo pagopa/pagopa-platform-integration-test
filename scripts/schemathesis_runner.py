@@ -149,10 +149,12 @@ def build_schemathesis_command(
         str(openapi_file),
         "--url",
         server_url,
-        "--report-dir",
-        str(report_directory),
+        # "--report-dir",
+        # str(report_directory),
         "--header",
         f"{API_KEY_HEADER}: {api_key}",
+        # "--report-ndjson-path",
+        # str(report_directory / f"{openapi_file.stem}.ndjson")
     ]
     command += extra_args
     return command
@@ -190,8 +192,8 @@ def main() -> int:
         print(f"No OpenAPI files found in '{args.openapi_dir}'. Nothing to test.")
         return 0
 
-    report_directory = build_report_directory(args.report_base_dir)
-    print(f"Report directory for this run: {report_directory}")
+    # report_directory = build_report_directory(args.report_base_dir)
+    # print(f"Report directory for this run: {report_directory}")
 
     exit_codes: list[int] = []
 
@@ -208,7 +210,7 @@ def main() -> int:
         code = run_spec(
             openapi_file,
             api_key,
-            report_directory,
+            None,
             args.schemathesis_args,
             args.url,
         )
