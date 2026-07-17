@@ -32,6 +32,10 @@ parameters:
     displayName: "TAS repo branch/tag"
     type: string
     default: main
+  - name: tags
+    displayName: "Behave tag expression (e.g. @runnable, @e2e)"
+    type: string
+    default: "@runnable"
 
 variables:
   # Import the variable group that holds INTEGRATION_TEST_PAT (secret).
@@ -75,7 +79,8 @@ stages:
                     \"test_suite\": \"${{ parameters.suite }}\",
                     \"environment\": \"${{ parameters.environment }}\",
                     \"caller_id\": \"$(Build.Repository.Name)/$(Build.BuildId)\",
-                    \"correlation_id\": \"$CORRELATION_ID\"
+                    \"correlation_id\": \"$CORRELATION_ID\",
+                    \"tags\": \"${{ parameters.tags }}\"
                   }
                 }")
 

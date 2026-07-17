@@ -44,9 +44,13 @@ on:
           - dev
           - uat
         default: uat
+      tags:
+        description: "Behave tag expression (e.g. @runnable, @e2e). Empty = all scenarios."
+        required: false
+        type: string
+        default: "@runnable"
 
-permissions:
-  contents: read
+permissions:  contents: read
 
 jobs:
 
@@ -61,6 +65,7 @@ jobs:
       environment:    ${{ inputs.environment }}
       caller_id:      "${{ github.repository }} (demo)"
       correlation_id: "${{ github.run_id }}-${{ github.run_attempt }}"
+      tags:           ${{ inputs.tags }}
 
   # ── 2. Log results (always, even on failure) ─────────────────────────────
   log-results:

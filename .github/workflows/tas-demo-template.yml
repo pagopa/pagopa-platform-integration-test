@@ -49,6 +49,11 @@ on:
           - dev
           - uat
         default: uat
+      tags:
+        description: "Behave tag expression (e.g. @runnable, @e2e). Empty = all scenarios."
+        required: false
+        type: string
+        default: "@runnable"
       mode:
         description: "Invocation mode"
         required: true
@@ -101,6 +106,7 @@ jobs:
           environment:         ${{ inputs.environment }}
           mode:                ${{ inputs.mode }}
           ref:                 ${{ inputs.ref || github.ref_name }}
+          tags:                ${{ inputs.tags }}
           github_token:        ${{ secrets.INTEGRATION_TEST_PAT }}
           caller_id:           "${{ github.repository }} (demo)"
           verify_orchestrator: ${{ inputs.verify_orchestrator }}
