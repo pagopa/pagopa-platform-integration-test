@@ -88,11 +88,11 @@
          
 
           document.getElementById(elementId).innerHTML = `
+            ${envHtml}
             <span class="badge bg-success">✅ Passed: ${statsData.passed}</span>
             <span class="badge bg-danger">❌ Failed: ${statsData.failed}</span>
             <span class="badge bg-warning text-dark">⚡ Skipped: ${statsData.skipped}</span>
             <span class="badge bg-info text-dark">⏱️ Time: ${timeFormatted}</span>
-            ${envHtml}
           `;
         } else {
           document.getElementById(elementId).innerHTML = '<span class="badge bg-secondary">📄 Stats not available</span>';
