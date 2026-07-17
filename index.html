@@ -42,10 +42,15 @@
         <a href="./openapi-fdr-tests/index.html" class="btn btn-primary btn-lg card-link">
           🔗 OpenApi Tests
         </a>
-        <div class="stats" id="openApi-stats-dev">
-          <div class="spinner-border text-primary" role="status">
-            <p>DEV:<span class="visually-hidden">Loading...</span></p>
-            <p>UAT:<span class="visually-hidden">Loading...</span></p>
+        <div class="stats" id="openapi-stats">
+          <div class="spinner-border text-primary" id="openapi-stats-dev"  role="status">
+            <p>DEV:</p>
+            <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="spinner-border text-primary" id="openapi-stats-uat" role="status">
+            <p>UAT:</p>
+            <span class="visually-hidden">Loading...</span>
+            </div>
           </div>
         </div>
       <div class="col-md-5 text-center mb-4">
@@ -95,7 +100,7 @@
 
     loadStats('wisp', 'wisp-stats');
     loadStats('fdr', 'fdr-stats');
-    loadStats('openapi-fdr-env','openapi-stats-dev')
+    loadStats('openapi-fdr-dev','openapi-stats-dev')
     loadStats('openapi-fdr-uat','openapi-stats-uat')
   </script>
 
