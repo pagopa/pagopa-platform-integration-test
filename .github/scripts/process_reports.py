@@ -29,7 +29,7 @@ def extract_stats(artifact_app_dir):
             # calculate duration in milliseconds
             start = time.get("start", 0)
             end = time.get("end", 0)
-            duration_ms = end - start
+            duration_ms = abs(end - start)  # use abs to handle edge cases where end < start
             duration = timedelta(milliseconds=duration_ms)
             print(f"[INFO][extract_stats] duration in millis {duration}")
 
