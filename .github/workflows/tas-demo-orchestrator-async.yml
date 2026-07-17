@@ -46,6 +46,11 @@ on:
           - dev
           - uat
         default: uat
+      tags:
+        description: "Behave tag expression (e.g. @runnable, @e2e). Empty = all scenarios."
+        required: false
+        type: string
+        default: "@runnable"
       ref:
         description: "TAS repo branch/tag to run the workflow on (defaults to the current branch)"
         required: false
@@ -103,6 +108,7 @@ jobs:
             --suite "${{ inputs.test_suite }}" \
             --env "${{ inputs.environment }}" \
             --ref "${{ inputs.ref || github.ref_name }}" \
+            --tags "${{ inputs.tags }}" \
             --caller-id "${{ github.repository }} (demo)")
 
           echo "$OUTPUT"

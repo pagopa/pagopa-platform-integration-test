@@ -33,6 +33,9 @@ jobs:
       # Unique correlation_id for this run: useful for retrieving the TAS
       # artifact later (see documentation "Downloading the full report artifact").
       correlation_id: "${{ github.run_id }}-${{ github.run_attempt }}"
+      # Behave tag filter. Default @runnable matches the integration suites;
+      # set to @e2e (with test_type: e2e) to run the e2e checkout suite.
+      tags:           "@runnable"
     # No secrets: to configure — test secrets live in the TAS repository.
 
   # ── 2. Log results ────────────────────────────────────────────────────────
