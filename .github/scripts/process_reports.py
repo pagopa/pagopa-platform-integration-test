@@ -79,78 +79,46 @@ def extract_stats_from_stats_file(stats_json_path):
         print(f"[INFO][extract_stats_from_stats_file] stats.json {stats_json_path} not found")
         return {'passed': 0, 'failed': 0, 'skipped': 0}
 
-def find_schemathesis_reports(artifact_dir):
-    """Recursively find all schemathesis report directories in artifacts.
+def find_allure_openapi_reports(artifact_dir):
+    """Find all allure-report-openapi-<env> artifacts in artifacts directory.
     
-    Returns a list of tuples: (report_path, date_folder, run_name, env_name)
+    Returns a list of dicts with: artifact_path, env_name
     """
     reports = []
-    print(f"[INFO][find_schemathesis_reports] artifact_dir {artifact_dir}")
+    print(f"[INFO][find_allure_openapi_reports] artifact_dir {artifact_dir}")
     
     # Check if artifact_dir exists
     if not os.path.isdir(artifact_dir):
-        print(f"[INFO][find_schemathesis_reports] artifact_dir {artifact_dir} does not exist, skipping schemathesis reports")
+        print(f"[INFO][find_allure_openapi_reports] artifact_dir {artifact_dir} does not exist")
         return reports
     
-    # Look for schemathesis-test-reports-<env> folders
-    for env_artifact in os.listdir(artifact_dir):
-        if not env_artifact.startswith("schemathesis-test-reports-"):
+    # Look for allure-report-openapi-<env> folders
+    for item in os.listdir(artifact_dir):
+        if not item.startswith("allure-report-openapi-"):
             continue
         
-        print(f"[INFO][find_schemathesis_reports] found artifact folder: {env_artifact}")
+        env_name = item.split("allure-report-openapi-")[1]
+        artifact_path = os.path.join(artifact_dir, item)
         
-        env_name = env_artifact.split("schemathesis-test-reports-")[1]
-        base_path = os.path.join(artifact_dir, env_artifact)
-        print(f"[INFO][find_schemathesis_reports] env_name: {env_name}, base_path: {base_path}")
+        print(f"[INFO][find_allure_openapi_reports] found artifact folder: {item}, env_name: {env_name}")
         
-        if not os.path.isdir(base_path):
-            print(f"[INFO][find_schemathesis_reports] base_path {base_path} is not a directory, skipping")
+        if not os.path.isdir(artifact_path):
+            print(f"[INFO][find_allure_openapi_reports] {artifact_path} is not a directory, skipping")
             continue
         
-        # Look for date folders (YYYY-MM-DD)
-        for date_folder in os.listdir(base_path):
-            date_path = os.path.join(base_path, date_folder)
-            
-            if not os.path.isdir(date_path):
-                print(f"[INFO][find_schemathesis_reports] date_path {date_path} is not a directory, skipping")
-                continue
-            
-            if not re.match(r"^\d{4}-\d{2}-\d{2}$", date_folder):
-                print(f"[INFO][find_schemathesis_reports] date_folder {date_folder} does not match YYYY-MM-DD pattern, skipping")
-                continue
-            
-            print(f"[INFO][find_schemathesis_reports] processing date_folder: {date_folder}")
-            
-            # Look for run folders (<name> run HH-MM-SS)
-            for run_folder in os.listdir(date_path):
-                run_path = os.path.join(date_path, run_folder)
-                
-                if not os.path.isdir(run_path):
-                    print(f"[INFO][find_schemathesis_reports] run_path {run_path} is not a directory, skipping")
-                    continue
-                
-                if " run " not in run_folder:
-                    print(f"[INFO][find_schemathesis_reports] run_folder {run_folder} does not contain ' run ', skipping")
-                    continue
-                
-                print(f"[INFO][find_schemathesis_reports] processing run_folder: {run_folder}")
-                
-                # The report is inside run_path/env_name/
-                report_path = os.path.join(run_path, env_name)
-                
-                if not os.path.isdir(report_path):
-                    print(f"[INFO][find_schemathesis_reports] report_path {report_path} does not exist, skipping")
-                    continue
-                
-                reports.append({
-                    'report_path': report_path,
-                    'date_folder': date_folder,
-                    'run_folder': run_folder,
-                    'env_name': env_name
-                })
-                print(f"[INFO][find_schemathesis_reports] Found report folder: {report_path}")
+        # Verify it has widgets/summary.json (Allure format)
+        summary_file = os.path.join(artifact_path, "widgets", "summary.json")
+        if not os.path.exists(summary_file):
+            print(f"[INFO][find_allure_openapi_reports] {artifact_path} does not have widgets/summary.json, skipping")
+            continue
+        
+        reports.append({
+            'artifact_path': artifact_path,
+            'env_name': env_name
+        })
+        print(f"[INFO][find_allure_openapi_reports] Found OpenAPI Allure report for env: {env_name}")
     
-    print(f"[INFO][find_schemathesis_reports] Total schemathesis reports found: {len(reports)}")
+    print(f"[INFO][find_allure_openapi_reports] Total openapi allure reports found: {len(reports)}")
     return reports
 
 def build_index_page(root_dir):
@@ -249,41 +217,32 @@ def main():
         # build index page
         build_index_page(root_dir)
 
-    # Process Schemathesis reports (openapi-fdr)
-    print(f"[INFO][main] Processing Schemathesis reports")
-    schemathesis_reports = find_schemathesis_reports(artifact_dir)
+    # Process OpenAPI Allure reports (from Schemathesis + Allure Action)
+    print(f"[INFO][main] Processing OpenAPI Allure reports (from matrix jobs)")
+    openapi_reports = find_allure_openapi_reports(artifact_dir)
     
-    if not schemathesis_reports:
-        print(f"[INFO][main] No schemathesis reports found, skipping schemathesis processing")
+    if not openapi_reports:
+        print(f"[INFO][main] No openapi allure reports found, skipping openapi-fdr processing")
     else:
         root_dir = "public/openapi-fdr-tests"
-        print(f"[INFO][main] processing Schemathesis directory {root_dir}")
+        print(f"[INFO][main] processing OpenAPI directory {root_dir}")
         
         # Create root directory if needed
         os.makedirs(root_dir, exist_ok=True)
         
-        for report_info in schemathesis_reports:
-            # Construct destination folder name: <date>_<run_name>_<env>
-            # run_name format is: "<api_name> run HH-MM-SS"
-            run_name = report_info['run_folder']
-            # Extract just the time part
-            time_match = re.search(r'run (\d{2}-\d{2}-\d{2})$', run_name)
-            if time_match:
-                time_part = time_match.group(1).replace('-', '')
-                folder_name = f"{report_info['date_folder']}_{time_part}_{report_info['env_name']}"
-            else:
-                folder_name = f"{report_info['date_folder']}_{run_name}_{report_info['env_name']}"
+        for report_info in openapi_reports:
+            env_name = report_info['env_name']
+            artifact_path = report_info['artifact_path']
             
-            source_dir = Path(report_info['report_path'])
+            # Extract stats from this Allure report
+            stats = extract_stats(artifact_path)
+            
+            # Create destination folder: <yyyy-mm-dd_hh:mm:ss>_<env>
+            folder_name = f"{stats.get('start')}_{env_name}"
+            source_dir = Path(artifact_path)
             destination_dir = Path(root_dir) / folder_name
-
-            # retrieve stats
-            # retrieve stats from the Allure-processed report for this env
-            stats_artifact_path = os.path.join(artifact_dir, f"allure-report-openapi-{report_info['env_name']}")
-            stats = extract_stats(stats_artifact_path)
-
             
-            print(f"[INFO][main] Copying schemathesis report from {source_dir} to {destination_dir}")
+            print(f"[INFO][main] Copying OpenAPI report from {source_dir} to {destination_dir}")
             
             # Copy the report
             if destination_dir.exists():
@@ -291,12 +250,12 @@ def main():
             shutil.copytree(source_dir, destination_dir)
             
             # Also update last-history for this env
-            last_history_env = Path(root_dir) / f"last-history-{report_info['env_name']}"
+            last_history_env = Path(root_dir) / f"last-history-{env_name}"
             if last_history_env.exists():
                 shutil.rmtree(last_history_env)
             shutil.copytree(source_dir, last_history_env)
         
-        # Build index page for schemathesis (uses generic method)
+        # Build index page for openapi-fdr (uses generic method)
         build_index_page(root_dir)
 
 if __name__ == "__main__":
