@@ -41,7 +41,6 @@ def create_auth(file):
     """Create an authentication object based on environment variables."""
     global auth
     
-    print(secrets[file])
     auth = build_api_key_auth(API_KEY_NAME, secrets[file])
     return auth
 
