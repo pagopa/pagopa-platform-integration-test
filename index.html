@@ -39,21 +39,6 @@
       </div>
 
       <div class="col-md-5 text-center mb-4">
-        <a href="./openapi-fdr-tests/index.html" class="btn btn-primary btn-lg card-link">
-          🔗 OpenApi Tests
-        </a>
-        <div class="stats" id="openapi-stats">
-          <div id="openapi-stats-dev"  role="status">
-            <p>DEV:</p>
-            <span class="visually-hidden">Loading...</span>
-            </div>
-            <div id="openapi-stats-uat" role="status">
-            <p>UAT:</p>
-            <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        </div>
-      <div class="col-md-5 text-center mb-4">
         <a href="./fdr-tests/index.html" class="btn btn-primary btn-lg card-link">
           🔗 FdR Tests
         </a>
@@ -69,11 +54,9 @@
 
   <script>
     async function loadStats(app, elementId) {
-      let env = app.startsWith('openapi-fdr') ? '-' + app.split('-')[2] : ''
-      app = app.startsWith('openapi-fdr') ? 'openapi-fdr' : app
       try {
-        const statsResponse = await fetch(`./${app}-tests/last-history${env}/stats.json`);
-        const summaryResponse = await fetch(`./${app}-tests/last-history${env}/widgets/summary.json`);
+        const statsResponse = await fetch(`./${app}-tests/last-history/stats.json`);
+        const summaryResponse = await fetch(`./${app}-tests/last-history/widgets/summary.json`);
 
         if (statsResponse.ok && summaryResponse.ok) {
           const statsData = await statsResponse.json();
@@ -84,11 +67,7 @@
           const seconds = durationSeconds % 60;
           const timeFormatted = `${minutes}m ${seconds}s`;
 
-          let envHtml = env != ''? ` <span class="badge bg-dark">🌍 ENV: ${env.replace('-','')}</span>` : ''
-         
-
           document.getElementById(elementId).innerHTML = `
-            ${envHtml}
             <span class="badge bg-success">✅ Passed: ${statsData.passed}</span>
             <span class="badge bg-danger">❌ Failed: ${statsData.failed}</span>
             <span class="badge bg-warning text-dark">⚡ Skipped: ${statsData.skipped}</span>
@@ -104,8 +83,6 @@
 
     loadStats('wisp', 'wisp-stats');
     loadStats('fdr', 'fdr-stats');
-    loadStats('openapi-fdr-dev','openapi-stats-dev')
-    loadStats('openapi-fdr-uat','openapi-stats-uat')
   </script>
 
 </body>
