@@ -276,6 +276,12 @@ def main():
             
             source_dir = Path(report_info['report_path'])
             destination_dir = Path(root_dir) / folder_name
+
+            # retrieve stats
+            # retrieve stats from the Allure-processed report for this env
+            stats_artifact_path = os.path.join(artifact_dir, f"allure-report-openapi-{report_info['env_name']}")
+            stats = extract_stats(stats_artifact_path)
+
             
             print(f"[INFO][main] Copying schemathesis report from {source_dir} to {destination_dir}")
             
