@@ -95,27 +95,6 @@ def build_arg_parser() -> argparse.ArgumentParser:
    
     return parser
 
-
-def build_report_directory(base_dir: Path) -> Path:
-    """Create and return a unique report directory for the current execution.
-
-    The resulting path is structured as ``<base>/<YYYY-MM-DD>/<run-name>``.
-    When *run_name* is missing, a timestamp-based name is used.
-    """
-    day_folder = datetime.now().strftime("%Y-%m-%d")
-    time = datetime.now().strftime("run %H-%M-%S")
-    for openApi_file in Path("tmp_fetched").glob("*.json"):
-            file_stem = openApi_file.stem
-            if file_stem:
-                name = fr"{file_stem} {time}"
-            else:
-                name = time
-            target = base_dir / day_folder / name / os.getenv("TARGET_ENV", "N/A")
-            if not target.exists():
-                target.mkdir(parents=True, exist_ok=False)
-            return target
-
-
 def extract_server_url(openapi_file: Path) -> str | None:
     """Read the first server URL from the servers field of an OpenAPI spec file."""
     with openapi_file.open(encoding="utf-8") as fh:
@@ -149,12 +128,8 @@ def build_schemathesis_command(
         str(openapi_file),
         "--url",
         server_url,
-        # "--report-dir",
-        # str(report_directory),
         "--header",
         f"{API_KEY_HEADER}: {api_key}",
-        # "--report-ndjson-path",
-        # str(report_directory / f"{openapi_file.stem}.ndjson")
     ]
     command += extra_args
     return command
@@ -191,9 +166,6 @@ def main() -> int:
     if not openapi_files:
         print(f"No OpenAPI files found in '{args.openapi_dir}'. Nothing to test.")
         return 0
-
-    # report_directory = build_report_directory(args.report_base_dir)
-    # print(f"Report directory for this run: {report_directory}")
 
     exit_codes: list[int] = []
 
