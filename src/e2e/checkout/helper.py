@@ -81,11 +81,37 @@ def perform_login(page):
     icon = page.locator("svg[data-testid='AccountCircleRoundedIcon']").nth(0)
     assert icon is not None, "Icon 'AccountCircleRoundedIcon' non trovato"
 
-def locate_and_click(page, locator, click_count=1, timeout=5000):
+def locate_and_click(page, locator, click_count=1, timeout=5000, check_focus=False):
     to_click = page.locator(locator)
     try:
         to_click.wait_for(state="visible", timeout=timeout)
         to_click.click(click_count=click_count)
+        if check_focus:
+            # retry focus check up to 3 times with small backoff
+            attempts = 0
+            focused = False
+            while attempts < 3 and not focused:
+                attempts += 1
+                # incremental wait to give the browser time to update focus
+                page.wait_for_timeout(50 * attempts)
+                try:
+                    focused = to_click.evaluate("el => el === document.activeElement || el.contains(document.activeElement)")
+                except Exception:
+                    focused = False
+                if focused:
+                    break
+                logger.debug("Focus check attempt %d failed for %s", attempts, locator)
+                # try to nudge focus: prefer .focus(), fallback to a gentle click
+                try:
+                    to_click.focus()
+                except Exception:
+                    try:
+                        to_click.click(click_count=1)
+                    except Exception:
+                        pass
+            if not focused:
+                logger.error("Locator %s did not receive focus after %d attempts", locator, attempts)
+                raise AssertionError(f"Locator '{locator}' did not receive focus after {attempts} attempts")
     except PlaywrightTimeoutError as exc:
         current_url = ""
         try:
@@ -101,7 +127,7 @@ def locate_and_click(page, locator, click_count=1, timeout=5000):
 def locate_click_and_type(page, locator, text, click_count=1, timeout=5000):
     """Click a locator, clear it and type text."""
     target = page.locator(locator)
-    locate_and_click(page, locator, click_count=click_count, timeout=timeout)
+    locate_and_click(page, locator, click_count=click_count, timeout=timeout, check_focus=True)
     try:
         target.fill("")
     except Exception:
