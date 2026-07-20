@@ -56,7 +56,7 @@ def perform_mock_login(page):
     page.wait_for_selector("button")
 
     logger.debug("Searching AccountCircleRoundIcon")
-    icon = page.query_selector("[data-testid='AccountCircleRoundedIcon']")
+    icon = page.locator("svg[data-testid='AccountCircleRoundedIcon']").nth(0)
 
     assert icon is not None, "Icon 'AccountCircleRoundedIcon' non trovato"
     logger.info("Login successful")
@@ -78,7 +78,7 @@ def perform_login(page):
     page.wait_for_load_state("networkidle")
     page.wait_for_selector("button")
 
-    icon = page.query_selector("[data-testid='AccountCircleRoundedIcon']")
+    icon = page.locator("svg[data-testid='AccountCircleRoundedIcon']").nth(0)
     assert icon is not None, "Icon 'AccountCircleRoundedIcon' non trovato"
 
 def locate_and_click(page, locator, click_count=1, timeout=5000):
