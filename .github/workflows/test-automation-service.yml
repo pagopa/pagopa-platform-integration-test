@@ -30,6 +30,11 @@ on:
         required: false
         type: string
         default: ""
+      tags:
+        description: "Behave tag expression to filter scenarios (e.g. @runnable, @e2e, @a,@b). Empty = run all scenarios in the path."
+        required: false
+        type: string
+        default: "@runnable"
     outputs:
       passed:
         description: "Number of passed scenarios"
@@ -64,11 +69,7 @@ on:
       test_suite:
         description: "Test suite to run"
         required: true
-        type: choice
-        options:
-          - wisp
-          - all
-        default: wisp
+        type: string
       environment:
         description: "Target environment"
         required: true
@@ -85,6 +86,10 @@ on:
         description: "Unique ID provided by the caller to correlate this run"
         required: false
         default: ""
+      tags:
+        description: "Behave tag expression to filter scenarios (e.g. @runnable, @e2e). Empty = run all scenarios in the path."
+        required: false
+        default: "@runnable"
 
 # The run-name includes the correlation_id so the CLI bridge can reliably locate
 # this run via the API without depending on timestamps.
@@ -135,6 +140,17 @@ jobs:
           pip install -r requirements.txt
           sudo apt-get install -y jq
 
+      # Playwright (Python package + branded Chrome) is only required by the
+      # e2e suites (src/e2e/checkout uses channel="chrome"). Installing it for
+      # integration/api runs would only add download time, so it is gated on
+      # test_type. Keep the pin aligned with @playwright/test in
+      # src/e2e/checkout/package.json.
+      - name: Install Playwright (e2e suites only)
+        if: ${{ inputs.test_type == 'e2e' }}
+        run: |
+          pip install playwright==1.55.0
+          python -m playwright install --with-deps chrome
+
       - name: Load secrets
         run: echo "$SECRETS" >> ./config/.secrets.yaml
         env:
@@ -184,13 +200,36 @@ jobs:
           echo "::notice title=TARGET_ENV::${TARGET_ENV}"
           echo "Running behave with TARGET_ENV=${TARGET_ENV}"
 
+          # Behave tag filter is configurable via the 'tags' input. When empty,
+          # the --tags flag is omitted so every scenario in the path runs.
+          TAGS_ARG=()
+          if [ -n "${BEHAVE_TAGS}" ]; then
+            TAGS_ARG=(--tags="${BEHAVE_TAGS}")
+            echo "::notice title=Behave tags::${BEHAVE_TAGS}"
+          else
+            echo "::notice title=Behave tags::(none — running all scenarios)"
+          fi
+
+          # Some suites (e.g. e2e checkout) load per-environment configuration
+          # from a <env>.env file, resolved via the ENV_FILE variable in their
+          # environment.py. Expose it automatically when a matching file exists
+          # for the selected suite/environment; harmless for suites that ignore it.
+          ENV_FILE_CANDIDATE="${{ steps.test_path.outputs.path }}/${TARGET_ENV}.env"
+          if [ -f "${ENV_FILE_CANDIDATE}" ]; then
+            export ENV_FILE="${ENV_FILE_CANDIDATE}"
+            echo "::notice title=ENV_FILE::${ENV_FILE}"
+          else
+            echo "::notice title=ENV_FILE::(none — no ${TARGET_ENV}.env in ${{ steps.test_path.outputs.path }})"
+          fi
+
           behave ${{ steps.test_path.outputs.path }} \
-            --tags=@runnable \
+            "${TAGS_ARG[@]}" \
             --format json --outfile behave-results.json \
             --junit --junit-directory=junit \
             --summary --show-timings -v
         env:
           TARGET_ENV: ${{ inputs.environment }}
+          BEHAVE_TAGS: ${{ inputs.tags }}
 
       - name: Parse results and generate summary artifact
         id: summary

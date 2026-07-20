@@ -34,11 +34,8 @@ on:
       test_suite:
         description: "Test suite to run"
         required: true
-        type: choice
-        options:
-          - wisp
-          - all
-        default: wisp
+        type: string
+        default: tas_pass
       environment:
         description: "Target environment"
         required: true
@@ -47,6 +44,11 @@ on:
           - dev
           - uat
         default: uat
+      tags:
+        description: "Behave tag expression (e.g. @runnable, @e2e). Empty = all scenarios."
+        required: false
+        type: string
+        default: "@runnable"
       ref:
         description: "TAS repo branch/tag to run the workflow on (defaults to the current branch)"
         required: false
@@ -106,6 +108,7 @@ jobs:
             --caller-id "${{ github.repository }} (demo)" \
             --correlation-id "${{ github.run_id }}-${{ github.run_attempt }}" \
             --ref "${{ inputs.ref || github.ref_name }}" \
+            --tags "${{ inputs.tags }}" \
             --sync
         env:
           GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_PAT }}

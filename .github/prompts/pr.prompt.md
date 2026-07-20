@@ -5,7 +5,7 @@ model: "GPT-5 mini"
 agent: agent
 ---
 
-Use `.github/instructions/git-pr.instructions.md` as the canonical source of truth for pull request rules and metadata.
+Use [`.github/instructions/git-pr.instructions.md`](../../.github/instructions/git-pr.instructions.md) as the canonical source of truth for pull request rules and metadata, **WITH NO DEVIATIONS**.
 
 Follow that instruction file end-to-end.
 

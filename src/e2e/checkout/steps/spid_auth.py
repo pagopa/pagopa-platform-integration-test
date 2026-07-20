@@ -1,6 +1,6 @@
 import logging
 from behave import given, when, then
-from src.e2e.checkout import get_page, get_required_config, perform_mock_login, locate_and_click
+from src.e2e.checkout import get_page, get_required_config, perform_mock_login, locate_and_click, perform_login
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +27,7 @@ def step_click_login_button(context):
     locate_and_click(page, "#login-header button")
 
     if "uat" in checkout_url:
-        # oneIdentityLogin not yet implemented
-        raise NotImplementedError("OneIdentity login not yet implemented for UAT")
+        perform_login(page)
     else:
         logger.debug("Performing mock login")
         perform_mock_login(page)

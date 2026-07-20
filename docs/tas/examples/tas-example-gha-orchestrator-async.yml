@@ -90,9 +90,10 @@ jobs:
           #   RUN_NAME=tas-<uuid>
           OUTPUT=$(python tas_orchestrator.py \
             --type integration \
-            --suite wisp \
+            --suite tas_pass \
             --env uat \
             --ref "${TAS_REF}" \
+            --tags "@runnable" \
             --caller-id "${{ github.repository }}")
 
           echo "$OUTPUT"
