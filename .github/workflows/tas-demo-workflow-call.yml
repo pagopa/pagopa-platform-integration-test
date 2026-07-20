@@ -17,6 +17,8 @@
 
 name: ↔️ TAS Demo - workflow_call
 
+run-name: "TAS Demo — ${{ inputs.test_suite }} / ${{ inputs.environment }} (run #${{ github.run_number }})"
+
 on:
   workflow_dispatch:
     inputs:
@@ -32,11 +34,8 @@ on:
       test_suite:
         description: "Test suite to run"
         required: true
-        type: choice
-        options:
-          - wisp
-          - all
-        default: wisp
+        type: string
+        default: tas_pass
       environment:
         description: "Target environment"
         required: true
@@ -45,9 +44,13 @@ on:
           - dev
           - uat
         default: uat
+      tags:
+        description: "Behave tag expression (e.g. @runnable, @e2e). Empty = all scenarios."
+        required: false
+        type: string
+        default: "@runnable"
 
-permissions:
-  contents: read
+permissions:  contents: read
 
 jobs:
 
@@ -62,6 +65,7 @@ jobs:
       environment:    ${{ inputs.environment }}
       caller_id:      "${{ github.repository }} (demo)"
       correlation_id: "${{ github.run_id }}-${{ github.run_attempt }}"
+      tags:           ${{ inputs.tags }}
 
   # ── 2. Log results (always, even on failure) ─────────────────────────────
   log-results:

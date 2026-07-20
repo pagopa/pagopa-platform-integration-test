@@ -4,30 +4,10 @@ Helper specifici per i cart-test:
 - data builders (build_cart_body, build_multiple_notices_body)
 - utility di generazione dati (generate_notice_code, get_checkout_host)
 """
-import os
-import random
-
 import requests
 
+from src.api.utility.api_env_helpers import generate_notice_code, get_checkout_host
 from src.api.utility.http_client import request as http_request
-
-
-# ---------------------------------------------------------------------------
-# Utility — environment readers
-# ---------------------------------------------------------------------------
-
-def get_checkout_host() -> str:
-    return os.environ.get("CHECKOUT_HOST", "https://api.dev.platform.pagopa.it")
-
-
-def generate_notice_code(prefix_env_var: str = "NOTICE_CODE_PREFIX") -> str:
-    """Genera un notice code casuale valido dal prefisso letto da una env var."""
-    prefix = os.environ.get(prefix_env_var)
-    if not prefix:
-        raise EnvironmentError(f"Environment variable {prefix_env_var} not set.")
-    min_val = int(prefix + "10000000000000")
-    max_val = int(prefix + "19999999999999")
-    return str(random.randint(min_val, max_val))
 
 
 # ---------------------------------------------------------------------------

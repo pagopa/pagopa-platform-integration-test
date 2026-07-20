@@ -19,6 +19,10 @@ Utilities for building a `zeep`-based SOAP client, managing authentication and r
 - `soap_client_factory.py`
   - `build_soap_client(service_config, auth_config)`: creates a `zeep.Client` with transport and optional WS-Security.
 
+- `soap_raw_client.py`
+  - `send_raw_soap_request(service_config, soap_action, body, auth_config)`: sends a raw SOAP envelope through zeep transport (useful when no WSDL is available).
+  - `get_raw_soap_text(xml_root, tag_path)`: extracts text values from namespace-stripped raw SOAP responses.
+
 - `soap_response.py`
   - `serialize_response(response)`: converts a zeep response object into a plain Python `dict`/`list`.
   - `get_soap_attr(response, path, default, strict)`: reads a value from a SOAP response via dot path (e.g. `payment.amount[0].currency`).
@@ -72,6 +76,15 @@ set_soap_attr(raw, "payment.amount.currency", "USD")
 
 # Write a value (creates missing nodes)
 set_soap_attr(raw, "payment.extra[0].note", "test", create_missing=True)
+
+# Raw SOAP call without WSDL (still via zeep transport)
+from src.utility.soap.soap_raw_client import send_raw_soap_request
+
+status_code, xml_root, headers = send_raw_soap_request(
+  service_config={"url": "https://example.com/soap", "verify_ssl": True},
+  soap_action="mySoapAction",
+  body="<soapenv:Envelope>...</soapenv:Envelope>",
+)
 ```
 
 ## Usage in Behave `environment.py`
@@ -100,6 +113,8 @@ def before_all(context):
 | `serialize_response(response)` | zeep response → plain Python dict |
 | `get_soap_attr(response, path, default, strict)` | Read value from SOAP response |
 | `set_soap_attr(response, path, value, create_missing)` | Write value into SOAP response |
+| `send_raw_soap_request(service_config, soap_action, body, auth_config)` | Send raw SOAP XML through zeep transport |
+| `get_raw_soap_text(xml_root, tag_path)` | Extract a value from raw SOAP XML |
 
 ## Notes
 

@@ -61,6 +61,26 @@ def perform_mock_login(page):
     assert icon is not None, "Icon 'AccountCircleRoundedIcon' non trovato"
     logger.info("Login successful")
 
+
+def perform_login(page):
+    logger.info("Performing login")
+
+    logger.debug("Waiting navigation state (networkidle)")
+    page.wait_for_load_state("networkidle")
+
+    page.wait_for_selector("form#login-form")
+
+    locate_click_and_type(page, "#username", "oneidentity")
+    locate_click_and_type(page, "#password", "password123")
+
+    locate_and_click(page, "button[type='submit']")
+
+    page.wait_for_load_state("networkidle")
+    page.wait_for_selector("button")
+
+    icon = page.query_selector("[data-testid='AccountCircleRoundedIcon']")
+    assert icon is not None, "Icon 'AccountCircleRoundedIcon' non trovato"
+
 def locate_and_click(page, locator, click_count=1, timeout=5000):
     to_click = page.locator(locator)
     try:
@@ -88,4 +108,3 @@ def locate_click_and_type(page, locator, text, click_count=1, timeout=5000):
         pass
     page.keyboard.type(str(text))
     logger.debug("Typed value into %s", locator)
-

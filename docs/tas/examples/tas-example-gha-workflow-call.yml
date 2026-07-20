@@ -20,19 +20,22 @@ jobs:
 
   # ── 1. Integration tests ──────────────────────────────────────────────────
   integration-tests:
-    name: Integration Tests (WISP / UAT)
+    name: Integration Tests (tas_pass / UAT)
     # NOTE: GitHub Actions does not allow expressions in 'uses:' — the ref
     # after '@' must be a literal branch, tag or commit SHA. Update it manually
     # to pin to a different version of the TAS workflow (e.g. '@refs/tags/v1').
     uses: pagopa/pagopa-platform-integration-test/.github/workflows/test-automation-service.yml@main
     with:
       test_type:      integration   # integration | e2e | api
-      test_suite:     wisp
+      test_suite:     tas_pass      
       environment:    uat
       caller_id:      ${{ github.repository }}
       # Unique correlation_id for this run: useful for retrieving the TAS
       # artifact later (see documentation "Downloading the full report artifact").
       correlation_id: "${{ github.run_id }}-${{ github.run_attempt }}"
+      # Behave tag filter. Default @runnable matches the integration suites;
+      # set to @e2e (with test_type: e2e) to run the e2e checkout suite.
+      tags:           "@runnable"
     # No secrets: to configure — test secrets live in the TAS repository.
 
   # ── 2. Log results ────────────────────────────────────────────────────────
@@ -66,5 +69,5 @@ jobs:
 
       - name: Deploy application
         run: |
-          echo "All WISP tests passed — deploying..."
+          echo "All tests passed — deploying..."
           # ./deploy.sh

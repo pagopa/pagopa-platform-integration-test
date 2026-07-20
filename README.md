@@ -45,10 +45,7 @@ pagopa-platform-integration-test/
 ├── config.yaml                      # servizi DEV/UAT per suite di integrazione
 ├── commondata.yaml                  # dati condivisi per test di integrazione
 ├── config/
-│   ├── .secrets_template.yaml       # template segreti per suite di integrazione
-│   └── api-tests/
-│       ├── .env.dev                 # variabili API test DEV
-│       └── .env.uat                 # variabili API test UAT
+│   └── .secrets_template.yaml       # template segreti per suite di integrazione
 ├── scripts/
 │   └── tas_orchestrator.py          # bridge CLI per avviare workflow di test
 ├── src/
@@ -56,11 +53,17 @@ pagopa-platform-integration-test/
 │   │   ├── auth-service/
 │   │   ├── cart/
 │   │   ├── checkout-npg/
-│   │   └── ecommerce-cdc/
+│   │   ├── ecommerce-cdc/
+│   │   ├── config/
+│   │   │   ├── .env.dev             # variabili API test DEV
+│   │   │   └── .env.uat             # variabili API test UAT
+│   │   └── utility/                 # hook comuni e helpers
 │   ├── integration/                 # suite integrazione Behave/Cucumber
 │   │   ├── wisp/
+│   │   │   └── utility/             # helpers SOAP, request builder, routing
 │   │   ├── fdr/
 │   │   ├── ebollo/
+│   │   │   └── utility/             # helpers API MBD, UI Playwright, generators
 │   │   └── gpd/
 │   └── e2e/
 │       └── checkout/                # Checkout E2E Behave/Playwright
@@ -141,11 +144,22 @@ Riferimenti: `requirements.txt`, `src/integration/gpd/package.json`,
 Le suite in `src/api/<suite>/` caricano automaticamente il file:
 
 ```text
-config/api-tests/.env.<env>
+src/api/config/.env.<env>
 ```
 
-L'ambiente si seleziona con `-D env=dev` o `-D env=uat`. Se il parametro non viene passato,
-gli hook comuni leggono `TARGET_ENV`; in assenza anche di questa variabile, usano `dev`.
+L'ambiente si seleziona tramite la variabile d'ambiente `TARGET_ENV` (default: `dev`).
+
+PowerShell:
+
+```powershell
+$env:TARGET_ENV = "uat"
+```
+
+Bash:
+
+```bash
+export TARGET_ENV=uat
+```
 
 Variabili comuni:
 
@@ -158,7 +172,7 @@ Variabili comuni:
 | `DEPLOYMENT_*` | routing specifico per payment-methods, payment-requests, transactions |
 | `NPG_*` | host e dati carta test NPG |
 
-Riferimenti: `config/api-tests/.env.dev`, `config/api-tests/.env.uat`,
+Riferimenti: `src/api/config/.env.dev`, `src/api/config/.env.uat`,
 `src/api/utility/api_test_environment.py`.
 
 ### Integration test
@@ -346,14 +360,14 @@ Tutti i comandi Behave vanno eseguiti dalla root del repository.
 PowerShell:
 
 ```powershell
+$env:TARGET_ENV = "uat"
 $suite = "cart"
-$targetEnv = "uat"
-$outDir = "reports\allure-results\$suite-$targetEnv"
+$outDir = "reports\allure-results\$suite-$env:TARGET_ENV"
 
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $outDir
 New-Item $outDir -ItemType Directory -Force | Out-Null
 
-behave "src\api\$suite" -D env=$targetEnv `
+behave "src\api\$suite" `
   -f allure_behave.formatter:AllureFormatter -o $outDir `
   -f progress --summary --show-timings
 ```
@@ -361,14 +375,14 @@ behave "src\api\$suite" -D env=$targetEnv `
 Bash:
 
 ```bash
+export TARGET_ENV=uat
 suite="cart"
-target_env="uat"
-out_dir="reports/allure-results/${suite}-${target_env}"
+out_dir="reports/allure-results/${suite}-${TARGET_ENV}"
 
 rm -rf "$out_dir"
 mkdir -p "$out_dir"
 
-behave "src/api/${suite}" -D env="$target_env" \
+behave "src/api/${suite}" \
   -f allure_behave.formatter:AllureFormatter -o "$out_dir" \
   -f progress --summary --show-timings
 ```

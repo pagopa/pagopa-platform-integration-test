@@ -20,10 +20,7 @@ parameters:
   - name: suite
     displayName: "Test suite"
     type: string
-    default: wisp
-    values:
-      - wisp
-      - all
+    default: tas_pass
   - name: environment
     displayName: "Target environment"
     type: string
@@ -35,6 +32,10 @@ parameters:
     displayName: "TAS repo branch/tag"
     type: string
     default: main
+  - name: tags
+    displayName: "Behave tag expression (e.g. @runnable, @e2e)"
+    type: string
+    default: "@runnable"
   - name: verifyOrchestrator
     displayName: "Verify orchestrator SHA-256 (recommended)"
     type: boolean
@@ -119,6 +120,7 @@ stages:
                 --ref "${{ parameters.ref }}" \
                 --caller-id "$(Build.Repository.Name)/$(Build.BuildId)" \
                 --correlation-id "$(Build.BuildId)-$(System.JobAttempt)" \
+                --tags "${{ parameters.tags }}" \
                 | tee orchestrator_output.txt
 
               # Capture CORRELATION_ID and expose it as a pipeline variable
