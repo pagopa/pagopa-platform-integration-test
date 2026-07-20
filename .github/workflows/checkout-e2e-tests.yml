@@ -3,6 +3,9 @@ name: Run WISP Integration Tests
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   wisp_tests:
     runs-on: ubuntu-latest
