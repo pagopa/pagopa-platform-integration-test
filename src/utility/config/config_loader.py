@@ -123,19 +123,95 @@ def _resolve_value(value: Any, secret_resolver: Any) -> Any:
     return value
 
     
+def _coerce_scalar_or_json(text: str) -> Any:
+    """Return the parsed value if it is a JSON object/array, else the raw string.
+
+    Bare scalars (URLs, numbers, fiscal/notice codes) are intentionally kept as
+    strings so callers relying on their string form are not affected; structured
+    values (JSON objects/arrays) are parsed so they can be consumed directly.
+    """
+    try:
+        parsed = json.loads(text)
+    except (json.JSONDecodeError, ValueError):
+        return text
+    if isinstance(parsed, (dict, list)):
+        return parsed
+    return text
+
+
+def _parse_key_value_content(raw_content: str, file_path: Path) -> Dict[str, Any]:
+    """Parse a ``KEY=VALUE`` / ``KEY:VALUE`` configuration file.
+
+    Supports comments (``#``), blank lines, and single- or double-quoted values
+    that may span multiple lines (e.g. an embedded JSON blob). Values are kept as
+    strings unless they are valid JSON objects/arrays (see ``_coerce_scalar_or_json``).
+    """
+    result: Dict[str, Any] = {}
+    lines = raw_content.splitlines()
+    index = 0
+    total = len(lines)
+
+    while index < total:
+        raw_line = lines[index]
+        index += 1
+        stripped = raw_line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+
+        eq_pos = raw_line.find("=")
+        colon_pos = raw_line.find(":")
+        separators = [pos for pos in (eq_pos, colon_pos) if pos != -1]
+        if not separators:
+            raise JsonConfigLoaderError(
+                f"Invalid configuration line (missing '=' or ':' separator) "
+                f"in file {file_path}: {stripped!r}"
+            )
+
+        sep = min(separators)
+        key = raw_line[:sep].strip()
+        value = raw_line[sep + 1:].strip()
+
+        if value[:1] in ("'", '"'):
+            quote = value[0]
+            body = value[1:]
+            close = body.find(quote)
+            if close != -1:
+                value = body[:close]
+            else:
+                parts = [body]
+                closed = False
+                while index < total:
+                    next_line = lines[index]
+                    index += 1
+                    close = next_line.find(quote)
+                    if close != -1:
+                        parts.append(next_line[:close])
+                        closed = True
+                        break
+                    parts.append(next_line)
+                if not closed:
+                    raise JsonConfigLoaderError(
+                        f"Unterminated quoted value for key '{key}' in file {file_path}."
+                    )
+                value = "\n".join(parts)
+
+        result[key] = _coerce_scalar_or_json(value)
+
+    return result
+
+
 def _parse_config_content(raw_content: str, file_path: Path) -> Dict[str, Any]:
-    """Parse JSON object completo, altrimenti fallback a key:value."""
+    """Parse a full JSON object, falling back to ``KEY=VALUE`` / ``KEY:VALUE``."""
     try:
         parsed = json.loads(raw_content)
-        if not isinstance(parsed, dict):
-            raise JsonConfigLoaderError(
-                f"JSON root must be an object in file {file_path}."
-            )
-        return parsed
     except json.JSONDecodeError:
+        return _parse_key_value_content(raw_content, file_path)
+
+    if not isinstance(parsed, dict):
         raise JsonConfigLoaderError(
-            f"Invalid JSON format in file {file_path}."
+            f"JSON root must be an object in file {file_path}."
         )
+    return parsed
 
 
 def load_json_config(secret_resolver: Any | list[Any]) -> Dict[str, Any]:
@@ -168,7 +244,7 @@ def load_json_config(secret_resolver: Any | list[Any]) -> Dict[str, Any]:
 
     if not parsed_content:
         raise JsonConfigLoaderError(
-            f"Impossible to find or parse configuration for environment '{os.getenv(TARGET_ENV_VAR)}' and suite '{os.getenv(SUITE_ENV_VAR)}' in file {file_path}."
+            f"Impossible to find or parse configuration for environment '{os.getenv(TARGET_ENV_VAR)}' and suite '{os.getenv(SUITE_ENV_VAR)}' in file {suite_file_path}."
         )
 
     resolved = _resolve_value(parsed_content, secret_resolver)

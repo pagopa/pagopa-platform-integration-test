@@ -53,10 +53,11 @@ jobs:
               \"ref\": \"${TAS_REF}\",
               \"inputs\": {
                 \"test_type\": \"integration\",
-                \"test_suite\": \"wisp\",
+                \"test_suite\": \"tas_pass\",
                 \"environment\": \"uat\",
                 \"caller_id\": \"${{ github.repository }}\",
-                \"correlation_id\": \"$CORRELATION_ID\"
+                \"correlation_id\": \"$CORRELATION_ID\",
+                \"tags\": \"@runnable\"
               }
             }")
 

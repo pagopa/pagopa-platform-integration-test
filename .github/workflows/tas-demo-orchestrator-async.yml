@@ -19,6 +19,8 @@
 
 name: ↔️ TAS Demo — orchestrator async
 
+run-name: "TAS Demo async — ${{ inputs.test_suite }} / ${{ inputs.environment }} (run #${{ github.run_number }})"
+
 on:
   workflow_dispatch:
     inputs:
@@ -34,11 +36,8 @@ on:
       test_suite:
         description: "Test suite to run"
         required: true
-        type: choice
-        options:
-          - wisp
-          - all
-        default: wisp
+        type: string
+        default: tas_pass
       environment:
         description: "Target environment"
         required: true
@@ -47,6 +46,11 @@ on:
           - dev
           - uat
         default: uat
+      tags:
+        description: "Behave tag expression (e.g. @runnable, @e2e). Empty = all scenarios."
+        required: false
+        type: string
+        default: "@runnable"
       ref:
         description: "TAS repo branch/tag to run the workflow on (defaults to the current branch)"
         required: false
@@ -104,6 +108,7 @@ jobs:
             --suite "${{ inputs.test_suite }}" \
             --env "${{ inputs.environment }}" \
             --ref "${{ inputs.ref || github.ref_name }}" \
+            --tags "${{ inputs.tags }}" \
             --caller-id "${{ github.repository }} (demo)")
 
           echo "$OUTPUT"

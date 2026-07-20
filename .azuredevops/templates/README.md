@@ -96,7 +96,8 @@ same tag.
 | `environment` | string | `uat` | Target environment: `dev` or `uat` |
 | `mode` | string | `sync` | Invocation mode: `sync`, `async`, or `raw` |
 | `ref` | string | `main` | TAS repo branch/tag to run the tests from |
-| `secretsGroup` | string | `tas-integration-secrets` | Variable group containing `INTEGRATION_TEST_PAT` |
+| `tags` | string | `""` | Behave tag expression (e.g. `@runnable`, `@e2e`, `@a,@b`). Empty = workflow default (`@runnable`) |
+| `githubToken` | string | — (required) | GitHub PAT (`public_repo` + `actions:read`) forwarded to the orchestrator as `TAS_GITHUB_TOKEN`. Source it from a secret pipeline variable / Key Vault–linked group |
 | `pythonVersion` | string | `3.11` | Python version (orchestrator-based modes only) |
 | `tasRepo` | string | `pagopa/pagopa-platform-integration-test` | TAS repository |
 | `workflowFile` | string | `test-automation-service.yml` | TAS workflow file |
@@ -128,13 +129,11 @@ Downstream jobs can branch on it with `condition: ne(variables.RUN_ID, '')`.
 
 ## Prerequisites for consumers
 
-1. **Variable group** named `tas-integration-secrets` (overridable via the
-   `secretsGroup` parameter) containing:
-   - `INTEGRATION_TEST_PAT` — GitHub PAT, secret, scopes
-     `public_repo` + `actions:read`.
-
-   Authorise the consuming pipeline:
-   *Library → Variable group → Pipeline permissions → +*.
+1. **GitHub PAT** (scopes `public_repo` + `actions:read`) supplied to the
+   `githubToken` parameter. Source it securely as a **secret** pipeline
+   variable (or a secret from an Azure Key Vault–linked variable group) so it
+   stays masked in the logs; the template forwards it to the orchestrator as
+   `TAS_GITHUB_TOKEN`. Never hard-code the token in YAML.
 
 2. **GitHub service connection** in the ADO project:
    *Project settings → Service connections → New service connection → GitHub*.

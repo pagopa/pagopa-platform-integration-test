@@ -11,6 +11,7 @@ import urllib3
 from dynaconf import Dynaconf
 
 ENV_VAR_PREFIX = 'WISP_DISMANTLING'
+_INTEGRATION_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Root directory of the integration suite (src/integration/)
 _INTEGRATION_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
