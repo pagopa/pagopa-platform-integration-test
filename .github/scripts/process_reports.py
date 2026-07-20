@@ -28,7 +28,7 @@ def extract_stats(artifact_app_dir):
             
             # calculate duration in milliseconds
             start = time.get("start", 0)
-            millis = (time.get("end", 0)) -  start
+            millis = (time.get("stop", 0)) -  start
             duration = str(timedelta(milliseconds=millis)).split(".")[0]  # format as HH:MM:SS
             print(f"[INFO][extract_stats] formatted duration {duration}")
           
