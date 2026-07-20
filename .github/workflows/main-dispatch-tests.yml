@@ -13,6 +13,7 @@ on:
         default: all
         options:
           - wisp
+          - checkout
           # - fdr
           - all
 
@@ -24,6 +25,13 @@ jobs:
     uses: ./.github/workflows/wisp-tests.yml
     secrets: inherit
 
+  trigger_checkout_e2e:
+    if: |
+      github.event_name == 'schedule' ||
+      github.event.inputs.services == 'checkout' || github.event.inputs.services == 'all'
+    uses: ./.github/workflows/checkout-e2e-tests.yml
+    secrets: inherit
+
   # trigger_fdr:
   #   if: |
   #     github.event_name == 'schedule' ||
@@ -32,6 +40,6 @@ jobs:
   #   secrets: inherit
 
   deploy:
-    needs: [trigger_wisp] #, trigger_fdr]
+    needs: [trigger_wisp, trigger_checkout_e2e] #, trigger_fdr]
     uses: ./.github/workflows/deploy-test-report.yml
     secrets: inherit
