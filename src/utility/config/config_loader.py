@@ -240,7 +240,7 @@ def load_json_config(secret_resolver: Any | list[Any]) -> Dict[str, Any]:
 
     suite_content = suite_file_path.read_text(encoding="utf-8")
    
-    parsed_content = _parse_config_content(suite_content, suite_file_path).get(os.getenv(TARGET_ENV_VAR), {})
+    parsed_content = _parse_config_content(suite_content, suite_file_path).get(str(os.getenv(TARGET_ENV_VAR)).lower(), {})
 
     if not parsed_content:
         raise JsonConfigLoaderError(

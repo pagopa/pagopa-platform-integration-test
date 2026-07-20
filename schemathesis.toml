@@ -1,0 +1,25 @@
+[[project]]
+title = 'pagopa-platform'
+continue-on-failure = true
+
+[checks]
+enabled = true
+positive_data_acceptance.expected-statuses = ["2xx"]
+
+# Global parameters
+[parameters]
+pspId = "88888888888"
+fdr = '2026-07-0188888888888-0001'
+organizationId = "15376371009"
+flowDate = '2026-07-01T12:00:30.900000Z'
+
+[phases]
+enabled = false
+examples.enabled = true
+
+[generation]
+allow-extra-parameters = false
+
+[reports.allure]
+enabled = true
+path = "schemathesis-raw-test-result"
