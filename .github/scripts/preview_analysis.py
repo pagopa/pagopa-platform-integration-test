@@ -14,7 +14,7 @@ import os
 import webbrowser
 from pathlib import Path
 
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 _MOCK_ANALYSIS = """\
 # 1. Utente paga un pagamento singolo con marca da bollo già esistente in GPD
@@ -103,7 +103,10 @@ def main() -> None:
     output = Path(os.environ.get("PREVIEW_OUTPUT", "tmp_fetched/analysis_preview.html"))
     output.parent.mkdir(parents=True, exist_ok=True)
 
-    env = Environment(loader=FileSystemLoader(".github/templates"))
+    env = Environment(
+        loader=FileSystemLoader(".github/templates"),
+        autoescape=select_autoescape(["html", "xml"]),
+    )
     template = env.get_template("analysis-template.html")
     rendered = template.render(
         suite_label="WISP",
