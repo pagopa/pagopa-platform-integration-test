@@ -21,6 +21,7 @@ behave src\api\<suite> `
 
 ```powershell
 $env:TARGET_ENV="uat"
+$env:suite="wisp"
 behave src/bdd/wisp --tags=@runnable `
     --format allure_behave.formatter:AllureFormatter -o allure-results `
     --junit-directory=junit --junit --summary --show-timings -v

@@ -1,6 +1,6 @@
 import json
 import os
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 import re
 from datetime import datetime, timedelta
 import shutil
@@ -139,6 +139,19 @@ def build_index_page(root_dir):
         stats_json = os.path.join(report_dir, "stats.json")
         if os.path.exists(stats_json):
             stats = extract_stats_from_stats_file(stats_json)
+            analysis_index = os.path.join(report_dir, "analysis", "index.html")
+            has_analysis = os.path.exists(analysis_index)
+            report_entry = {
+                "name": name,
+                "passed": stats["passed"],
+                "failed": stats["failed"],
+                "link": f"./{name}/index.html",
+                "has_analysis": has_analysis,
+                "analysis_link": f"./{name}/analysis/index.html" if has_analysis else None,
+                "sort_key": name
+            }
+            print(f"[INFO][build_index_page] Adding report entry: {report_entry}")
+            reports.append(report_entry)
         else:
             # Default stats for schemathesis or other reports without stats.json
             stats = {'passed': 0, 'failed': 0, 'skipped': 0}
@@ -159,7 +172,10 @@ def build_index_page(root_dir):
 
     # load index template and render template
     print(f"[INFO][build_index_page] applying history-index-template.html template")
-    env = Environment(loader=FileSystemLoader(".github/templates"))
+    env = Environment(
+        loader=FileSystemLoader(".github/templates"),
+        autoescape=select_autoescape(["html", "xml"]),
+    )
     template = env.get_template("history-index-template.html")
     output_path = os.path.join(root_dir, "index.html")
     with open(output_path, "w") as f:
@@ -167,7 +183,47 @@ def build_index_page(root_dir):
         f.write(template.render(reports=reports))
     print(f"[INFO][build_index_page] written index page to {output_path}")
 
+def deploy_ai_analysis(artifact_dir, run_dir, last_history_dir, app, timestamp, model):
+    """Render the AI analysis HTML page inside run_dir and last_history_dir.
+
+    Reads the analysis markdown from `<artifact_dir>/ai-analysis-<app>/analysis.md`.
+    Silently skips when the artifact is missing (e.g., first run before the change).
+    """
+    analysis_artifact_dir = Path(artifact_dir) / f"ai-analysis-{app}"
+    analysis_md = analysis_artifact_dir / "analysis.md"
+    if not analysis_md.exists():
+        print(f"[INFO][deploy_ai_analysis] no analysis artifact at {analysis_md}, skipping")
+        return
+
+    analysis_text = analysis_md.read_text(encoding="utf-8").strip()
+    if not analysis_text:
+        print(f"[INFO][deploy_ai_analysis] analysis file {analysis_md} is empty, skipping")
+        return
+
+    env = Environment(
+        loader=FileSystemLoader(".github/templates"),
+        autoescape=select_autoescape(["html", "xml"]),
+    )
+    template = env.get_template("analysis-template.html")
+    rendered = template.render(
+        suite_label=app.upper(),
+        timestamp=timestamp or "unknown",
+        model=model,
+        analysis_markdown_json=json.dumps(analysis_text),
+    )
+
+    for base in (Path(run_dir), Path(last_history_dir)):
+        analysis_dir = base / "analysis"
+        analysis_dir.mkdir(parents=True, exist_ok=True)
+        (analysis_dir / "index.html").write_text(rendered, encoding="utf-8")
+        # keep the raw markdown next to the page for auditability
+        (analysis_dir / "analysis.md").write_text(analysis_text, encoding="utf-8")
+        print(f"[INFO][deploy_ai_analysis] wrote analysis page in {analysis_dir}")
+
+
 def main():
+    apps = ["wisp"]
+    ai_model = os.environ.get("AI_MODEL", "openai/gpt-4.1")
     artifact_dir = os.path.join("artifacts") # /artifacts
     print(f"[INFO][main] artifact_dir {artifact_dir}")
     
@@ -205,6 +261,9 @@ def main():
         shutil.copytree(source_dir, destination_dir)
         print(f"[INFO][main] copy everything from {source_dir} to {last_history_dir}")
         shutil.copytree(source_dir, last_history_dir)
+
+        # render AI analysis page (no-op when artifact missing)
+        deploy_ai_analysis(artifact_dir, run_dir, last_history_dir, app, stats.get("start"), ai_model)
 
         # build index page
         build_index_page(root_dir)
