@@ -1,6 +1,6 @@
 import json
 import os
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 import re
 from datetime import datetime, timedelta
 import shutil
@@ -109,7 +109,10 @@ def build_index_page(root_dir):
 
     # load index template and render template
     print(f"[INFO][build_index_page] applying history-index-template.html template")
-    env = Environment(loader=FileSystemLoader(".github/templates"))
+    env = Environment(
+        loader=FileSystemLoader(".github/templates"),
+        autoescape=select_autoescape(["html", "xml"]),
+    )
     template = env.get_template("history-index-template.html")
     output_path = os.path.join(root_dir, "index.html")
     with open(output_path, "w") as f:
@@ -134,7 +137,10 @@ def deploy_ai_analysis(artifact_dir, run_dir, last_history_dir, app, timestamp, 
         print(f"[INFO][deploy_ai_analysis] analysis file {analysis_md} is empty, skipping")
         return
 
-    env = Environment(loader=FileSystemLoader(".github/templates"))
+    env = Environment(
+        loader=FileSystemLoader(".github/templates"),
+        autoescape=select_autoescape(["html", "xml"]),
+    )
     template = env.get_template("analysis-template.html")
     rendered = template.render(
         suite_label=app.upper(),
