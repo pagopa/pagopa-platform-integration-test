@@ -2,21 +2,18 @@ import os
 
 from urllib.parse import unquote
 from src.integration.fdr import common
-from src.utility.config.config_loader import load_json_config
-from src.utility.config.secrets.azure_secret_resolver import AzureKeyVaultSecretResolver
 from src.utility.rest.rest_auth_factory import build_api_key_auth_from_config
 from src.utility.rest.rest_client_factory import build_rest_client
-
-
-if os.getenv("AZURE_KEY_VAULT_URL") is not None and os.getenv("AZURE_KEY_VAULT_URL") != "":
-    # resolve secrets from Azure Key Vault in CI
-    secrets_resolver = AzureKeyVaultSecretResolver()
-    config = load_json_config(secrets_resolver)
-    if isinstance(secrets_resolver, AzureKeyVaultSecretResolver):
-        secrets_resolver.close_client()
+from src.integration.conf.configuration import commondata
+from src.integration.conf.configuration import secrets
+from src.integration.conf.configuration import settings
 
 
 def before_all(context):
+    context.settings = settings
+    context.secrets = secrets
+    context.commondata = commondata
+
     context.fdr.rest.auth = build_api_key_auth_from_config(context.config["fdr"]["api_key"])
     context.fdr.rest.client = build_rest_client(context.config["service"], context.fdr.rest.auth)
 
