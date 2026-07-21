@@ -25,21 +25,13 @@ def extract_stats(artifact_app_dir):
             time = time_raw[0] if isinstance(time_raw, list) else time_raw
             print(f"[INFO][extract_stats] extracted statistic section {statistic}")
             print(f"[INFO][extract_stats] extracted time section {time}")
-
+            
             # calculate duration in milliseconds
             start = time.get("start", 0)
-            end = time.get("end", 0)
-            duration_ms = end - start
-            duration = timedelta(milliseconds=duration_ms)
-            print(f"[INFO][extract_stats] duration in millis {duration}")
-
-            # format duration as hh:mm:ss
-            total_seconds = int(duration.total_seconds())
-            hours, remainder = divmod(total_seconds, 3600)
-            minutes, seconds = divmod(remainder, 60)
-            formatted_duration = f"{hours:02}:{minutes:02}:{seconds:02}"
+            millis = (time.get("stop", 0)) -  start
+            duration = str(timedelta(milliseconds=millis)).split(".")[0]  # format as HH:MM:SS
             print(f"[INFO][extract_stats] formatted duration {duration}")
-
+          
             # compute start date
             start_datetime = datetime.fromtimestamp(start / 1000)
             formatted_start = start_datetime.strftime("%Y-%m-%d_%H:%M:%S")
@@ -50,7 +42,7 @@ def extract_stats(artifact_app_dir):
                 "passed": statistic.get("passed", 0),
                 "failed": statistic.get("failed", 0),
                 "skipped": statistic.get("skipped", 0),
-                "duration": formatted_duration,
+                "duration": str(duration),
                 "start": formatted_start,
             }
 
@@ -79,28 +71,90 @@ def extract_stats_from_stats_file(stats_json_path):
         print(f"[INFO][extract_stats_from_stats_file] stats.json {stats_json_path} not found")
         return {'passed': 0, 'failed': 0, 'skipped': 0}
 
-def build_index_page(root_dir):
-
+def find_allure_openapi_reports(artifact_dir):
+    """Find all allure-report-openapi-<env> artifacts in artifacts directory.
+    
+    Returns a list of dicts with: artifact_path, env_name
+    """
     reports = []
+    print(f"[INFO][find_allure_openapi_reports] artifact_dir {artifact_dir}")
+    
+    # Check if artifact_dir exists
+    if not os.path.isdir(artifact_dir):
+        print(f"[INFO][find_allure_openapi_reports] artifact_dir {artifact_dir} does not exist")
+        return reports
+    
+    # Look for allure-report-openapi-<env> folders
+    for item in os.listdir(artifact_dir):
+        if not item.startswith("allure-report-openapi-"):
+            continue
+        
+        env_name = item.split("allure-report-openapi-")[1]
+        artifact_path = os.path.join(artifact_dir, item)
+        
+        print(f"[INFO][find_allure_openapi_reports] found artifact folder: {item}, env_name: {env_name}")
+        
+        if not os.path.isdir(artifact_path):
+            print(f"[INFO][find_allure_openapi_reports] {artifact_path} is not a directory, skipping")
+            continue
+        
+        # Verify it has widgets/summary.json (Allure format)
+        summary_file = os.path.join(artifact_path, "widgets", "summary.json")
+        if not os.path.exists(summary_file):
+            print(f"[INFO][find_allure_openapi_reports] {artifact_path} does not have widgets/summary.json, skipping")
+            continue
+        
+        reports.append({
+            'artifact_path': artifact_path,
+            'env_name': env_name
+        })
+        print(f"[INFO][find_allure_openapi_reports] Found OpenAPI Allure report for env: {env_name}")
+    
+    print(f"[INFO][find_allure_openapi_reports] Total openapi allure reports found: {len(reports)}")
+    return reports
+
+def build_index_page(root_dir):
+    """Build index page for reports (handles both allure and schemathesis reports).
+    
+    For allure (wisp, openapi): extracts stats from stats.json if available
+    For schemathesis: uses default stats (0 passed/failed)
+    Excludes: index.html, last-history, and last-history-* folders
+    """
+    reports = []
+    print(f"[INFO][build_index_page] processing root_dir {root_dir}")
+    
     for name in os.listdir(root_dir):
         report_dir = os.path.join(root_dir, name)
+        
+        # Skip index.html and last-history folders (including env-specific: last-history-dev, etc)
+        if name == "index.html" or name == "last-history" or name.startswith("last-history-"):
+            print(f"[INFO][build_index_page] skipping excluded folder: {name}")
+            continue
+        
+        if not os.path.isdir(report_dir):
+            print(f"[INFO][build_index_page] skipping non-directory: {name}")
+            continue
+        
+        # Try to get stats from stats.json (allure reports)
         stats_json = os.path.join(report_dir, "stats.json")
-        if os.path.isdir(report_dir) and os.path.exists(stats_json) and name not in ("last-history", "index.html"):
+        if os.path.exists(stats_json):
             stats = extract_stats_from_stats_file(stats_json)
-            report_entry = {
-                "name": name,
-                "passed": stats["passed"],
-                "failed": stats["failed"],
-                "link": f"./{name}/index.html",
-                "sort_key": name
-            }
-            print(f"[INFO][build_index_page] Adding report entry: {report_entry}")
-            reports.append(report_entry)
         else:
-            print(f"[INFO][build_index_page] skipping dir {report_dir} not found")
+            # Default stats for schemathesis or other reports without stats.json
+            stats = {'passed': 0, 'failed': 0, 'skipped': 0}
+        
+        report_entry = {
+            "name": name,
+            "passed": stats["passed"],
+            "failed": stats["failed"],
+            "link": f"./{name}/index.html",
+            "sort_key": name
+        }
+        print(f"[INFO][build_index_page] Adding report entry: {report_entry}")
+        reports.append(report_entry)
 
     # Order by timestamp desc
-    print(f"[INFO][build_index_page] sorting badge by date descending")
+    print(f"[INFO][build_index_page] sorting reports by date descending")
     reports.sort(key=lambda r: r["sort_key"], reverse=True)
 
     # load index template and render template
@@ -114,12 +168,14 @@ def build_index_page(root_dir):
     print(f"[INFO][build_index_page] written index page to {output_path}")
 
 def main():
-    apps = ["wisp"]
     artifact_dir = os.path.join("artifacts") # /artifacts
     print(f"[INFO][main] artifact_dir {artifact_dir}")
-    for app in apps:
+    
+    # Process Allure reports (wisp, openapi)
+    allure_apps = ["wisp", "openapi"]
+    for app in allure_apps:
         root_dir = f"public/{app}-tests"
-        print(f"[INFO][main] processing directory {root_dir}")
+        print(f"[INFO][main] processing Allure directory {root_dir}")
 
         # extract stats form allure reports inside artifacts
         artifact_app_dir = os.path.join(artifact_dir, "allure-report-" + app) # /artifacts/allure-report-<app>
@@ -151,6 +207,47 @@ def main():
         shutil.copytree(source_dir, last_history_dir)
 
         # build index page
+        build_index_page(root_dir)
+
+    # Process OpenAPI Allure reports (from Schemathesis + Allure Action)
+    print(f"[INFO][main] Processing OpenAPI Allure reports (from matrix jobs)")
+    openapi_reports = find_allure_openapi_reports(artifact_dir)
+    
+    if not openapi_reports:
+        print(f"[INFO][main] No openapi allure reports found, skipping openapi-fdr processing")
+    else:
+        root_dir = "public/openapi-fdr-tests"
+        print(f"[INFO][main] processing OpenAPI directory {root_dir}")
+        
+        # Create root directory if needed
+        os.makedirs(root_dir, exist_ok=True)
+        
+        for report_info in openapi_reports:
+            env_name = report_info['env_name']
+            artifact_path = report_info['artifact_path']
+            
+            # Extract stats from this Allure report
+            stats = extract_stats(artifact_path)
+            
+            # Create destination folder: <yyyy-mm-dd_hh:mm:ss>_<env>
+            folder_name = f"{stats.get('start')}_{env_name}"
+            source_dir = Path(artifact_path)
+            destination_dir = Path(root_dir) / folder_name
+            
+            print(f"[INFO][main] Copying OpenAPI report from {source_dir} to {destination_dir}")
+            
+            # Copy the report
+            if destination_dir.exists():
+                shutil.rmtree(destination_dir)
+            shutil.copytree(source_dir, destination_dir)
+            
+            # Also update last-history for this env
+            last_history_env = Path(root_dir) / f"last-history-{env_name}"
+            if last_history_env.exists():
+                shutil.rmtree(last_history_env)
+            shutil.copytree(source_dir, last_history_env)
+        
+        # Build index page for openapi-fdr (uses generic method)
         build_index_page(root_dir)
 
 if __name__ == "__main__":

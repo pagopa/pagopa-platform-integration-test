@@ -1,0 +1,71 @@
+name: Fetch openApi files from github and then test them with schemathesis
+
+on:
+   workflow_call:
+ 
+
+permissions:
+    contents: read
+
+jobs:
+  fetch_and_test_openapi:
+    runs-on: ubuntu-latest
+    strategy:
+       matrix:
+          env: [ "dev", "uat" ]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+          fetch-depth: 2
+          ref: ${{ github.ref }}
+
+
+    - name: Set up Python
+      uses: actions/setup-python@7f4fc3e22c37d6ff65e88745f38bd3157c663f7c # v4
+      with: 
+        python-version: '3.x'
+
+    -  name: Install dependencies
+       run: |
+          python -m pip install --upgrade pip
+          pip install requests schemathesis azure-identity azure-keyvault-secrets azure-mgmt-apimanagement dynaconf allure-python-commons
+
+    - name: Load secrets
+      run: |
+        mkdir -p config
+        echo "$SECRETS" > ./config/.secrets.yaml
+      env:
+        SECRETS: ${{ secrets.FDR_INTEGRATION_TESTS_SECRETS }}
+
+    - name: Fetch and test openApi
+      id: run_tests
+      continue-on-error: true
+      env:
+        TARGET_ENV: ${{ matrix.env }}
+        suite: 'fdr'
+        #AZURE_KEY_VAULT_URL: ${{ case(matrix.env == 'dev', secrets.AZURE_KEY_VAULT_DEV_URL, secrets.AZURE_KEY_VAULT_UAT_URL) }}
+      run: |
+        python -u .github/scripts/openApi_test.py
+
+    - name: Build OpenApi Allure report
+      uses: simple-elf/allure-report-action@53ebb757a2097edc77c53ecef4d454fc2f2f774c # v1.13
+      with:
+          gh_pages: gh-pages
+          allure_results: schemathesis-raw-test-result
+          allure_report: allure-report-openapi
+          allure_history: allure-history
+          subfolder: openapi-tests
+          keep_reports: 30
+
+    - uses: actions/upload-artifact@v4
+      with:
+          name: allure-report-openapi-${{ matrix.env }}
+          path: allure-report-openapi
+          retention-days: 30
+          if-no-files-found: error
+
+
+     
+    
