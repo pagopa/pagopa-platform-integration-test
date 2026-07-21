@@ -1,0 +1,62 @@
+name: Run WISP Integration Tests
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  wisp_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: 3.x
+
+      - name: Setup Java
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
+        with:
+          distribution: zulu
+          java-version: 17
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          sudo apt-get install -y jq
+
+      - name: Run Checkout E2E tests
+        id: run_tests
+        continue-on-error: true
+        env:
+          HEADLESS: False
+          ENV_FILE: uat.env
+
+        run: |
+          behave src/e2e/checkout/ --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+
+      - name: Load previous allure history
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Build Checkout E2E Allure report
+        uses: simple-elf/allure-report-action@53ebb757a2097edc77c53ecef4d454fc2f2f774c # v1.13
+        with:
+          gh_pages: gh-pages
+          allure_results: allure-results
+          allure_report: allure-report-checkout-e2e
+          allure_history: allure-history
+          subfolder: checkout-e2e-tests
+          keep_reports: 30
+
+      - name: Upload Checkout E2E report artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: allure-report-checkout-e2e
+          path: allure-report-checkout-e2e
