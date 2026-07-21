@@ -14,6 +14,7 @@ alcune suite storiche usano Cucumber.js o Playwright.
 - [Suite disponibili](#suite-disponibili)
 - [Esecuzione locale](#esecuzione-locale)
 - [Report Allure](#report-allure)
+- [FDR api test](#fdr-api-test)
 - [Esecuzione in CI](#esecuzione-in-ci)
 - [Servizio di test riusabile](#servizio-di-test-riusabile)
 - [Documentazione scenari](#documentazione-scenari)
@@ -568,6 +569,123 @@ La dashboard GitHub Pages espone:
 Riferimenti: `.github/html/index.html`, `.github/scripts/process_reports.py`,
 `.github/scripts/notify_slack.py`, `.github/templates/history-index-template.html`,
 `.github/workflows/deploy-test-report.yml`.
+
+## FDR api test
+
+### Scope
+
+La suite FDR api test verifica la conformità delle API REST di FdR (Flussi di Rendicontazione)
+rispetto alle specifiche OpenAPI dichiarate. Diversamente dalle suite Behave, non richiede la
+scrittura manuale di scenari: Schemathesis genera automaticamente i casi di test a partire dagli
+schemi OpenAPI e valida ogni risposta contro i codici di stato e i modelli dichiarati nel
+contratto.
+
+Le API testate comprendono due profili:
+
+| Profilo | File OpenAPI | Subscription key richiesta |
+|---|---|---|
+| `fdr_organization` | `fdr_organization.json` | `tas-fdr3-orgs-subscription-key` |
+| `fdr_psp` | `fdr_psp.json` | `tas-fdr3-psp-subscription-key` |
+
+Entrambi i profili vengono testati contro gli ambienti `dev` e `uat`.
+
+### Script coinvolti
+
+**`scripts/fetch_github_files.py`**
+
+Scarica i file OpenAPI JSON dall'apposito repository GitHub usando un Personal Access Token
+(PAT) letto dalla configurazione dei secret (`gh_token`). Il branch sorgente viene risolto
+in base all'ambiente: `DEV` usa l'ultimo branch `SANPx.y.z`, `UAT` usa `develop`.
+I file vengono salvati nella cartella temporanea `tmp_fetched/`.
+
+**`scripts/schemathesis_runner.py`**
+
+Scopre tutti i file `.json` in `tmp_fetched/`, risolve l'API key corrispondente dai secret
+(la chiave del secret deve coincidere con lo stem del file, ad es. `fdr_organization`),
+e lancia il comando `schemathesis run` per ciascun file. Ogni esecuzione produce un report
+nella cartella:
+
+```text
+schemathesis-raw-test-result/<YYYY-MM-DD>/<nome> run <HH-MM-SS>/<env>/
+```
+
+Il report include i risultati Allure (abilitati tramite `schemathesis.toml` con `path = "schemathesis-raw-test-result"`) che vengono
+poi processati dall'Allure Action nel workflow CI.
+
+**`.github/scripts/openApi_test.py`**
+
+Orchestratore che esegue in sequenza: fetch dei file OpenAPI, esecuzione dei test Schemathesis,
+rimozione della cartella temporanea `tmp_fetched/` e pulizia dei run più vecchi di 30 giorni.
+
+### Esecuzione locale
+
+Prerequisiti:
+
+- Variabili d'ambiente `TARGET_ENV` (valori: `dev`, `uat`) e `suite` impostata a `fdr`.
+- File `config/suites/fdr_config.json` presente con le subscription key per l'ambiente scelto.
+- File dei secret locali `config/.secrets.yaml` compilato con i valori reali dei placeholder.
+
+PowerShell:
+
+```powershell
+$env:TARGET_ENV = "dev"
+$env:suite = "fdr"
+
+python -u .github/scripts/openApi_test.py
+```
+
+Bash:
+
+```bash
+export TARGET_ENV=dev
+export suite=fdr
+
+python -u .github/scripts/openApi_test.py
+```
+
+I report vengono scritti in `schemathesis-raw-test-result/<data>/<run>/`. Per aprire il report
+Allure generato localmente (dopo aver fatto girare `allure generate` sulla cartella Allure):
+
+```bash
+allure serve schemathesis-raw-test-result/<data>/<run>/<env>/allure-<timestamp>
+```
+
+Per eseguire solo uno specifico profilo OpenAPI senza l'orchestratore:
+
+```bash
+export TARGET_ENV=dev
+export suite=fdr
+python scripts/schemathesis_runner.py fdr_organization
+```
+
+### Esecuzione tramite GitHub Actions
+
+Il workflow è definito in `.github/workflows/openApi_test.yml` e viene invocato come
+`workflow_call` da `main-dispatch-tests.yml`.
+
+**Trigger disponibili:**
+
+| Trigger | Quando scatta |
+|---|---|
+| Schedulato | ogni giorno alle `06:17 UTC` (insieme a WISP) |
+| Manuale (`workflow_dispatch`) | selezionando `openApi_fdr` o `all` nel campo *services* |
+
+**Flusso del job `fetch_and_test_openapi`:**
+
+Il workflow usa una strategy matrix con `env: [dev, uat]`, quindi viene eseguito in parallelo
+per entrambi gli ambienti. Per ogni ambiente:
+
+1. Carica i secret da `FDR_INTEGRATION_TESTS_SECRETS`.
+2. Esegue `openApi_test.py` con `TARGET_ENV` e `suite=fdr` impostati.
+3. Costruisce il report Allure con `simple-elf/allure-report-action`.
+4. Carica l'artefatto `allure-report-openapi-<env>` (es. `allure-report-openapi-dev`).
+
+Il job `deploy` in `main-dispatch-tests.yml` scarica successivamente gli artefatti e pubblica
+i report su GitHub Pages sotto `openapi-fdr-tests/`.
+
+Riferimenti: `.github/workflows/openApi_test.yml`, `.github/workflows/main-dispatch-tests.yml`,
+`scripts/fetch_github_files.py`, `scripts/schemathesis_runner.py`,
+`.github/scripts/openApi_test.py`, `config/suites/fdr_config.json`, `schemathesis.toml`.
 
 ## Esecuzione in CI
 

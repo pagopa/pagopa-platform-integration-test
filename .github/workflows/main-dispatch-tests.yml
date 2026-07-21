@@ -14,6 +14,7 @@ on:
         options:
           - wisp
           - checkout
+          - openApi_fdr
           # - fdr
           - all
 
@@ -39,7 +40,16 @@ jobs:
   #   uses: ./.github/workflows/fdr-tests.yml
   #   secrets: inherit
 
+  trigger_openApi_fdr:
+    if: |
+      github.event_name == 'schedule' ||
+      github.event.inputs.services == 'openApi_fdr' || github.event.inputs.services == 'all'
+    uses: ./.github/workflows/openApi_test.yml
+    secrets: inherit
+
   deploy:
     needs: [trigger_wisp, trigger_checkout_e2e] #, trigger_fdr]
+    if: always()
+    needs: [trigger_wisp, trigger_openApi_fdr, trigger_checkout_e2e]
     uses: ./.github/workflows/deploy-test-report.yml
     secrets: inherit
