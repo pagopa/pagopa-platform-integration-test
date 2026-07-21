@@ -44,7 +44,8 @@ Contesto:
         E il PSP ha una lista di 1001 pagamenti da aggiungere al flusso la cui somma degli importi è 300
         E tale numero di pagamenti supera il limite massimo consentito per un singolo invio
         Quando il PSP invia una richiesta di aggiunta pagamenti al flusso "2025-06-30ABI50004-1178" tramite l'api "Add one or more payments to an existing flow" con un body valido
-        Allora il sistema risponde con un errore di validazione e restituisce il codice di stato HTTP 400
+        Allora il sistema risponde con un errore di validazione 
+        E restituisce il codice di stato HTTP 400
         E la lista di pagamenti non viene aggiunta al flusso di rendicontazione
 
 
@@ -60,7 +61,8 @@ Contesto:
         E il PSP ha una lista di 10 pagamenti da aggiungere al flusso
         Ma la somma degli importi 100 indicata nella richiesta non è corretta rispetto al totale dei singoli pagamenti
         Quando il PSP invia una richiesta di aggiunta pagamenti al flusso "2025-06-30ABI50004-1178" tramite l'api "Add one or more payments to an existing flow" con un body formalmente valido
-        Allora il sistema risponde con un errore di validazione e restituisce il codice di stato HTTP 400
+        Allora il sistema risponde con un errore di validazione 
+        E restituisce il codice di stato HTTP 400
         E la lista di pagamenti non viene aggiunta al flusso di rendicontazione
 
 
@@ -75,7 +77,8 @@ Contesto:
         E che non esiste alcun flusso di rendicontazione creato dal PSP con identificativo "2025-06-30ABI50004-1176"
         E il PSP ha una lista di 10 pagamenti da aggiungere con somma degli importi pari a 100
         Quando il PSP invia una richiesta di aggiunta pagamenti al flusso "2025-06-30ABI50004-1176" tramite l'api "Add one or more payments to an existing flow" con un body formalmente valido
-        Allora il sistema risponde con un errore di risorsa non trovata e restituisce il codice di stato HTTP 404
+        Allora il sistema risponde con un errore di risorsa non trovata 
+        E restituisce il codice di stato HTTP 404
 
 # ===============================================================================================
 # ===============================================================================================
