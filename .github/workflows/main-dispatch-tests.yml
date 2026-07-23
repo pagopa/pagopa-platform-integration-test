@@ -14,7 +14,7 @@ on:
         options:
           - wisp
           - checkout
-          - openApi_fdr
+          - openapi-fdr
           # - fdr
           - all
 
@@ -40,22 +40,22 @@ jobs:
   #   uses: ./.github/workflows/fdr-tests.yml
   #   secrets: inherit
 
-  trigger_openApi_fdr:
+  trigger_openapi_fdr:
     if: |
       github.event_name == 'schedule' ||
-      github.event.inputs.services == 'openApi_fdr' || github.event.inputs.services == 'all'
-    uses: ./.github/workflows/openApi_fdr-tests.yml
+      github.event.inputs.services == 'openapi-fdr' || github.event.inputs.services == 'all'
+    uses: ./.github/workflows/openapi-fdr-tests.yml
     secrets: inherit
 
   deploy:
     if: always()
-    needs: [trigger_wisp, trigger_checkout_e2e, trigger_openApi_fdr] #, trigger_fdr]
+    needs: [trigger_wisp, trigger_checkout_e2e, trigger_openapi_fdr] #, trigger_fdr]
     uses: ./.github/workflows/deploy-test-report.yml
     secrets: inherit
 
   create_confluence_report:
     if: always()
-    needs: [trigger_wisp, trigger_checkout_e2e, trigger_openApi_fdr] #, trigger_fdr]
+    needs: [trigger_wisp, trigger_checkout_e2e, trigger_openapi_fdr] #, trigger_fdr]
     uses: ./.github/workflows/create_report_page.yml
     secrets: inherit
     with:
