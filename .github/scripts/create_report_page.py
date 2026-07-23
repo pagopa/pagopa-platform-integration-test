@@ -4,6 +4,13 @@ import re
 import shutil
 from dynaconf import Dynaconf
 import argparse
+import sys
+from pathlib import Path
+
+# Ensure repository root is on sys.path so `src` package is importable when this
+# script runs from .github/scripts in CI environments.
+REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
 
 from src.utility.confluence_utils import create_confluence_auth, create_confluence_page
 
