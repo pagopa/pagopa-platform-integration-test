@@ -155,12 +155,17 @@ def main():
   args = parser.parse_args()
   run['scope'] = args.run_type
 
-  if os.listdir(PROCESSED_REPORTS_DIR) == []:
-    print(f"[INFO][main] No processed reports found in {PROCESSED_REPORTS_DIR}. Exiting.")
+  # Support processed reports created under `public/` by the deploy job
+  processed_dir = PROCESSED_REPORTS_DIR
+  if not os.path.exists(processed_dir) and os.path.exists(os.path.join('public', PROCESSED_REPORTS_DIR)):
+    processed_dir = os.path.join('public', PROCESSED_REPORTS_DIR)
+
+  if not os.path.isdir(processed_dir) or os.listdir(processed_dir) == []:
+    print(f"[INFO][main] No processed reports found in {processed_dir}. Exiting.")
     return
   # Read the last history data from stats.json
-  for dir in os.listdir(PROCESSED_REPORTS_DIR):
-    run_dir = os.path.join(PROCESSED_REPORTS_DIR, dir)
+  for dir in os.listdir(processed_dir):
+    run_dir = os.path.join(processed_dir, dir)
     if os.path.isdir(run_dir):
       global suite
       run['env'] = dir.split('-')[-1]
@@ -178,8 +183,11 @@ def main():
             print(f"[ERROR][main] Failed processing run directory {run_dir}. Error: {str(e)}")
             continue
     
-    print(f"[INFO][main] Finished processing run directory {run_dir}. Removing it.")
-    shutil.rmtree(PROCESSED_REPORTS_DIR)
+    print(f"[INFO][main] Finished processing run directory {run_dir}. Removing processed reports directory {processed_dir}.")
+    try:
+      shutil.rmtree(processed_dir)
+    except Exception as e:
+      print(f"[WARN][main] Could not remove processed reports directory {processed_dir}: {e}")
     
 
 if __name__ == "__main__":

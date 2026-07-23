@@ -54,8 +54,7 @@ jobs:
     secrets: inherit
 
   create_confluence_report:
-    if: always()
-    needs: [trigger_wisp, trigger_checkout_e2e, trigger_openapi_fdr] #, trigger_fdr]
+    needs: [deploy]
     uses: ./.github/workflows/create_report_page.yml
     secrets: inherit
     with:
