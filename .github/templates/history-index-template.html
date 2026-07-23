@@ -65,6 +65,9 @@
               ✅ Passed: {{ report.passed }} | ❌ Failed: {{ report.failed }}
             </p>
             <a href="{{ report.link }}" class="btn btn-primary mt-2">View Report</a>
+            {% if report.has_analysis %}
+              <a href="{{ report.analysis_link }}" class="btn btn-secondary mt-2 ms-1">🤖 View Analysis</a>
+            {% endif %}
           </div>
         </div>
       </div>

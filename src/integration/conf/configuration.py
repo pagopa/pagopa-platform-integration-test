@@ -13,6 +13,9 @@ from dynaconf import Dynaconf
 ENV_VAR_PREFIX = 'WISP_DISMANTLING'
 _INTEGRATION_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Root directory of the integration suite (src/integration/)
+_INTEGRATION_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def check_apim_variables():
@@ -31,7 +34,7 @@ settings = Dynaconf(
 if 'TARGET_ENV' not in os.environ:
     os.environ['TARGET_ENV'] = 'uat'
 
-settings = settings[os.environ['TARGET_ENV']]
+settings = settings[str(os.environ['TARGET_ENV']).lower()]
 
 # Load the secrets for the specified environment
 secrets = {}
@@ -46,8 +49,8 @@ else:
     # resolve secrets from DictSecretResolver for local testing, takes a dictonary of secrets which he uses to resolve secrets founds in the test config file
     try:
         all_secrets = Dynaconf(settings_files=settings.SECRET_PATH)
-        if settings.TARGET_ENV in all_secrets:
-            secrets_resolver = DictSecretResolver( all_secrets[settings.TARGET_ENV])
+        if str(settings.TARGET_ENV).lower() in all_secrets:
+            secrets_resolver = DictSecretResolver( all_secrets[str(settings.TARGET_ENV).lower()])
     except Exception as e:
         logging.error(e)
         exit()
