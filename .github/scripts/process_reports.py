@@ -269,10 +269,6 @@ def main():
                     print(f"[INFO][main] deleting {tmp_reports_dir} content")
                     shutil.rmtree(tmp_reports_dir)
 
-                print(f"[INFO][main] creating {tmp_reports_dir} directory")
-                tmp_reports_dir.mkdir(parents=True, exist_ok=True)
-
-
                 print(f"[INFO][main] copy everything from {source_dir} to {destination_dir}")
                 shutil.copytree(source_dir, destination_dir)
                 print(f"[INFO][main] copy everything from {source_dir} to {last_history_dir}")
