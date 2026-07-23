@@ -11,8 +11,9 @@ from pathlib import Path
 # script runs from .github/scripts in CI environments.
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
-
+SCRIPTS_ROOT = os.path.dirname(os.path.realpath(__file__))
 from src.utility.confluence_utils import create_confluence_auth, create_confluence_page
+from src.conf.configuration import load_settings
 
 run = {
   'scope': '',
@@ -100,8 +101,6 @@ def read_runs(dir):
         failedRuns.append(run_stats.copy())
 
     run['runs'] = failedRuns
-    with open('run.json', 'w', encoding='utf-8') as f:
-      json.dump(run, f, indent=4, ensure_ascii=False)
   except Exception as e:
     raise RuntimeError(f"Failed while processing runs in {dir}. Error: {str(e)}")
 
@@ -137,12 +136,11 @@ def build_page(folder_name, page_components, config):
     raise RuntimeError(f"Failed to build page for {folder_name}. Error: {str(e)}")
 
 
-def read_config(suite):
+def read_config(suite, config):
     try:
-        read_config = Dynaconf(settings_files=['config.yaml'])
         key_parts = suite.split('-')[:-1]
         key = '-'.join(key_parts) or suite
-        return read_config[key] if key in read_config else {}
+        return config[key] if key in config else {}
     except KeyError as e:
         raise RuntimeError(f"Config key '{key}' not found in config.yaml. Error: {str(e)}")
     except Exception as e:
@@ -164,6 +162,7 @@ def main():
     print(f"[INFO][main] No processed reports found in {processed_dir}. Exiting.")
     return
   # Read the last history data from stats.json
+  config = Dynaconf(settings_files=['config.yaml'])
   for dir in os.listdir(processed_dir):
     run_dir = os.path.join(processed_dir, dir)
     if os.path.isdir(run_dir):
@@ -175,7 +174,7 @@ def main():
             read_stats(os.path.join(run_dir, 'stats.json'))
             read_runs(os.path.join(run_dir, TEST_CASES_DIR))
             page_components = read_page_components()
-            config = read_config(suite)
+            config = read_config(suite, config)
             page = build_page(suite, page_components, config)
             page_title = str(run['date']).replace('-', '') + " - " + suite
             create_confluence_page(page.strip(), config=config, page_title=page_title, auth_obj=create_confluence_auth())

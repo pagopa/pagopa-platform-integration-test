@@ -1,12 +1,14 @@
 import copy
 import logging
+import os
 import subprocess
 import sys
 import time
 
-from src.integration.conf.configuration import commondata
-from src.integration.conf.configuration import secrets
-from src.integration.conf.configuration import settings
+from src.conf.configuration import load_commondata
+from src.conf.configuration import load_secrets
+from src.conf.configuration import load_settings
+from src.utility.constants import INTEGRATION_ROOT
 from src.integration.wisp.utility import constants
 from src.integration.wisp.utility.constants import empty_flow_data
 
@@ -18,10 +20,21 @@ logger = logging.getLogger(__name__)
 
 
 def before_all(context):
+    """Initialize suite configuration, secrets, common data, and retry controls."""
     # load settings and secrets into context
-    context.settings = settings
-    context.secrets = secrets
-    context.commondata = commondata
+    suite_name = "wisp"
+    target_env = os.getenv("TARGET_ENV") or "uat"
+
+    os.environ["TARGET_ENV"] = str(target_env)
+    os.environ["suite"] = suite_name
+
+    context.settings = load_settings(config_folder_root=INTEGRATION_ROOT)
+    context.secrets = load_secrets(
+        suite=suite_name,
+        target_env=target_env,
+        settings=context.settings,
+    )
+    context.commondata = load_commondata(config_folder_root=INTEGRATION_ROOT)
 
     # configure logging setup
     logging.basicConfig(level=logging.DEBUG)
@@ -36,11 +49,13 @@ def before_all(context):
 
 
 def before_scenario(context, scenario):
+    """Reset mutable scenario data before each scenario starts."""
     context.flow_data = copy.deepcopy(empty_flow_data)
     context.flow_data['action']['trigger_primitive']['name'] = constants.PRIMITIVE_NODOINVIARPT
 
 
 def after_scenario(context, scenario):
+    """Track failed scenarios and apply optional inter-scenario delay."""
     # Track failed scenarios for end-of-run retry.
     if context._wisp_retry and scenario.status == 'failed':
         context._wisp_failed_scenarios.append((scenario.filename, scenario.line))
@@ -71,4 +86,5 @@ def after_all(context):
 
 
 def before_step(context, step):
+    """Store current step name for diagnostics and reporting."""
     context.running_step = step.name

@@ -31,7 +31,33 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from src.conf.configuration import secrets
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT = os.path.dirname(SCRIPT_DIR)
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
+
+from src.conf.configuration import load_secrets
+from src.conf.configuration import load_settings
+from src.utility.constants import INTEGRATION_ROOT
+
+def _build_runtime_secrets() -> dict:
+    """Load runtime secrets with suite/env fallbacks for standalone script execution."""
+    target_env = os.getenv("TARGET_ENV") or "uat"
+    suite_name = os.getenv("suite") or target_env
+
+    os.environ["TARGET_ENV"] = str(target_env)
+    os.environ["suite"] = str(suite_name)
+
+    runtime_settings = load_settings(config_folder_root=str(INTEGRATION_ROOT))
+    return load_secrets(
+        secrets_file_name=runtime_settings.SECRET_PATH,
+        suite=suite_name,
+        target_env=target_env,
+        settings=runtime_settings,
+    )
+
+
+secrets = _build_runtime_secrets()
 
 API_KEY_HEADER: str = "Ocp-Apim-Subscription-Key"
 DEFAULT_OPENAPI_DIR: Path = Path("tmp_fetched")
