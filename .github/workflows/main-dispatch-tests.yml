@@ -44,12 +44,19 @@ jobs:
     if: |
       github.event_name == 'schedule' ||
       github.event.inputs.services == 'openApi_fdr' || github.event.inputs.services == 'all'
-    uses: ./.github/workflows/openApi_test.yml
+    uses: ./.github/workflows/openApi_fdr-tests.yml
     secrets: inherit
 
   deploy:
-    needs: [trigger_wisp, trigger_checkout_e2e] #, trigger_fdr]
     if: always()
-    needs: [trigger_wisp, trigger_openApi_fdr, trigger_checkout_e2e]
+    needs: [trigger_wisp, trigger_checkout_e2e, trigger_openApi_fdr] #, trigger_fdr]
     uses: ./.github/workflows/deploy-test-report.yml
     secrets: inherit
+
+  create_confluence_report:
+    if: always()
+    needs: [trigger_wisp, trigger_checkout_e2e, trigger_openApi_fdr] #, trigger_fdr]
+    uses: ./.github/workflows/create_report_page.yml
+    secrets: inherit
+    with:
+      run_type: ${{ case(github.event_name == 'schedule',  'NIGHTLY', 'NO-PROMO') }}
