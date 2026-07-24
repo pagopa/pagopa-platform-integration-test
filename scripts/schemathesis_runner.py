@@ -50,7 +50,6 @@ def _build_runtime_secrets() -> dict:
 
     runtime_settings = load_settings(config_folder_root=str(INTEGRATION_ROOT))
     return load_secrets(
-        secrets_file_name=runtime_settings.SECRET_PATH,
         suite=suite_name,
         target_env=target_env,
         settings=runtime_settings,

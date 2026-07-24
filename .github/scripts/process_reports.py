@@ -25,6 +25,8 @@ def extract_stats(artifact_app_dir):
             # extract statistic and time sections from summary
             statistic_raw = data.get("statistic", {})
             time_raw = data.get("time", {})
+            if time_raw is None:
+                raise ValueError(f"[ERROR][extract_stats] 'time' section is missing in {artifact_summary_file} for {artifact_app_dir}. This means that something went wrong during the last test run.")
             statistic = statistic_raw[0] if isinstance(statistic_raw, list) else statistic_raw
             time = time_raw[0] if isinstance(time_raw, list) else time_raw
             print(f"[INFO][extract_stats] extracted statistic section {statistic}")

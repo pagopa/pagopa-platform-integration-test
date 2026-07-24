@@ -56,8 +56,7 @@ def load_secrets(suite: str = "",
     """Load secrets resolver and resolved secrets according to runtime configuration.
     # Keep canonical env vars aligned for loaders that resolve placeholders
     # from environment context.
-    os.environ['TARGET_ENV'] = str(target_env)
-    os.environ['suite'] = str(suite)
+    
 
     Logic:
     - If the environment variable `AZURE_KEY_VAULT_URL` is set, use
@@ -76,7 +75,7 @@ def load_secrets(suite: str = "",
         target_envr: optional name of the env used to identify the target environment
         inside the secrets file. If empty, `TARGET_ENV` is used and falls back to `uat` 
         when not present.
-        settings: dict of settings loaded from the config file (used to resolve secrets placeholders when not using the azure key vault).
+        settings: optional dict of settings loaded from the config file (used to resolve secrets placeholders when not using the azure key vault).
 
     Returns:
         secrets: A dictionary containing the resolved secrets for the specified suite and target environment.
@@ -94,6 +93,9 @@ def load_secrets(suite: str = "",
         if 'suite' not in os.environ:
             raise RuntimeError("Suite name not set: set the suite environment variable or pass its name to load_secrets") 
         suite = os.environ.get('suite')
+
+    os.environ['TARGET_ENV'] = str(target_env)
+    os.environ['suite'] = str(suite)
    
 
     secrets_resolver = None
