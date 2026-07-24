@@ -49,6 +49,12 @@ jobs:
       run: |
         python -u .github/scripts/openApi_test.py
 
+    - name: Load previous allure history
+      uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      with:
+        ref: gh-pages
+        path: gh-pages
+
     - name: Build OpenApi Allure report
       uses: simple-elf/allure-report-action@53ebb757a2097edc77c53ecef4d454fc2f2f774c # v1.13
       with:
