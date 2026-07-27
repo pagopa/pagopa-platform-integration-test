@@ -268,18 +268,20 @@ def main():
                     print(f"[INFO][main] deleting {last_history_dir} content")
                     shutil.rmtree(last_history_dir)
 
-                if tmp_reports_dir.exists(): # delete tmp reports dir if already exists
-                    print(f"[INFO][main] deleting {tmp_reports_dir} content")
-                    shutil.rmtree(tmp_reports_dir)
+                tmp_reports_dir.mkdir(parents=True, exist_ok=True)
 
                 print(f"[INFO][main] copy everything from {source_dir} to {destination_dir}")
                 shutil.copytree(source_dir, destination_dir)
                 print(f"[INFO][main] copy everything from {source_dir} to {last_history_dir}")
                 shutil.copytree(source_dir, last_history_dir)
-                print(f"[INFO][main] copy everything from {source_dir} to {tmp_reports_dir}")
                 if app == "openapi":
                     app = OPENAPI_FDR_TESTS
-                shutil.copytree(source_dir, os.path.join(f'public/{PROCESSED_REPORTS_DIR}/{app}-{env}'))
+                processed_run_dir = Path(f'public/{PROCESSED_REPORTS_DIR}/{app}-{env}')
+                if processed_run_dir.exists():
+                    print(f"[INFO][main] deleting {processed_run_dir} content")
+                    shutil.rmtree(processed_run_dir)
+                print(f"[INFO][main] copy everything from {source_dir} to {processed_run_dir}")
+                shutil.copytree(source_dir, processed_run_dir)
 
                 # render AI analysis page (no-op when artifact missing)
                 deploy_ai_analysis(artifact_dir, run_dir, last_history_dir, app, stats.get("start"), ai_model)

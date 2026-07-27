@@ -184,12 +184,15 @@ def main():
         except Exception as e:
             print(f"[ERROR][main] Failed processing run directory {run_dir}. Error: {str(e)}")
             continue
-    
-    print(f"[INFO][main] Finished processing run directory {run_dir}. Removing processed reports directory {processed_dir}.")
-    try:
-      shutil.rmtree(processed_dir, ignore_errors = False)
-    except Exception as e:
-      print(f"[WARN][main] Could not remove processed reports directory {processed_dir}: {e}")
+
+  # Remove processed reports only once, after all run directories were handled.
+  print(f"[INFO][main] Finished processing all run directories. Removing processed reports directory {processed_dir}.")
+  try:
+    shutil.rmtree(processed_dir, ignore_errors=False)
+    if not os.path.exists(processed_dir):
+       print(f"[INFO][main] Removed processed reports directory: {processed_dir}")     
+  except Exception as e:
+    print(f"[WARN][main] Could not remove processed reports directory {processed_dir}: {e}")
     
 
 if __name__ == "__main__":
