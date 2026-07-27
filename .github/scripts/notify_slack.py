@@ -4,7 +4,7 @@ import os
 
 def send_slack_notification():
     webhook_url = os.environ["SLACK_QA_WEBHOOK_URL"]
-    apps = ["wisp", "checkout"]
+    apps = ["wisp", "checkout-e2e"]
     base_path = "public"
 
     blocks = [

@@ -227,8 +227,8 @@ def main():
     artifact_dir = os.path.join("artifacts") # /artifacts
     print(f"[INFO][main] artifact_dir {artifact_dir}")
     
-    # Process Allure reports (wisp, openapi)
-    allure_apps = ["wisp", "openapi"]
+    # Process Allure reports (wisp, checkout-e2e, openapi)
+    allure_apps = ["wisp", "checkout-e2e", "openapi"]
     for app in allure_apps:
         root_dir = f"public/{app}-tests"
         print(f"[INFO][main] processing Allure directory {root_dir}")
