@@ -165,8 +165,8 @@ def main():
     print(f"[INFO][main] No processed reports found in {processed_dir}. Exiting.")
     return
   # Read the last history data from stats.json
-  config = Dynaconf(settings_files=['config.yaml'])
-  for dir in os.listdir(processed_dir):
+  full_config = Dynaconf(settings_files=['config.yaml'])
+  for dir in sorted(os.listdir(processed_dir)):
     run_dir = os.path.join(processed_dir, dir)
     if os.path.isdir(run_dir):
       global suite
@@ -174,13 +174,14 @@ def main():
       suite = os.path.basename(dir)
       if os.path.exists(os.path.join(run_dir, 'stats.json')):
         try:
+            failedRuns.clear()
             read_stats(os.path.join(run_dir, 'stats.json'))
             read_runs(os.path.join(run_dir, TEST_CASES_DIR))
             page_components = read_page_components()
-            config = read_config(suite, config)
-            page = build_page(suite, page_components, config)
+            suite_config = read_config(suite, full_config)
+            page = build_page(suite, page_components, suite_config)
             page_title = str(run['date']).replace('-', '') + " Analisi RUN " + suite.upper()
-            create_confluence_page(page.strip(), config=config, page_title=page_title, auth_obj=create_confluence_auth())
+            create_confluence_page(page.strip(), config=suite_config, page_title=page_title, auth_obj=create_confluence_auth())
         except Exception as e:
             print(f"[ERROR][main] Failed processing run directory {run_dir}. Error: {str(e)}")
             continue
