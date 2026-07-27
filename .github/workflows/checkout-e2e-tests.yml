@@ -65,19 +65,39 @@ jobs:
             echo "::warning::No allure result files found — tests may have crashed before writing results."
           fi
 
+      - name: Install Allure CLI
+        if: always()
+        run: npm install -g allure-commandline@2.27.0
+
       - name: Build Checkout E2E Allure report
-        continue-on-error: true   # allure generate fails gracefully when no results exist
-        uses: simple-elf/allure-report-action@53ebb757a2097edc77c53ecef4d454fc2f2f774c # v1.13
-        with:
-          gh_pages: gh-pages
-          allure_results: allure-results
-          allure_report: allure-report-checkout-e2e
-          allure_history: allure-history
-          subfolder: checkout-e2e-tests
-          keep_reports: 30
+        if: always()
+        continue-on-error: true
+        env:
+          SUBFOLDER: checkout-e2e-tests
+        run: |
+          # Seed allure-results/history with the previous run's history so
+          # trend charts are populated. Skip gracefully on first run.
+          if [ -d "gh-pages/${SUBFOLDER}/last-history" ]; then
+            echo "Loading previous history for trend charts..."
+            cp -r "gh-pages/${SUBFOLDER}/last-history/." allure-results/history/
+          fi
+
+          # Generate the HTML report.
+          allure generate allure-results --clean -o allure-report-checkout-e2e
+
+          # Save the new history under allure-history/ so the next run can
+          # seed its trend charts (same layout the deploy workflow expects).
+          mkdir -p "allure-history/${SUBFOLDER}/${{ github.run_number }}"
+          cp -r allure-report-checkout-e2e/. "allure-history/${SUBFOLDER}/${{ github.run_number }}/" || true
+          mkdir -p "allure-history/${SUBFOLDER}/last-history"
+          cp -r allure-report-checkout-e2e/history/. "allure-history/${SUBFOLDER}/last-history/" || true
+
+          echo "Report generated: $(ls allure-report-checkout-e2e | wc -l) top-level entries"
 
       - name: Upload Checkout E2E report artifact
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: allure-report-checkout-e2e
           path: allure-report-checkout-e2e
+          if-no-files-found: warn
