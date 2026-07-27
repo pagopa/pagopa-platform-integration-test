@@ -45,6 +45,15 @@ jobs:
           ref: gh-pages
           path: gh-pages
 
+      - name: Prepare allure-results for report generation
+        if: always()
+        run: |
+          # allure-behave may create allure-results/history as a plain file;
+          # simple-elf/allure-report-action needs it to be a directory to copy
+          # the previous history into it.  Remove the file and create the dir.
+          if [ -f allure-results/history ]; then rm allure-results/history; fi
+          mkdir -p allure-results/history
+
       - name: Build Checkout E2E Allure report
         uses: simple-elf/allure-report-action@53ebb757a2097edc77c53ecef4d454fc2f2f774c # v1.13
         with:
