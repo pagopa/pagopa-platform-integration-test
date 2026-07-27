@@ -102,6 +102,7 @@ def read_runs(dir):
         failedRuns.append(run_stats.copy())
 
     run['runs'] = failedRuns
+    print(f"[INFO][read_runs] Successfully read {len(failedRuns)} failed runs from {dir}")
   except Exception as e:
     raise RuntimeError(f"Failed while processing runs in {dir}. Error: {str(e)}")
 
@@ -132,6 +133,7 @@ def build_page(folder_name, page_components, config):
         row = re.sub(r'\{[^}]+\}', '', row).strip(" ")
         page += row
       page += "</tr></tbody></table>"
+    print(f"[INFO][read_runs] Successfully built page content for {folder_name}")
     return page
   except Exception as e:
     raise RuntimeError(f"Failed to build page for {folder_name}. Error: {str(e)}")
@@ -177,7 +179,7 @@ def main():
             page_components = read_page_components()
             config = read_config(suite, config)
             page = build_page(suite, page_components, config)
-            page_title = str(run['date']).replace('-', '') + " - " + suite
+            page_title = str(run['date']).replace('-', '') + " Analisi RUN " + suite.upper()
             create_confluence_page(page.strip(), config=config, page_title=page_title, auth_obj=create_confluence_auth())
         except Exception as e:
             print(f"[ERROR][main] Failed processing run directory {run_dir}. Error: {str(e)}")
@@ -185,7 +187,7 @@ def main():
     
     print(f"[INFO][main] Finished processing run directory {run_dir}. Removing processed reports directory {processed_dir}.")
     try:
-      shutil.rmtree(processed_dir)
+      shutil.rmtree(processed_dir, ignore_errors = False)
     except Exception as e:
       print(f"[WARN][main] Could not remove processed reports directory {processed_dir}: {e}")
     

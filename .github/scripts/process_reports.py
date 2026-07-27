@@ -279,7 +279,7 @@ def main():
                 print(f"[INFO][main] copy everything from {source_dir} to {tmp_reports_dir}")
                 if app == "openapi":
                     app = OPENAPI_FDR_TESTS
-                shutil.copytree(source_dir, os.path.join(f'public/{PROCESSED_REPORTS_DIR}/{app}-tests-{env}'))
+                shutil.copytree(source_dir, os.path.join(f'public/{PROCESSED_REPORTS_DIR}/{app}-{env}'))
 
                 # render AI analysis page (no-op when artifact missing)
                 deploy_ai_analysis(artifact_dir, run_dir, last_history_dir, app, stats.get("start"), ai_model)
