@@ -264,6 +264,13 @@ def run(args: argparse.Namespace) -> int:
     if args.tags:
         inputs["tags"] = args.tags
 
+    # Forward the Allure toggle only when enabled, mirroring the 'tags'
+    # backward-compatibility handling above (older workflow refs may not
+    # declare the 'allure' input). Sent as a string because workflow_dispatch
+    # input values are always strings, even for boolean-typed inputs.
+    if args.allure:
+        inputs["allure"] = "true"
+
     log.info("Sending dispatch to '%s' (workflow: %s, ref: %s)", repo, workflow_file, args.ref)
     log.info("Type: %s | Suite: %s | Env: %s | Caller: %s | Correlation ID: %s",
              args.type, args.suite, args.env, args.caller_id, correlation_id)
@@ -408,6 +415,13 @@ def build_parser() -> argparse.ArgumentParser:
             "Behave tag expression to filter scenarios (e.g. '@runnable', "
             "'@e2e', '@a,@b'). When omitted the workflow keeps its own "
             "default (@runnable)."
+        )
+    )
+    parser.add_argument(
+        "--allure", action="store_true",
+        help=(
+            "Ask the TAS workflow to also produce an Allure results directory "
+            "(allure-results/) inside the test-results artifact."
         )
     )
     parser.add_argument(

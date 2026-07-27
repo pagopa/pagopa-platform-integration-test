@@ -5,10 +5,9 @@
 The **Test Automation Service (TAS)** is a centralised integration testing infrastructure
 hosted in the GitHub repository `pagopa-platform-integration-test`.
 
-It exposes multiple integration interfaces so that any external system — a GitHub Actions
-workflow, an Azure DevOps pipeline, or any other CI/CD tool — can trigger BDD test suites
-(Behave + Playwright), wait for the outcome, and make decisions (e.g. block a deployment)
-based on the results.
+It exposes integration interfaces so that a GitHub Actions workflow or an Azure DevOps
+pipeline can trigger BDD test suites (Behave + Playwright), wait for the outcome, and make
+decisions (e.g. block a deployment) based on the results.
 
 ---
 
@@ -25,12 +24,8 @@ flowchart TB
   subgraph CALLERS["Callers (External Systems)"]
     direction TB
     A["GitHub Actions<br/>(workflow_call)"]:::caller
-    GHA_RAW["GitHub Actions<br/>(raw workflow_dispatch / curl)"]:::caller
     GHA_TPL["GitHub Actions<br/>(GHA composite action)"]:::caller
-    B["GitHub Actions<br/>(tas_orchestrator)"]:::caller
     D["Azure DevOps<br/>(ADO template)"]:::caller
-    C["Azure DevOps<br/>(tas_orchestrator / curl)"]:::caller
-    E["Any other CI/CD<br/>(tas_orchestrator)"]:::caller
   end
 
   subgraph TAS["pagopa-platform-integration-test (GitHub repo)"]
@@ -49,7 +44,7 @@ flowchart TB
       W1 --> W2 --> W3 --> W4
     end
 
-    RESULTS[/"Artifacts:<br/>- test-summary.json<br/>- behave-results.json<br/>- junit/*.xml"/]:::art
+    RESULTS[/"Artifacts:<br/>- test-summary.json<br/>- behave-results.json<br/>- junit/*.xml<br/>- allure-results/ (opt-in)"/]:::art
 
     W3 -. "generates" .-> RESULTS
   end
@@ -57,9 +52,6 @@ flowchart TB
 %% Callers → Gateways
   D       -- "consumes (sync/async/raw)" --> TEMPLATE
   GHA_TPL -- "consumes (sync/async/raw)" --> ACTION
-  B -. "uses" .-> SCRIPT
-  C -. "uses" .-> SCRIPT
-  E -. "uses" .-> SCRIPT
 
 %% Gateways wrap script
   TEMPLATE -. "wraps" .-> SCRIPT
@@ -68,7 +60,6 @@ flowchart TB
 %% Callers / Gateways → Workflow
   A        == "workflow_call<br/>(sync, native outputs)"           ==> WORKFLOW
   SCRIPT   == "workflow_dispatch<br/>+ polling & download<br/>(sync / async)" ==> WORKFLOW
-  GHA_RAW  -. "workflow_dispatch (raw, fire-and-forget)" .-> WORKFLOW
   TEMPLATE -. "dispatches (if raw)" .-> WORKFLOW
   ACTION   -. "dispatches (if raw)" .-> WORKFLOW
 ```
@@ -95,6 +86,8 @@ The central GHA workflow that runs the test suites. It supports two trigger mech
 | `environment` | string | ✅ | Target environment (`dev`, `uat`) |
 | `caller_id` | string | ❌ | Identifier of the calling system for traceability |
 | `correlation_id` | string | ❌ | Unique ID to correlate the run with the caller |
+| `tags` | string | ❌ | Behave tag expression to filter scenarios (e.g. `@runnable`, `@e2e`). Default: `@runnable` |
+| `allure` | boolean | ❌ | Also produce an Allure results directory (`allure-results/`) inside the artifact. Default: `false` |
 
 **Outputs** (available only via `workflow_call`):
 
@@ -111,10 +104,13 @@ The central GHA workflow that runs the test suites. It supports two trigger mech
 - `test-summary.json` — structured summary (see schema below)
 - `behave-results.json` — raw Behave JSON output
 - `junit/*.xml` — JUnit XML reports
+- `allure-results/` — Allure result files, only when the `allure` input is `true` (render to HTML with the Allure CLI)
 
-### 2. `tas_orchestrator.py` — CLI bridge
+### 2. `tas_orchestrator.py` — internal engine (CLI bridge)
 
-A Python script that wraps the `workflow_dispatch` API with two operating modes:
+It is the **internal engine** wrapped by the ADO template and the GHA composite
+action; external callers do not invoke it directly. A Python script that wraps
+the `workflow_dispatch` API with two operating modes:
 
 | Mode | Flag | Behaviour |
 |---|---|---|
@@ -130,19 +126,18 @@ run via the GitHub API, making it robust against concurrent executions.
 
 ### 3. `.azuredevops/templates/tas-integration-tests.yml` — Official ADO template
 
-A reusable Azure DevOps stage template published by the TAS team. It encapsulates the
+A reusable Azure DevOps steps template published by the TAS team. It encapsulates the
 boilerplate that an Azure DevOps consumer would otherwise have to write by hand
 (Python setup, orchestrator download, secret handling, JSON dispatch, output-variable
-normalisation) behind a single, parameterised stage. Consumers reference it as a remote
-resource via `resources.repositories` and invoke it as a stage; nothing else is needed
-beyond a variable group with the PAT and a GitHub service connection.
+normalisation) behind a single, parameterised entry point. Consumers reference it as a remote
+resource via `resources.repositories` and inject it into a job they own via `steps`; nothing
+else is needed beyond a variable group with the PAT and a GitHub service connection.
 
 | Aspect | Value |
 |---|---|
 | Path | `.azuredevops/templates/tas-integration-tests.yml` |
-| Stage name (public contract) | `TAS_IntegrationTests` |
-| Job name (public contract) | `RunTAS` |
-| Output step name (public contract) | `tas` |
+| Template type | steps template (injected into a caller-owned job) |
+| Output step name (public contract) | `tas` (configurable via `stepName`) |
 | Supported modes (`mode` parameter) | `sync`, `async`, `raw` |
 | Normalised output variables | `CORRELATION_ID`, `RUN_ID` (sync only), `RUN_URL` (sync only) |
 
@@ -158,7 +153,7 @@ of the selected mode.
 **Companion documentation:**
 - [`.azuredevops/templates/README.md`](../../.azuredevops/templates/README.md) — public
   contract, prerequisites, versioning policy.
-- [`docs/tas/tas-developer-guide.md`](./tas-developer-guide.md) — "Option 5 — Official
+- [`docs/tas/tas-developer-guide.md`](./tas-developer-guide.md) — "Option 1 — Official
   Azure DevOps template" section.
 - [`docs/tas/examples/tas-example-ado-using-template.yml`](./examples/tas-example-ado-using-template.yml)
   — ready-to-copy consumer pipeline.
@@ -192,15 +187,15 @@ same names, so the caller's `steps.<id>.outputs.*` paths are identical regardles
 of the selected mode. In `sync` mode the action propagates the orchestrator's
 exit code, so the calling job fails on test failure exactly like Option 1.
 
-Option 6 is the recommended choice for GHA callers that cannot use Option 1 —
-typically because they need to target a feature branch at runtime, or because
-they want a single switchable entry point across the three orchestrator-style
-modes.
+Option 2 is the recommended choice for GHA callers that cannot use Option 3
+(`workflow_call`) — typically because they need to target a feature branch at
+runtime, or because they want a single switchable entry point across the three
+invocation modes.
 
 **Companion documentation:**
 - [`.github/actions/tas-integration-tests/README.md`](../../.github/actions/tas-integration-tests/README.md) — public
   contract, prerequisites, versioning policy.
-- [`docs/tas/tas-developer-guide.md`](./tas-developer-guide.md) — "Option 6 —
+- [`docs/tas/tas-developer-guide.md`](./tas-developer-guide.md) — "Option 2 —
   Official GitHub Actions composite action" section.
 - [`docs/tas/examples/tas-example-gha-using-template.yml`](./examples/tas-example-gha-using-template.yml)
   — ready-to-copy consumer workflow.
@@ -238,9 +233,6 @@ produced the results.
 | Interface | Caller type | Synchronous | Results accessible | Required infra |
 |---|---|---|---|---|
 | `workflow_call` | GHA only | ✅ | ✅ native outputs | None |
-| `workflow_dispatch` (raw) | Any | ❌ | ❌ | None |
-| `tas_orchestrator.py --sync` | Any CI/CD | ✅ | ✅ via stdout + exit code | Python + requests |
-| `tas_orchestrator.py` (async) | Any CI/CD | ❌ | ❌ (correlation_id printed) | Python + requests |
 | Official ADO template | Azure DevOps only | sync / async / raw (parameter) | ✅ via normalised output variables | GitHub service connection in the ADO project |
 | Official GHA composite action | GHA only | sync / async / raw (input) | ✅ via normalised step outputs | `INTEGRATION_TEST_PAT` secret in the caller's repo |
 

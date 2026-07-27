@@ -5,7 +5,7 @@ Test Automation Service (TAS) team for external consumers.
 
 | Template | Purpose |
 |---|---|
-| [`tas-integration-tests.yml`](./tas-integration-tests.yml) | All-in-one entry point to run TAS integration tests from an ADO pipeline. Supports the `sync`, `async` and `raw` invocation modes behind a single, parameterised stage. |
+| [`tas-integration-tests.yml`](./tas-integration-tests.yml) | All-in-one entry point to run TAS integration tests from an ADO pipeline. Supports the `sync`, `async` and `raw` invocation modes behind a single, parameterised steps template. |
 
 ---
 
@@ -34,6 +34,13 @@ observed in practice:
 
 The template normalises all of the above behind a stable public contract.
 
+Being a **steps** template (rather than a stages template), it also keeps the
+wrapping stage/job in the caller's hands. This means the caller controls the
+stage name, its `dependsOn` (e.g. gate the tests on a previous DEV deploy) and
+its `condition`, and can invoke the same template more than once in one
+pipeline (e.g. one job for e2e and one for integration) — each stage/job name
+only has to be unique.
+
 ---
 
 ## Quick start
@@ -52,12 +59,24 @@ resources:
       endpoint: pagoPA-projects     # your GitHub service connection name
 
 stages:
-  - template: .azuredevops/templates/tas-integration-tests.yml@tas
-    parameters:
-      testType: integration         # integration | e2e | api
-      suite: wisp
-      environment: uat
-      mode: sync                    # sync | async | raw
+  - stage: IntegrationTests
+    displayName: "TAS integration tests"
+    # dependsOn / condition are now fully under your control, e.g.:
+    # dependsOn: DeployDev
+    # condition: succeeded()
+    jobs:
+      - job: RunTAS
+        displayName: "Run TAS"
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - template: .azuredevops/templates/tas-integration-tests.yml@tas
+            parameters:
+              testType: integration      # integration | e2e | api
+              suite: wisp
+              environment: uat
+              mode: sync                 # sync | async | raw
+              githubToken: $(INTEGRATION_TEST_PAT)
 ```
 
 A complete consumer example (including the `Deploy` stage that reads the
@@ -68,7 +87,7 @@ The full integration guide, including prerequisites (PAT, variable
 group, GitHub service connection) and the rationale for each
 invocation mode, lives in
 [`../../docs/tas/tas-developer-guide.md`](../../docs/tas/tas-developer-guide.md) — see the
-"**Option 5 — Official Azure DevOps template**" section.
+"**Option 1 — Official Azure DevOps template**" section.
 
 ---
 
@@ -81,11 +100,15 @@ same tag.
 
 ### Stage / job / step names
 
-| Identifier | Value |
-|---|---|
-| Stage name | `TAS_IntegrationTests` |
-| Job name | `RunTAS` |
-| Step name (output publisher) | `tas` |
+Because this is a **steps** template, the stage and job that wrap it are
+declared and named by **you**, the caller. The template only owns the
+publishing step, whose name is configurable via `stepName`.
+
+| Identifier | Owner | Value |
+|---|---|---|
+| Stage name | caller | your choice (e.g. `IntegrationTests`) |
+| Job name | caller | your choice (e.g. `RunTAS`) |
+| Step name (output publisher) | template | `tas` (override with `stepName`) |
 
 ### Input parameters
 
@@ -97,11 +120,12 @@ same tag.
 | `mode` | string | `sync` | Invocation mode: `sync`, `async`, or `raw` |
 | `ref` | string | `main` | TAS repo branch/tag to run the tests from |
 | `tags` | string | `""` | Behave tag expression (e.g. `@runnable`, `@e2e`, `@a,@b`). Empty = workflow default (`@runnable`) |
+| `allure` | boolean | `false` | Also produce an Allure results directory (`allure-results/`) inside the artifact (extracted under `ARTIFACT_DIR` in sync mode). Render/host is left to the caller |
 | `githubToken` | string | — (required) | GitHub PAT (`public_repo` + `actions:read`) forwarded to the orchestrator as `TAS_GITHUB_TOKEN`. Source it from a secret pipeline variable / Key Vault–linked group |
 | `pythonVersion` | string | `3.11` | Python version (orchestrator-based modes only) |
 | `tasRepo` | string | `pagopa/pagopa-platform-integration-test` | TAS repository |
 | `workflowFile` | string | `test-automation-service.yml` | TAS workflow file |
-| `poolVmImage` | string | `ubuntu-latest` | Agent image |
+| `stepName` | string | `tas` | Name of the publishing step; the prefix used to read the output variables (`<stepName>.CORRELATION_ID`, …). Override when invoking the template multiple times in one job |
 | `verifyOrchestrator` | boolean | `true` | Verify the SHA-256 of `tas_orchestrator.py` after download |
 | `orchestratorSha256` | string | `""` | Pinned SHA-256 hex digest of `tas_orchestrator.py`. When set, it overrides the published sidecar and provides true SRI even if the `ref` is mutated |
 | `publishTests` | boolean | `true` | Publish JUnit results to the ADO "Tests" tab via `PublishTestResults@2` (sync mode only — silently ignored in async/raw) |
@@ -109,10 +133,16 @@ same tag.
 
 ### Output variables
 
-Read with:
+Read from a **downstream stage** with (substituting your own stage/job names):
 
 ```yaml
-$[ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.<NAME>'] ]
+$[ stageDependencies.<yourStage>.<yourJob>.outputs['tas.<NAME>'] ]
+```
+
+or from another **job in the same stage** with:
+
+```yaml
+$[ dependencies.<yourJob>.outputs['tas.<NAME>'] ]
 ```
 
 | Variable | `sync` | `async` | `raw` | Description |

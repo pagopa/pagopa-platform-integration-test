@@ -10,10 +10,10 @@ Funzionalità: Cancellazione di uno o più pagamenti
 #======================================================
 
 @CancellazioneDiUnooPiuPagamentiFdR_004_01
-@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSPDEMO")
+@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSP%20DEMO")
 @Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
 Scenario: Cancellazione di un pagamento all’interno dell’FdR
-  Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
+  Dato Il PSP "PSP DEMO" con pspId "PSP DEMO" è correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "INSERTED"
   E contiene totPayments pagamenti con amount sumPayments
   Quando si vuole cancellare n pagamenti con amount a
@@ -29,10 +29,10 @@ Scenario: Cancellazione di un pagamento all’interno dell’FdR
 #======================================================
 
 @CancellazioneDiUnooPiuPagamentiFdR_004_02
-@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSPDEMO")
+@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSP%20DEMO")
 @Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
 Scenario: Cancellazione di tutti i pagamenti all’interno dell’FdR 
-  Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
+  Dato Il PSP "PSP DEMO" con pspId "PSP DEMO" è correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "INSERTED"
   E contiene m pagamenti
   Quando si vuole cancellare tutti gli m pagamenti
@@ -49,7 +49,7 @@ Scenario: Cancellazione di tutti i pagamenti all’interno dell’FdR
 
 @CancellazioneDiUnooPiuPagamentiFdR_004_03
 Scenario: Cancellazione di pagamenti con FdR KO
-  Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
+  Dato Il PSP "PSP DEMO" con pspId "PSP DEMO" è correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-9999" non esiste a sistema
   Quando Il PSP invia una richiesta di cancellazione attraverso l'API "Delete one or more payments from an existing flow"
   Allora il sistema rispone con il codice di stato HTTP 404
@@ -59,10 +59,10 @@ Scenario: Cancellazione di pagamenti con FdR KO
 #======================================================
 
 @CancellazioneDiUnooPiuPagamentiFdR_004_04
-@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSPDEMO")
+@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSP%20DEMO")
 @Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
 Scenario:  Cancellazione di più pagamenti di quanti presenti nell' FdR
-  Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
+  Dato Il PSP "PSP DEMO" con pspId "PSP DEMO" è correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "INSERTED"
   E contiene totPayments pagamenti
   Quando si vuole cancellare n pagamenti con n>totPayments
@@ -73,9 +73,9 @@ Scenario:  Cancellazione di più pagamenti di quanti presenti nell' FdR
 #======================================================
 
 @CancellazioneDiUnooPiuPagamentiFdR_004_05
-@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSPDEMO")
+@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSP%20DEMO")
 Scenario:  Cancellazione dei pagamenti di un FdR in stato  CREATED
-  Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
+  Dato Il PSP "PSP DEMO" con pspId "PSP DEMO" è correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "CREATED"
   Quando Il PSP invia una richiesta di cancellazione dei pagamenti attraverso l'API "Delete one or more payments from an existing flow"
   Allora il PSP riceve un errore 400 Bad Request
@@ -85,11 +85,11 @@ Scenario:  Cancellazione dei pagamenti di un FdR in stato  CREATED
 #======================================================
 
 @CancellazioneDiUnooPiuPagamentiFdR_004_06
-@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSPDEMO")
+@Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSP%20DEMO")
 @Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
 @Pubblica_FdR
 Scenario: Cancellazione dei pagamenti di un FdR in stato PUBLISHED
- Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
+ Dato Il PSP "PSP DEMO" con pspId "PSP DEMO" è correttamente censito a sistema
  E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "PUBLISHED"
  Quando Il PSP invia una richiesta di cancellazione dei pagamenti attraverso l'API "Delete one or more payments from an existing flow"
  Allora il PSP riceve un errore 400 Bad Request
