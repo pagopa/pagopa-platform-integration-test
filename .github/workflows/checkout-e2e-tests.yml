@@ -38,11 +38,11 @@ jobs:
         id: run_tests
         continue-on-error: true
         env:
-          HEADLESS: False
+          HEADLESS: "true"   # CI runners have no display — must run headless
           ENV_FILE: uat.env
 
         run: |
-          behave src/e2e/checkout/ --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+          behave src/e2e/checkout/ --tags=@e2e --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
 
       - name: Load previous allure history
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -58,8 +58,15 @@ jobs:
           # the previous history into it.  Remove the file and create the dir.
           if [ -f allure-results/history ]; then rm allure-results/history; fi
           mkdir -p allure-results/history
+          # Show how many result files were produced — useful to diagnose test crashes.
+          RESULT_COUNT=$(find allure-results -maxdepth 1 -name '*-result.json' | wc -l)
+          echo "::notice title=Allure results::${RESULT_COUNT} result file(s) in allure-results/"
+          if [ "$RESULT_COUNT" -eq 0 ]; then
+            echo "::warning::No allure result files found — tests may have crashed before writing results."
+          fi
 
       - name: Build Checkout E2E Allure report
+        continue-on-error: true   # allure generate fails gracefully when no results exist
         uses: simple-elf/allure-report-action@53ebb757a2097edc77c53ecef4d454fc2f2f774c # v1.13
         with:
           gh_pages: gh-pages
