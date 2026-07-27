@@ -54,6 +54,7 @@ jobs:
     secrets: inherit
 
   create_confluence_report:
+    if: always()
     needs: [deploy]
     uses: ./.github/workflows/create_report_page.yml
     secrets: inherit
