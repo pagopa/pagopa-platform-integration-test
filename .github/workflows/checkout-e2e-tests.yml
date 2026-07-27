@@ -29,6 +29,11 @@ jobs:
           pip install -r requirements.txt
           sudo apt-get install -y jq
 
+      - name: Install Playwright
+        run: |
+          pip install playwright==1.55.0
+          python -m playwright install --with-deps chrome
+
       - name: Run Checkout E2E tests
         id: run_tests
         continue-on-error: true
