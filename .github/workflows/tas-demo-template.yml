@@ -1,12 +1,12 @@
 ##############################################################################
-# TAS DEMO — official composite action (Option 6)
+# TAS DEMO — official composite action (Option 2)
 #
 # Demonstrative workflow showing how a calling system integrates the
 # Test Automation Service via the official GHA composite action.
 #
 # A single step (`uses: ./.github/actions/tas-integration-tests`) replaces
-# the entire boilerplate that the orchestrator-async / sync / raw demos
-# implement by hand. The composite action exposes the same outputs
+# the entire boilerplate you would otherwise write by hand to call the
+# GitHub API. The composite action exposes the same outputs
 # regardless of `mode`, so the downstream `deploy` job reads from the
 # same path no matter how the tests were invoked.
 #
