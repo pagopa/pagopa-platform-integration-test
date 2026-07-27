@@ -229,15 +229,15 @@ def deploy_ai_analysis(artifact_dir, run_dir, last_history_dir, app, timestamp, 
 
 
 def main():
-    apps = ["wisp"]
     allure_apps = ["wisp", "openapi"]
     ai_model = os.environ.get("AI_MODEL", "openai/gpt-4.1")
     artifact_dir = os.path.join("artifacts") # /artifacts
     print(f"[INFO][main] artifact_dir {artifact_dir}")
     
     # Process Allure reports (wisp, openapi)
-    artifact_dirs = os.listdir(artifact_dir) 
+    artifact_dirs = sorted(os.listdir(artifact_dir))
     for dir in artifact_dirs:
+        processed = False
         for app in allure_apps:
             if app == "openapi":
                 root_dir = f"public/{OPENAPI_TEST_DIR}"
@@ -285,8 +285,11 @@ def main():
                 deploy_ai_analysis(artifact_dir, run_dir, last_history_dir, app, stats.get("start"), ai_model)
                 # build index page
                 build_index_page(root_dir)
+                processed = True
+                break
 
-                artifact_dirs.pop(artifact_dirs.index(dir)) # remove processed dir from list to avoid re-processing
+        if not processed:
+            print(f"[INFO][main] skipping non-Allure artifact directory: {dir}")
 
     
 
