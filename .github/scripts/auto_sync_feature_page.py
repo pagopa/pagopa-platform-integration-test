@@ -9,7 +9,7 @@ from pathlib import Path
 from src.utility.confluence_utils import create_confluence_auth, upload_page_content, get_existing_page_content
 
 
-PAGE_COMPONENTS_DIR = Path(__file__).resolve().parents[1] / 'page_components'
+PAGE_COMPONENTS_DIR = Path(__file__).resolve().parents[1] / 'page_components' / 'feature_page'
 
 context_block = ''
 scenario_header = ''
@@ -32,7 +32,7 @@ KEYWORD_PIPE = '|'
 LINK_PREFIX = '#link:'
 TABLE_CLOSURE = '</tr></tbody></table>'
 INLINE_CODE_PATTERN = re.compile(r'<\s*([A-Za-z0-9_]+)\s*>')
-SUITE_SCENARIO_ID = re.compile(r'^@([A-Za-z0-9]+_(?:[A-Za-z0-9]+)*)_(\d{3})_(\d{2})$')
+SUITE_SCENARIO_ID = re.compile(r'^@([A-Za-z0-9]+(?:[_A-Za-z0-9]+)*)_(\d{3})_(\d{2})$')
 EMPTY_TABLE_CELL = '<td data-highlight-colour="#ffffff"></td>'
 
 

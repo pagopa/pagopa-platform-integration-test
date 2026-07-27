@@ -27,32 +27,34 @@ failedRuns = list()
 TEST_CASES_DIR = 'data/test-cases'
 MISSING_DATA = 'N/A'
 PROCESSED_REPORTS_DIR = 'tmp_processed_reports'
+PAGE_COMPONENTS_DIR = Path(__file__).resolve().parents[1] / 'page_components' / 'test_report_page'
+
 
 
 def read_page_components():
   page_components = dict()
   try:
     # use headerOnlyPage instead of actually calling the API to get the content of the page
-    with open('./report_page_components/title.txt', 'r', encoding='utf-8') as f:
+    with open(PAGE_COMPONENTS_DIR / 'title.txt', 'r', encoding='utf-8') as f:
       page_components['title'] = f.read().strip()
 
     # use headerOnlyPage instead of actually calling the API to get the content of the page
-    with open('./report_page_components/go_table.txt', 'r', encoding='utf-8') as f:
+    with open(PAGE_COMPONENTS_DIR / 'go_table.txt', 'r', encoding='utf-8') as f:
       page_components['go_table'] = f.read().strip()
 
     # use headerOnlyPage instead of actually calling the API to get the content of the page
-    with open('./report_page_components/main_table.txt', 'r', encoding='utf-8') as f:
+    with open(PAGE_COMPONENTS_DIR / 'main_table.txt', 'r', encoding='utf-8') as f:
       page_components['main_table'] = f.read().strip()
 
-    with open('./report_page_components/table_header.txt', 'r', encoding='utf-8') as f:
+    with open(PAGE_COMPONENTS_DIR / 'table_header.txt', 'r', encoding='utf-8') as f:
       page_components['table_header'] = f.read().strip()
 
-    with open('./report_page_components/table_row.txt', 'r', encoding='utf-8') as f:
+    with open(PAGE_COMPONENTS_DIR / 'table_row.txt', 'r', encoding='utf-8') as f:
       page_components['table_row'] = f.read().strip()
 
     return page_components
   except Exception as e:
-    raise RuntimeError(f"Failed to read page components from ./report_page_components. Error: {str(e)}")
+    raise RuntimeError(f"Failed to read page components from {PAGE_COMPONENTS_DIR}. Error: {str(e)}")
 
 # use headerOnlyPage instead of actually calling the API to get the content of the page
 def read_stats(stats_file):
