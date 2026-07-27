@@ -52,6 +52,10 @@ parameters:
     displayName: "Behave tag expression (e.g. @runnable, @e2e); empty = workflow default (@runnable)"
     type: string
     default: ""
+  - name: allure
+    displayName: "Also produce Allure results (allure-results/) in the artifact"
+    type: boolean
+    default: false
   - name: verifyOrchestrator
     displayName: "Verify tas_orchestrator.py SHA-256 integrity (recommended)"
     type: boolean
@@ -60,6 +64,10 @@ parameters:
     displayName: "Publish JUnit results to the 'Tests' tab (sync only)"
     type: boolean
     default: true
+  - name: stepName
+    displayName: "Output publishing step name (prefix for the output variables)"
+    type: string
+    default: tas
 
 # ── Remote template source ──────────────────────────────────────────────────
 # 'tas' is a logical alias used in the 'template:' directive below.
@@ -81,40 +89,80 @@ resources:
       endpoint: pagoPA-projects   # ← GitHub service connection name (Project settings → Service connections)
 
 stages:
-  # ── Stage 1: Integration tests (provided entirely by the template) ───────
-  - template: templates/qa-tas/tas-integration-test.yml@tas
-    parameters:
-      testType:           ${{ parameters.testType }}
-      suite:              ${{ parameters.suite }}
-      environment:        ${{ parameters.environment }}
-      mode:               ${{ parameters.mode }}
-      ref:                ${{ parameters.ref }}
-      verifyOrchestrator: ${{ parameters.verifyOrchestrator }}
-      publishTests:       ${{ parameters.publishTests }}
-      # Behave tag filter. Leave empty to keep the workflow default (@runnable,
-      # used by the integration suites). Override to target other suites, e.g.
-      # set 'tags: @e2e' to run the e2e checkout suite (testType: e2e).
-      tags:               ${{ parameters.tags }}
-      # GitHub PAT forwarded to the orchestrator as GITHUB_TOKEN. Source it
-      # from a SECRET pipeline variable (here 'INTEGRATION_TEST_PAT') so it is
-      # masked in the logs — do not paste the raw token into this file.
-      githubToken:        $(INTEGRATION_TEST_PAT)
-      # Optional overrides — exposed inline because they are typically
-      # set-once-and-forget (not toggled from the portal at run-time):
-      # pythonVersion: "3.11"
-      # poolVmImage:   "ubuntu-latest"
-      # testRunTitle:  ""                # default — auto-generated as "TAS — <suite> / <env> (<ref>)"
-      #
-      # Supply-chain integrity, pinned mode (true SRI). When set, the sidecar
-      # verification is replaced by a check against this explicit digest.
-      # Compute it once against the version you trust and bake it in:
-      #   curl -sSfL https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/refs/tags/v1/scripts/tas_orchestrator.py | sha256sum
-      # orchestratorSha256: "a68b6c43c98517352c6d182df4a97b67e33a94ed79ae56949b1f6e6a179b5fe1"
+  # ── Stage 0: Deploy to DEV ───────────────────────────────────
+  # Runs first. Demonstrates that the TAS tests can now be gated on an
+  # upstream stage: because the template is a STEPS template wrapped in a
+  # stage you own, you are free to add `dependsOn` on the TAS stage below
+  # (this was impossible with the previous stages-based template).
+  - stage: DeployDev
+    displayName: "Deploy to DEV"
+    jobs:
+      - job: DeployDevApp
+        displayName: "Deploy application to DEV"
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - script: echo "Deploying application to DEV..."
+            displayName: "Deploy to DEV step"
+
+  # ── Stage 1: Integration tests ──────────────────────────────────
+  # The template is a STEPS template, so you wrap it in a stage/job you own.
+  # This gives you full control over the stage name and its `dependsOn`
+  # (here we gate the tests on the DEV deploy above), and lets you invoke the
+  # template more than once in the same pipeline (e.g. one job for e2e and one
+  # for integration) — the only rule is that each stage/job name is unique.
+  - stage: TAS_IntegrationTests
+    displayName: "TAS integration tests"
+    dependsOn: DeployDev            # ← gate the tests on the DEV deploy stage above
+    condition: succeeded()
+    jobs:
+      - job: RunTAS
+        displayName: "Run TAS"
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - template: templates/qa-tas/tas-integration-test.yml@tas
+            parameters:
+              testType:           ${{ parameters.testType }}
+              suite:              ${{ parameters.suite }}
+              environment:        ${{ parameters.environment }}
+              mode:               ${{ parameters.mode }}
+              ref:                ${{ parameters.ref }}
+              verifyOrchestrator: ${{ parameters.verifyOrchestrator }}
+              publishTests:       ${{ parameters.publishTests }}
+              # Behave tag filter. Leave empty to keep the workflow default
+              # (@runnable, used by the integration suites). Override to target
+              # other suites, e.g. 'tags: @e2e' for the e2e checkout suite.
+              tags:               ${{ parameters.tags }}
+              # Also emit an Allure results directory (allure-results/) inside
+              # the artifact. In sync mode it is extracted under ARTIFACT_DIR;
+              # rendering it to HTML is left to the caller (allure generate).
+              allure:             ${{ parameters.allure }}
+              # GitHub PAT forwarded to the orchestrator as TAS_GITHUB_TOKEN.
+              # Source it from a SECRET pipeline variable (here
+              # 'INTEGRATION_TEST_PAT') so it is masked in the logs — do not
+              # paste the raw token into this file.
+              githubToken:        $(INTEGRATION_TEST_PAT)
+              # Name of the publishing step; also the prefix used to read the
+              # output variables in Stage 2 below. Override it when you invoke
+              # the template more than once in the SAME job (each step name
+              # must be unique).
+              stepName:           ${{ parameters.stepName }}
+              # Optional overrides — exposed inline because they are typically
+              # set-once-and-forget (not toggled from the portal at run-time):
+              # pythonVersion: "3.11"
+              # testRunTitle:  ""    # default — auto-generated as "TAS — <suite> / <env> (<ref>)"
+              #
+              # Supply-chain integrity, pinned mode (true SRI). When set, the
+              # sidecar verification is replaced by a check against this digest.
+              # Compute it once against the version you trust and bake it in:
+              #   curl -sSfL https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/refs/tags/v1/scripts/tas_orchestrator.py | sha256sum
+              # orchestratorSha256: "a68b6c43c98517352c6d182df4a97b67e33a94ed79ae56949b1f6e6a179b5fe1"
 
   # ── Stage 2: Deploy ───────────────────────────────────────────────────────
-  # In sync mode, the template stage fails on test failure, so 'succeeded()'
-  # blocks the deploy. In async/raw modes the template stage only reflects
-  # the dispatch outcome, so deploy proceeds in parallel with the tests.
+  # In sync mode, the tests job fails on test failure, so 'succeeded()' on the
+  # TAS_IntegrationTests stage blocks the deploy. In async/raw modes the job
+  # only reflects the dispatch outcome, so deploy proceeds in parallel.
   - stage: Deploy
     displayName: "Deploy"
     dependsOn: TAS_IntegrationTests
@@ -125,10 +173,13 @@ stages:
         pool:
           vmImage: ubuntu-latest
         variables:
-          # Output variables exposed by the template (step name normalised to 'tas'):
-          CORRELATION_ID: $[ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.CORRELATION_ID'] ]
-          RUN_ID:         $[ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.RUN_ID'] ]
-          RUN_URL:        $[ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.RUN_URL'] ]
+          # Output variables published by the template step (name = stepName,
+          # default 'tas') inside the RunTAS job of the TAS_IntegrationTests
+          # stage declared above. The compile-time ${{ parameters.stepName }}
+          # keeps this path in sync with the stepName passed to the template:
+          CORRELATION_ID: $[ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['${{ parameters.stepName }}.CORRELATION_ID'] ]
+          RUN_ID:         $[ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['${{ parameters.stepName }}.RUN_ID'] ]
+          RUN_URL:        $[ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['${{ parameters.stepName }}.RUN_URL'] ]
         steps:
           - script: |
               echo "Correlation ID : $(CORRELATION_ID)"

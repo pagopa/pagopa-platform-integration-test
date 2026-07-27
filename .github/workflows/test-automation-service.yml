@@ -35,6 +35,11 @@ on:
         required: false
         type: string
         default: "@runnable"
+      allure:
+        description: "Also produce an Allure results directory (allure-results/) inside the test-results artifact"
+        required: false
+        type: boolean
+        default: false
     outputs:
       passed:
         description: "Number of passed scenarios"
@@ -90,6 +95,11 @@ on:
         description: "Behave tag expression to filter scenarios (e.g. @runnable, @e2e). Empty = run all scenarios in the path."
         required: false
         default: "@runnable"
+      allure:
+        description: "Also produce an Allure results directory (allure-results/) inside the test-results artifact"
+        required: false
+        type: boolean
+        default: false
 
 # The run-name includes the correlation_id so the CLI bridge can reliably locate
 # this run via the API without depending on timestamps.
@@ -210,6 +220,17 @@ jobs:
             echo "::notice title=Behave tags::(none — running all scenarios)"
           fi
 
+          # Optional Allure results directory (opt-in via the 'allure' input).
+          # allure-behave is already a dependency; the formatter is additive —
+          # JUnit + JSON are always produced, so gating and the ADO Tests tab
+          # are unaffected. Appended AFTER the json format/outfile pair so it
+          # lands on its own outfile slot (allure-results/).
+          ALLURE_ARG=()
+          if [ "${ALLURE}" = "true" ]; then
+            ALLURE_ARG=(-f allure_behave.formatter:AllureFormatter -o allure-results)
+            echo "::notice title=Allure::allure-results/ will be produced"
+          fi
+
           # Some suites (e.g. e2e checkout) load per-environment configuration
           # from a <env>.env file, resolved via the ENV_FILE variable in their
           # environment.py. Expose it automatically when a matching file exists
@@ -225,11 +246,13 @@ jobs:
           behave ${{ steps.test_path.outputs.path }} \
             "${TAGS_ARG[@]}" \
             --format json --outfile behave-results.json \
+            "${ALLURE_ARG[@]}" \
             --junit --junit-directory=junit \
             --summary --show-timings -v
         env:
           TARGET_ENV: ${{ inputs.environment }}
           BEHAVE_TAGS: ${{ inputs.tags }}
+          ALLURE: ${{ inputs.allure }}
 
       - name: Parse results and generate summary artifact
         id: summary
@@ -325,6 +348,7 @@ jobs:
             behave-results.json
             test-summary.json
             junit/
+            allure-results/
           if-no-files-found: warn
 
       # This step fails the job when scenarios have failed, ensuring that

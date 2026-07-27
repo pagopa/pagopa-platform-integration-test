@@ -6,7 +6,7 @@
 # entry point. Consumers reference this action from any job in their own
 # workflow via `uses: pagopa/pagopa-platform-integration-test/.github/actions/tas-integration-tests@<ref>`.
 #
-# For native `workflow_call` integration (Option 1 in the developer guide)
+# For native `workflow_call` integration (Option 3 in the developer guide)
 # use `.github/workflows/test-automation-service.yml` directly — it remains
 # the lightest and most idiomatic option when the caller is GitHub Actions
 # and the tests are already merged on `main`.
@@ -74,6 +74,12 @@ inputs:
       (@runnable).
     required: false
     default: ""
+  allure:
+    description: >-
+      Also produce an Allure results directory (allure-results/) inside the
+      test-results artifact. 'true' | 'false'.
+    required: false
+    default: "false"
   tas_repo:
     description: "TAS repository (rarely overridden)"
     required: false
@@ -203,6 +209,7 @@ runs:
         TAS_CALLER_ID: ${{ inputs.caller_id != '' && inputs.caller_id || format('{0}/{1}', github.repository, github.run_id) }}
         TAS_CORRELATION_ID: ${{ inputs.correlation_id != '' && inputs.correlation_id || format('{0}-{1}', github.run_id, github.run_attempt) }}
         TAS_TAGS: ${{ inputs.tags }}
+        TAS_ALLURE: ${{ inputs.allure }}
       run: |
         # `pipefail` only — we want to capture orchestrator exit codes AND
         # publish outputs before propagating the failure to the step.
@@ -212,6 +219,12 @@ runs:
           # $1 = name, $2 = value (may be empty)
           printf '%s=%s\n' "$1" "$2" >> "$GITHUB_OUTPUT"
         }
+
+        # Forward the Allure toggle as a CLI flag only when enabled (sync/async).
+        ALLURE_ARG=()
+        if [ "$TAS_ALLURE" = "true" ]; then
+          ALLURE_ARG=(--allure)
+        fi
 
         case "$TAS_MODE" in
           sync)
@@ -225,6 +238,7 @@ runs:
               --caller-id "$TAS_CALLER_ID" \
               --correlation-id "$TAS_CORRELATION_ID" \
               --tags "$TAS_TAGS" \
+              "${ALLURE_ARG[@]}" \
               --sync \
               | tee tas_output.txt
             EXIT_CODE=${PIPESTATUS[0]}
@@ -253,6 +267,7 @@ runs:
               --caller-id "$TAS_CALLER_ID" \
               --correlation-id "$TAS_CORRELATION_ID" \
               --tags "$TAS_TAGS" \
+              "${ALLURE_ARG[@]}" \
               | tee tas_output.txt
 
             CID="$(grep -E '^CORRELATION_ID=' tas_output.txt | tail -n1 | cut -d= -f2-)"
@@ -284,6 +299,11 @@ runs:
               TAGS_JSON=", \"tags\": \"${TAS_TAGS}\""
             fi
 
+            ALLURE_JSON=""
+            if [ "${TAS_ALLURE}" = "true" ]; then
+              ALLURE_JSON=", \"allure\": \"true\""
+            fi
+
             HTTP=$(curl -s -o /dev/null -w "%{http_code}" \
               -X POST \
               -H "Accept: application/vnd.github+json" \
@@ -297,7 +317,7 @@ runs:
                   \"test_suite\": \"${TAS_SUITE}\",
                   \"environment\": \"${TAS_ENV}\",
                   \"caller_id\": \"${TAS_CALLER_ID}\",
-                  \"correlation_id\": \"${CID}\"${TAGS_JSON}
+                  \"correlation_id\": \"${CID}\"${TAGS_JSON}${ALLURE_JSON}
                 }
               }")
 
