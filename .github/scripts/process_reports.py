@@ -8,6 +8,7 @@ from pathlib import Path
 
 OPENAPI_TEST_DIR = 'openapi-fdr-tests'
 PROCESSED_REPORTS_DIR = 'tmp_processed_reports'
+OPENAPI_FDR_TESTS = 'openapi-fdr'
 
 
 def extract_stats(artifact_app_dir):
@@ -276,6 +277,8 @@ def main():
                 print(f"[INFO][main] copy everything from {source_dir} to {last_history_dir}")
                 shutil.copytree(source_dir, last_history_dir)
                 print(f"[INFO][main] copy everything from {source_dir} to {tmp_reports_dir}")
+                if app == "openapi":
+                    app = OPENAPI_FDR_TESTS
                 shutil.copytree(source_dir, os.path.join(f'public/{PROCESSED_REPORTS_DIR}/{app}-tests-{env}'))
 
                 # render AI analysis page (no-op when artifact missing)
