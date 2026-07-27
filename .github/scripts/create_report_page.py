@@ -13,7 +13,6 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 SCRIPTS_ROOT = os.path.dirname(os.path.realpath(__file__))
 from src.utility.confluence_utils import create_confluence_auth, create_confluence_page
-from src.conf.configuration import load_settings
 
 run = {
   'scope': '',
