@@ -124,7 +124,7 @@ def build_page_content(data,feature_file):
                 if SUITE_SCENARIO_ID.match(line):
                     scenario_id = line.split('_').pop()
                 elif line.startswith(KEYWORD_SCENARIO):
-                    data += scenario_header.replace("{scenario_title}", line.replace('Scenario',f'Scenario {scenario_id}')).replace("{link}", link_to_add)
+                    data += scenario_header.replace("{scenario_title}", line.replace('Scenario',f'Scenario {scenario_id}')).replace("{link}", "\n" + link_to_add if link_to_add else "")
                     data += table_header
                 elif line.startswith(LINK_PREFIX):
                     link_vars = line[len(LINK_PREFIX):].split('|')
