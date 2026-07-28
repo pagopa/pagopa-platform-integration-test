@@ -24,11 +24,11 @@ def load_settings(config_folder_root: str, config_file_name: str = "config.yaml"
     """Load settings from a YAML configuration file using Dynaconf.
 
     Args:
-        config_folder_root (str): The root folder where the configuration file is located. (example: config_folder_root = os.path.join(os.path.dirname(os.path.abspath(__file__))))
+        config_folder_root (str): The root folder where the configuration file is located. (example: config_folder_root = os.path.join(os.path.dirname(os.path.abspath(__file__))) to get the path of the current folder.)
 
         config_file_name (str, optional): The name of the configuration file. Defaults to "config.yaml".
         
-        target_section (str, optional): The target section desired inside the settings file. Defaults to env var TARGET_ENV or "uat" if not set.
+        target_section (str, optional): The target section desired inside the settings file (example: dev, uat, wisp, fdr), returns the settings for that section only. Defaults to "" (empty string). If empty, the entire settings file will be returned.
         
         env_var_prefix (str, optional): The prefix for environment variables. Defaults to "" (empty string). If empty, no prefix will be used.
 
@@ -41,11 +41,8 @@ def load_settings(config_folder_root: str, config_file_name: str = "config.yaml"
     )
 
     if target_section:
-        settings = settings[str(os.environ.get(target_section)).lower()]
-    else:
-        if 'TARGET_ENV' not in os.environ:
-            os.environ['TARGET_ENV'] = 'uat'
-        settings = settings[str(os.environ['TARGET_ENV']).lower()]
+        settings = settings[str(target_section)]
+   
 
     return settings
 
