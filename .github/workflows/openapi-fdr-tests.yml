@@ -76,15 +76,15 @@ jobs:
       env:
           SUBFOLDER: openapi-fdr-tests
       run: |
-          if [ -d "gh-pages/${SUBFOLDER}/last-history" ]; then
+          if [ -d "gh-pages/${SUBFOLDER}/last-history-${{ matrix.env }}" ]; then
             echo "Loading previous history for trend charts..."
-            cp -r "gh-pages/${SUBFOLDER}/last-history/." allure-results/history/
+            cp -r "gh-pages/${SUBFOLDER}/last-history-${{ matrix.env }}/." allure-results/history/
           fi
           allure generate allure-results --clean -o allure-report-openapi
           mkdir -p "allure-history/${SUBFOLDER}/${{ github.run_number }}"
           cp -r allure-report-openapi/. "allure-history/${SUBFOLDER}/${{ github.run_number }}/" || true
-          mkdir -p "allure-history/${SUBFOLDER}/last-history"
-          cp -r allure-report-openapi/history/. "allure-history/${SUBFOLDER}/last-history/" || true
+          mkdir -p "allure-history/${SUBFOLDER}/last-history-${{ matrix.env }}"
+          cp -r allure-report-openapi/history/. "allure-history/${SUBFOLDER}/last-history-${{ matrix.env }}/" || true
           echo "Report generated: $(ls allure-report-openapi | wc -l) top-level entries"
 
     - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
