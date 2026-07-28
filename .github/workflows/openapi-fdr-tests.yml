@@ -55,15 +55,33 @@ jobs:
         ref: gh-pages
         path: gh-pages
 
-    - name: Build OpenApi Allure report
-      uses: simple-elf/allure-report-action@385367cde61ac68c2568a117f7579f7f148dc459 # v1.15
-      with:
-          gh_pages: gh-pages
-          allure_results: schemathesis-raw-test-result
-          allure_report: allure-report-openapi
-          allure_history: allure-history
-          subfolder: openapi-tests
-          keep_reports: 30
+    - name: Prepare allure-results for report generation
+      if: always()
+      run: |
+          if [ -f allure-results/history ]; then rm allure-results/history; fi
+          mkdir -p allure-results/history
+          RESULT_COUNT=$(find allure-results -maxdepth 1 -name '*-result.json' | wc -l)
+          echo "::notice title=Allure results::${RESULT_COUNT} result file(s) in allure-results/"
+          if [ "$RESULT_COUNT" -eq 0 ]; then
+            echo "::warning::No allure result files found — tests may have crashed before writing results."
+          fi
+
+    - name: Build FdR Allure report
+      if: always()
+      continue-on-error: true
+      env:
+          SUBFOLDER: openapi-fdr-tests
+      run: |
+          if [ -d "gh-pages/${SUBFOLDER}/last-history" ]; then
+            echo "Loading previous history for trend charts..."
+            cp -r "gh-pages/${SUBFOLDER}/last-history/." allure-results/history/
+          fi
+          allure generate allure-results --clean -o allure-report-fdr
+          mkdir -p "allure-history/${SUBFOLDER}/${{ github.run_number }}"
+          cp -r allure-report-fdr/. "allure-history/${SUBFOLDER}/${{ github.run_number }}/" || true
+          mkdir -p "allure-history/${SUBFOLDER}/last-history"
+          cp -r allure-report-fdr/history/. "allure-history/${SUBFOLDER}/last-history/" || true
+          echo "Report generated: $(ls allure-report-fdr | wc -l) top-level entries"
 
     - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
