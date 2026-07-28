@@ -66,6 +66,10 @@ jobs:
             echo "::warning::No allure result files found — tests may have crashed before writing results."
           fi
 
+    - name: Install Allure CLI
+      if: always()
+      run: npm install -g allure-commandline@2.27.0
+
     - name: Build FdR Allure report
       if: always()
       continue-on-error: true
