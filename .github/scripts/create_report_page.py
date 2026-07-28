@@ -13,6 +13,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 SCRIPTS_ROOT = os.path.dirname(os.path.realpath(__file__))
 from src.utility.confluence_utils import create_confluence_auth, create_confluence_page
+from src.conf.configuration import load_settings
 
 run = {
   'scope': '',
@@ -165,7 +166,7 @@ def main():
     print(f"[INFO][main] No processed reports found in {processed_dir}. Exiting.")
     return
   # Read the last history data from stats.json
-  full_config = Dynaconf(settings_files=['config.yaml'])
+  full_config = load_settings(config_folder_root=SCRIPTS_ROOT)
   for dir in sorted(os.listdir(processed_dir)):
     run_dir = os.path.join(processed_dir, dir)
     if os.path.isdir(run_dir):
