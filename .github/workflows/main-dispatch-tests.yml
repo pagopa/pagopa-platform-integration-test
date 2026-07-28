@@ -23,6 +23,12 @@ jobs:
     if: |
       github.event_name == 'schedule' ||
       github.event.inputs.services == 'wisp' || github.event.inputs.services == 'all'
+    # wisp-tests.yml calls ai-report-analysis.yml, which requires 'actions: write'.
+    # Down a reusable-workflow chain permissions can only be reduced, never elevated,
+    # so the top-level caller must grant it here.
+    permissions:
+      contents: read
+      actions: write
     uses: ./.github/workflows/wisp-tests.yml
     secrets: inherit
 
@@ -30,6 +36,8 @@ jobs:
     if: |
       github.event_name == 'schedule' ||
       github.event.inputs.services == 'checkout' || github.event.inputs.services == 'all'
+    permissions:
+      contents: read
     uses: ./.github/workflows/checkout-e2e-tests.yml
     secrets: inherit
 
@@ -49,7 +57,12 @@ jobs:
 
   deploy:
     if: always()
-    needs: [trigger_wisp, trigger_checkout_e2e, trigger_openapi_fdr] #, trigger_fdr]
+    # deploy-test-report.yml pushes to gh-pages via peaceiris (needs contents: write)
+    # and downloads run artifacts (needs actions: read)
+    needs: [trigger_wisp, trigger_checkout_e2e, trigger_openapi_fdr]
+    permissions:
+      contents: write
+      actions: read
     uses: ./.github/workflows/deploy-test-report.yml
     secrets: inherit
 

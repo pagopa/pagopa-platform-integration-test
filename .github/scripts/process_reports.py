@@ -229,7 +229,7 @@ def deploy_ai_analysis(artifact_dir, run_dir, last_history_dir, app, timestamp, 
 
 
 def main():
-    allure_apps = ["wisp", "openapi"]
+    allure_apps = ["wisp", "checkout-e2e", "openapi"]
     ai_model = os.environ.get("AI_MODEL", "openai/gpt-4.1")
     artifact_dir = os.path.join("artifacts") # /artifacts
     print(f"[INFO][main] artifact_dir {artifact_dir}")

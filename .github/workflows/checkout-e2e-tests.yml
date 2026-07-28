@@ -1,4 +1,4 @@
-name: Run WISP Integration Tests
+name: Run Checkout E2E Tests
 
 on:
   workflow_call:
@@ -7,7 +7,7 @@ permissions:
   contents: read
 
 jobs:
-  wisp_tests:
+  checkout_e2e_tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -29,15 +29,20 @@ jobs:
           pip install -r requirements.txt
           sudo apt-get install -y jq
 
+      - name: Install Playwright
+        run: |
+          pip install playwright==1.55.0
+          python -m playwright install --with-deps chrome
+
       - name: Run Checkout E2E tests
         id: run_tests
         continue-on-error: true
         env:
-          HEADLESS: False
+          HEADLESS: "true"   # CI runners have no display — must run headless
           ENV_FILE: uat.env
 
         run: |
-          behave src/e2e/checkout/ --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+          behave src/e2e/checkout/ --tags=@e2e --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
 
       - name: Load previous allure history
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -45,18 +50,54 @@ jobs:
           ref: gh-pages
           path: gh-pages
 
+      - name: Prepare allure-results for report generation
+        if: always()
+        run: |
+          # allure-behave may create allure-results/history as a plain file;
+          # simple-elf/allure-report-action needs it to be a directory to copy
+          # the previous history into it.  Remove the file and create the dir.
+          if [ -f allure-results/history ]; then rm allure-results/history; fi
+          mkdir -p allure-results/history
+          # Show how many result files were produced — useful to diagnose test crashes.
+          RESULT_COUNT=$(find allure-results -maxdepth 1 -name '*-result.json' | wc -l)
+          echo "::notice title=Allure results::${RESULT_COUNT} result file(s) in allure-results/"
+          if [ "$RESULT_COUNT" -eq 0 ]; then
+            echo "::warning::No allure result files found — tests may have crashed before writing results."
+          fi
+
+      - name: Install Allure CLI
+        if: always()
+        run: npm install -g allure-commandline@2.27.0
+
       - name: Build Checkout E2E Allure report
-        uses: simple-elf/allure-report-action@385367cde61ac68c2568a117f7579f7f148dc459 # v1.15
-        with:
-          gh_pages: gh-pages
-          allure_results: allure-results
-          allure_report: allure-report-checkout-e2e
-          allure_history: allure-history
-          subfolder: checkout-e2e-tests
-          keep_reports: 30
+        if: always()
+        continue-on-error: true
+        env:
+          SUBFOLDER: checkout-e2e-tests
+        run: |
+          # Seed allure-results/history with the previous run's history so
+          # trend charts are populated. Skip gracefully on first run.
+          if [ -d "gh-pages/${SUBFOLDER}/last-history" ]; then
+            echo "Loading previous history for trend charts..."
+            cp -r "gh-pages/${SUBFOLDER}/last-history/." allure-results/history/
+          fi
+
+          # Generate the HTML report.
+          allure generate allure-results --clean -o allure-report-checkout-e2e
+
+          # Save the new history under allure-history/ so the next run can
+          # seed its trend charts (same layout the deploy workflow expects).
+          mkdir -p "allure-history/${SUBFOLDER}/${{ github.run_number }}"
+          cp -r allure-report-checkout-e2e/. "allure-history/${SUBFOLDER}/${{ github.run_number }}/" || true
+          mkdir -p "allure-history/${SUBFOLDER}/last-history"
+          cp -r allure-report-checkout-e2e/history/. "allure-history/${SUBFOLDER}/last-history/" || true
+
+          echo "Report generated: $(ls allure-report-checkout-e2e | wc -l) top-level entries"
 
       - name: Upload Checkout E2E report artifact
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: allure-report-checkout-e2e
+          name: allure-report-checkout-e2e-uat
           path: allure-report-checkout-e2e
+          if-no-files-found: warn
