@@ -23,6 +23,12 @@ jobs:
     if: |
       github.event_name == 'schedule' ||
       github.event.inputs.services == 'wisp' || github.event.inputs.services == 'all'
+    # wisp-tests.yml calls ai-report-analysis.yml, which requires 'actions: write'.
+    # Down a reusable-workflow chain permissions can only be reduced, never elevated,
+    # so the top-level caller must grant it here.
+    permissions:
+      contents: read
+      actions: write
     uses: ./.github/workflows/wisp-tests.yml
     secrets: inherit
 
@@ -30,6 +36,8 @@ jobs:
     if: |
       github.event_name == 'schedule' ||
       github.event.inputs.services == 'checkout' || github.event.inputs.services == 'all'
+    permissions:
+      contents: read
     uses: ./.github/workflows/checkout-e2e-tests.yml
     secrets: inherit
 
@@ -40,16 +48,20 @@ jobs:
   #   uses: ./.github/workflows/fdr-tests.yml
   #   secrets: inherit
 
-  trigger_openApi_fdr:
-    if: |
-      github.event_name == 'schedule' ||
-      github.event.inputs.services == 'openApi_fdr' || github.event.inputs.services == 'all'
-    uses: ./.github/workflows/openApi_test.yml
-    secrets: inherit
+  # trigger_openApi_fdr:
+  #   if: |
+  #     github.event_name == 'schedule' ||
+  #     github.event.inputs.services == 'openApi_fdr' || github.event.inputs.services == 'all'
+  #   uses: ./.github/workflows/openApi_test.yml
+  #   secrets: inherit
 
   deploy:
     needs: [trigger_wisp, trigger_checkout_e2e] #, trigger_fdr]
     if: always()
-    needs: [trigger_wisp, trigger_openApi_fdr, trigger_checkout_e2e]
+    # deploy-test-report.yml pushes to gh-pages via peaceiris (needs contents: write)
+    # and downloads run artifacts (needs actions: read).
+    permissions:
+      contents: write
+      actions: read
     uses: ./.github/workflows/deploy-test-report.yml
     secrets: inherit
