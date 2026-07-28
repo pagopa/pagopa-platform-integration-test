@@ -1,4 +1,4 @@
-#3212745173 
+#3212745173
 #language:it
 @ConversioneDaXMLaJSON_008
 Funzionalità: Ccnversione da XML a JSON di un Fdr
