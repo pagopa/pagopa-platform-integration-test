@@ -1,15 +1,41 @@
 import json
+import os
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from jsonschema import ValidationError
 from jsonschema.validators import validator_for
 from referencing import Registry
 import referencing.jsonschema as referencing_jsonschema
-from src.conf.configuration import secrets
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT = os.path.dirname(SCRIPT_DIR)
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
 
+from src.conf.configuration import load_secrets
+from src.conf.configuration import load_settings
+from src.utility.constants import INTEGRATION_ROOT
 from src.utility.rest.rest_auth_factory import build_api_key_auth
 from src.utility.rest.rest_client_factory import build_rest_client
+
+def _build_runtime_secrets() -> dict:
+    """Load runtime secrets with suite/env fallbacks for standalone script execution."""
+    target_env = os.getenv("TARGET_ENV") or "uat"
+    suite_name = os.getenv("suite") or target_env
+
+    os.environ["TARGET_ENV"] = str(target_env)
+    os.environ["suite"] = str(suite_name)
+
+    runtime_settings = load_settings(config_folder_root=str(INTEGRATION_ROOT))
+    return load_secrets(
+        suite=suite_name,
+        target_env=target_env,
+        settings=runtime_settings,
+    )
+
+
+secrets = _build_runtime_secrets()
 
 SERVERS = 'servers'
 URL = 'url'
@@ -204,6 +230,7 @@ def test_apis(apis, rest_client, data):
 
 
 def main():
+    """Iterate fetched OpenAPI files, execute requests, and persist validation results."""
     for file in Path('tmp_fetched').glob('*.json'):
         with open(file, 'r') as f:
             try:
