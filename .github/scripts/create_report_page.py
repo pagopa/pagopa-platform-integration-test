@@ -81,7 +81,7 @@ def read_stats(stats_file,suite_test_folder):
         run['start'] = start
         run['time'] = start.split('_')[1]
         run['date'] = start.split('_')[0]
-        run['allure_page'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}', start)
+        run['allure_page'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}', start + "-" + run['env'])
     print(f"[INFO][read_stats] Last history: failed={run['failed']}, duration={run['duration']}, time={run['time']}")
 
 
@@ -109,7 +109,7 @@ def read_runs(dir, suite_test_folder):
 
       if run_obj.get('status') == 'failed':
         run_stats = dict()
-        run_stats['uid'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}',run["start"] )
+        run_stats['uid'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}',run["start"] + "-" + run['env'])
         for stage in run_obj.get('testStage', {}).get('steps', []):
           if stage.get('status') == 'failed':
             run_stats['result'] = stage.get('statusMessage')
