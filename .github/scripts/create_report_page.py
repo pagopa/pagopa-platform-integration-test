@@ -196,7 +196,7 @@ def main():
       if os.path.exists(os.path.join(run_dir, "stats.json")):
         try:
             read_stats(os.path.join(run_dir, "stats.json"), suite_test_folder)
-            read_runs(os.path.join(run_dir, "test-cases"), suite_test_folder)
+            read_runs(os.path.join(run_dir, "data/test-cases"), suite_test_folder)
             page_components = read_page_components()
             suite_config = read_config(suite, full_config)
             page = build_page(suite, page_components, suite_config)
