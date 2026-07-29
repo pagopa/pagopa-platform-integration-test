@@ -1,0 +1,99 @@
+name: Fetch openApi files from github and then test them with schemathesis
+
+on:
+   workflow_call:
+ 
+
+permissions:
+    contents: read
+
+jobs:
+  fetch_and_test_openapi:
+    runs-on: ubuntu-latest
+    strategy:
+       matrix:
+          env: [ "dev", "uat" ]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      with:
+          fetch-depth: 2
+          ref: ${{ github.ref }}
+
+
+    - name: Set up Python
+      uses: actions/setup-python@7f4fc3e22c37d6ff65e88745f38bd3157c663f7c # v4
+      with: 
+        python-version: '3.x'
+
+    -  name: Install dependencies
+       run: |
+          python -m pip install --upgrade pip
+          pip install requests schemathesis azure-identity azure-keyvault-secrets azure-mgmt-apimanagement dynaconf allure-python-commons
+
+    - name: Load secrets
+      run: |
+        mkdir -p config
+        echo "$SECRETS" > ./config/.secrets.yaml
+      env:
+        SECRETS: ${{ secrets.FDR_INTEGRATION_TESTS_SECRETS }}
+
+    - name: Fetch and test openApi
+      id: run_tests
+      continue-on-error: true
+      env:
+        TARGET_ENV: ${{ matrix.env }}
+        suite: 'fdr'
+        #AZURE_KEY_VAULT_URL: ${{ case(matrix.env == 'dev', secrets.AZURE_KEY_VAULT_DEV_URL, secrets.AZURE_KEY_VAULT_UAT_URL) }}
+      run: |
+        python -u .github/scripts/openApi_test.py
+
+    - name: Load previous allure history
+      uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      with:
+        ref: gh-pages
+        path: gh-pages
+
+    - name: Prepare allure-results for report generation
+      if: always()
+      run: |
+          if [ -f allure-results/history ]; then rm allure-results/history; fi
+          mkdir -p allure-results/history
+          RESULT_COUNT=$(find allure-results -maxdepth 1 -name '*-result.json' | wc -l)
+          echo "::notice title=Allure results::${RESULT_COUNT} result file(s) in allure-results/"
+          if [ "$RESULT_COUNT" -eq 0 ]; then
+            echo "::warning::No allure result files found — tests may have crashed before writing results."
+          fi
+
+    - name: Install Allure CLI
+      if: always()
+      run: npm install -g allure-commandline@2.27.0
+
+    - name: Build FdR Allure report
+      if: always()
+      continue-on-error: true
+      env:
+          SUBFOLDER: openapi-fdr-tests
+      run: |
+          if [ -d "gh-pages/${SUBFOLDER}/last-history-${{ matrix.env }}" ]; then
+            echo "Loading previous history for trend charts..."
+            cp -r "gh-pages/${SUBFOLDER}/last-history-${{ matrix.env }}/." allure-results/history/
+          fi
+          allure generate allure-results --clean -o allure-report-openapi
+          mkdir -p "allure-history/${SUBFOLDER}/${{ github.run_number }}"
+          cp -r allure-report-openapi/. "allure-history/${SUBFOLDER}/${{ github.run_number }}/" || true
+          mkdir -p "allure-history/${SUBFOLDER}/last-history-${{ matrix.env }}"
+          cp -r allure-report-openapi/history/. "allure-history/${SUBFOLDER}/last-history-${{ matrix.env }}/" || true
+          echo "Report generated: $(ls allure-report-openapi | wc -l) top-level entries"
+
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      with:
+          name: allure-report-openapi-${{ matrix.env }}
+          path: allure-report-openapi
+          retention-days: 30
+          if-no-files-found: error
+
+
+     
+    

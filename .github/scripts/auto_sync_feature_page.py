@@ -7,7 +7,15 @@ import re
 import sys
 from pathlib import Path
 
-PAGE_COMPONENTS_DIR = Path(__file__).resolve().parents[1] / 'page_components'
+# Ensure repository root is on sys.path so `src` package is importable when this
+# script runs from .github/scripts in CI environments.
+REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
+
+from src.utility.confluence_utils import create_confluence_auth, upload_page_content, get_existing_page_content
+
+
+PAGE_COMPONENTS_DIR = Path(__file__).resolve().parents[1] / 'page_components' / 'feature_page'
 
 context_block = ''
 scenario_header = ''
@@ -17,8 +25,7 @@ step_content = ''
 scenario_link = ''
 code_block = ''
 inline_code = ''
-PAGE_BODY_FORMAT = '?body-format=storage'
-CONFLUENCE_BASE_URL = 'https://pagopa.atlassian.net/wiki/api/v2/pages/'
+
 KEYWORD_CONTEXT = 'Contesto:'
 KEYWORD_WHEN = 'Quando'
 KEYWORD_THEN = 'Allora'
@@ -31,29 +38,15 @@ KEYWORD_PIPE = '|'
 LINK_PREFIX = '#link:'
 TABLE_CLOSURE = '</tr></tbody></table>'
 INLINE_CODE_PATTERN = re.compile(r'<\s*([A-Za-z0-9_]+)\s*>')
-SUITE_SCENARIO_ID = re.compile(r'^@([A-Za-z0-9]+_(?:[A-Za-z0-9]+)*)_(\d{3})_(\d{2})$')
+SUITE_SCENARIO_ID = re.compile(r'^@([A-Za-z0-9]+(?:[_A-Za-z0-9]+)*)_(\d{3})_(\d{2})$')
 EMPTY_TABLE_CELL = '<td data-highlight-colour="#ffffff"></td>'
 
-auth = None
 
-headers = {
-  "Accept": "application/json",
-  "Content-Type": "application/json"
-}
 
 # function used to replace the inline code with the inline code block, containing the inline code inside the block
 def replace_inline_code(value):
     return INLINE_CODE_PATTERN.sub(lambda m: inline_code.replace('{inline_code}', m.group(1).strip()), value)
 
-def createAuth():
-   # Retrieve confluence credentials from environment variables
-   confluenceEmail = os.getenv("CONFLUENCE_EMAIL")
-   confluenceKey = os.getenv("CONFLUENCE_KEY")
-   if(confluenceEmail is None or confluenceKey is None):
-      raise RuntimeError("Confluence email or key not found in environment variables. Please set CONFLUENCE_EMAIL and CONFLUENCE_KEY environment variables.")
-   else:
-      global auth
-      auth = HTTPBasicAuth(confluenceEmail, confluenceKey)
 
 def get_page_components():
     try:
@@ -94,26 +87,6 @@ def check_language(line,fileIn):
         raise RuntimeError(f"Language not specified. The second line of the feature file must specify the language using the format: {KEYWORD_LANGUAGE} <language_code>, in file {fileIn}")
 
 
-def get_existing_page_content(fileIn):
-    # retrieving the existing confluence page content using the page id from the first line of the feature file
-    try:
-        with open(fileIn, "r", encoding="utf-8") as f:
-            confluencePageId = f.readline()[1:].strip('\n ')
-            check_language(f.readline().strip('\n '), fileIn)
-        url = f'{CONFLUENCE_BASE_URL}{confluencePageId}'
-        response = requests.request(
-            "GET",
-            url=url + PAGE_BODY_FORMAT,
-            headers=headers,
-            auth=auth
-        )
-        response.raise_for_status()
-        print(f"[INFO][getConfluencePageContent] Successfully retrieved content for confluence page id: {confluencePageId}")
-    except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as e:
-        raise Exception(f"Failed to get content for confluence page id: {confluencePageId}. Error: {str(e)}")
-    
-    return response.json()
-
 # Function used to add the step content to the table
 def add_step_content(content_to_add,keyword,last_ins,line,data):
     last_ins = keyword if keyword is not None else last_ins
@@ -151,7 +124,7 @@ def build_page_content(data,feature_file):
                 if SUITE_SCENARIO_ID.match(line):
                     scenario_id = line.split('_').pop()
                 elif line.startswith(KEYWORD_SCENARIO):
-                    data += scenario_header.replace("{scenario_title}", line.replace('Scenario',f'Scenario {scenario_id}')).replace("{link}", link_to_add)
+                    data += scenario_header.replace("{scenario_title}", line.replace('Scenario',f'Scenario {scenario_id}')).replace("{link}", "\n" + link_to_add if link_to_add else "")
                     data += table_header
                 elif line.startswith(LINK_PREFIX):
                     link_vars = line[len(LINK_PREFIX):].split('|')
@@ -187,48 +160,21 @@ def build_page_content(data,feature_file):
     except Exception as e:
         raise RuntimeError(f"Failed to build page content from feature file: {feature_file}. Error: {str(e)}")
 
-# Function used to update the existing confluence page content
-def upload_page_content(existing_page, data):  
-    try:
-        payload = json.dumps( {
-        "id": existing_page['id'],
-        "status": "current",
-        "title": existing_page['title'],
-        "body": {
-        "representation": "storage",
-        "value": data
-        },
-        "version": {
-        "number": existing_page['version']['number'] + 1,
-        "message": "Updated feature file content via GitHub Action"
-        }
-        })
-
-        response = requests.request(
-        "PUT",
-        url=CONFLUENCE_BASE_URL + existing_page['id'],
-        data=payload,
-        headers=headers,
-        auth=auth
-        )
-        response.raise_for_status()
-    except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as e:
-        raise Exception(f"Failed to update confluence page content for page id: {existing_page['id']}. Error: {str(e)}")
-
-    print(f"[INFO][updateConfluencePageContent] Successfully updated confluence page content for page id: {existing_page['id']}")
 
 def main():
     if len(sys.argv) > 1:
         fileIn = sys.argv[1]
-        createAuth()
-        existing_page = get_existing_page_content(fileIn)
+        with open(fileIn, 'r', encoding='utf-8') as f:
+            confluencePageId = f.readline()[1:].strip('\n ')
+            check_language(f.readline().strip('\n '), fileIn)
+        auth = create_confluence_auth()
+        existing_page = get_existing_page_content(fileIn, page_id=confluencePageId, auth_obj=auth)
         get_page_components()
         h2_index = existing_page['body']['storage']['value'].find('<h2>')
         if h2_index != -1: # if the <h2> tag is found, we use it to keep only the header section of the page, else we just append the new content
             existing_page['body']['storage']['value'] = existing_page['body']['storage']['value'][:h2_index]
         data = build_page_content(existing_page['body']['storage']['value'],fileIn)
-        upload_page_content(existing_page, data)
-
+        upload_page_content(existing_page, data, auth)
     else:
         raise FileNotFoundError("No file provided. Please provide a file as an argument.")
 

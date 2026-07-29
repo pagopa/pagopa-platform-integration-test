@@ -570,6 +570,35 @@ Riferimenti: `.github/html/index.html`, `.github/scripts/process_reports.py`,
 `.github/scripts/notify_slack.py`, `.github/templates/history-index-template.html`,
 `.github/workflows/deploy-test-report.yml`.
 
+### Pagina report su Confluence
+
+Dopo la pubblicazione dei report su `gh-pages`, lo script `.github/scripts/create_report_page.py` legge le esecuzioni processate (`tmp_processed_reports/`) e crea una pagina Confluence per ogni suite/ambiente trovata.
+
+La logica e orientata al reporting operativo:
+
+- legge `stats.json` per recuperare data, durata e numero di failure;
+- estrae i test falliti dai file case in `data/test-cases/`;
+- compone la pagina usando template HTML sotto `.github/page_components/test_report_page/`;
+- pubblica la pagina nel target Confluence configurato in `config.yaml`.
+
+L'input `--run-type` (es. `NIGHTLY`, `NO-PROMO`) viene usato per valorizzare il contesto
+della run nella pagina.
+
+Esecuzione locale (se sono presenti report gia processati):
+
+```bash
+python .github/scripts/create_report_page.py --run-type NO-PROMO
+```
+
+Prerequisiti minimi:
+
+- variabili d'ambiente `CONFLUENCE_KEY` e `CONFLUENCE_EMAIL` valorizzate;
+- `config.yaml` con i metadati Confluence della suite;
+
+
+Riferimenti: `.github/scripts/create_report_page.py`, `.github/workflows/create_report_page.yml`,
+`.github/page_components/test_report_page/`, `src/utility/confluence_utils.py`.
+
 ## FDR api test
 
 ### Scope
@@ -730,11 +759,14 @@ Riferimenti: `.github/workflows/wisp-tests.yml`, `.github/workflows/fdr-tests.ym
   `gh-pages` con timestamp.
 - `deploy-test-report.yml` scarica gli artefatti, processa i report, aggiorna dashboard e
   invia la notifica Slack se configurata.
+- `create_report_page.yml` legge i report processati da `gh-pages` e pubblica le pagine
+  di riepilogo su Confluence.
 - `extract_allure_fail_rate.yml` legge `widgets/summary.json` da `gh-pages`, calcola fail
   rate e success rate, poi passa i dati al workflow di notifica.
 
 Riferimenti: `.github/workflows/main-dispatch-tests.yml`, `.github/workflows/run_behave_tests.yml`, `.github/workflows/deploy-test-report.yml`,
-`.github/workflows/extract_allure_fail_rate.yml`, `.github/workflows/send_notification.yml`.
+`.github/workflows/create_report_page.yml`, `.github/workflows/extract_allure_fail_rate.yml`,
+`.github/workflows/send_notification.yml`.
 
 ### Documentazione GitHub Pages
 
@@ -919,7 +951,7 @@ Riferimenti: `src/api/utility/http_client.py`, `src/api/utility/api_test_environ
 | Configurazione integrazione | `config.yaml`, `commondata.yaml`, `config/.secrets_template.yaml`, `src/conf/configuration.py` |
 | Comandi API Behave | suite `src/api/*`, feature file, hook `environment.py` |
 | Comandi WISP/FdR | `.github/workflows/wisp-tests.yml`, `.github/workflows/fdr-tests.yml`, `.github/workflows/run_behave_tests.yml` |
-| Report Allure e dashboard | `.github/scripts/process_reports.py`, `.github/scripts/notify_slack.py`, `.github/html/index.html`, `.github/templates/history-index-template.html` |
+| Report Allure e dashboard | `.github/scripts/process_reports.py`, `.github/scripts/notify_slack.py`, `.github/scripts/create_report_page.py`, `.github/html/index.html`, `.github/templates/history-index-template.html`, `.github/workflows/create_report_page.yml` |
 | CI e workflow riusabile | `.github/workflows/*.yml`, `scripts/tas_orchestrator.py`, `docs/examples/*` |
 | Documentazione scenari | `scenario_parser.py`, `.github/workflows/landing_pages.yaml` |
 | Convenzioni di contributo | `.github/PULL_REQUEST_TEMPLATE.md`, `.github/workflows/check_pr.yml`, regole operative di progetto |
