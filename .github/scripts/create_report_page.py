@@ -146,7 +146,7 @@ def read_runs(dir, suite_test_folder):
 def build_page(folder_name, page_components, config):
   try:
     page = ''
-    page += page_components[TITLE_COMPONENT_KEY].replace(TITLE_PLACEHOLDER, (run['date'] + " - " + folder_name))
+    page += page_components[TITLE_COMPONENT_KEY].replace(TITLE_PLACEHOLDER, (run['date'] + " - " + run['time'] + folder_name))
     page += page_components[GO_TABLE_COMPONENT_KEY]
     main_table = page_components[MAIN_TABLE_COMPONENT_KEY]
     for field in run:
