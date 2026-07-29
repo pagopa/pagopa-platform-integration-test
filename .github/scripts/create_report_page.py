@@ -31,15 +31,11 @@ MISSING_DATA = 'N/A'
 PROCESSED_REPORTS_DIR = 'tmp_processed_reports'
 PAGE_COMPONENTS_DIR = Path(__file__).resolve().parents[1] / 'page_components' / 'test_report_page'
 GH_PAGES_URL = 'https://pagopa.github.io/pagopa-platform-integration-test/{suite_folder}/{run}/index.html'
-DATE_KEYWORD = 'date'
-PROCEDURE_KEYWORD = 'procedure'
 TITLE_COMPONENT_KEY = 'title'
 GO_TABLE_COMPONENT_KEY = 'go_table'
 MAIN_TABLE_COMPONENT_KEY = 'main_table'
 TABLE_HEADER_COMPONENT_KEY = 'table_header'
 TABLE_ROW_COMPONENT_KEY = 'table_row'
-RUNS_KEY = 'runs'
-FAILURES_KEY = 'failures'
 COMPONENTS_KEY = 'components'
 TITLE_PLACEHOLDER = '{title}'
 COMPONENTS_PLACEHOLDER = '{components}'
@@ -133,22 +129,16 @@ def build_page(folder_name, page_components, config):
     page += page_components[GO_TABLE_COMPONENT_KEY]
     main_table = page_components[MAIN_TABLE_COMPONENT_KEY]
     for field in run:
-      if field != RUNS_KEY:
+      if field != 'runs':
         main_table = main_table.replace(f'{{{field}}}', str(run.get(field, MISSING_DATA)))
     page += main_table
     if run['failed'] > 0:
       page += page_components[TABLE_HEADER_COMPONENT_KEY]
-      for test_run in run[RUNS_KEY]:
+      for test_run in run['runs']:
         row = page_components[TABLE_ROW_COMPONENT_KEY]
         for field in test_run:
-          row = row.replace(f'{{{field}}}', str(test_run.get(field, '')))
+          row = row.replace(f'{{{field}}}', str(test_run.get(field, MISSING_DATA)))
         # use all parts of folder_name except the last as the config key (joined by '-')
-        components_val = config.get(COMPONENTS_KEY, '')
-        if isinstance(components_val, (list, tuple)):
-          components_str = ','.join(map(str, components_val))
-        else:
-          components_str = str(components_val) if components_val is not None else ''
-        row = row.replace(COMPONENTS_PLACEHOLDER, components_str)
         row = re.sub(r'\{[^}]+\}', '', row).strip(" ")
         page += row
       page += TABLE_CLOSING_TAG
