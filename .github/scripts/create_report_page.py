@@ -220,7 +220,7 @@ def main():
   # Remove processed reports only once, after all run directories were handled.
   print(f"[INFO][main] Finished processing all run directories. Removing processed reports directory {processed_dir}.")
   try:
-    os.rmdir(processed_dir)
+    shutil.rmtree(processed_dir)
     if not os.path.exists(processed_dir):
        print(f"[INFO][main] Removed processed reports directory: {processed_dir}")     
   except Exception as e:
