@@ -127,7 +127,7 @@ def read_runs(dir, suite_test_folder):
       except Exception as e:
         raise RuntimeError(f"Failed to read run file {file_path}. Error: {str(e)}")
 
-      if run_obj.get(STATUS_KEY) == FAILED_KEY:
+      if run_obj.get(STATUS_KEY) == "failed":
         run_stats = dict()
         run_stats['uid'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}', run[DATE_KEY])
         for stage in run_obj.get(TEST_STAGE_KEY, {}).get(STEPS_KEY, []):
@@ -135,6 +135,7 @@ def read_runs(dir, suite_test_folder):
             run_stats[RESULT_KEY] = stage.get(STATUS_MESSAGE_KEY)
             if stage.get(STATUS_TRACE_KEY):
               run_stats[ERROR_LOG_KEY] = extract_main_error_line(stage.get(STATUS_TRACE_KEY))
+        print(f"[INFO][read_runs] Found failed run: {run_stats}")
         failedRuns.append(run_stats.copy())
 
     run[RUNS_KEY] = failedRuns
