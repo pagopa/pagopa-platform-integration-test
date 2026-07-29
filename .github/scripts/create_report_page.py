@@ -78,14 +78,14 @@ def read_page_components():
 def read_stats(stats_file,suite_test_folder):
   with open(stats_file,'r',encoding="utf-8") as f:
     last_history = json.load(f)
-    run['failures'] = last_history.get('failed', 0)
+    run['failed'] = last_history.get('failed', 0)
     run['duration'] = last_history.get('duration', 0)
     start = last_history.get('start', '')
     if start:
         run['time'] = start.split('_')[1]
         run['date'] = start.split('_')[0]
         run['allure_page'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}', start)
-    print(f"[INFO][read_stats] Last history: failures={run['failures']}, duration={run['duration']}, time={run['time']}")
+    print(f"[INFO][read_stats] Last history: failed={run['failed']}, duration={run['duration']}, time={run['time']}")
 
 
 def extract_main_error_line(trace: str) -> str:
@@ -136,7 +136,7 @@ def build_page(folder_name, page_components, config):
       if field != RUNS_KEY:
         main_table = main_table.replace(f'{{{field}}}', str(run.get(field, MISSING_DATA)))
     page += main_table
-    if run[FAILURES_KEY] > 0:
+    if run['failed'] > 0:
       page += page_components[TABLE_HEADER_COMPONENT_KEY]
       for test_run in run[RUNS_KEY]:
         row = page_components[TABLE_ROW_COMPONENT_KEY]
