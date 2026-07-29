@@ -78,6 +78,7 @@ def read_stats(stats_file,suite_test_folder):
     run['duration'] = last_history.get('duration', 0)
     start = last_history.get('start', '')
     if start:
+        run['start'] = start
         run['time'] = start.split('_')[1]
         run['date'] = start.split('_')[0]
         run['allure_page'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}', start)
@@ -108,7 +109,7 @@ def read_runs(dir, suite_test_folder):
 
       if run_obj.get('status') == 'failed':
         run_stats = dict()
-        run_stats['uid'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}',run["date"] )
+        run_stats['uid'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}',run["start"] )
         for stage in run_obj.get('testStage', {}).get('steps', []):
           if stage.get('status') == 'failed':
             run_stats['result'] = stage.get('statusMessage')
@@ -148,10 +149,8 @@ def build_page(folder_name, page_components, config):
     raise RuntimeError(f"Failed to build page for {folder_name}. Error: {str(e)}")
 
 
-def read_config(suite, config):
+def read_config(key,config):
     try:
-        key_parts = suite.split('-')[:-1]
-        key = '-'.join(key_parts) or suite
         return config[key] if key in config else {}
     except KeyError as e:
         raise RuntimeError(f"Config key '{key}' not found in config.yaml. Error: {str(e)}")
@@ -180,9 +179,9 @@ def main():
     if os.path.isdir(run_dir):
       global suite
       run["env"] = dir.split('-')[-1]
-      suite = os.path.basename(dir)
+      suite = '-'.join(dir.split('-')[:-1])
       # build the suite test folder path based on the run directory name
-      suite_test_folder = (dir.split('-')[-1] + "-tests")
+      suite_test_folder = suite + "-tests"
       if os.path.exists(os.path.join(run_dir, "stats.json")):
         try:
             read_stats(os.path.join(run_dir, "stats.json"), suite_test_folder)
