@@ -211,7 +211,7 @@ def main():
             page_components = read_page_components()
             suite_config = read_config(suite, full_config)
             page = build_page(suite, page_components, suite_config)
-            page_title = str(run[DATE_KEY]).replace('-', '') + " " + ANALISI_RUN_PAGE_TITLE_KEY + " " + suite.upper()
+            page_title = str(run[DATE_KEY]).replace('-', '') + str(run[TIME_KEY]) + " " + ANALISI_RUN_PAGE_TITLE_KEY + " " + suite.upper()
             create_confluence_page(page.strip(), config=suite_config, page_title=page_title, auth_obj=create_confluence_auth())
         except Exception as e:
             print(f"[ERROR][main] Failed processing run directory {run_dir}. Error: {str(e)}")
