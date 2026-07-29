@@ -173,7 +173,7 @@ def read_config(suite, config):
     try:
         key_parts = suite.split('-')[:-1]
         key = '-'.join(key_parts) or suite
-        return key,config[key] if key in config else {}
+        return config[key] if key in config else {}
     except KeyError as e:
         raise RuntimeError(f"Config key '{key}' not found in config.yaml. Error: {str(e)}")
     except Exception as e:
