@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>🤖 AI Analysis · WISP · 2026-07-29_14:59:02</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body { background-color: #f5f8fa; padding: 2rem; }
+    .hero {
+      background-color: #6f42c1;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      border-radius: 0.5rem;
+    }
+    .content-card {
+      background: white;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    }
+    .content-card h2 { margin-top: 1.5rem; color: #6f42c1; }
+    .content-card h3 { color: #495057; }
+    .content-card pre {
+      background: #f1f3f5;
+      padding: 0.75rem;
+      border-radius: 0.35rem;
+      overflow-x: auto;
+      font-size: 0.9rem;
+    }
+    .hero code {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      padding: 0.15rem 0.4rem;
+      border-radius: 0.35rem;
+    }
+    .content-card code {
+      color: #ff61b0;
+      background: #fff0f7;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    footer code {
+      color: #6f42c1;
+      background: #f3ebff;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    .btn-secondary { background-color: #6c757d; border: none; }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <h1 class="display-6">🤖 AI Analysis · WISP</h1>
+  <p class="lead mb-1">Run: <code>2026-07-29_14:59:02</code></p>
+  <div class="mt-3">
+    <a href="../index.html" class="btn btn-light">📊 View Report</a>
+    <a href="../../index.html" class="btn btn-light">🗂️ Storico</a>
+    <a href="../../../index.html" class="btn btn-light">🏠 Dashboard</a>
+  </div>
+</header>
+
+<div class="container">
+  <div class="content-card">
+    <div id="analysis-content">
+      <div class="text-center text-muted">Rendering in corso...</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Powered by GitHub Models · Model: <code>openai/gpt-4.1</code></p>
+</footer>
+
+<script>
+  const markdown = &#34;# 1. L&#39;utente paga un carrello multibeneficiario con due RPT con un totale di tre versamenti\n- **status**: broken\n- **fullName**: `L&#39;utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT: L&#39;utente paga un carrello multibeneficiario con due RPT con un totale di tre versamenti`\n- **message**: AttributeError: &#39;Settings&#39; object has no attribute &#39;SERVICES&#39;\n- **trace**:\n```\nFile \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/model.py\&#34;, line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/matchers.py\&#34;, line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;src/integration/wisp/steps/healthcheck.py\&#34;, line 14, in system_up\n    for key, value in context.settings.services.items():\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/dynaconf/base.py\&#34;, line 144, in __getattr__\n    value = getattr(self._wrapped, name)\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/dynaconf/base.py\&#34;, line 332, in __getattribute__\n    return super().__getattribute__(name)\n           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n```\n### Root cause\nAll tests fail due to `Settings` missing the attribute `SERVICES`, likely a misconfiguration.\n### Category\nenvironment\n### Recommended action\nEnsure the test environment loads all required configuration variables for `Settings`, especially `SERVICES`.\n\n---\n\n# 2. Utente paga un pagamento singolo con tre versamenti e nessuna marca da bollo\n- **status**: broken\n- **fullName**: `Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con tre versamenti e nessuna marca da bollo`\n- **message**: AttributeError: &#39;Settings&#39; object has no attribute &#39;SERVICES&#39;\n- **trace**:\n```\nFile \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/model.py\&#34;, line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/matchers.py\&#34;, line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;src/integration/wisp/steps/healthcheck.py\&#34;, line 14, in system_up\n    for key, value in context.settings.services.items():\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/dynaconf/base.py\&#34;, line 144, in __getattr__\n    value = getattr(self._wrapped, name)\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/dynaconf/base.py\&#34;, line 332, in __getattribute__\n    return super().__getattribute__(name)\n           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n```\n### Root cause\nMissing configuration attribute in test context, preventing service discovery.\n### Category\nenvironment\n### Recommended action\nUpdate or regenerate the configuration for the integration environment to include `services`.\n\n---\n\n# 3. Utente paga un pagamento singolo con due versamenti e nessuna marca da bollo\n- **status**: broken\n- **fullName**: `Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con due versamenti e nessuna marca da bollo`\n- **message**: AttributeError: &#39;Settings&#39; object has no attribute &#39;SERVICES&#39;\n- **trace**:\n```\nFile \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/model.py\&#34;, line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/matchers.py\&#34;, line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;src/integration/wisp/steps/healthcheck.py\&#34;, line 14, in system_up\n    for key, value in context.settings.services.items():\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/dynaconf/base.py\&#34;, line 144, in __getattr__\n    value = getattr(self._wrapped, name)\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/dynaconf/base.py\&#34;, line 332, in __getattribute__\n    return super().__getattribute__(name)\n           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n```\n### Root cause\nThe environment lacks the required `SERVICES` attribute in the settings configuration.\n### Category\nenvironment\n### Recommended action\nVerify dynaconf settings definition (`settings.toml` or env vars) and patch with the `SERVICES` section.\n\n---\n\n# 4. Utente tenta di pagare un pagamento singolo inserito da ACA e in stato valido\n- **status**: broken\n- **fullName**: `Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT: Utente tenta di pagare un pagamento singolo inserito da ACA e in stato valido`\n- **message**: AttributeError: &#39;Settings&#39; object has no attribute &#39;SERVICES&#39;\n- **trace**:\n```\nFile \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/model.py\&#34;, line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/matchers.py\&#34;, line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;src/integration/wisp/steps/healthcheck.py\&#34;, line 14, in system_up\n    for key, value in context.settings.services.items():\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/dynaconf/base.py\&#34;, line 144, in __getattr__\n    value = getattr(self._wrapped, name)\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/dynaconf/base.py\&#34;, line 332, in __getattribute__\n    return super().__getattribute__(name)\n           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n```\n### Root cause\nConfiguration for `Settings` is missing, causing test setup to fail.\n### Category\nenvironment\n### Recommended action\nCorrect settings initialization and ensure all attributes (especially `SERVICES`) are present.\n\n---\n\n# 5. L&#39;utente paga un carrello con due RPT, entrambe senza versamento semplice e con una marca da bollo\n- **status**: broken\n- **fullName**: `L&#39;utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT: L&#39;utente paga un carrello con due RPT, entrambe senza versamento semplice e con una marca da bollo`\n- **message**: AttributeError: &#39;Settings&#39; object has no attribute &#39;SERVICES&#39;\n- **trace**:\n```\nFile \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/model.py\&#34;, line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/matchers.py\&#34;, line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;src/integration/wisp/steps/healthcheck.py\&#34;, line 14, in system_up\n    for key, value in context.settings.services.items():\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/dynaconf/base.py\&#34;, line 144, in __getattr__\n    value = getattr(self._wrapped, name)\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/dynaconf/base.py\&#34;, line 332, in __getattribute__\n    return super().__getattribute__(name)\n           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n```\n### Root cause\nTest context initialization fails due to absent `SERVICES` attribute.\n### Category\nenvironment\n### Recommended action\nReview and update configuration setup for test environment; possibly recreate `context.settings`.\n\n---\n\n# 6. L&#39;utente paga un carrello con tre RPT, con quantita diverse di versamenti semplici e marche da bollo\n- **status**: broken\n- **fullName**: `L&#39;utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT: L&#39;utente paga un carrello con tre RPT, con quantita diverse di versamenti semplici e marche da bollo`\n- **message**: AttributeError: &#39;Settings&#39; object has no attribute &#39;SERVICES&#39;\n- **trace**:\n```\nFile \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/model.py\&#34;, line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/matchers.py\&#34;, line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;src/integration/wisp/steps/healthcheck.py\&#34;, line 14, in system_up\n    for key, value in context.settings.services.items():\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/dynaconf/base.py\&#34;, line 144, in __getattr__\n    value = getattr(self._wrapped, name)\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/dynaconf/base.py\&#34;, line 332, in __getattribute__\n    return super().__getattribute__(name)\n           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n```\n### Root cause\nSettings not properly injected into test context; cannot access `services`.\n### Category\nenvironment\n### Recommended action\nCheck environment variables and dynaconf configuration files for completeness.\n\n---\n\n# 7. L&#39;utente paga un carrello con singola RPT con due versamenti\n- **status**: broken\n- **fullName**: `L&#39;utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L&#39;utente paga un carrello con singola RPT con due versamenti`\n- **message**: AttributeError: &#39;Settings&#39; object has no attribute &#39;SERVICES&#39;\n- **trace**:\n```\nFile \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/model.py\&#34;, line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/matchers.py\&#34;, line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;src/integration/wisp/steps/healthcheck.py\&#34;, line 14, in system_up\n    for key, value in context.settings.services.items():\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/dynaconf/base.py\&#34;, line 144, in __getattr__\n    value = getattr(self._wrapped, name)\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/dynaconf/base.py\&#34;, line 332, in __getattribute__\n    return super().__getattribute__(name)\n           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n```\n### Root cause\nGlobal settings object misconfigured or incomplete.\n### Category\nenvironment\n### Recommended action\nRevisit dynaconf settings file and environment setup, ensuring `services` attribute exists.\n\n---\n\n# 8. Utente paga un pagamento singolo senza versamenti semplici e una marca da bollo gia esistente in GPD\n- **status**: broken\n- **fullName**: `Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT: Utente paga un pagamento singolo senza versamenti semplici e una marca da bollo gia esistente in GPD`\n- **message**: AttributeError: &#39;Settings&#39; object has no attribute &#39;SERVICES&#39;\n- **trace**:\n```\nFile \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/model.py\&#34;, line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/matchers.py\&#34;, line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;src/integration/wisp/steps/healthcheck.py\&#34;, line 14, in system_up\n    for key, value in context.settings.services.items():\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/dynaconf/base.py\&#34;, line 144, in __getattr__\n    value = getattr(self._wrapped, name)\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/dynaconf/base.py\&#34;, line 332, in __getattribute__\n    return super().__getattribute__(name)\n           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n```\n### Root cause\nContext.settings lacks required configuration, blocking test execution.\n### Category\nenvironment\n### Recommended action\nValidate settings loading logic; assign `services` object before test execution.\n\n---\n\n# 9. Utente paga un pagamento singolo con quattro versamenti e nessuna marca da bollo\n- **status**: broken\n- **fullName**: `Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con quattro versamenti e nessuna marca da bollo`\n- **message**: AttributeError: &#39;Settings&#39; object has no attribute &#39;SERVICES&#39;\n- **trace**:\n```\nFile \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/model.py\&#34;, line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/matchers.py\&#34;, line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;src/integration/wisp/steps/healthcheck.py\&#34;, line 14, in system_up\n    for key, value in context.settings.services.items():\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/dynaconf/base.py\&#34;, line 144, in __getattr__\n    value = getattr(self._wrapped, name)\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/dynaconf/base.py\&#34;, line 332, in __getattribute__\n    return super().__getattribute__(name)\n           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n```\n### Root cause\nMissing attribute in dynamic configuration object.\n### Category\nenvironment\n### Recommended action\nConfirm dynaconf config contains all required keys (`services`).\n\n---\n\n# 10. L&#39;utente tenta di pagare un carrello con una RPT che ha una quantita di versamenti e marche da bollo oltre il limite\n- **status**: broken\n- **fullName**: `L&#39;utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT: L&#39;utente tenta di pagare un carrello con una RPT che ha una quantita di versamenti e marche da bollo oltre il limite`\n- **message**: AttributeError: &#39;Settings&#39; object has no attribute &#39;SERVICES&#39;\n- **trace**:\n```\nFile \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/model.py\&#34;, line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/behave/matchers.py\&#34;, line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;src/integration/wisp/steps/healthcheck.py\&#34;, line 14, in system_up\n    for key, value in context.settings.services.items():\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/dynaconf/base.py\&#34;, line&#34;;
+  const target = document.getElementById('analysis-content');
+  if (markdown && markdown.trim().length > 0) {
+    target.innerHTML = marked.parse(markdown);
+  } else {
+    target.innerHTML = '<div class="alert alert-warning">Nessuna analisi disponibile per questa run.</div>';
+  }
+</script>
+
+</body>
+</html>
