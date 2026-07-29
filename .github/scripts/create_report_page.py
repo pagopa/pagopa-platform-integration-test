@@ -20,7 +20,7 @@ from src.conf.configuration import load_settings
 failedRuns = list()
 TEST_CASES_DIR = 'data/test-cases'
 MISSING_DATA = 'N/A'
-PROCESSED_REPORTS_DIR = 'tmp_processed_reports'
+ARTIFACTS_DIR = 'artifacts'
 PAGE_COMPONENTS_DIR = Path(__file__).resolve().parents[1] / 'page_components' / 'test_report_page'
 GH_PAGES_URL = 'https://pagopa.github.io/pagopa-platform-integration-test/{suite_folder}/{run}/index.html'
 
@@ -187,9 +187,10 @@ def main():
   run[SCOPE_KEY] = args.run_type
 
   # Support processed reports created under `public/` by the deploy job
-  processed_dir = PROCESSED_REPORTS_DIR
-  if not os.path.exists(processed_dir) and os.path.exists(os.path.join('public', PROCESSED_REPORTS_DIR)):
-    processed_dir = os.path.join('artifacts', PROCESSED_REPORTS_DIR)
+  processed_dir = ARTIFACTS_DIR
+  if not os.path.exists(processed_dir) and os.path.exists(os.path.join('artifacts', ARTIFACTS_DIR)):
+     processed_dir = os.path.join('artifacts', ARTIFACTS_DIR)
+     print(f"[INFO][main] Found processed reports in {processed_dir}.")
 
   if not os.path.isdir(processed_dir) or os.listdir(processed_dir) == []:
     print(f"[INFO][main] No processed reports found in {processed_dir}. Exiting.")
