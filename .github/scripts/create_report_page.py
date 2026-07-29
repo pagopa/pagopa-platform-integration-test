@@ -175,14 +175,14 @@ def main():
   run['scope'] = args.run_type
 
   # Support processed reports created under `public/` by the deploy job
-  processed_dir = "tmp_processed_reports"
-  if not os.path.exists(processed_dir) and os.path.exists(os.path.join('artifacts', processed_dir)):
-     processed_dir = os.path.join('artifacts', processed_dir)
-     print(f"[INFO][main] Found processed reports in {processed_dir}.")
-
+  processed_dir = "artifacts"
   if not os.path.isdir(processed_dir) or os.listdir(processed_dir) == []:
     print(f"[INFO][main] No processed reports found in {processed_dir}. Exiting.")
     return
+  
+  print(f"[INFO][main] Found processed reports in {processed_dir}.")
+
+
   # Read the last history data from stats.json
   full_config = load_settings(config_folder_root=GITHUB_ROOT)
   for dir in sorted(os.listdir(processed_dir)):
