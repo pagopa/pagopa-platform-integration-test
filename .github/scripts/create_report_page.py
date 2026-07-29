@@ -189,7 +189,7 @@ def main():
   # Support processed reports created under `public/` by the deploy job
   processed_dir = PROCESSED_REPORTS_DIR
   if not os.path.exists(processed_dir) and os.path.exists(os.path.join('public', PROCESSED_REPORTS_DIR)):
-    processed_dir = os.path.join('public', PROCESSED_REPORTS_DIR)
+    processed_dir = os.path.join('artifacts', PROCESSED_REPORTS_DIR)
 
   if not os.path.isdir(processed_dir) or os.listdir(processed_dir) == []:
     print(f"[INFO][main] No processed reports found in {processed_dir}. Exiting.")
@@ -203,7 +203,7 @@ def main():
       run[ENV_KEY] = dir.split('-')[-1]
       suite = os.path.basename(dir)
       # build the suite test folder path based on the run directory name
-      suite_test_folder = os.path.join('public', dir.split('-')[-1] + "-tests")
+      suite_test_folder = os.path.join('artifacts', dir.split('-')[-1] + "-tests")
       if os.path.exists(os.path.join(run_dir, STATS_FILE_NAME)):
         try:
             read_stats(os.path.join(run_dir, STATS_FILE_NAME), suite_test_folder)
