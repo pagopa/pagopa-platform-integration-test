@@ -6,6 +6,7 @@ from dynaconf import Dynaconf
 import argparse
 import sys
 from pathlib import Path
+from datetime import datetime, timedelta
 
 # Ensure repository root is on sys.path so `src` package is importable when this
 # script runs from .github/scripts in CI environments.
@@ -80,6 +81,8 @@ def read_stats(stats_file,suite_test_folder):
     if start:
         run['start'] = start
         run['time'] = start.split('_')[1]
+        time_formatted = datetime.strptime(run['time'], "%H:%M:%S")
+        run['time'] = (time_formatted + timedelta(hours=2)).strftime("%H:%M:%S")
         run['date'] = start.split('_')[0]
         run['allure_page'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}', start + "-" + run['env'])
     print(f"[INFO][read_stats] Last history: failed={run['failed']}, duration={run['duration']}, time={run['time']}")
