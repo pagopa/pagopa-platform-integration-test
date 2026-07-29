@@ -6,6 +6,11 @@ from datetime import datetime, timedelta
 import shutil
 from pathlib import Path
 
+OPENAPI_TEST_DIR = 'openapi-fdr-tests'
+PROCESSED_REPORTS_DIR = 'tmp_processed_reports'
+OPENAPI_FDR_TESTS = 'openapi-fdr'
+
+
 def extract_stats(artifact_app_dir):
     try:
         print(f"[INFO][extract_stats] artifact_app_dir {artifact_app_dir}")
@@ -21,6 +26,8 @@ def extract_stats(artifact_app_dir):
             # extract statistic and time sections from summary
             statistic_raw = data.get("statistic", {})
             time_raw = data.get("time", {})
+            if time_raw is None:
+                raise ValueError(f"[ERROR][extract_stats] 'time' section is missing in {artifact_summary_file} for {artifact_app_dir}. This means that something went wrong during the last test run.")
             statistic = statistic_raw[0] if isinstance(statistic_raw, list) else statistic_raw
             time = time_raw[0] if isinstance(time_raw, list) else time_raw
             print(f"[INFO][extract_stats] extracted statistic section {statistic}")
@@ -222,92 +229,69 @@ def deploy_ai_analysis(artifact_dir, run_dir, last_history_dir, app, timestamp, 
 
 
 def main():
-    apps = ["wisp"]
+    allure_apps = ["wisp", "checkout-e2e", "openapi"]
     ai_model = os.environ.get("AI_MODEL", "openai/gpt-4.1")
     artifact_dir = os.path.join("artifacts") # /artifacts
     print(f"[INFO][main] artifact_dir {artifact_dir}")
     
-    # Process Allure reports (wisp, checkout-e2e, openapi)
-    allure_apps = ["wisp", "checkout-e2e", "openapi"]
-    for app in allure_apps:
-        root_dir = f"public/{app}-tests"
-        print(f"[INFO][main] processing Allure directory {root_dir}")
+    # Process Allure reports (wisp, openapi)
+    artifact_dirs = sorted(os.listdir(artifact_dir))
+    for dir in artifact_dirs:
+        processed = False
+        for app in allure_apps:
+            if app == "openapi":
+                root_dir = f"public/{OPENAPI_TEST_DIR}"
+            else:
+                root_dir = f"public/{app}-tests"
+            print(f"[INFO][main] processing Allure directory {root_dir}")
 
-        # extract stats form allure reports inside artifacts
-        artifact_app_dir = os.path.join(artifact_dir, "allure-report-" + app) # /artifacts/allure-report-<app>
-        print(f"[INFO][main] artifact_app_dir {artifact_app_dir}")
-        if not os.path.isdir(artifact_app_dir): # in case not all app have been selected for running test
-            print(f"[INFO][main] artifact_app_dir {artifact_app_dir} does not exist, skipping it")
-            continue
+            
+            if not dir.startswith(f"allure-report-{app}"):
+                continue
+            else:
+                artifact_app_dir = os.path.join(artifact_dir, dir) # /artifacts/allure-report-<app>
+                print(f"[INFO][main] artifact_app_dir {artifact_app_dir}")
+                env = dir.split(f"allure-report-{app}-")[1]
+                # retrieve stats
+                stats = extract_stats(artifact_app_dir)
+                # copy content from /artifacts/allure-report-<app> inside the new directory run_dir
+                source_dir = Path(artifact_app_dir)
+                run_dir = os.path.join(root_dir + "/" + stats.get("start") + "-" + env) # pattern yyyy-mm-dd_hh:mm:ss-<env>
+                destination_dir = Path(run_dir)
+                print(f"[INFO][main] destination_dir {destination_dir}")
+                # copy everything from source to run dir and last-history dir
+                last_history_dir = os.path.join(root_dir, "last-history" + "-" + env) # pattern last-history-<env>
+                tmp_reports_dir = Path(f"public/{PROCESSED_REPORTS_DIR}")
+                print(f"[INFO][main] last_history_dir {last_history_dir}")
+                last_history_dir = Path(last_history_dir)
+                print(f"[INFO][main] last_history_dir {last_history_dir}")
+                if last_history_dir.exists(): # delete dir if already exists
+                    print(f"[INFO][main] deleting {last_history_dir} content")
+                    shutil.rmtree(last_history_dir)
+                tmp_reports_dir.mkdir(parents=True, exist_ok=True)
+                print(f"[INFO][main] copy everything from {source_dir} to {destination_dir}")
+                shutil.copytree(source_dir, destination_dir)
+                print(f"[INFO][main] copy everything from {source_dir} to {last_history_dir}")
+                shutil.copytree(source_dir, last_history_dir)
+                if app == "openapi":
+                    app = OPENAPI_FDR_TESTS
+                processed_run_dir = Path(f'public/{PROCESSED_REPORTS_DIR}/{app}-{env}')
+                if processed_run_dir.exists():
+                    print(f"[INFO][main] deleting {processed_run_dir} content")
+                    shutil.rmtree(processed_run_dir)
+                print(f"[INFO][main] copy everything from {source_dir} to {processed_run_dir}")
+                shutil.copytree(source_dir, processed_run_dir)
+                # render AI analysis page (no-op when artifact missing)
+                deploy_ai_analysis(artifact_dir, run_dir, last_history_dir, app, stats.get("start"), ai_model)
+                # build index page
+                build_index_page(root_dir)
+                processed = True
+                break
 
-        # retrieve stats
-        stats = extract_stats(artifact_app_dir)
+        if not processed:
+            print(f"[INFO][main] skipping non-Allure artifact directory: {dir}")
 
-        # copy content from /artifacts/allure-report-<app> inside the new directory run_dir
-        source_dir = Path(artifact_app_dir)
-        run_dir = os.path.join(root_dir + "/" + stats.get("start")) # pattern yyyy-mm-dd_hh:mm:ss
-        destination_dir = Path(run_dir)
-        print(f"[INFO][main] destination_dir {destination_dir}")
-
-        # copy everything from source to run dir and last-history dir
-        last_history_dir = os.path.join(root_dir, "last-history")
-        last_history_dir = Path(last_history_dir)
-        print(f"[INFO][main] last_history_dir {last_history_dir}")
-        if last_history_dir.exists(): # delete dir if already exists
-            print(f"[INFO][main] deleting {last_history_dir} content")
-            shutil.rmtree(last_history_dir)
-
-        print(f"[INFO][main] copy everything from {source_dir} to {destination_dir}")
-        shutil.copytree(source_dir, destination_dir)
-        print(f"[INFO][main] copy everything from {source_dir} to {last_history_dir}")
-        shutil.copytree(source_dir, last_history_dir)
-
-        # render AI analysis page (no-op when artifact missing)
-        deploy_ai_analysis(artifact_dir, run_dir, last_history_dir, app, stats.get("start"), ai_model)
-
-        # build index page
-        build_index_page(root_dir)
-
-    # Process OpenAPI Allure reports (from Schemathesis + Allure Action)
-    print(f"[INFO][main] Processing OpenAPI Allure reports (from matrix jobs)")
-    openapi_reports = find_allure_openapi_reports(artifact_dir)
     
-    if not openapi_reports:
-        print(f"[INFO][main] No openapi allure reports found, skipping openapi-fdr processing")
-    else:
-        root_dir = "public/openapi-fdr-tests"
-        print(f"[INFO][main] processing OpenAPI directory {root_dir}")
-        
-        # Create root directory if needed
-        os.makedirs(root_dir, exist_ok=True)
-        
-        for report_info in openapi_reports:
-            env_name = report_info['env_name']
-            artifact_path = report_info['artifact_path']
-            
-            # Extract stats from this Allure report
-            stats = extract_stats(artifact_path)
-            
-            # Create destination folder: <yyyy-mm-dd_hh:mm:ss>_<env>
-            folder_name = f"{stats.get('start')}_{env_name}"
-            source_dir = Path(artifact_path)
-            destination_dir = Path(root_dir) / folder_name
-            
-            print(f"[INFO][main] Copying OpenAPI report from {source_dir} to {destination_dir}")
-            
-            # Copy the report
-            if destination_dir.exists():
-                shutil.rmtree(destination_dir)
-            shutil.copytree(source_dir, destination_dir)
-            
-            # Also update last-history for this env
-            last_history_env = Path(root_dir) / f"last-history-{env_name}"
-            if last_history_env.exists():
-                shutil.rmtree(last_history_env)
-            shutil.copytree(source_dir, last_history_env)
-        
-        # Build index page for openapi-fdr (uses generic method)
-        build_index_page(root_dir)
 
 if __name__ == "__main__":
     main()

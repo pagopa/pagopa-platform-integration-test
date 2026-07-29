@@ -1,0 +1,109 @@
+<table data-table-width="760" data-layout="center">
+    <tbody>
+        <tr>
+            <th data-highlight-colour="#f0f1f2">
+                <p><strong>ATTRIBUTE</strong></p>
+            </th>
+            <th data-highlight-colour="#f0f1f2">
+                <p><strong>VALUE</strong></p>
+            </th>
+        </tr>
+        <tr>
+            <td data-highlight-colour="#ffffff">
+                <p>Release</p>
+            </td>
+            <td data-highlight-colour="#ffffff">
+                <p><em>Link al task di release jira</em> </p>
+            </td>
+        </tr>
+        <tr>
+            <td data-highlight-colour="#ffffff">
+                <p>Environment</p>
+            </td>
+            <td data-highlight-colour="#ffffff">
+                <p>{env}</p>
+            </td>
+        </tr>
+        <tr>
+            <td data-highlight-colour="#ffffff">
+                <p>Scope  NO-PROMO | NIGHTLY | PROMO</p>
+            </td>
+            <td data-highlight-colour="#ffffff">
+                <p>{scope}</p>
+            </td>
+        </tr>
+        <tr>
+            <td data-highlight-colour="#ffffff">
+                <p>Issue Jira Link</p>
+            </td>
+            <td data-highlight-colour="#ffffff">
+                <p><em>Link alla issue jira</em></p>
+            </td>
+        </tr>
+        <tr>
+            <td data-highlight-colour="#ffffff">
+                <p>Data esecuzione run</p>
+            </td>
+            <td data-highlight-colour="#ffffff">
+                <p>{date}</p>
+            </td>
+        </tr>
+        <tr>
+            <td data-highlight-colour="#ffffff">
+                <p>Ora esecuzione run</p>
+            </td>
+            <td data-highlight-colour="#ffffff">
+                <p>{time}</p></td>
+        </tr>
+        <tr>
+            <td data-highlight-colour="#ffffff">
+                <p>Durata esecuzione run</p>
+            </td>
+            <td data-highlight-colour="#ffffff">
+                <p><em>{duration}</em></p>
+            </td>
+        </tr>
+        <tr>
+            <td data-highlight-colour="#ffffff">
+                <p><strong><span style="color: rgb(191,38,0);">Numero di KO</span></strong></p>
+            </td>
+            <td data-highlight-colour="#ffffff">
+                <p><strong><span style="color: rgb(191,38,0);">{failed}</span></strong></p>
+            </td>
+        </tr>
+        <tr>
+            <td data-highlight-colour="#ffffff">
+                <p>File Log</p>
+            </td>
+            <td data-highlight-colour="#ffffff">
+            <p local-id=\"f5cbd7f5cec3\">
+				<a href=\"{allure_page}\"</a>
+			</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<p>Come compilare i vari campi:</p>
+<ul>
+    <li><p><strong>ID Test:</strong> indicare l&rsquo;id dello scenario fallito. <strong>Obbligatorio</strong>.</p>
+    </li>
+    <li><p><strong>Error log</strong>: riportare il log entry principale che indica l&rsquo;errore nello stack trace. <strong>Obbligatorio</strong>.</p>
+    </li>
+    <li><p><strong>Keys</strong>: indicare i campi principali utilizzati come input dell&rsquo;indagine. &Egrave; un elenco attributo:valore separato dalla virgola.</p>
+    </li>
+    <li><p><strong>Result</strong>: &egrave; l&rsquo;esito dell&rsquo;analisi descritta nel campo Procedure. Spiega le ragioni del KO senza addentrarsi nelle modalit&agrave; con cui si &egrave; giunti a tale conclusione (oggetto del campo Procedure). <strong>Questo campo &egrave; obbligatorio e deve indicare in modo chiaro, sintetico e preciso la ragione del KO;</strong></p>
+    </li>
+    <li><p><strong>Procedure</strong>: &egrave; l&rsquo;indagine che ci porta al RESULT. Nel caso in cui il KO ha gi&agrave; richiesto un intervento e non &egrave; necessario procedere ad ulteriori indagini riportare il link della PR (nel caso di intervento sulla codebase) o il link del Bug (in caso di regressione sull&rsquo;incremento di prodotto). <strong>Questo campo &egrave; obbligatorio e va dettagliato accuratamente step by step</strong>;</p>
+    </li>
+    <li><p><strong>Components</strong>: indicata i componenti interni o sistemi esterni coinvolti. &Egrave; un elenco che usa  la virgola come separatore. <strong>Obbligatorio</strong>.</p>
+    </li>
+    <li local-id="56a3a87f-ecc3-476c-a841-a63b41bb2e96">
+		<p local-id="2ec9d3f69e1d"><strong>BUG SUITE</strong>: se il KO &egrave; dovuto ad un errore nella suite di test indicare la issue Jira deputata a correggere il problema. <strong>Obbligatorio</strong> se non &egrave; valorizzato BUG PRODOTTO. (link <ac:link ac:local-id="32feb0bf049f"ac:card-appearance="inline"ac:anchor="3.1-Bug-fix-validation-(Task)"><ri:page ri:content-title="Organizzazione del lavoro di QA su Jira"ri:version-at-save="12"/><ac:link-body>Organizzazione del lavoro di QA su Jira</ac:link-body></ac:link>)</p>
+	</li>
+	<li local-id="cc7db076-4844-48ef-9f17-64ac3ad1d8b6">
+		<p local-id="28a27d9ab402"><strong>BUG PRODOTTO</strong>: se il KO &egrave; dovuto ad un errore presente nel prodotto da testare, indicare il bug Jira aperto in funzione di tale KO o la issue Jira deputata a correggere il problema. <strong>Obbligatorio</strong> se non &egrave; valorizzato BUG SUITE. (link per apertura Bug <a href="https://pagopa.atlassian.net/servicedesk/customer/portal/85/group/156/create/2408"local-id="36159d5c44ab"data-card-appearance="inline">https://pagopa.atlassian.net/servicedesk/customer/portal/85/group/156/create/2408</a> )</p>
+	</li>
+</ul>
+<ac:structured-macro ac:name="info" ac:schema-version="1" ac:local-id="5d42ac9e-24db-4376-96a7-f6060224444b" ac:macro-id="f3f9bcbe-21ad-47c2-9e96-7be0405c4c82">
+	<ac:rich-text-body><p>Laddove non ci sono BUG specifici, si andr&agrave; a leggere il campo RESULT + PROCEDURE per capire cosa &egrave; successo e come si arrivati a stabilirlo. Tutt'al pi&ugrave;, se tali errori sono scaturiti da un comportamento inaspettato di un componente interno o esterno (vedi SelfCare) indicare nella riga Bug di Prodotto una descrizione sulle ragioni.</p></ac:rich-text-body>
+</ac:structured-macro>
