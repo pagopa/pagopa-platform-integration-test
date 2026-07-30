@@ -111,7 +111,7 @@ def load_secrets(suite: str = "",
             all_secrets = Dynaconf(settings_files=[settings['SECRET_PATH']])
             secrets_resolver = DictSecretResolver(all_secrets[str(target_env).lower()])
         except Exception as e:
-            logging.exception("Failed to load secrets from %s", settings[target_env]['SECRET_PATH'])
+            logging.exception("Failed to load secrets from %s", settings['SECRET_PATH'])
             raise RuntimeError("Failed to initialize local secrets resolver") from e
     try:
         secrets = load_json_config(secrets_resolver)

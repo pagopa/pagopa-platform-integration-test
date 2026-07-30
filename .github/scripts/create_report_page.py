@@ -31,7 +31,7 @@ TEST_CASES_DIR = 'data/test-cases'
 MISSING_DATA = 'N/A'
 PROCESSED_REPORTS_DIR = 'tmp_processed_reports'
 PAGE_COMPONENTS_DIR = Path(__file__).resolve().parents[1] / 'page_components' / 'test_report_page'
-GH_PAGES_URL = 'https://pagopa.github.io/pagopa-platform-integration-test/{suite_folder}/{run}/index.html'
+GH_PAGES_URL = 'https://pagopa.github.io/pagopa-platform-integration-test/{suite_folder}/{run}/index.html#suites/{run_id}'
 TITLE_COMPONENT_KEY = 'title'
 GO_TABLE_COMPONENT_KEY = 'go_table'
 MAIN_TABLE_COMPONENT_KEY = 'main_table'
@@ -71,6 +71,14 @@ def read_page_components():
   except Exception as e:
     raise RuntimeError(f"Failed to read page components from {PAGE_COMPONENTS_DIR}. Error: {str(e)}")
 
+def read_run_id(run_file):
+    try:
+        with open(run_file, 'r', encoding='utf-8') as f:
+            run_data = json.load(f)
+            run['uid'] = run_data.get('uid')
+    except Exception as e:
+        raise RuntimeError(f"Failed to read run ID from {run_file}. Error: {str(e)}")
+
 # use headerOnlyPage instead of actually calling the API to get the content of the page
 def read_stats(stats_file,suite_test_folder):
   with open(stats_file,'r',encoding="utf-8") as f:
@@ -84,7 +92,6 @@ def read_stats(stats_file,suite_test_folder):
         time_formatted = datetime.strptime(run['time'], "%H:%M:%S")
         run['time'] = (time_formatted + timedelta(hours=2)).strftime("%H:%M:%S")
         run['date'] = start.split('_')[0]
-        run['allure_page'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}', start + "-" + run['env'])
     print(f"[INFO][read_stats] Last history: failed={run['failed']}, duration={run['duration']}, time={run['time']}")
 
 
@@ -99,7 +106,7 @@ def extract_main_error_line(trace: str) -> str:
     else: 
       return lines[-1]
 
-def read_runs(dir, suite_test_folder):
+def read_runs(dir):
   failedRuns = list()
   try:
     for file in os.listdir(dir):
@@ -112,7 +119,7 @@ def read_runs(dir, suite_test_folder):
 
       if run_obj.get('status') == 'failed':
         run_stats = dict()
-        run_stats['uid'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}',run["start"] + "-" + run['env'])
+        run_stats['uid'] = run['allure_page'] + f'/{run_obj.get("uid")}'
         for stage in run_obj.get('testStage', {}).get('steps', []):
           if stage.get('status') == 'failed':
             run_stats['result'] = stage.get('statusMessage')
@@ -150,6 +157,14 @@ def build_page(folder_name, page_components, config):
     return page
   except Exception as e:
     raise RuntimeError(f"Failed to build page for {folder_name}. Error: {str(e)}")
+  
+def build_gh_pages_url(suite_folder):
+  try:
+    url = GH_PAGES_URL.replace('{suite_folder}', suite_folder).replace('{run}',run["start"] + "-" + run['env']).replace('{run_id}', run['uid'])
+    print(f"[INFO][build_gh_pages_url] Built GH Pages URL: {url}")
+    return url
+  except Exception as e:
+    raise RuntimeError(f"Failed to build GH Pages URL for suite_folder={suite_folder}, run={run}. Error: {str(e)}")
 
 
 def read_config(key,config):
@@ -159,6 +174,7 @@ def read_config(key,config):
         raise RuntimeError(f"Config key '{key}' not found in config.yaml. Error: {str(e)}")
     except Exception as e:
         raise RuntimeError(f"Failed to read config from config.yaml. Error: {str(e)}")
+    
 def main():
   # parse CLI args
   parser = argparse.ArgumentParser(description='Create Confluence page from test runs')
@@ -187,12 +203,23 @@ def main():
       suite_test_folder = suite + "-tests"
       if os.path.exists(os.path.join(run_dir, "stats.json")):
         try:
+            # get run id from the run directory's data/suites.json file
+            read_run_id(os.path.join(run_dir, "data/suites.json"))
+            # read the last history data from stats.json
             read_stats(os.path.join(run_dir, "stats.json"), suite_test_folder)
-            read_runs(os.path.join(run_dir, "data/test-cases"), suite_test_folder)
+            # build the GH Pages URL for the run
+            run['allure_page'] = build_gh_pages_url(suite_test_folder)
+            # read the failed runs from the run directory's data/test-cases folder
+            read_runs(os.path.join(run_dir, "data/test-cases"))
+            # read the page components 
             page_components = read_page_components()
+            # read the suite configuration from config.yaml
             suite_config = read_config(suite, full_config)
+            # build the Confluence page content 
             page = build_page(suite, page_components, suite_config)
-            page_title = str(run["date"]).replace('-', '') + " " +str(run["time"]) + " " + "Analisi RUN" + " " + suite.upper() + run["env"].upper()
+            # create the title for the Confluence page
+            page_title = str(run["date"]).replace('-', '') + " " +str(run["time"]) + " " + "Analisi RUN" + " " + suite.upper() + " - " + run["env"].upper()
+            # create the Confluence page using the built content and title
             create_confluence_page(page.strip(), config=suite_config, page_title=page_title, auth_obj=create_confluence_auth())
         except Exception as e:
             print(f"[ERROR][main] Failed processing run directory {run_dir}. Error: {str(e)}")
