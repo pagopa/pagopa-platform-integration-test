@@ -48,7 +48,7 @@ def _build_runtime_secrets() -> dict:
     os.environ["TARGET_ENV"] = str(target_env)
     os.environ["suite"] = str(suite_name)
 
-    runtime_settings = load_settings(config_folder_root=str(INTEGRATION_ROOT))
+    runtime_settings = load_settings(config_folder_root=str(INTEGRATION_ROOT), target_section=target_env)
     return load_secrets(
         suite=suite_name,
         target_env=target_env,

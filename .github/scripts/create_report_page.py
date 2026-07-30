@@ -6,6 +6,7 @@ from dynaconf import Dynaconf
 import argparse
 import sys
 from pathlib import Path
+from datetime import datetime, timedelta
 
 # Ensure repository root is on sys.path so `src` package is importable when this
 # script runs from .github/scripts in CI environments.
@@ -31,15 +32,11 @@ MISSING_DATA = 'N/A'
 PROCESSED_REPORTS_DIR = 'tmp_processed_reports'
 PAGE_COMPONENTS_DIR = Path(__file__).resolve().parents[1] / 'page_components' / 'test_report_page'
 GH_PAGES_URL = 'https://pagopa.github.io/pagopa-platform-integration-test/{suite_folder}/{run}/index.html'
-DATE_KEYWORD = 'date'
-PROCEDURE_KEYWORD = 'procedure'
 TITLE_COMPONENT_KEY = 'title'
 GO_TABLE_COMPONENT_KEY = 'go_table'
 MAIN_TABLE_COMPONENT_KEY = 'main_table'
 TABLE_HEADER_COMPONENT_KEY = 'table_header'
 TABLE_ROW_COMPONENT_KEY = 'table_row'
-RUNS_KEY = 'runs'
-FAILURES_KEY = 'failures'
 COMPONENTS_KEY = 'components'
 TITLE_PLACEHOLDER = '{title}'
 COMPONENTS_PLACEHOLDER = '{components}'
@@ -82,9 +79,12 @@ def read_stats(stats_file,suite_test_folder):
     run['duration'] = last_history.get('duration', 0)
     start = last_history.get('start', '')
     if start:
+        run['start'] = start
         run['time'] = start.split('_')[1]
+        time_formatted = datetime.strptime(run['time'], "%H:%M:%S")
+        run['time'] = (time_formatted + timedelta(hours=2)).strftime("%H:%M:%S")
         run['date'] = start.split('_')[0]
-        run['allure_page'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}', start)
+        run['allure_page'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}', start + "-" + run['env'])
     print(f"[INFO][read_stats] Last history: failed={run['failed']}, duration={run['duration']}, time={run['time']}")
 
 
@@ -112,7 +112,7 @@ def read_runs(dir, suite_test_folder):
 
       if run_obj.get('status') == 'failed':
         run_stats = dict()
-        run_stats['uid'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}',run["date"] )
+        run_stats['uid'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}',run["start"] + "-" + run['env'])
         for stage in run_obj.get('testStage', {}).get('steps', []):
           if stage.get('status') == 'failed':
             run_stats['result'] = stage.get('statusMessage')
@@ -133,22 +133,16 @@ def build_page(folder_name, page_components, config):
     page += page_components[GO_TABLE_COMPONENT_KEY]
     main_table = page_components[MAIN_TABLE_COMPONENT_KEY]
     for field in run:
-      if field != RUNS_KEY:
+      if field != 'runs':
         main_table = main_table.replace(f'{{{field}}}', str(run.get(field, MISSING_DATA)))
     page += main_table
     if run['failed'] > 0:
       page += page_components[TABLE_HEADER_COMPONENT_KEY]
-      for test_run in run[RUNS_KEY]:
+      for test_run in run['runs']:
         row = page_components[TABLE_ROW_COMPONENT_KEY]
         for field in test_run:
-          row = row.replace(f'{{{field}}}', str(test_run.get(field, '')))
+          row = row.replace(f'{{{field}}}', str(test_run.get(field, MISSING_DATA)))
         # use all parts of folder_name except the last as the config key (joined by '-')
-        components_val = config.get(COMPONENTS_KEY, '')
-        if isinstance(components_val, (list, tuple)):
-          components_str = ','.join(map(str, components_val))
-        else:
-          components_str = str(components_val) if components_val is not None else ''
-        row = row.replace(COMPONENTS_PLACEHOLDER, components_str)
         row = re.sub(r'\{[^}]+\}', '', row).strip(" ")
         page += row
       page += TABLE_CLOSING_TAG
@@ -158,10 +152,8 @@ def build_page(folder_name, page_components, config):
     raise RuntimeError(f"Failed to build page for {folder_name}. Error: {str(e)}")
 
 
-def read_config(suite, config):
+def read_config(key,config):
     try:
-        key_parts = suite.split('-')[:-1]
-        key = '-'.join(key_parts) or suite
         return config[key] if key in config else {}
     except KeyError as e:
         raise RuntimeError(f"Config key '{key}' not found in config.yaml. Error: {str(e)}")
@@ -190,9 +182,9 @@ def main():
     if os.path.isdir(run_dir):
       global suite
       run["env"] = dir.split('-')[-1]
-      suite = os.path.basename(dir)
+      suite = '-'.join(dir.split('-')[:-1])
       # build the suite test folder path based on the run directory name
-      suite_test_folder = (dir.split('-')[-1] + "-tests")
+      suite_test_folder = suite + "-tests"
       if os.path.exists(os.path.join(run_dir, "stats.json")):
         try:
             read_stats(os.path.join(run_dir, "stats.json"), suite_test_folder)

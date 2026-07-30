@@ -10,7 +10,6 @@ from src.integration.wisp.utility import utils
 def system_up(context):
     """Check health endpoints for configured services and assert they are reachable."""
     responses = True
-
     for key, value in context.settings.services.items():
         if 'healthcheck' in value:
             url = value.get('url') + value.get('healthcheck')
