@@ -28,7 +28,7 @@ def before_all(context):
     os.environ["TARGET_ENV"] = str(target_env)
     os.environ["suite"] = suite_name
 
-    context.settings = load_settings(config_folder_root=INTEGRATION_ROOT)
+    context.settings = load_settings(config_folder_root=INTEGRATION_ROOT, target_section=target_env)
     context.secrets = load_secrets(
         suite=suite_name,
         target_env=target_env,
