@@ -1,6 +1,6 @@
 import logging
 from behave import given, when, then
-from src.e2e.checkout import get_page, get_required_config, perform_mock_login, locate_and_click
+from src.e2e.checkout import get_page, get_required_config, perform_mock_login, locate_and_click, perform_login
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +27,7 @@ def step_click_login_button(context):
     locate_and_click(page, "#login-header button")
 
     if "uat" in checkout_url:
-        # oneIdentityLogin not yet implemented
-        raise NotImplementedError("OneIdentity login not yet implemented for UAT")
+        perform_login(page)
     else:
         logger.debug("Performing mock login")
         perform_mock_login(page)
@@ -65,7 +64,7 @@ def step_confirm_logout(context):
     page = get_page(context)
     logger.debug("Confirming logout")
     locate_and_click(page, "#logoutModalConfirmButton")
-    page.locator("#login-header button").wait_for(state="visible", timeout=10000)
+    page.locator("#login-header button").nth(0).wait_for(state="visible", timeout=10000)
 
 
 # ──────────────────────────────────────────────
@@ -77,7 +76,8 @@ def step_check_account_icon_visible(context):
     """Assert that the user avatar icon is visible after login."""
     page = get_page(context)
     logger.debug("Checking AccountCircleRoundedIcon is visible")
-    icon = page.locator("[data-testid='AccountCircleRoundedIcon']")
+    # Select the first matching svg to avoid strict-mode errors
+    icon = page.locator("svg[data-testid='AccountCircleRoundedIcon']").nth(0)
     icon.wait_for(state="visible", timeout=10000)
     assert icon.is_visible(), "Expected AccountCircleRoundedIcon to be visible after login, but it was not found"
     logger.debug("AccountCircleRoundedIcon found — login confirmed")
@@ -88,7 +88,7 @@ def step_check_login_button_visible_after_logout(context):
     """Assert that the login button reappears after logout."""
     page = get_page(context)
     logger.debug("Checking login button is visible after logout")
-    login_button = page.locator("#login-header button")
+    login_button = page.locator("#login-header button").nth(0)
     login_button.wait_for(state="visible", timeout=10000)
     assert login_button.is_visible(), "Expected login button to be visible after logout, but it was not found"
     logger.debug("Login button visible — logout confirmed")

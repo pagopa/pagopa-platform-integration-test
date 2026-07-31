@@ -21,6 +21,7 @@ from src.utility.rest.rest_client import (
     RestClientError,
 )
 from src.utility.rest.rest_client_factory import build_rest_client
+from src.utility.rest.rest_auth_factory import build_api_key_auth_from_config
 
 __all__ = [
     "RestClient",
@@ -34,5 +35,6 @@ __all__ = [
     "ApiKeyAuthConfig",
     "OAuth2ClientCredentialsConfig",
     "build_rest_client",
+    "build_api_key_auth_from_config"
 ]
 

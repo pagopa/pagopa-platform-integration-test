@@ -11,8 +11,8 @@ Service (TAS) team for external consumers.
 
 ## Why use this action
 
-Without the action, a GHA consumer that wants to use the `tas_orchestrator.py`
-flow (Options 2 and 3) has to maintain ~40 lines of YAML per workflow:
+Without the action, a GHA consumer that wants to run the tests via the GitHub
+API has to maintain ~40 lines of YAML per workflow:
 Python setup, orchestrator download, integrity verification, secret wiring
 and stdout parsing for `CORRELATION_ID` / `RUN_ID` / `RUN_URL`. With this
 action the same integration boils down to a single step and the boilerplate
@@ -38,7 +38,7 @@ caller's `steps.<id>.outputs.*` paths stay identical.
 
 If your tests are already merged on `main` of the TAS repo and you do not
 need to target a feature branch dynamically, prefer the native
-`workflow_call` integration (Option 1 in the developer guide). It does not
+`workflow_call` integration (Option 3 in the developer guide). It does not
 need a PAT, and it exposes the same numeric outputs (`passed`, `failed`,
 …) without any extra boilerplate:
 
@@ -55,7 +55,7 @@ Use the composite action when:
 
 - You need to choose the TAS repo `ref` at runtime (parallel development
   on a feature branch).
-- You need async / fire-and-forget behaviour (Option 3).
+- You need async / fire-and-forget behaviour (`mode: async` / `raw`).
 - You want a single switchable entry point that can run in `sync`,
   `async`, or `raw` mode depending on a workflow input.
 
@@ -98,7 +98,7 @@ The full integration guide, including prerequisites (PAT scope), the
 flowchart that helps you pick the right option, and the rationale for each
 invocation mode, lives in
 [`../../../docs/tas/tas-developer-guide.md`](../../../docs/tas/tas-developer-guide.md)
-— see the "**Option 6 — Official GitHub Actions composite action**" section.
+— see the "**Option 2 — Official GitHub Actions composite action**" section.
 
 ---
 
@@ -118,6 +118,8 @@ same tag.
 | `environment` | `uat` | — | Target environment: `dev` or `uat` |
 | `mode` | `sync` | — | Invocation mode: `sync`, `async` or `raw` |
 | `ref` | `main` | — | TAS repo branch/tag to run the tests from |
+| `tags` | `""` | — | Behave tag expression (e.g. `@runnable`, `@e2e`, `@a,@b`). Empty = workflow default (`@runnable`) |
+| `allure` | `"false"` | — | Also produce an Allure results directory (`allure-results/`) inside the `test-results` artifact. Render/host is left to the caller |
 | `github_token` | — | ✅ | GitHub PAT (scopes `public_repo` + `actions:read`). Must be passed explicitly (composite actions cannot read caller secrets). |
 | `caller_id` | `${{ github.repository }}/${{ github.run_id }}` | — | Identifier of the calling system (traceability) |
 | `correlation_id` | `${{ github.run_id }}-${{ github.run_attempt }}` | — | Unique ID to correlate the run with the caller |

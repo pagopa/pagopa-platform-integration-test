@@ -25,13 +25,15 @@ through the decision using a flowchart.
   (see [Downloading the full report artifact](#downloading-the-full-report-artifact)).
   In that case the minimum required scopes are **`public_repo`** and **`actions:read`**.
 
-### For callers using `tas_orchestrator.py` or raw `workflow_dispatch`
+### For callers using the official ADO template or GHA composite action
 
-- Python 3.9+ and `pip install requests` (only for `tas_orchestrator.py`).
 - A GitHub Personal Access Token (PAT) with scopes **`public_repo`** and **`actions:read`**,
   stored as a secret in the calling system (`INTEGRATION_TEST_PAT` in the examples below).
-  A PAT is required because these modes trigger the workflow via the GitHub API, which
-  requires authentication even on public repositories.
+  A PAT is required because both wrappers trigger the workflow via the GitHub API, which
+  requires authentication even on public repositories. The template/action forward it to
+  their internal engine as `TAS_GITHUB_TOKEN`.
+- No Python setup on your side: the wrappers bootstrap Python and download their internal
+  engine (`tas_orchestrator.py`) automatically.
 
 ---
 
@@ -41,26 +43,25 @@ Use the following flowchart to identify the option that best fits your situation
 
 ```mermaid
 flowchart TD
-    A([Start]) --> B{Is your CI/CD\nGitHub Actions?}
+    A([Start]) --> B{Is your CI/CD\nAzure DevOps?}
 
-    B -- Yes --> GHA{Do you need\nsynchronous results?}
-    B -- No --> ADO{Is your CI/CD\nAzure DevOps?}
+    B -- Yes --> G([Option 1\nOfficial ADO template\nany ref supported])
+    B -- No --> C{Is your CI/CD\nGitHub Actions?}
 
-    ADO -- Yes --> G([Option 1\nOfficial ADO template\nrecommended])
-    ADO -- No --> G2{Do you need\nsynchronous results?}
+    C -- No --> X([TAS is called only from GHA or ADO\nadd a small GHA/ADO pipeline\nthat invokes Option 1 or 2])
+    C -- Yes --> D{Need a switchable\nsync/async/raw entry point?}
 
-    GHA -- Yes --> D{Are the tests already on main,\nor do you need to target\na feature branch?}
-    GHA -- No --> GHA_ASYNC{Switch between modes\nfrom a single input?}
+    D -- Yes --> H([Option 2\nOfficial GHA composite action])
+    D -- No --> E{Prefer a native call\nor a packaged wrapper?}
 
-    D -- "Only main\n(no parallel development)" --> F([Option 3\nworkflow_call])
-    D -- "Feature branch\n(parallel development\nwith the TAS team)" --> GHA_TPL([Option 2\nOfficial GHA composite action\nrecommended for sync on a feature branch])
-
-    GHA_ASYNC -- Yes --> GHA_TPL
-    GHA_ASYNC -- No  --> E([Option 5\ntas_orchestrator async\nfrom GHA])
-
-    G2 -- Yes --> I([Option 4\ntas_orchestrator --sync\nfrom any CI/CD])
-    G2 -- No --> L([Option 6\nraw workflow_dispatch])
+    E -- "native and minimal, no PAT" --> F([Option 3\nworkflow_call])
+    E -- "packaged wrapper, richer outputs" --> H
 ```
+
+> **Notes on the GitHub Actions branch:** `workflow_call` (Option 3) is **synchronous** and
+> runs the TAS code from a **fixed** ref baked into `uses: …@<ref>`. If you need `async`/`raw`
+> modes **or** a dynamic ref chosen at runtime (e.g. a feature branch), use **Option 2**.
+> Both **Option 1 (ADO)** and **Option 2 (GHA action)** support any `ref` and all three modes.
 
 ### Quick reference
 
@@ -69,9 +70,6 @@ flowchart TD
 | **1** | Official ADO template | sync / async / raw (parameter) | Any branch ✅ | Azure DevOps only | ✅ Normalised output variables |
 | **2** | Official GHA composite action | sync / async / raw (parameter) | Any branch ✅ | GitHub Actions only | ✅ Normalised step outputs |
 | **3** | `workflow_call` | Synchronous | `main` only (fixed) | GitHub Actions only | ✅ Native GHA outputs |
-| **4** | `tas_orchestrator.py --sync` | Synchronous | Any branch ✅ | GHA / Azure DevOps / any | ✅ stdout + exit code |
-| **5** | `tas_orchestrator.py` (async) | Asynchronous | Any branch ✅ | GHA / Azure DevOps / any | ❌ correlation_id only |
-| **6** | `workflow_dispatch` (raw) | Asynchronous | Configurable in payload | Any | ❌ |
 
 ---
 
@@ -89,36 +87,33 @@ worse, scenarios that do not yet cover the new functionality under development.
 | Option | Target branch | Notes |
 |---|---|---|
 | `workflow_call` | **Fixed** — hardcoded in the `uses: ...@<ref>` directive in the caller's YAML | Cannot be made dynamic: **GitHub Actions limitation** |
-| `tas_orchestrator.py` | **Dynamic** — `--ref` parameter at runtime | Ideal for parallel development |
-| raw `workflow_dispatch` | **Configurable** — `"ref"` field in the JSON payload | Settable at runtime but fire-and-forget |
 | Official ADO template | **Dynamic** — `ref` template parameter at runtime | Recommended for ADO callers |
-| Official GHA composite action | **Dynamic** — `ref` action input at runtime | Recommended for GHA callers when Option 1 is not enough |
+| Official GHA composite action | **Dynamic** — `ref` action input at runtime | Recommended for GHA callers that need a dynamic ref |
 
-> **Recommendation for parallel development:** use option 2 (`tas_orchestrator.py --sync`)
-> with the `--ref <feature-branch>` parameter — or, on GitHub Actions, the equivalent
-> Option 6 composite action with `ref: <feature-branch>`. Once the feature branch is merged
-> into `main`, simply remove the override (the default is already `main`) — no other
-> changes to the pipeline needed.
+> **Recommendation for parallel development:** on Azure DevOps use Option 1 (the ADO
+> template) and on GitHub Actions use Option 2 (the GHA composite action), passing
+> `ref: <feature-branch>`. Once the feature branch is merged into `main`, simply remove
+> the override (the default is already `main`) — no other changes to the pipeline needed.
 
 ---
 ## Option 1 — Official Azure DevOps template (recommended for ADO callers)
 
 **When to use it:** your CI/CD is **Azure DevOps** and you want the simplest,
 most maintainable integration. The TAS team publishes an official ADO template
-that encapsulates the boilerplate of Options 2, 3 and 4 (Python setup,
+that encapsulates the boilerplate (Python setup,
 orchestrator download, secret handling, JSON dispatch, output normalisation)
 behind a single, parameterised entry point. Your pipeline only declares
 parameters and consumes the standardised outputs.
 
 **How it works:** your pipeline references the template as a remote resource
-via `resources.repositories`, then invokes it as a stage with the desired
-`mode` parameter (`sync`, `async`, or `raw`). The template adds a stage
-named `TAS_IntegrationTests` containing a single job `RunTAS` with the
-relevant steps. Internally the template selects between the three invocation
-modes using compile-time conditionals, but exposes the **same** output
-variable names on the **same** step name (`tas`), so the caller's
-`stageDependencies[...].outputs['tas.<NAME>']` paths are identical regardless
-of the mode selected.
+via `resources.repositories`, then injects it into a job **you** own via
+`steps: - template:`, choosing the desired `mode` parameter (`sync`, `async`,
+or `raw`). Because it is a steps template, you control the wrapping stage/job
+(name, `dependsOn`, `condition`) and can invoke it multiple times in one
+pipeline. Internally the template selects between the three invocation modes
+using compile-time conditionals, but publishes the **same** output variable
+names on the **same** step name (`tas`, configurable via `stepName`), so the
+output paths are stable regardless of the mode selected.
 
 ### Prerequisites
 
@@ -159,6 +154,9 @@ parameters:
   - name: ref
     type: string
     default: main
+  - name: tags
+    type: string
+    default: "@runnable"
 
 resources:
   repositories:
@@ -169,24 +167,32 @@ resources:
       endpoint: pagoPA-projects     # GitHub service connection name
 
 stages:
-  - template: .azuredevops/templates/tas-integration-tests.yml@tas
-    parameters:
-      suite:       ${{ parameters.suite }}
-      environment: ${{ parameters.environment }}
-      mode:        ${{ parameters.mode }}
-      ref:         ${{ parameters.ref }}
+  - stage: IntegrationTests
+    displayName: "TAS integration tests"
+    jobs:
+      - job: RunTAS
+        pool: { vmImage: ubuntu-latest }
+        steps:
+          - template: .azuredevops/templates/tas-integration-tests.yml@tas
+            parameters:
+              suite:       ${{ parameters.suite }}
+              environment: ${{ parameters.environment }}
+              mode:        ${{ parameters.mode }}
+              ref:         ${{ parameters.ref }}
+              tags:        ${{ parameters.tags }}
+              githubToken: $(INTEGRATION_TEST_PAT)   # secret pipeline variable / KV-linked group
 
   - stage: Deploy
-    dependsOn: TAS_IntegrationTests
+    dependsOn: IntegrationTests
     condition: succeeded()
     jobs:
       - job: DeployApp
         pool: { vmImage: ubuntu-latest }
         variables:
-          # Output variables exposed by the template (step name normalised to 'tas'):
-          CORRELATION_ID: $[ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.CORRELATION_ID'] ]
-          RUN_ID:         $[ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.RUN_ID'] ]
-          RUN_URL:        $[ stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.RUN_URL'] ]
+          # Output variables published by the template step 'tas' in the RunTAS job above:
+          CORRELATION_ID: $[ stageDependencies.IntegrationTests.RunTAS.outputs['tas.CORRELATION_ID'] ]
+          RUN_ID:         $[ stageDependencies.IntegrationTests.RunTAS.outputs['tas.RUN_ID'] ]
+          RUN_URL:        $[ stageDependencies.IntegrationTests.RunTAS.outputs['tas.RUN_URL'] ]
         steps:
           - script: |
               echo "Correlation ID : $(CORRELATION_ID)"
@@ -211,21 +217,24 @@ documented in
 | `environment` | string | `uat` | Target environment: `dev` or `uat` |
 | `mode` | string | `sync` | Invocation mode: `sync`, `async`, or `raw` |
 | `ref` | string | `main` | TAS repo branch/tag to run the tests from |
-| `secretsGroup` | string | `tas-integration-secrets` | Variable group containing `INTEGRATION_TEST_PAT` |
+| `tags` | string | `""` | Behave tag expression to filter scenarios (e.g. `@runnable`, `@e2e`, `@a,@b`). Empty = workflow default (`@runnable`) |
+| `allure` | boolean | `false` | Also produce an Allure results directory (`allure-results/`) inside the artifact (extracted under `ARTIFACT_DIR` in sync mode) |
+| `githubToken` | string | — | GitHub PAT (`public_repo` + `actions:read`) forwarded to the orchestrator as `TAS_GITHUB_TOKEN`. Source it from a secret pipeline variable / Key Vault–linked group |
 | `pythonVersion` | string | `3.11` | Python version used for orchestrator-based modes |
 | `tasRepo` | string | `pagopa/pagopa-platform-integration-test` | TAS repository (rarely overridden) |
 | `workflowFile` | string | `test-automation-service.yml` | TAS workflow file (rarely overridden) |
-| `poolVmImage` | string | `ubuntu-latest` | Agent image used by the test job |
+| `stepName` | string | `tas` | Publishing step name; prefix used to read the output variables. Override when invoking the template multiple times in one job |
 | `publishTests` | boolean | `true` | Publish JUnit results to the ADO **Tests** tab via `PublishTestResults@2` (sync only — silently ignored in async/raw) |
 | `testRunTitle` | string | `""` | Title of the published test run. Empty = `TAS — <suite> / <env> (<ref>)` |
 
 ### Public contract (output variables)
 
-The template normalises the step that publishes outputs to `name: tas`,
-so the caller always reads from the same path regardless of `mode`:
+The template publishes its outputs from the step named `tas` (configurable
+via `stepName`). Read them from a downstream stage, substituting your own
+stage/job names:
 
 ```
-stageDependencies.TAS_IntegrationTests.RunTAS.outputs['tas.<NAME>']
+stageDependencies.<yourStage>.<yourJob>.outputs['tas.<NAME>']
 ```
 
 | Variable | `sync` | `async` | `raw` | Description |
@@ -263,21 +272,26 @@ resources:
       endpoint: pagoPA-projects
 ```
 
-Breaking changes to the template's public contract (stage/job/step names,
-parameter names, output variables) are released under a new major tag
+Breaking changes to the template's public contract (step name, output step
+name, parameter names, output variables) are released under a new major tag
 (`v1` → `v2`). Internal refactors that preserve the contract are released
 on the same tag.
 
-### Why prefer Option 1 over Options 3/5 on Azure DevOps
+### Why use the template
 
-| Concern | Options 3/4/5 (per-pipeline YAML)                                    | Option 5 (template) |
-|---|----------------------------------------------------------------------|---|
-| Lines of YAML in the caller | ~80                                                                  | ~15 |
-| Risk of `variables:` mapping/sequence syntax mistakes | High (caused HTTP 401 in practice)                                   | None (template handles it) |
-| Risk of leaking the PAT into the rendered shell script | Possible if `$(VAR)` is used instead of `$VAR`                       | None (template uses the safe pattern) |
-| Output variable path depends on the mode chosen | Yes (`trigger.*` vs `dispatch.*` vs n/a)                             | No (always `tas.*`) |
-| Centralised upgrade when the orchestrator CLI evolves | Each caller must update its YAML                                     | All callers benefit transparently |
-| Native ADO **Tests** tab populated automatically | No (caller must wire `PublishTestResults@2`, find the JUnit path, …) | Yes — built-in in sync mode |
+Compared with hand-rolling the GitHub API dispatch in your own pipeline, the
+template:
+
+- collapses ~80 lines of caller YAML down to ~15;
+- removes the `variables:` mapping/sequence pitfall that caused `HTTP 401` in
+  practice, and the PAT-leak risk of using `$(VAR)` instead of `$VAR` in the
+  rendered shell script;
+- keeps the output-variable path stable (`tas.*`) regardless of the `mode`
+  chosen;
+- upgrades its internal engine centrally, so every caller benefits without
+  editing its YAML;
+- populates the native ADO **Tests** tab automatically in sync mode
+  (`PublishTestResults@2` wired for you).
 
 ### Test reporting (ADO "Tests" tab)
 
@@ -307,18 +321,18 @@ remains usable for custom downstream logic).
 
 ## Option 2 — Official GitHub Actions composite action (recommended for advanced GHA callers)
 
-**When to use it:** your CI/CD is **GitHub Actions** and Option 1
+**When to use it:** your CI/CD is **GitHub Actions** and Option 3
 (`workflow_call`) is not enough — typically because you need to target a
 feature branch of the TAS repo at runtime (parallel development), or
 because you want a single switchable entry point that can run in `sync`,
 `async`, or `raw` mode depending on a workflow input. The TAS team
 publishes an official GHA composite action that encapsulates the same
-boilerplate as Options 2, 3 and 4 (Python setup, orchestrator download,
+boilerplate (Python setup, orchestrator download,
 supply-chain verification, secret wiring and stdout parsing) behind a
 single step.
 
 > **Reminder:** if your tests are already merged on `main` of the TAS
-> repo and you do not need a dynamic `ref`, prefer **Option 1**: it is
+> repo and you do not need a dynamic `ref`, prefer **Option 3**: it is
 > lighter, does not require a PAT, and natively exposes the same numeric
 > outputs (`passed`, `failed`, …).
 
@@ -372,6 +386,7 @@ jobs:
           environment:  uat
           mode:         ${{ inputs.mode || 'sync' }}
           ref:          ${{ inputs.ref  || 'main' }}
+          tags:         "@runnable"          # e.g. @e2e (with test_type: e2e); empty = workflow default
           github_token: ${{ secrets.INTEGRATION_TEST_PAT }}
         # The action automatically logs a run summary (sync) or dispatch
         # info (async/raw) at the end. Set `print_summary: "false"` to
@@ -404,6 +419,8 @@ documented in
 | `environment` | `uat` | — | Target environment: `dev` or `uat` |
 | `mode` | `sync` | — | Invocation mode: `sync`, `async`, or `raw` |
 | `ref` | `main` | — | TAS repo branch/tag to run the tests from |
+| `tags` | `""` | — | Behave tag expression (e.g. `@runnable`, `@e2e`, `@a,@b`). Empty = workflow default (`@runnable`) |
+| `allure` | `"false"` | — | Also produce an Allure results directory (`allure-results/`) inside the `test-results` artifact |
 | `github_token` | — | ✅ | GitHub PAT (`public_repo` + `actions:read`) |
 | `caller_id` | `${{ github.repository }}/${{ github.run_id }}` | — | Identifier of the calling system |
 | `correlation_id` | `${{ github.run_id }}-${{ github.run_attempt }}` | — | Unique ID to correlate the run |
@@ -523,352 +540,36 @@ jobs:
 | `duration` | `134.7` | Execution time (seconds) |
 | `outcome` | `success` | `success` or `failure` |
 
-> **No PAT required** for `workflow_call` invocations: GitHub Actions handles the call
-> natively. Test secrets are managed centrally in the `integration-tests` environment
-> of the TAS repository.
+> **No PAT required** for `workflow_call` invocations — **even when your caller lives in a
+> different repository**. GitHub resolves the `uses: …@<ref>` call natively (it does not go
+> through the REST API, so there is no token to supply), and because
+> `test-automation-service.yml` reads its test secrets from its **own** `integration-tests`
+> environment, those secrets are used regardless of the caller. Per GitHub's reusable-workflow
+> rules, environment secrets come from the repository that **defines** the workflow (the TAS
+> repo), not from the caller — so you do not pass, inherit, or configure any secret. A PAT is
+> only needed if you later want to download the run's artifact (see
+> [Downloading the full report artifact](#downloading-the-full-report-artifact)).
 
-### Why prefer Option 2 over Options 1/4 on GitHub Actions
+### Choosing between Option 2 and Option 3
 
-| Concern | Options 2/3 (per-workflow YAML) | Option 6 (composite action) |
-|---|---|---|
-| Lines of YAML in the caller | ~40 | ~10 |
-| Risk of forgetting the SHA-256 verification of the orchestrator | High | None (built-in, toggleable) |
-| Step output path depends on the mode chosen | Yes (`trigger.*` vs `dispatch.*`) | No (always the same step ID) |
-| Centralised upgrade when the orchestrator CLI evolves | Each caller must update its YAML | All callers benefit transparently |
-| Numeric outputs (`passed`, `failed`, …) parsed for you | No (caller must parse stdout) | Yes (exposed as step outputs) |
+Both are GitHub-Actions-native and run the same suites, so the choice is mostly a
+**preference between a native call and a packaged wrapper** — with one hard constraint:
 
----
+- **You need a dynamic `ref` (feature branch) or a switchable `sync`/`async`/`raw`
+  entry point** → you must use **Option 2**. `workflow_call` hardcodes the ref in
+  `uses: …@<ref>` and cannot vary it at runtime, which rules Option 3 out.
+- **Otherwise (tests on `main`, synchronous is fine)** → it is a genuine preference.
+  **Option 3** (`workflow_call`) is the most native and minimal: no PAT, native job
+  outputs, nothing to wrap. **Option 2** (composite action) wraps the same run but
+  additionally:
+  - keeps the caller to a single step (~10 lines);
+  - performs the SHA-256 verification of its internal engine for you (built-in, toggleable);
+  - keeps the step-output path stable regardless of the `mode` chosen;
+  - upgrades its internal engine centrally, so every caller benefits without editing its YAML;
+  - parses the numeric outputs (`passed`, `failed`, …) and exposes them as step outputs.
 
-## Option 4 — `tas_orchestrator.py --sync` (synchronous)
-
-**When to use it:** you want synchronous behaviour with the full summary visible in the step
-log, your pipeline is not GitHub Actions, or — a very common case during parallel development —
-**you need to target a feature branch** of the TAS repo.
-
-**How it works:** the Python script `tas_orchestrator.py` acts as a bridge between your CI/CD
-and the GitHub Actions API. It sends a `workflow_dispatch` to `test-automation-service.yml`,
-polls the run status every 15 seconds, downloads the results artifact upon completion, and
-prints a summary to the log. If tests fail it exits with code 1, otherwise with 0 —
-natively compatible with the `success()`/`failed()` logic of any pipeline.
-
-The key parameter of this option is `--ref`: it lets you specify which branch of the TAS repo
-to run the tests from. In a parallel development scenario, the calling team passes
-`--ref feature/new-wisp-tests` to point to the test branch still in progress. Once that
-branch is merged into `main`, simply remove the parameter (the default is already `main`).
-
-### From GitHub Actions
-
-```yaml
-# .github/workflows/deploy.yml  (in your repository)
-name: Build, Test & Deploy
-
-on:
-  push:
-    branches: [main]
-
-jobs:
-
-  integration-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install orchestrator dependencies
-        run: pip install requests
-
-      - name: Download tas_orchestrator.py
-        run: |
-          curl -sSfL \
-            "https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/main/scripts/tas_orchestrator.py" \
-            -o tas_orchestrator.py
-
-      # Exit 0 = all tests passed   → job succeeds → deploy runs
-      # Exit 1 = scenarios failed   → job fails    → deploy skipped
-      # Exit 2 = orchestration error (config / timeout)
-      - name: Run integration tests (sync)
-        run: |
-          python tas_orchestrator.py \
-            --type integration \
-            --suite wisp \
-            --env uat \
-            --caller-id "${{ github.repository }}" \
-            --sync
-            # Add --type {integration|e2e|api} to target a different test category
-            # Add --ref <feature-branch> if tests are not yet on main
-        env:
-          GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_PAT }}
-
-  deploy:
-    needs: integration-tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy application
-        run: ./deploy.sh
-```
-
-**Example output printed in the step log:**
-
-```
-======================================================
-   TEST AUTOMATION SERVICE — RESULTS SUMMARY
-======================================================
-   Correlation ID  : 3f2a1b4c-...
-   Caller          : pagopa/pagopa-checkout
-   Suite           : wisp
-   Type            : integration
-   Environment     : uat
-------------------------------------------------------
-   Passed          : 42
-   Failed          : 0
-   Skipped         : 3
-   Total           : 45
-   Duration        : 134.7s
-------------------------------------------------------
-   Outcome         : PASSED
-======================================================
-```
-
-### From Azure DevOps
-
-**Configuring the secret in Azure DevOps:**
-
-1. Go to **Pipelines → Library → Variable Groups** (or directly to the pipeline variables).
-2. Add a variable named `INTEGRATION_TEST_PAT` and mark it as **secret**.
-3. Value: the GitHub PAT with scopes `public_repo` + `actions:read`.
-
-```yaml
-# azure-pipelines.yml  (in your ADO repository)
-trigger: none
-
-parameters:
-  - name: suite
-    type: string
-    default: wisp
-    values: [wisp, all]
-  - name: environment
-    type: string
-    default: uat
-    values: [dev, uat]
-  - name: ref
-    type: string
-    default: main
-    displayName: "TAS repo branch to run the tests from"
-
-variables:
-  PYTHON_VERSION: "3.11"
-  TAS_REPO: "pagopa/pagopa-platform-integration-test"
-  TAS_REF: ${{ parameters.ref }}
-
-stages:
-
-  # ── Stage 1: Integration tests ────────────────────────────────────────────
-  - stage: IntegrationTests
-    displayName: "Integration Tests"
-    jobs:
-      - job: RunTests
-        displayName: "Trigger and wait for results"
-        pool:
-          vmImage: ubuntu-latest
-        steps:
-          - task: UsePythonVersion@0
-            inputs:
-              versionSpec: "$(PYTHON_VERSION)"
-
-          - script: pip install requests
-            displayName: "Install dependencies"
-
-          - script: |
-              curl -sSfL \
-                "https://raw.githubusercontent.com/$(TAS_REPO)/$(TAS_REF)/scripts/tas_orchestrator.py" \
-                -o tas_orchestrator.py
-            displayName: "Download tas_orchestrator.py"
-
-          - script: |
-              python tas_orchestrator.py \
-                --type integration \
-                --suite "${{ parameters.suite }}" \
-                --env "${{ parameters.environment }}" \
-                --ref "$(TAS_REF)" \
-                --caller-id "$(Build.Repository.Name)/$(Build.BuildId)" \
-                --sync
-              # Add --type {integration|e2e|api} to target a different test category
-            displayName: "Run integration tests (sync)"
-            env:
-              GITHUB_TOKEN: $(INTEGRATION_TEST_PAT)
-
-  # ── Stage 2: Deploy (runs only if IntegrationTests succeeded) ─────────────
-  - stage: Deploy
-    displayName: "Deploy"
-    dependsOn: IntegrationTests
-    condition: succeeded()
-    jobs:
-      - job: DeployApp
-        pool:
-          vmImage: ubuntu-latest
-        steps:
-          - script: echo "Deploying..."
-            displayName: "Deploy"
-```
-
----
-
-## Option 5 — `tas_orchestrator.py` (async)
-
-**When to use it:** you want to trigger tests without waiting for their outcome — for example
-to run them in parallel with other jobs, to gain observability without blocking the deploy,
-or purely for monitoring purposes.
-
-**How it works:** the script sends the `workflow_dispatch` and returns immediately with exit
-code 0, without waiting for completion. It prints `CORRELATION_ID` and `RUN_NAME`
-(`tas-{correlation_id}`) to stdout, which you can use to track or locate the run later.
-This mode also supports `--ref` to target a specific feature branch.
-
-### From GitHub Actions
-
-```yaml
-jobs:
-  trigger-tests:
-    runs-on: ubuntu-latest
-    outputs:
-      correlation_id: ${{ steps.trigger.outputs.correlation_id }}
-    steps:
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.11" }
-
-      - run: pip install requests
-
-      - run: |
-          curl -sSfL \
-            "https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/main/scripts/tas_orchestrator.py" \
-            -o tas_orchestrator.py
-
-      - name: Trigger tests (fire-and-forget)
-        id: trigger
-        run: |
-          OUTPUT=$(python tas_orchestrator.py \
-            --suite wisp \
-            --env uat \
-            --caller-id "${{ github.repository }}")
-            # Add --ref <feature-branch> if needed
-          echo "$OUTPUT"
-          CORRELATION_ID=$(echo "$OUTPUT" | grep '^CORRELATION_ID=' | cut -d= -f2)
-          echo "correlation_id=$CORRELATION_ID" >> "$GITHUB_OUTPUT"
-        env:
-          GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_PAT }}
-
-      - name: Continue without waiting
-        run: |
-          echo "Tests triggered in background."
-          echo "Monitor at: https://github.com/pagopa/pagopa-platform-integration-test/actions"
-          echo "Correlation ID: ${{ steps.trigger.outputs.correlation_id }}"
-```
-
-> **Note:** in async mode the script always exits with `0`. The caller does not block and
-> cannot determine the test outcome from the exit code.
-
-### From Azure DevOps
-
-```yaml
-stages:
-  - stage: TriggerTests
-    jobs:
-      - job: FireAndForget
-        pool:
-          vmImage: ubuntu-latest
-        steps:
-          - task: UsePythonVersion@0
-            inputs: { versionSpec: "3.11" }
-
-          - script: pip install requests
-            displayName: "Install dependencies"
-
-          - script: |
-              curl -sSfL \
-                "https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/main/scripts/tas_orchestrator.py" \
-                -o tas_orchestrator.py
-            displayName: "Download tas_orchestrator.py"
-
-          - script: |
-              python tas_orchestrator.py \
-                --suite wisp \
-                --env uat \
-                --caller-id "$(Build.Repository.Name)"
-                # Add --ref <feature-branch> if needed
-              # Prints CORRELATION_ID=<uuid> — save it if you want to track the run later
-            displayName: "Trigger tests (async)"
-            env:
-              GITHUB_TOKEN: $(INTEGRATION_TEST_PAT)
-
-  - stage: ContinueImmediately
-    dependsOn: TriggerTests
-    jobs:
-      - job: NextStep
-        pool: { vmImage: ubuntu-latest }
-        steps:
-          - script: echo "Tests triggered in background, pipeline continues."
-```
-
----
-
-## Option 6 — Raw `workflow_dispatch` (fire-and-forget, no script)
-
-**When to use it:** maximum simplicity, no results needed, just trigger the tests.
-This is the option with the fewest dependencies: no Python, no additional script required.
-
-**How it works:** a direct HTTP call is sent to the GitHub Actions API. The API responds
-immediately with `HTTP 204 No Content` — no `run_id` is returned. The `"ref"` field in the
-payload determines which branch of the TAS repo the tests run from and can be set freely
-at runtime.
-
-### From GitHub Actions
-
-```yaml
-steps:
-  - name: Trigger integration tests
-    run: |
-      curl -X POST \
-        -H "Accept: application/vnd.github+json" \
-        -H "Authorization: Bearer ${{ secrets.INTEGRATION_TEST_PAT }}" \
-        -H "X-GitHub-Api-Version: 2022-11-28" \
-        -d '{
-          "ref": "main",
-          "inputs": {
-            "test_type": "integration",
-            "test_suite": "wisp",
-            "environment": "uat",
-            "caller_id": "${{ github.repository }}"
-          }
-        }' \
-        https://api.github.com/repos/pagopa/pagopa-platform-integration-test/actions/workflows/test-automation-service.yml/dispatches
-```
-
-### From Azure DevOps (curl)
-
-```yaml
-- script: |
-    curl -X POST \
-      -H "Authorization: Bearer $(INTEGRATION_TEST_PAT)" \
-      -H "Accept: application/vnd.github+json" \
-      -H "X-GitHub-Api-Version: 2022-11-28" \
-      -d '{
-        "ref": "main",
-        "inputs": {
-          "test_type": "integration",
-          "test_suite": "wisp",
-          "environment": "uat",
-          "caller_id": "my-ado-pipeline"
-        }
-      }' \
-      https://api.github.com/repos/pagopa/pagopa-platform-integration-test/actions/workflows/test-automation-service.yml/dispatches
-  displayName: "Trigger integration tests (fire-and-forget)"
-```
-
-> The API returns `HTTP 204 No Content` on success. No run_id is returned.
-> Monitor the triggered run at:
-> `https://github.com/pagopa/pagopa-platform-integration-test/actions`
+> Trade-off: Option 2 requires a PAT (`github_token`) because it triggers the run via the
+> GitHub API, whereas Option 3 needs none.
 
 ---
 
@@ -876,26 +577,27 @@ steps:
 
 The TAS workflow always uploads a `test-results` artifact to the GHA run that executed it.
 The zip contains `test-summary.json`, `behave-results.json`, and the `junit/` folder with
-XML reports.
+XML reports. When the caller enables the `allure` input/parameter, it also contains an
+`allure-results/` folder that can be rendered to a browsable HTML report with the Allure
+CLI (`allure generate allure-results -o allure-report`, or `allure serve allure-results`);
+Java + Allure CLI 2.x are required.
 
 Two API calls are needed:
 1. List the run's artifacts → `GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts`
 2. Download the zip → `GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/zip`
 
-Availability of the `run_id` varies depending on the integration mode used.
+> **Options 1 & 2 do this for you.** In `sync` mode the ADO template extracts the artifact
+> under `ARTIFACT_DIR` (and publishes JUnit to the Tests tab), and the GHA composite action
+> exposes `run_id` / `run_url` as step outputs. The manual lookup below is only relevant for
+> **Option 3 (`workflow_call`)**, which does not expose the `run_id`.
 
 ---
 
-### From `tas_orchestrator.py --sync`
+### Downloading once you have the `run_id`
 
-The script prints `RUN_ID=<id>` to stdout before the summary. The `run_id` is therefore
-directly available without any additional API calls.
+With a `RUN_ID` in hand, download the artifact:
 
 ```bash
-# Capture RUN_ID from the script output
-RUN_ID=$(python tas_orchestrator.py --suite wisp --env uat --caller-id myapp --sync \
-  | grep '^RUN_ID=' | cut -d= -f2)
-
 # Download the artifact
 curl -sSfL \
   -H "Authorization: Bearer $GITHUB_TOKEN" \
@@ -909,32 +611,6 @@ curl -sSfL \
       -o test-results.zip
 
 unzip test-results.zip -d test-results/
-```
-
----
-
-### From `tas_orchestrator.py` (async)
-
-In async mode the script exits before the run is visible on GitHub, so it cannot provide
-the `run_id`. However, it prints `CORRELATION_ID` and `RUN_NAME` (`tas-{correlation_id}`),
-which allow you to locate the run by name after it completes.
-
-```bash
-CORRELATION_ID="<uuid-received-from-the-script>"
-RUN_NAME="tas-${CORRELATION_ID}"
-
-RUN_ID=$(curl -sSfL \
-  -H "Authorization: Bearer $GITHUB_TOKEN" \
-  -H "Accept: application/vnd.github+json" \
-  "https://api.github.com/repos/pagopa/pagopa-platform-integration-test/actions/runs?event=workflow_dispatch&per_page=50" \
-  | python -c "
-import sys, json
-runs = json.load(sys.stdin)['workflow_runs']
-match = next((r for r in runs if r['name'] == '${RUN_NAME}'), None)
-print(match['id'] if match else '')
-")
-
-# Then proceed with the download as shown in the --sync section above
 ```
 
 ---
@@ -972,15 +648,12 @@ to the workflow becomes the `run-name: tas-{correlation_id}`.
 
 ---
 
-### From raw `workflow_dispatch` / Option 4
-
-No run identifier is available at dispatch time (the API returns only `HTTP 204`).
-The only way to locate the run afterwards is to pass a `correlation_id` in the dispatch
-parameters and search by run-name as shown in the async section above.
-
----
-
 ## CLI reference — `tas_orchestrator.py`
+
+> `tas_orchestrator.py` is the **internal engine** wrapped by Option 1 (the ADO
+> template) and Option 2 (the GHA composite action). It is documented here for
+> reference and troubleshooting; invoking it directly is not a supported
+> integration option — use Option 1 or 2 instead.
 
 ```
 usage: tas_orchestrator.py [-h]
@@ -989,6 +662,8 @@ usage: tas_orchestrator.py [-h]
                                --env {dev,uat}
                                --caller-id CALLER_ID
                                [--correlation-id CORRELATION_ID]
+                               [--tags TAGS]
+                               [--allure]
                                [--sync]
                                [--repo REPO]
                                [--workflow WORKFLOW]
@@ -1003,6 +678,11 @@ arguments:
   --env             Target environment: dev | uat
   --caller-id       Identifier of the calling system (e.g. repository name)
   --correlation-id  Custom correlation ID (auto-generated UUID if omitted)
+  --tags            Behave tag expression to filter scenarios (e.g. '@runnable',
+                    '@e2e', '@a,@b' for OR, '~@wip' to exclude). Omitted =
+                    the workflow keeps its own default (@runnable).
+  --allure          Ask the TAS workflow to also produce an Allure results
+                    directory (allure-results/) inside the test-results artifact.
   --sync            Wait for completion and exit with the test outcome
   --repo            GitHub repo in owner/repo format (default: pagopa/pagopa-platform-integration-test)
   --workflow        Workflow filename to trigger (default: test-automation-service.yml)
@@ -1015,7 +695,9 @@ arguments:
                     actions/upload-artifact on GitHub Actions. Skipped when empty.
 
 environment variables:
-  GITHUB_TOKEN      Required. PAT with scopes repo + actions:read.
+  TAS_GITHUB_TOKEN  Required. PAT with scopes repo + actions:read. Falls back
+                    to GITHUB_TOKEN when unset (backward compatibility).
+  GITHUB_TOKEN      Legacy name for the PAT, used only if TAS_GITHUB_TOKEN is unset.
   GITHUB_REPO       Optional. Overrides --repo.
   WORKFLOW_FILE     Optional. Overrides --workflow.
 
@@ -1040,5 +722,5 @@ exit codes:
 | All scenarios fail with `health-check systems or subscription-key errors` | The branch in `--ref` does not have updated tests, or the secret is not configured in the `integration-tests` environment | Verify the target branch and check `INTEGRATION_TESTS_SECRETS` in the `integration-tests` environment of the TAS repo |
 | Calling GHA job fails despite `outcome=success` | `outputs:` at job level not propagated | Verify the TAS workflow has `outputs:` defined at the `run_tests` job level |
 | TAS job fails immediately with `TARGET_ENV is empty — workflow input 'environment' did not propagate` | The caller did not pass `environment` to `test-automation-service.yml`, or a wrapper stripped it | Pass `environment` explicitly via `workflow_call` `with:` / `workflow_dispatch` inputs / `tas_orchestrator.py --env`; do not override `TARGET_ENV` in the step `env:` |
-| GHA composite action: numeric outputs (`passed`, `failed`, …) are empty even though tests ran | The action was invoked with `mode: async` or `mode: raw` — those modes only know the dispatch outcome | Switch to `mode: sync` (Option 6 default) to get the parsed counters; use `correlation_id` + run-name `tas-<id>` to download the artifact later in async/raw |
+| GHA composite action: numeric outputs (`passed`, `failed`, …) are empty even though tests ran | The action was invoked with `mode: async` or `mode: raw` — those modes only know the dispatch outcome | Switch to `mode: sync` (Option 2 default) to get the parsed counters; use `correlation_id` + run-name `tas-<id>` to download the artifact later in async/raw |
 | GHA composite action manifest error `Unrecognized named-value: 'secrets'` | Action `description:` fields cannot contain `${{ … }}` expressions — only the action body can | Keep `${{ … }}` template expressions out of `inputs.*.description` and `outputs.*.description` (already handled in v1+ of the action) |

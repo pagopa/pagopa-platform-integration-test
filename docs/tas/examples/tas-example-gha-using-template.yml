@@ -5,7 +5,7 @@
 # Test Automation Service via the official GHA composite action.
 #
 # This is the recommended way to integrate from GitHub Actions when the
-# native `workflow_call` integration (Option 1) is not enough — typically
+# native `workflow_call` integration (Option 3) is not enough — typically
 # because you need to target a feature branch of the TAS repo, or because
 # you want to switch between sync / async / raw modes via a single input.
 # The composite action encapsulates Python setup, orchestrator download,
@@ -47,6 +47,14 @@ on:
         description: "TAS repo branch/tag"
         type: string
         default: main
+      tags:
+        description: "Behave tag expression (e.g. @runnable, @e2e)"
+        type: string
+        default: "@runnable"
+      allure:
+        description: "Also produce Allure results (allure-results/) in the artifact"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -71,11 +79,17 @@ jobs:
         uses: pagopa/pagopa-platform-integration-test/.github/actions/tas-integration-tests@main
         with:
           test_type:    ${{ inputs.test_type || 'integration' }}
-          suite:        ${{ inputs.suite       || 'wisp' }}
+          suite:        ${{ inputs.suite       || 'tas_pass' }}
           environment:  ${{ inputs.environment || 'uat'  }}
           mode:         ${{ inputs.mode        || 'sync' }}
           ref:          ${{ inputs.ref         || 'main' }}
           github_token: ${{ secrets.INTEGRATION_TEST_PAT }}
+          # Behave tag filter. Leave empty to keep the workflow default
+          # (@runnable); set to @e2e (with test_type: e2e) for the e2e suite.
+          tags:         ${{ inputs.tags || '@runnable' }}
+          # Also emit an Allure results directory (allure-results/) inside the
+          # test-results artifact; render it to HTML yourself (allure generate).
+          allure:       ${{ inputs.allure || 'false' }}
           # Optional overrides (defaults shown for reference):
           # python_version: "3.11"
           # tas_repo: "pagopa/pagopa-platform-integration-test"
