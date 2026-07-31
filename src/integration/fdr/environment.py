@@ -16,12 +16,13 @@ Notes for maintainers:
 
 import os
 
+from pathlib import Path
 from urllib.parse import unquote
 
 from src.utility.blob.azure_blob import AzureBlobService
 from src.utility.rest import build_rest_client, build_api_key_auth_from_config
-from src.integration.conf.configuration import commondata, secrets, settings
 from src.integration.fdr import common
+from src.utility.config.config_loader import _parse_config_content
 
 
 def before_all(context):
@@ -41,9 +42,8 @@ def before_all(context):
       (created by behave environment or other helpers). If those attributes can
       be missing in some test runs, add defensive initialization here.
     """
-    context.settings = settings
-    context.secrets = secrets
-    context.commondata = commondata
+
+    context.config = _load_test_config(os.getenv("ENV_FILE", "dev.json"))
 
     # Build FDR rest client
     fdr_rest_config = context.secrets["fdr"]
@@ -166,3 +166,21 @@ def clear_context(context):
     context.tot_payments = None
     context.sum_payments = None
     context.get_psp_response = None
+
+
+def _resolve_config_file(config_file: str) -> Path:
+    candidate = Path(config_file)
+    if candidate.is_file():
+        return candidate
+
+    local_candidate = Path(__file__).resolve().parent / config_file
+    if local_candidate.is_file():
+        return local_candidate
+
+    raise RuntimeError(f"File config non trovato: {config_file}")
+
+
+def _load_test_config(config_file: str) -> dict:
+    path = _resolve_config_file(config_file)
+    raw_content = path.read_text(encoding="utf-8")
+    return _parse_config_content(raw_content, path)
