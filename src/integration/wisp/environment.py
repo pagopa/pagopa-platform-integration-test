@@ -23,7 +23,7 @@ def before_all(context):
     """Initialize suite configuration, secrets, common data, and retry controls."""
     # load settings and secrets into context
     suite_name = "wisp"
-    target_env = os.getenv("TARGET_ENV") or "uat"
+    target_env = "uat"
 
     os.environ["TARGET_ENV"] = str(target_env)
     os.environ["suite"] = suite_name
