@@ -106,12 +106,12 @@ jobs:
           name: allure-report-wisp-uat
           path: allure-report-wisp
           if-no-files-found: warn
-
-  ai-analysis:
-    needs: wisp_tests
-    uses: ./.github/workflows/ai-report-analysis.yml
-    with:
-      prompt_artifact: ai-prompt-wisp
-      analysis_artifact_name: ai-analysis-wisp
-      max_tokens: '4096'
-    secrets: inherit
+          
+  # ai-analysis:
+  #   needs: wisp_tests
+  #   uses: ./.github/workflows/ai-report-analysis.yml
+  #   with:
+  #     prompt_artifact: ai-prompt-wisp
+  #     analysis_artifact_name: ai-analysis-wisp
+  #     max_tokens: '4096'
+  #   secrets: inherit
