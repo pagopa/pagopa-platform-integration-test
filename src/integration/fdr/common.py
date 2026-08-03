@@ -8,56 +8,27 @@ def check_health(context):
 
 def build_create_fdr_request_payload(context):
     # Build the request payload for creating a new flow structure
-    context.request_date = date.today().isoformat();
+    context.request_date = date.today().isoformat()
     return {
-        "fdr": [
-            f"{context.fdr_id}"
-        ],
-        "fdrDate": [
-            f"{context.request_date}"
-        ],
+        "fdr": f"{context.fdr_id}",
+        "fdrDate": f"{context.request_date}",
         "sender": {
             "type": f"{context.psp.type}",
-            "id": [
-            f"{context.sender.id}"
-            ],
-            "pspId": [
-            f"{context.sender.psp_id}"
-            ],
-            "pspName": [
-            f"{context.sender.name}"
-            ],
-            "pspBrokerId": [
-            f"{context.sender.broker_id}"
-            ],
-            "channelId": [
-            f"{context.sender.channel_id}"
-            ]
+            "id": f"{context.sender.id}",
+            "pspId": f"{context.sender.psp_id}",
+            "pspName": f"{context.sender.name}",
+            "pspBrokerId": f"{context.sender.broker_id}",
+            "channelId": f"{context.sender.channel_id}",
+            "password": f"{context.sender.password}"
         },
         "receiver": {
-            "id": [
-            f"{context.receiver.id}"
-            ],
-            "organizationId": [
-            f"{context.receiver.organization_id}"
-            ],
-            "organizationName": [
-            f"{context.receiver.organization_name}"
-            ]
+            "id": f"{context.receiver.id}",
+            "organizationId": f"{context.receiver.organization_id}",
+            "organizationName": f"{context.receiver.organization_name}"
         },
-        "regulation": [
-            "SEPA - Bonifico X"
-        ],
+        "regulation": "SEPA - Bonifico X",
         "regulationDate": f"{context.request_date}",
-        "bicCodePouringBank": [
-            f"{context.bic_code_pouring_bank}"
-        ],
-        "totPayments": [
-            f"{context.tot_payments}"
-        ],
-        "sumPayments": [
-            f"{context.sum_payments}"
-        ]
+        "bicCodePouringBank": f"{context.bic_code_pouring_bank}"
     }
 
 def create_fdr(context, fdr_id, psp_id):
