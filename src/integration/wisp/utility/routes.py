@@ -5,7 +5,7 @@ from . import constants as constants
 
 def _resolve_services(context):
     """Resolve services from root settings or active TARGET_ENV section."""
-    settings = context.settings
+    settings = context.environment
     services = getattr(settings, 'services', None)
     if services:
         return services
@@ -46,24 +46,24 @@ def get_primitive_url(context, primitive):
     match primitive.lower():
         case 'nodoinviarpt':
             service_data = _get_service(services_cfg, 'nodo_per_pa')
-            return _get_service_url(service_data), context.secrets.NUOVA_CONNETTIVITA_SUBSCRIPTION_KEY, constants.ResponseType.XML
+            return _get_service_url(service_data), context.environment.NUOVA_CONNETTIVITA_SUBSCRIPTION_KEY, constants.ResponseType.XML
         case 'nodoinviacarrellorpt':
             service_data = _get_service(services_cfg, 'nodo_per_pa')
-            return _get_service_url(service_data), context.secrets.NUOVA_CONNETTIVITA_SUBSCRIPTION_KEY, constants.ResponseType.XML
+            return _get_service_url(service_data), context.environment.NUOVA_CONNETTIVITA_SUBSCRIPTION_KEY, constants.ResponseType.XML
         case 'checkposition':
             service_data = _get_service(services_cfg, 'nodo_per_pm_v1')
             url = _get_service_url(service_data) + '/checkPosition'
-            return url, context.secrets.NODO_SUBSCRIPTION_KEY, constants.ResponseType.JSON
+            return url, context.environment.NODO_SUBSCRIPTION_KEY, constants.ResponseType.JSON
         case 'activatepaymentnoticev2':
             service_data = _get_service(services_cfg, 'node_for_psp')
-            return _get_service_url(service_data), context.secrets.NODO_SUBSCRIPTION_KEY, constants.ResponseType.XML
+            return _get_service_url(service_data), context.environment.NODO_SUBSCRIPTION_KEY, constants.ResponseType.XML
         case 'closepaymentv2':
             service_data = _get_service(services_cfg, 'nodo_per_pm_v2')
             url = _get_service_url(service_data) + '/closepayment'
-            return url, context.secrets.NODO_SUBSCRIPTION_KEY, constants.ResponseType.JSON
+            return url, context.environment.NODO_SUBSCRIPTION_KEY, constants.ResponseType.JSON
         case 'sendpaymentoutcomev2':
             service_data = services.get('node-for-psp')
-            return service_data['url'], context.secrets.TECHNICAL_SUPPORT_SUBSCRIPTION_KEY, constants.ResponseType.XML
+            return service_data['url'], context.environment.TECHNICAL_SUPPORT_SUBSCRIPTION_KEY, constants.ResponseType.XML
 
 
 # The method permits to retrieve the REST URL starting from action
@@ -79,19 +79,19 @@ def get_rest_url(context, action):
         case 'search_in_re_by_iuv':
             service_data = _get_service(services_cfg, 'technical_support')
             url = _get_service_url(service_data) + '/organizations/{creditor_institution}/iuv/{iuv}?dateFrom={date_from}&dateTo={date_to}'
-            return url, context.secrets.TECHNICAL_SUPPORT_SUBSCRIPTION_KEY
+            return url, context.environment.TECHNICAL_SUPPORT_SUBSCRIPTION_KEY
 
         case 'get_paymentposition_by_iuv':
             service_data = _get_service(services_cfg, 'gpd_core')
             url = _get_service_url(service_data) + '/organizations/{creditor_institution}/paymentoptions/{iuv}/debtposition'
-            return url, context.secrets.GPD_SUBSCRIPTION_KEY
+            return url, context.environment.GPD_SUBSCRIPTION_KEY
 
         case 'create_paymentposition_and_publish':
             service_data = _get_service(services_cfg, 'gpd_core')
             url = _get_service_url(service_data) + '/organizations/{creditor_institution}/debtpositions?toPublish=true'
-            return url, context.secrets.GPD_SUBSCRIPTION_KEY
+            return url, context.environment.GPD_SUBSCRIPTION_KEY
 
         case 'create_paymentposition':
             service_data = _get_service(services_cfg, 'gpd_core')
             url = _get_service_url(service_data) + '/organizations/{creditor_institution}/debtpositions?toPublish=false'
-            return url, context.secrets.GPD_SUBSCRIPTION_KEY
+            return url, context.environment.GPD_SUBSCRIPTION_KEY

@@ -14,9 +14,9 @@ def get_page(context):
     return context.page
 
 def get_required_config(context, name: str):
-    config = getattr(context, "test_config", None)
-    if not isinstance(config, dict):
-        raise RuntimeError("context.test_config non disponibile o non valido")
+    config = getattr(context, "config", None)
+    if config is None:
+        raise RuntimeError("context.config non disponibile o non valido")
 
     value = config.get(name)
     if value is None:

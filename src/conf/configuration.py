@@ -2,13 +2,15 @@
 """
 import logging
 import os
-from src.utility.config.config_loader import load_json_config
+from src.utility.config.config_loader import load_json_config, resolve_value
 from src.utility.config.secrets.azure_secret_resolver import AzureKeyVaultSecretResolver
 from src.utility.config.secrets.apim_subscription_resolver import ApimSubscriptionResolver
 from src.utility.config.secrets.secret_resolver import DictSecretResolver
 
 import urllib3
 from dynaconf import Dynaconf
+
+SECRETS_PATH = './config/.secrets.yaml'
 
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -19,37 +21,50 @@ def check_apim_variables():
     missing_vars = [var for var in required_vars if not os.environ.get(var)]
     return True if missing_vars == [] else False
 
-
-def load_settings(config_folder_root: str, config_file_name: str = "config.yaml", target_section: str = "", env_var_prefix: str = ""):
-    """Load settings from a YAML configuration file using Dynaconf.
+def solve_configurations(configurations, secret_resolver) -> dict:
+    """Extract secrets placeholders from the configurations.
 
     Args:
-        config_folder_root (str): The root folder where the configuration file is located. (example: config_folder_root = os.path.join(os.path.dirname(os.path.abspath(__file__))) to get the path of the current folder.)
-
-        config_file_name (str, optional): The name of the configuration file. Defaults to "config.yaml".
-        
-        target_section (str, optional): The target section desired inside the settings file (example: dev, uat, wisp, fdr), returns the settings for that section only. Defaults to "" (empty string). If empty, the entire settings file will be returned.
-        
-        env_var_prefix (str, optional): The prefix for environment variables. Defaults to "" (empty string). If empty, no prefix will be used.
+        configurations (dict): The configurations loaded from the settings file.
 
     Returns:
-       A sequence object containing the settings for the specified target environment in the specified path.
+        dict: A dictionary containing the secrets placeholders to be resolved.
     """
-    settings = Dynaconf(
-        envvar_prefix=env_var_prefix if env_var_prefix != "" else "",
-        settings_files=[os.path.join(config_folder_root, config_file_name)],
-    )
+    for key, value in configurations.items():
+        if isinstance(value, dict):
+            solve_configurations(value, secret_resolver)
+        if isinstance(value, str) and value.startswith('$'):
+            configurations[key] = resolve_value(value, secret_resolver)  # Placeholder for resolved secret
+    return configurations
 
-    if target_section:
-        settings = settings[str(target_section)]
-   
+def load_configurations(config_folder_root: str):
+    """Load settings, secrets, and common data from configuration files.
 
-    return settings
+    Args:
+        config_folder_root (str): The root folder where the configuration files are located.
+    Returns:
+        tuple: A tuple containing settings, secrets, and common data dictionaries.
+    """
+    if not config_folder_root:
+        raise ValueError("config_folder_root must be provided to load configurations.")
 
+    if not os.path.isdir(config_folder_root):
+        raise ValueError(f"config_folder_root '{config_folder_root}' is not a valid directory.")
 
-def load_secrets(suite: str = "",
-                 target_env: str = "",
-                 settings: dict = None) -> dict:
+    env_file = os.path.join(config_folder_root, os.getenv('TARGET_ENV', 'uat') + ".yaml")
+
+    if not os.path.isfile(env_file):
+        raise FileNotFoundError(f"Configuration file '{env_file}' not found.")
+
+    configurations =  Dynaconf(
+            settings_files=[env_file]
+        )
+    secret_resolver = get_secrets_resolver()
+    configurations = solve_configurations(configurations, secret_resolver)
+    return configurations
+    
+
+def load_secrets(secrets_to_solve: dict) -> dict:
     """Load secrets resolver and resolved secrets according to runtime configuration.
     # Keep canonical env vars aligned for loaders that resolve placeholders
     # from environment context.
@@ -78,25 +93,8 @@ def load_secrets(suite: str = "",
         secrets: A dictionary containing the resolved secrets for the specified suite and target environment.
     """
 
-    # Resolve target environment (fallback to TARGET_ENV -> 'uat')
-    if not target_env:
-        if 'TARGET_ENV' not in os.environ:
-            os.environ['TARGET_ENV'] = 'uat'
-        target_env = os.environ['TARGET_ENV']
-
-   
-    # Resolve suite name 
-    if not suite:
-        if 'suite' not in os.environ:
-            raise RuntimeError("Suite name not set: set the suite environment variable or pass its name to load_secrets") 
-        suite = os.environ.get('suite')
-
-    os.environ['TARGET_ENV'] = str(target_env)
-    os.environ['suite'] = str(suite)
-   
-
-    secrets_resolver = None
-    secrets = {}
+    if secrets_to_solve is None:
+        raise ValueError("secrets_to_solve must be provided to load secrets.")
 
     if os.getenv("AZURE_KEY_VAULT_URL"):
         # Use Azure Key Vault resolver (requires AZURE_KEY_VAULT_URL env var)
@@ -106,15 +104,13 @@ def load_secrets(suite: str = "",
     else:
         # resolve secrets from DictSecretResolver for local testing, takes a dictonary of secrets which he uses to resolve secrets founds in the test config file
         try:
-            if settings is None:
-                raise RuntimeError("Settings must be provided when not using Azure Key Vault for secrets resolution.")
-            all_secrets = Dynaconf(settings_files=[settings['SECRET_PATH']])
-            secrets_resolver = DictSecretResolver(all_secrets[str(target_env).lower()])
+            all_secrets = Dynaconf(settings_files=[SECRETS_PATH])
+            secrets_resolver = DictSecretResolver(all_secrets[str(os.getenv('TARGET_ENV', 'uat')).lower()])
         except Exception as e:
-            logging.exception("Failed to load secrets from %s", settings[target_env]['SECRET_PATH'])
+            logging.exception("Failed to load secrets from %s", SECRETS_PATH)
             raise RuntimeError("Failed to initialize local secrets resolver") from e
     try:
-        secrets = load_json_config(secrets_resolver)
+        secrets = load_json_config(secrets_resolver, secrets_to_solve)
     except Exception as e:
         logging.exception("Failed to load secrets using resolver")
         raise RuntimeError("Failed to resolve secrets") from e
@@ -123,6 +119,22 @@ def load_secrets(suite: str = "",
             secrets_resolver.close_client()
 
     return secrets
+
+def get_secrets_resolver() -> Any:
+    """Get the appropriate secrets resolver based on the environment configuration.
+
+    Returns:
+        An instance of the secrets resolver (AzureKeyVaultSecretResolver or DictSecretResolver).
+    """
+    if os.getenv("AZURE_KEY_VAULT_URL"):
+        return AzureKeyVaultSecretResolver()
+    else:
+        try:
+            all_secrets = Dynaconf(settings_files=[SECRETS_PATH])
+            return DictSecretResolver(all_secrets[str(os.getenv('TARGET_ENV', 'uat')).lower()])
+        except Exception as e:
+            logging.exception("Failed to load secrets from %s", SECRETS_PATH)
+            raise RuntimeError("Failed to initialize local secrets resolver") from e
 
 
 def load_commondata(commondata_file_name: str = "commondata.yaml", config_folder_root: str = None) -> dict:

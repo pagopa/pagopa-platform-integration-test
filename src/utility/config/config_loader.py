@@ -71,7 +71,7 @@ def _to_attribute_dict(value: Any) -> Any:
     return value
 
 
-def _resolve_value(value: Any, secret_resolver: Any) -> Any:
+def resolve_value(value: Any, secret_resolver: Any) -> Any:
     # Se il valore è una stringa del tipo "$nome_secret", lo sostituiamo.
     if isinstance(value, str):
         match = SECRET_PLACEHOLDER_PATTERN.match(value)
@@ -114,10 +114,10 @@ def _resolve_value(value: Any, secret_resolver: Any) -> Any:
 
     # Ricorsione su oggetti JSON annidati.
     if isinstance(value, dict):
-        return {k: _resolve_value(v, secret_resolver) for k, v in value.items()}
+        return {k: resolve_value(v, secret_resolver) for k, v in value.items()}
 
     if isinstance(value, list):
-        return [_resolve_value(item, secret_resolver) for item in value]
+        return [resolve_value(item, secret_resolver) for item in value]
 
     # Numeri, booleani, null ecc. restano invariati.
     return value
@@ -214,7 +214,7 @@ def _parse_config_content(raw_content: str, file_path: Path) -> Dict[str, Any]:
     return parsed
 
 
-def load_json_config(secret_resolver: Any | list[Any]) -> Dict[str, Any]:
+def load_json_config(secret_resolver: Any | list[Any], secrets_to_solve: Dict) -> Dict[str, Any]:
     """
     Legge un file di configurazione e risolve i placeholder "$var_name".
 
@@ -230,23 +230,7 @@ def load_json_config(secret_resolver: Any | list[Any]) -> Dict[str, Any]:
         default_headers:{"Content-Type":"application/json"}
         oauth2:{"client_id":"my-client","client_secret":"$oauth_client_secret"}
     """
-   
-    if(os.getenv(TARGET_ENV_VAR) is None or os.getenv(TARGET_ENV_VAR) == "") or (os.getenv(SUITE_ENV_VAR) is None or os.getenv(SUITE_ENV_VAR) == ""):
-        raise JsonConfigLoaderError(f"Environment variable '{TARGET_ENV_VAR}' or '{SUITE_ENV_VAR}' is not set. Set them to the target environment (e.g., 'uat', 'dev') and suite (e.g., 'wisp', 'cup').")
 
-    suite_file_path = Path(SUITE_FILE_PATH_PREFIX.replace("{suite}", os.getenv(SUITE_ENV_VAR)))
-    if not suite_file_path.exists():
-        raise JsonConfigLoaderError(f"Config file not found: {suite_file_path}")
-
-    suite_content = suite_file_path.read_text(encoding="utf-8")
-   
-    parsed_content = _parse_config_content(suite_content, suite_file_path).get(str(os.getenv(TARGET_ENV_VAR)).lower(), {})
-
-    if not parsed_content:
-        raise JsonConfigLoaderError(
-            f"Impossible to find or parse configuration for environment '{os.getenv(TARGET_ENV_VAR)}' and suite '{os.getenv(SUITE_ENV_VAR)}' in file {suite_file_path}."
-        )
-
-    resolved = _resolve_value(parsed_content, secret_resolver)
+    resolved = resolve_value(secrets_to_solve, secret_resolver)
     return _to_attribute_dict(resolved)
     

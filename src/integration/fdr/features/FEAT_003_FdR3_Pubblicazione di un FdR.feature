@@ -27,7 +27,7 @@ Scenario: Pubblicazione di un Fdr
 #======================================================
 
 @PubblicazioneFdR_003_02
-Scenario outline: Pubblicazione FdR KO
+Schema dello scenario: Pubblicazione FdR KO
   Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
   E il PSP vuole recuperare un FdR con identificativo diverso da "<data_regolamento><istituto_mittente>-<flusso>"
   Quando il PSP avvia una richiesta di pubblicazione flusso attraverso l'API "Publish an existing flow in draft status"
