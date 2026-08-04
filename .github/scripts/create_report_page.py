@@ -14,7 +14,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 GITHUB_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 from src.utility.confluence_utils import create_confluence_auth, create_confluence_page
-from src.conf.configuration import load_settings
+from src.conf.configuration import load_configurations
 
 
 run = {
@@ -176,7 +176,7 @@ def main():
 
 
   # Read the last history data from stats.json
-  full_config = load_settings(config_folder_root=GITHUB_ROOT)
+  full_config = load_configurations(GITHUB_ROOT)
   for dir in sorted(os.listdir(processed_dir)):
     run_dir = os.path.join(processed_dir, dir)
     if os.path.isdir(run_dir):
