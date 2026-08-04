@@ -4,8 +4,15 @@ import os
 
 def send_slack_notification():
     webhook_url = os.environ["SLACK_QA_WEBHOOK_URL"]
-    apps = ["wisp", "checkout-e2e"]
+    apps = ["wisp", "checkout-e2e", "openapi-fdr"]
     base_path = "public"
+
+    processed_dir = "artifacts"
+    if not os.path.isdir(processed_dir) or os.listdir(processed_dir) == []:
+        print(f"[INFO][main] No processed reports found in {processed_dir}. Exiting.")
+        return
+
+    print(f"[INFO][main] Found processed reports in {processed_dir}.")
 
     blocks = [
         {
@@ -15,10 +22,15 @@ def send_slack_notification():
         {"type": "divider"}
     ]
 
-    for app in apps:
-        app_title = app.upper() + " Tests"
-        stats_file = f"{base_path}/{app}-tests/last-history/stats.json"
-        summary_file = f"{base_path}/{app}-tests/last-history/widgets/summary.json"
+    for dir in os.listdir(processed_dir):
+
+        if dir.endswith('-dev'):
+            continue  # Skip dev runs
+
+        app_title = '-'.join(dir.split('-')[:-1]).upper() + " Tests"
+        run_dir = os.path.join(processed_dir, dir)
+        stats_file = os.path.join(run_dir, "stats.json")
+        summary_file = os.path.join(run_dir, "widgets/summary.json")
 
         if os.path.exists(stats_file) and os.path.exists(summary_file):
             with open(stats_file) as f:
