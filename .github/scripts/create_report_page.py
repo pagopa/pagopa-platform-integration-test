@@ -176,7 +176,8 @@ def main():
 
 
   # Read the last history data from stats.json
-  full_config = load_configurations(GITHUB_ROOT)
+  full_config = Dynaconf(
+            settings_files=[os.path.join(GITHUB_ROOT,'config.yaml')])
   for dir in sorted(os.listdir(processed_dir)):
     run_dir = os.path.join(processed_dir, dir)
     if os.path.isdir(run_dir):
