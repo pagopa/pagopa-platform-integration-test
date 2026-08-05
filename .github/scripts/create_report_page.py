@@ -31,7 +31,7 @@ TEST_CASES_DIR = 'data/test-cases'
 MISSING_DATA = 'N/A'
 PROCESSED_REPORTS_DIR = 'tmp_processed_reports'
 PAGE_COMPONENTS_DIR = Path(__file__).resolve().parents[1] / 'page_components' / 'test_report_page'
-GH_PAGES_URL = 'https://pagopa.github.io/pagopa-platform-integration-test/{suite_folder}/{run}/index.html'
+GH_PAGES_URL = 'https://pagopa.github.io/pagopa-platform-integration-test/{suite_folder}/{run}/index.html#suites/{run_id}'
 TITLE_COMPONENT_KEY = 'title'
 GO_TABLE_COMPONENT_KEY = 'go_table'
 MAIN_TABLE_COMPONENT_KEY = 'main_table'
@@ -78,7 +78,6 @@ def read_run_id(run_file):
             run['uid'] = run_data.get('uid')
     except Exception as e:
         raise RuntimeError(f"Failed to read run ID from {run_file}. Error: {str(e)}")
-
 
 # use headerOnlyPage instead of actually calling the API to get the content of the page
 def read_stats(stats_file,suite_test_folder):
@@ -164,6 +163,14 @@ def build_page(folder_name, page_components, config):
     return page
   except Exception as e:
     raise RuntimeError(f"Failed to build page for {folder_name}. Error: {str(e)}")
+  
+def build_gh_pages_url(suite_folder):
+  try:
+    url = GH_PAGES_URL.replace('{suite_folder}', suite_folder).replace('{run}',run["start"] + "-" + run['env']).replace('{run_id}', run['uid'])
+    print(f"[INFO][build_gh_pages_url] Built GH Pages URL: {url}")
+    return url
+  except Exception as e:
+    raise RuntimeError(f"Failed to build GH Pages URL for suite_folder={suite_folder}, run={run}. Error: {str(e)}")
 
 
 def read_config(key,config):

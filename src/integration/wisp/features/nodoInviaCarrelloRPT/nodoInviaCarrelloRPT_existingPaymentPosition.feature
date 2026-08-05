@@ -213,7 +213,7 @@ Funzionalità: L'utente paga carrelli di pagamento da posizione debitoria esiste
   # ===============================================================================================
   # ===============================================================================================
 
-  @runnable @nodo_invia_carrello_rpt @unhappy_path
+  @nodo_invia_carrello_rpt @unhappy_path
   @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_16
   Scenario: L'utente paga un carrello multibeneficiario gia esistente in GPD
     Dato un carrello di RPT multi-beneficiario

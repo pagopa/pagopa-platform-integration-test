@@ -242,7 +242,7 @@ def main():
                 print(f"[INFO][main] copy everything from {source_dir} to {processed_run_dir}")
                 shutil.copytree(source_dir, processed_run_dir)
                 # render AI analysis page (no-op when artifact missing)
-                deploy_ai_analysis(artifact_dir, run_dir, last_history_dir, app, stats.get("start"), ai_model)
+                # deploy_ai_analysis(artifact_dir, run_dir, last_history_dir, app, stats.get("start"), ai_model)
                 # build index page
                 build_index_page(root_dir)
                 processed = True
