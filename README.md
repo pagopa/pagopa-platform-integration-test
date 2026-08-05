@@ -242,6 +242,7 @@ Inoltre, è presente l'`ApimSubscriptionResolver`, utilizzato per risolvere le s
 Per entrambe le casistiche, è necessario che nel workspace sia presente:
 - un file specifico per la singola suite, denominato "{target_env}.yaml" (es. uat.yaml), contenente sia i secrets della suite che le sue configurazioni (es. url di un servizio, timeout, ecc...)
 
+
 L'applicazione risolverà poi i secret presenti nel file e li riassegnerà ai propri attributi all'interno dell'oggetto configuration ricavato dal file "{target_env}.yaml", per accedere al secret bisognerà richiamarlo utilizzando il nome ad esso associato nel file in cui è presente. 
 
 Esempio:
@@ -300,7 +301,17 @@ context.config = load_configurations(os.path.dirname(os.path.abspath(__file__)))
 ```
 
 #### Risoluzione secret in locale
-Per la risoluzione locale dei secret è necessario che sia presente un file `secrets.yaml` sotto `./config/`, affinchè il sistema possa utilizzarlo per risolvere i secret presenti nel file di config.
+Per la risoluzione locale dei secret è necessario che sia presente un file `secrets.yaml` sotto `./config/`, affinchè il sistema possa utilizzarlo per risolvere i secret presenti nel file di config, e che il file in questione sia diviso per env.
+
+Esempio:
+```
+uat:
+  secret_1: XXX
+  secret_2: YYY
+dev:
+  secret_1: XXX
+  secret_2: YYY
+```
 
 #### Autenticazione Azure
 L'autenticazione verso Azure avviene tramite `DefaultAzureCredential`, che prova in sequenza le credenziali disponibili nell'ambiente di esecuzione fino a trovare un'identità valida. Questo meccanismo viene usato sia per la risoluzione dei secret dal Key Vault Azure sia per il recupero delle subscription key da APIM, così da avere un unico modello di autenticazione per entrambi i resolver.

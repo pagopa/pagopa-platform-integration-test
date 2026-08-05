@@ -21,7 +21,7 @@ def check_apim_variables():
     missing_vars = [var for var in required_vars if not os.environ.get(var)]
     return True if missing_vars == [] else False
 
-def solve_configurations(configurations, secret_resolver) -> dict:
+def solve_configurations(configurations) -> dict:
     """Extract secrets placeholders from the configurations.
 
     Args:
@@ -30,11 +30,16 @@ def solve_configurations(configurations, secret_resolver) -> dict:
     Returns:
         dict: A dictionary containing the secrets placeholders to be resolved.
     """
+    secret_resolver = None
     for key, value in configurations.items():
         if isinstance(value, dict):
-            solve_configurations(value, secret_resolver)
+            solve_configurations(value)
         if isinstance(value, str) and value.startswith('$'):
+            # obtain the secrets resolver ONLY if there are secrets to resolve, to avoid unnecessary initialization
+            if secret_resolver is None:
+                secret_resolver = get_secrets_resolver()
             configurations[key] = resolve_value(value, secret_resolver)  # Placeholder for resolved secret
+
     return configurations
 
 def load_configurations(config_folder_root: str):
@@ -59,8 +64,7 @@ def load_configurations(config_folder_root: str):
     configurations =  Dynaconf(
             settings_files=[env_file]
         )
-    secret_resolver = get_secrets_resolver()
-    configurations = solve_configurations(configurations, secret_resolver)
+    configurations = solve_configurations(configurations)
     return configurations
     
 

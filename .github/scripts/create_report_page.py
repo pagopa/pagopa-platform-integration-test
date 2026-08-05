@@ -42,9 +42,6 @@ COMPONENTS_PLACEHOLDER = '{components}'
 TABLE_CLOSING_TAG = '</tr></tbody></table>'
 
 
-
-
-
 def read_page_components():
   page_components = dict()
   try:
