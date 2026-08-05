@@ -134,20 +134,20 @@ def read_runs(dir):
     raise RuntimeError(f"Failed while processing runs in {dir}. Error: {str(e)}")
 
 
-
 def build_page(folder_name, page_components, config):
   try:
     page = ''
     page += page_components[TITLE_COMPONENT_KEY].replace(TITLE_PLACEHOLDER, (run["date"] + " - " + folder_name))
     page += page_components[GO_TABLE_COMPONENT_KEY]
     main_table = page_components[MAIN_TABLE_COMPONENT_KEY]
+
+    # set the run['env'] to 'UAT' if it is not set
+    if not run['env']:
+      run['env'] = 'UAT'
+        
     for field in run:
       if field != 'runs':
         main_table = main_table.replace(f'{{{field}}}', str(run.get(field, MISSING_DATA)))
-    # case where we are not processing openapi-fdr which brings the env in the folder name,
-    # so we don't have the env in the run['env'] field, we replace the placeholder with 'UAT' as default
-    if not run['env']:
-      main_table = main_table.replace('{env}', 'UAT')
     page += main_table
     if run['failed'] > 0:
       page += page_components[TABLE_HEADER_COMPONENT_KEY]
@@ -237,10 +237,10 @@ def main():
             page_components = read_page_components()
             # read the suite configuration from config.yaml
             suite_config = read_config(suite, full_config)
-            # build the Confluence page content 
-            page = build_page(suite, page_components, suite_config)
             # create the title for the Confluence page
             page_title = str(run["date"]).replace('-', '') + " " +str(run["time"]) + " " + "Analisi RUN" + " " + suite.upper() + (" - " + run['env'].upper() if run['env'] else "")
+            # build the Confluence page content 
+            page = build_page(suite, page_components, suite_config)
             # create the Confluence page using the built content and title
             create_confluence_page(page.strip(), config=suite_config, page_title=page_title, auth_obj=create_confluence_auth())
         except Exception as e:
