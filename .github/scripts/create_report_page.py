@@ -212,7 +212,7 @@ def main():
 
       if dir.startswith('openapi-fdr'):
         suite = '-'.join(dir.split('-')[:-1]) 
-        run['env'] = dir.split('-')[-1] 
+        run['env'] = dir.split('-')[-1].upper()
       else:
         suite = str(dir)
 
