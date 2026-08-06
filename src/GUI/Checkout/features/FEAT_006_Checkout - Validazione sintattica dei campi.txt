@@ -24,23 +24,6 @@ Scenario outline: Inserimento dati - errori -  Inserimento codice avviso errato
   | 12345678901234567890 |
   | 12345678             |
   | aaabbbcccdddeeefff   |
-  
-#======================================================
-#======================================================
-
-@CheckoutValidazioneCampi_006_01
-Scenario outline: Inserimento dati - errori -  Inserimento codice avviso errato
-  Dato L’utente si trova sulla pagina /inserisci-dati-avviso
-  Quando L’utente Inserisce il codice avviso {codice_avviso} all’interno della pagina
-  E L’utente clicca sul tasto Continua
-  Allora Il campo codice avviso viene segnalato in rosso
-  E Viene mostrato il messaggio “inserisci 18 cifre” sotto il campo codice avviso
-  
-  Esempi:
-  | codice_avviso        |
-  | 12345678901234567890 |
-  | 12345678             |
-  | aaabbbcccdddeeefff   |
 
 #======================================================
 #======================================================
@@ -86,6 +69,6 @@ Scenario: Inserimento dati - errori - indirizzo email diverso da ripeti
   Dato L’utente si trova sulla pagina /inserisci-email
   Quando L’utente inserisce un indirizzo email valido nel campo “Indirizzo Email”
   E L’utente inserisce un indirizzo email valido ma diverso dal precedente nel campo “Ripeti di Nuovo”
-  E L’utente clicca sulla CTA Continua
+  E L’utente clicca sul tasto Continua
   Allora Il campo “Ripeti di Nuovo” viene segnalato in rosso
   E Sotto il campo “Ripeti di Nuovo” viene mostrato il messaggio di errore “Gli indirizzi email non coincidono”
