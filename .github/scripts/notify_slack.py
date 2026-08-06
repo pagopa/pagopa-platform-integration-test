@@ -27,7 +27,7 @@ def send_slack_notification():
         if dir.endswith('-dev'):
             continue  # Skip dev runs
 
-        app_title = '-'.join(dir.split('-')[:-1]).upper() + " Tests"
+        app_title = (dir.replace('allure-report-','').upper() if dir.startswith('allure-report-') else dir.upper()) + " Tests"
         run_dir = os.path.join(processed_dir, dir)
         stats_file = os.path.join(run_dir, "stats.json")
         summary_file = os.path.join(run_dir, "widgets/summary.json")
