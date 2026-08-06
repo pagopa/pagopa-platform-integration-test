@@ -3,6 +3,9 @@ name: OpenAPI Test Dispatch
 on:
     workflow_dispatch:
 
+permissions:
+    contents: write
+    actions: read
 
 jobs:
 
@@ -24,6 +27,8 @@ jobs:
   create_confluence_report:
     if: always()
     needs: [deploy]
+    permissions:
+       contents: read
     uses: ./.github/workflows/create_report_page.yml
     secrets: inherit
     with:
