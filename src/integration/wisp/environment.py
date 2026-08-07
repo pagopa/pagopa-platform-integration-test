@@ -5,9 +5,7 @@ import subprocess
 import sys
 import time
 
-from src.conf.configuration import load_commondata
-from src.conf.configuration import load_secrets
-from src.conf.configuration import load_settings
+from src.conf.configuration import load_commondata, load_configurations
 from src.utility.constants import INTEGRATION_ROOT
 from src.integration.wisp.utility import constants
 from src.integration.wisp.utility.constants import empty_flow_data
@@ -22,18 +20,7 @@ logger = logging.getLogger(__name__)
 def before_all(context):
     """Initialize suite configuration, secrets, common data, and retry controls."""
     # load settings and secrets into context
-    suite_name = "wisp"
-    target_env = "uat"
-
-    os.environ["TARGET_ENV"] = str(target_env)
-    os.environ["suite"] = suite_name
-
-    context.settings = load_settings(config_folder_root=INTEGRATION_ROOT, target_section=target_env)
-    context.secrets = load_secrets(
-        suite=suite_name,
-        target_env=target_env,
-        settings=context.settings,
-    )
+    context.environment = load_configurations(os.path.dirname(os.path.abspath(__file__)))
     context.commondata = load_commondata(config_folder_root=INTEGRATION_ROOT)
 
     # configure logging setup

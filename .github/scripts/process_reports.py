@@ -78,48 +78,6 @@ def extract_stats_from_stats_file(stats_json_path):
         print(f"[INFO][extract_stats_from_stats_file] stats.json {stats_json_path} not found")
         return {'passed': 0, 'failed': 0, 'skipped': 0}
 
-def find_allure_openapi_reports(artifact_dir):
-    """Find all allure-report-openapi-<env> artifacts in artifacts directory.
-    
-    Returns a list of dicts with: artifact_path, env_name
-    """
-    reports = []
-    print(f"[INFO][find_allure_openapi_reports] artifact_dir {artifact_dir}")
-    
-    # Check if artifact_dir exists
-    if not os.path.isdir(artifact_dir):
-        print(f"[INFO][find_allure_openapi_reports] artifact_dir {artifact_dir} does not exist")
-        return reports
-    
-    # Look for allure-report-openapi-<env> folders
-    for item in os.listdir(artifact_dir):
-        if not item.startswith("allure-report-openapi-"):
-            continue
-        
-        env_name = item.split("allure-report-openapi-")[1]
-        artifact_path = os.path.join(artifact_dir, item)
-        
-        print(f"[INFO][find_allure_openapi_reports] found artifact folder: {item}, env_name: {env_name}")
-        
-        if not os.path.isdir(artifact_path):
-            print(f"[INFO][find_allure_openapi_reports] {artifact_path} is not a directory, skipping")
-            continue
-        
-        # Verify it has widgets/summary.json (Allure format)
-        summary_file = os.path.join(artifact_path, "widgets", "summary.json")
-        if not os.path.exists(summary_file):
-            print(f"[INFO][find_allure_openapi_reports] {artifact_path} does not have widgets/summary.json, skipping")
-            continue
-        
-        reports.append({
-            'artifact_path': artifact_path,
-            'env_name': env_name
-        })
-        print(f"[INFO][find_allure_openapi_reports] Found OpenAPI Allure report for env: {env_name}")
-    
-    print(f"[INFO][find_allure_openapi_reports] Total openapi allure reports found: {len(reports)}")
-    return reports
-
 def build_index_page(root_dir):
     """Build index page for reports (handles both allure and schemathesis reports).
     
@@ -238,9 +196,11 @@ def main():
     artifact_dirs = sorted(os.listdir(artifact_dir))
     for dir in artifact_dirs:
         processed = False
+        env = ""
         for app in allure_apps:
             if app == "openapi":
                 root_dir = f"public/{OPENAPI_TEST_DIR}"
+                env = dir.split(f"allure-report-{app}-")[1]
             else:
                 root_dir = f"public/{app}-tests"
             print(f"[INFO][main] processing Allure directory {root_dir}")
@@ -251,16 +211,16 @@ def main():
             else:
                 artifact_app_dir = os.path.join(artifact_dir, dir) # /artifacts/allure-report-<app>
                 print(f"[INFO][main] artifact_app_dir {artifact_app_dir}")
-                env = dir.split(f"allure-report-{app}-")[1]
+                
                 # retrieve stats
                 stats = extract_stats(artifact_app_dir)
                 # copy content from /artifacts/allure-report-<app> inside the new directory run_dir
                 source_dir = Path(artifact_app_dir)
-                run_dir = os.path.join(root_dir + "/" + stats.get("start") + "-" + env) # pattern yyyy-mm-dd_hh:mm:ss-<env>
+                run_dir = os.path.join(root_dir + "/" + stats.get("start") + ("-" + env if env else "")) # pattern yyyy-mm-dd_hh:mm:ss-<env>
                 destination_dir = Path(run_dir)
                 print(f"[INFO][main] destination_dir {destination_dir}")
                 # copy everything from source to run dir and last-history dir
-                last_history_dir = os.path.join(root_dir, "last-history" + "-" + env) # pattern last-history-<env>
+                last_history_dir = os.path.join(root_dir, "last-history" + ("-" + env if env else "")) # pattern last-history-<env>
                 tmp_reports_dir = Path(f"public/{PROCESSED_REPORTS_DIR}")
                 print(f"[INFO][main] last_history_dir {last_history_dir}")
                 last_history_dir = Path(last_history_dir)
@@ -275,7 +235,7 @@ def main():
                 shutil.copytree(source_dir, last_history_dir)
                 if app == "openapi":
                     app = OPENAPI_FDR_TESTS
-                processed_run_dir = Path(f'public/{PROCESSED_REPORTS_DIR}/{app}-{env}')
+                processed_run_dir = Path(f'public/{PROCESSED_REPORTS_DIR}/{app}' + ("-" + env if env else ""))
                 if processed_run_dir.exists():
                     print(f"[INFO][main] deleting {processed_run_dir} content")
                     shutil.rmtree(processed_run_dir)

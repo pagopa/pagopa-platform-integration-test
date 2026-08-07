@@ -4,8 +4,8 @@ Questa cartella contiene la suite Behave + Playwright per i test end-to-end del 
 
 ## Configurazione
 
-La suite carica il file di configurazione indicato dalla variabile ambiente `ENV_FILE`.
-Il file viene parsato tramite `src.utility.config.config_loader._parse_config_content` e reso disponibile negli step come `context.test_config`.
+La suite carica il file di configurazione identificandolo tramite la variabile d'ambiente `TARGET_ENV`.
+Il file viene parsato tramite `src.conf.configuration.load_configuration` e reso disponibile negli step come `context.config`.
 
 Formati supportati nel file config:
 - `KEY=VALUE`

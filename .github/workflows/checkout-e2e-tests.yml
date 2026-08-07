@@ -34,12 +34,17 @@ jobs:
           pip install playwright==1.55.0
           python -m playwright install --with-deps chrome
 
+      - name: Load secrets
+        run: echo "$SECRETS" >> ./config/.secrets.yaml
+        env:
+          SECRETS: ${{ secrets.CHECKOUT_TESTS_SECRETS }}
+
       - name: Run Checkout E2E tests
         id: run_tests
         continue-on-error: true
         env:
           HEADLESS: "true"   # CI runners have no display — must run headless
-          ENV_FILE: uat.env
+          TARGET_ENV: "uat"
 
         run: |
           behave src/e2e/checkout/ --tags=@e2e --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
@@ -98,6 +103,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: allure-report-checkout-e2e-uat
+          name: allure-report-checkout-e2e
           path: allure-report-checkout-e2e
           if-no-files-found: warn

@@ -240,17 +240,27 @@ Inoltre, è presente l'`ApimSubscriptionResolver`, utilizzato per risolvere le s
 
 #### Requisiti comuni
 Per entrambe le casistiche, è necessario che nel workspace sia presente:
-- un file specifico per la singola suite, denominato "{suite}_config.json" (es. wisp_config.json), contenente sia i secrets della suite che le sue configurazioni (es. url di un servizio, timeout, ecc...)
+- un file specifico per la singola suite, denominato "{target_env}.yaml" (es. uat.yaml), contenente sia i secrets della suite che le sue configurazioni (es. url di un servizio, timeout, ecc...)
 
-L'applicazione risolverà poi i secret presenti nel file e li assegnerà nell'attributo secret presente nell'oggetto context, per accedere al secret bisognerà richiamarlo utilizzando il nome ad esso associato nel file in cui è presente. es. `context.secret.NOME_SECRET` 
 
-È necessario che il file sia inserito manualmente nel workspace, sotto la cartelle `./config/suites/`.
+L'applicazione risolverà poi i secret presenti nel file e li riassegnerà ai propri attributi all'interno dell'oggetto configuration ricavato dal file "{target_env}.yaml", per accedere al secret bisognerà richiamarlo utilizzando il nome ad esso associato nel file in cui è presente. 
 
+Esempio:
+```
+ context.config.NOME_SECRET
+```  
+
+È necessario che il file sia inserito manualmente nel workspace, sotto la cartella root a cui appartengono i suoi secret e le sue config.
+
+Esempio:
+```
+ file uat.yaml di wisp --> posizionare sotto src/integration/wisp
+ ```
 
 Il formato dei secret da risolvere all'interno dei file JSON **DEVE** essere il seguente:
 ` "NOME_NON_VINCOLANTE" : "$NOME_SECRET_VINCOLANTE" `.
 
-Il nome dell'attributo JSON non è vincolante in quanto rappresenta solo il nome che utilizzeremo all'interno del codice per accedere al secret, il valore dell'attributo invece è vincolante in quanto sarà utilizzato per individuare il secret da cui leggere il valore, che sarà poi settato come valore per quell'attributo.
+Il nome dell'attributo non è vincolante in quanto rappresenta solo il nome che utilizzeremo all'interno del codice per accedere al secret, il valore dell'attributo invece è vincolante in quanto sarà utilizzato per individuare il secret da cui leggere il valore, che sarà poi settato come valore per quell'attributo.
 
 
 ```
@@ -259,29 +269,49 @@ FLUSSO D'ESEMPIO:
 - Il resolver cerca un secret denominato API_KEY_WISP
 - Lo trova e lo sostituisce a "$API_KEY_WISP" nel file JSON 
 - "API_KEY_TEST" : "XXXXXXXXX"
-- Accedo all'attributo nel codice con "context.secret.API_KEY_TEST"
+- Accedo all'attributo nel codice con "context.config.API_KEY_TEST"
 ```
-Tutti i placeholder all'interno dei JSON **devono** essere suddivisi per ambiente, inserendoli dentro un oggetto avente come nome la denominazione dell'ambiente di riferimento, così che l'applicazione possa risolvere i secret corretti per l'ambiente d'esecuzione.
+
+Esempio di un file uat.yaml:
+
+```
+VALID_FISCAL_CODE: 77777777777
+INVALID_FISCAL_CODE: 77777777776
+EMAIL: example.email@domain.com
+TEST_DATA:
+    tests:
+        - skipTest: true
+          testingX: TEST_X
+          testingY: TEST_Y
+          secretX: $secret_placeholder
+        - skipTest: false
+          testingX: X_TEST
+          testingY: Y_TEST
+          secretX: $secret_placeholder_new
+```
+
+L'applicazione ha bisogno che sia settata la seguente variabile d'ambiente:
+- `TARGET_ENV` -> Utilizzata per indicare quale file .yaml utilizzare per le config
+
+Per utilizzare la logica di caricamento settings e risoluzione secrets, è necessario utilizzare il metodo `load_configuration` presente in `src/conf/configuration.py`, passando come parametro il path alla cartella dalla quale si vuole leggere il file {target_env}.yaml.
+
 Esempio:
 ```
-{
-  "uat":{
-    "EXAMPLE_SECRET": "$EXAMPLE_SECRET",
-    "EXAMPLE_CONFIG": "CONFIG"
-  },
-  "dev":{
-    "EXAMPLE_SECRET": "$EXAMPLE_SECRET",
-    "EXAMPLE_CONFIG": "CONFIG"
-  }
-}
+context.config = load_configurations(os.path.dirname(os.path.abspath(__file__)))
 ```
 
-L'applicazione ha bisogno che siano settate le seguenti variabili d'ambiente:
--  `suite` -> Utilizzata per individuare il file di placeholders specifico per la suite;
-- `TARGET_ENV` -> Utilizzata per indicare l'env da cui leggere i placeholders, sia per i secret   comuni che per quelli specifici per la suite;
-
 #### Risoluzione secret in locale
-Per la risoluzione locale dei secret è necessario che sia presente un file `secrets.yaml` sotto `./config/`, affinchè il sistema possa utilizzarlo per risolvere i secret presenti nel file di config.
+Per la risoluzione locale dei secret è necessario che sia presente un file `secrets.yaml` sotto `./config/`, affinchè il sistema possa utilizzarlo per risolvere i secret presenti nel file di config, e che il file in questione sia diviso per env.
+
+Esempio:
+```
+uat:
+  secret_1: XXX
+  secret_2: YYY
+dev:
+  secret_1: XXX
+  secret_2: YYY
+```
 
 #### Autenticazione Azure
 L'autenticazione verso Azure avviene tramite `DefaultAzureCredential`, che prova in sequenza le credenziali disponibili nell'ambiente di esecuzione fino a trovare un'identità valida. Questo meccanismo viene usato sia per la risoluzione dei secret dal Key Vault Azure sia per il recupero delle subscription key da APIM, così da avere un unico modello di autenticazione per entrambi i resolver.

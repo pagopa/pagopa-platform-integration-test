@@ -20,7 +20,7 @@ from urllib.parse import unquote
 
 from src.utility.blob.azure_blob import AzureBlobService
 from src.utility.rest import build_rest_client, build_api_key_auth_from_config
-from src.integration.conf.configuration import commondata, secrets, settings
+from src.conf.configuration import load_configurations
 from src.integration.fdr import common
 
 
@@ -41,19 +41,17 @@ def before_all(context):
       (created by behave environment or other helpers). If those attributes can
       be missing in some test runs, add defensive initialization here.
     """
-    context.settings = settings
-    context.secrets = secrets
-    context.commondata = commondata
+    context.config = load_configurations(os.path.dirname(os.path.abspath(__file__)))
 
     # Build FDR rest client
-    fdr_rest_config = context.secrets["fdr"]
+    fdr_rest_config = context.config.fdr
     # NOTE: ensure context.fdr and context.fdr.rest exist before assignment
     context.fdr.rest.client = build_rest_client(
         fdr_rest_config, build_api_key_auth_from_config(fdr_rest_config)
     )
 
     # Build PSP rest client
-    psp_rest_config = context.secrets["psp"]
+    psp_rest_config = context.config.psp
     context.psp.rest.client = build_rest_client(
         psp_rest_config, build_api_key_auth_from_config(psp_rest_config)
     )
@@ -160,6 +158,7 @@ def clear_context(context):
     context.request_date = None
     context.fdr_id = None
     context.psp = None
+    context.blob = None
     context.sender = None
     context.receiver = None
     context.bic_code_pouring_bank = None

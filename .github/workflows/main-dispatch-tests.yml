@@ -14,7 +14,6 @@ on:
         options:
           - wisp
           - checkout
-          - openapi-fdr
           # - fdr
           - all
 
@@ -48,18 +47,11 @@ jobs:
   #   uses: ./.github/workflows/fdr-tests.yml
   #   secrets: inherit
 
-  trigger_openapi_fdr:
-    if: |
-      github.event_name == 'schedule' ||
-      github.event.inputs.services == 'openapi-fdr' || github.event.inputs.services == 'all'
-    uses: ./.github/workflows/openapi-fdr-tests.yml
-    secrets: inherit
-
   deploy:
     if: always()
     # deploy-test-report.yml pushes to gh-pages via peaceiris (needs contents: write)
     # and downloads run artifacts (needs actions: read)
-    needs: [trigger_wisp, trigger_checkout_e2e, trigger_openapi_fdr]
+    needs: [trigger_wisp, trigger_checkout_e2e]
     permissions:
       contents: write
       actions: read
