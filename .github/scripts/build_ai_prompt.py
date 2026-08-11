@@ -1,11 +1,13 @@
-"""Build a compact AI-analysis prompt from Allure raw results.
+"""Build a compact AI-analysis prompt from Allure or JUnit raw results.
 
 Reads all `*-result.json` files under an Allure results directory, keeps only
-failed / broken test cases, and writes a Markdown prompt to disk. The prompt
-asks the model to categorize each failure and suggest an action.
+failed / broken test cases, and optionally reads failures from JUnit XML files.
+The generated Markdown prompt asks the model to categorize each failure and
+suggest an action.
 
 Environment variables:
     ALLURE_RESULTS_DIR   Directory containing Allure raw results (default: allure-results).
+    JUNIT_RESULTS_DIR    Optional directory containing JUnit XML result files.
     PROMPT_OUTPUT        Destination path for the generated prompt (default: ai-analysis-input/prompt.txt).
     SUITE_LABEL          Human-readable suite name used in the prompt header (default: WISP).
     MAX_FAILURES         Cap on number of failures included (default: 20).
@@ -18,6 +20,7 @@ import json
 import os
 from pathlib import Path
 from typing import Any, Dict, List
+from xml.etree import ElementTree
 
 
 def _clean(value: Any) -> str:
@@ -56,6 +59,44 @@ def load_failures(allure_results_dir: Path) -> List[Dict[str, str]]:
                 "trace": _clean(details.get("trace")),
             }
         )
+    return failures
+
+
+def load_junit_failures(junit_results_dir: Path) -> List[Dict[str, str]]:
+    """Extract failed and errored test cases from JUnit XML result files."""
+    failures: List[Dict[str, str]] = []
+    if not junit_results_dir.is_dir():
+        print(f"[build_ai_prompt] JUnit results dir '{junit_results_dir}' not found")
+        return failures
+
+    for path in sorted(junit_results_dir.glob("*.xml")):
+        try:
+            root = ElementTree.parse(path).getroot()
+        except (ElementTree.ParseError, OSError) as exc:
+            print(f"[build_ai_prompt] skipping '{path}': {exc}")
+            continue
+
+        for test_case in root.iter("testcase"):
+            problem = test_case.find("failure")
+            status = "failed"
+            if problem is None:
+                problem = test_case.find("error")
+                status = "broken"
+            if problem is None:
+                continue
+
+            name = _clean(test_case.get("name")) or "unknown"
+            class_name = _clean(test_case.get("classname"))
+            failures.append(
+                {
+                    "name": name,
+                    "fullName": f"{class_name}.{name}" if class_name else name,
+                    "status": status,
+                    "message": _clean(problem.get("message")),
+                    "trace": _clean(problem.text),
+                }
+            )
+
     return failures
 
 
@@ -116,12 +157,15 @@ def build_prompt(
 def main() -> None:
     """Entry point: read env, load failures, write prompt file."""
     allure_dir = Path(os.environ.get("ALLURE_RESULTS_DIR", "allure-results"))
+    junit_dir_value = os.environ.get("JUNIT_RESULTS_DIR")
     output_path = Path(os.environ.get("PROMPT_OUTPUT", "ai-analysis-input/prompt.txt"))
     suite_label = os.environ.get("SUITE_LABEL", "WISP")
     max_failures = int(os.environ.get("MAX_FAILURES", "20"))
     max_trace_chars = int(os.environ.get("MAX_TRACE_CHARS", "1500"))
 
     failures = load_failures(allure_dir)
+    if junit_dir_value:
+        failures.extend(load_junit_failures(Path(junit_dir_value)))
     prompt = build_prompt(failures, suite_label, max_failures, max_trace_chars)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)

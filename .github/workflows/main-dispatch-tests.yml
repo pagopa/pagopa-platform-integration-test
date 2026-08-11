@@ -38,6 +38,7 @@ jobs:
       github.event.inputs.services == 'checkout' || github.event.inputs.services == 'all'
     permissions:
       contents: read
+      actions: write
     uses: ./.github/workflows/checkout-e2e-tests.yml
     secrets: inherit
 
@@ -52,6 +53,9 @@ jobs:
     if: |
       github.event_name == 'schedule' ||
       github.event.inputs.services == 'openapi-fdr' || github.event.inputs.services == 'all'
+    permissions:
+      contents: read
+      actions: write
     uses: ./.github/workflows/openapi-fdr-tests.yml
     secrets: inherit
 

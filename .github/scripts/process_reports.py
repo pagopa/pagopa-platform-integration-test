@@ -190,13 +190,20 @@ def build_index_page(root_dir):
         f.write(template.render(reports=reports))
     print(f"[INFO][build_index_page] written index page to {output_path}")
 
-def deploy_ai_analysis(artifact_dir, run_dir, last_history_dir, app, timestamp, model):
+def deploy_ai_analysis(
+    artifact_dir,
+    run_dir,
+    last_history_dir,
+    analysis_artifact_name,
+    suite_label,
+    timestamp,
+):
     """Render the AI analysis HTML page inside run_dir and last_history_dir.
 
-    Reads the analysis markdown from `<artifact_dir>/ai-analysis-<app>/analysis.md`.
+    Reads the analysis markdown from the named artifact directory.
     Silently skips when the artifact is missing (e.g., first run before the change).
     """
-    analysis_artifact_dir = Path(artifact_dir) / f"ai-analysis-{app}"
+    analysis_artifact_dir = Path(artifact_dir) / analysis_artifact_name
     analysis_md = analysis_artifact_dir / "analysis.md"
     if not analysis_md.exists():
         print(f"[INFO][deploy_ai_analysis] no analysis artifact at {analysis_md}, skipping")
@@ -207,13 +214,23 @@ def deploy_ai_analysis(artifact_dir, run_dir, last_history_dir, app, timestamp, 
         print(f"[INFO][deploy_ai_analysis] analysis file {analysis_md} is empty, skipping")
         return
 
+    response_json = analysis_artifact_dir / "response.json"
+    model = "Gemini"
+    if response_json.exists():
+        try:
+            model = json.loads(response_json.read_text(encoding="utf-8")).get(
+                "modelVersion", model
+            )
+        except (json.JSONDecodeError, OSError) as exc:
+            print(f"[INFO][deploy_ai_analysis] cannot read model version: {exc}")
+
     env = Environment(
         loader=FileSystemLoader(".github/templates"),
         autoescape=select_autoescape(["html", "xml"]),
     )
     template = env.get_template("analysis-template.html")
     rendered = template.render(
-        suite_label=app.upper(),
+        suite_label=suite_label.upper(),
         timestamp=timestamp or "unknown",
         model=model,
         analysis_markdown_json=json.dumps(analysis_text),
@@ -230,7 +247,6 @@ def deploy_ai_analysis(artifact_dir, run_dir, last_history_dir, app, timestamp, 
 
 def main():
     allure_apps = ["wisp", "checkout-e2e", "openapi"]
-    ai_model = os.environ.get("AI_MODEL", "openai/gpt-4.1")
     artifact_dir = os.path.join("artifacts") # /artifacts
     print(f"[INFO][main] artifact_dir {artifact_dir}")
     
@@ -273,6 +289,19 @@ def main():
                 shutil.copytree(source_dir, destination_dir)
                 print(f"[INFO][main] copy everything from {source_dir} to {last_history_dir}")
                 shutil.copytree(source_dir, last_history_dir)
+                analysis_artifact_name = (
+                    f"ai-analysis-openapi-{env}"
+                    if app == "openapi"
+                    else f"ai-analysis-{app}"
+                )
+                deploy_ai_analysis(
+                    artifact_dir,
+                    run_dir,
+                    last_history_dir,
+                    analysis_artifact_name,
+                    app,
+                    stats.get("start"),
+                )
                 if app == "openapi":
                     app = OPENAPI_FDR_TESTS
                 processed_run_dir = Path(f'public/{PROCESSED_REPORTS_DIR}/{app}-{env}')
@@ -281,8 +310,6 @@ def main():
                     shutil.rmtree(processed_run_dir)
                 print(f"[INFO][main] copy everything from {source_dir} to {processed_run_dir}")
                 shutil.copytree(source_dir, processed_run_dir)
-                # render AI analysis page (no-op when artifact missing)
-                # deploy_ai_analysis(artifact_dir, run_dir, last_history_dir, app, stats.get("start"), ai_model)
                 # build index page
                 build_index_page(root_dir)
                 processed = True
