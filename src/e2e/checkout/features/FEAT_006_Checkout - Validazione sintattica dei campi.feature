@@ -5,14 +5,14 @@ Funzionalità: Validazione sintattica dei campi nel funnel di Checkout
 
   Contesto:
     Dato La pagina di checkout e aperta
-	E La lingua e impostata su "it"
+	  E La lingua e impostata su "it"
 
 
 #======================================================
 #======================================================
 
 @CheckoutValidazioneCampi_006_01
-Scenario outline: Inserimento dati - errori -  Inserimento codice avviso errato
+Schema dello scenario: Inserimento dati - errori -  Inserimento codice avviso errato
   Dato L’utente si trova sulla pagina /inserisci-dati-avviso
   Quando L’utente Inserisce il codice avviso {codice_avviso} all’interno della pagina
   E L’utente clicca sul tasto Continua
@@ -29,7 +29,7 @@ Scenario outline: Inserimento dati - errori -  Inserimento codice avviso errato
 #======================================================
 
 @CheckoutValidazioneCampi_006_02
-Scenario outline: Inserimento dati - errori -  Inserimento CF ente errato
+Schema dello scenario: Inserimento dati - errori -  Inserimento CF ente errato
   Dato L’utente si trova sulla pagina /inserisci-dati-avviso
   Quando L’utente Inserisce il CF ente {CF_ente} all’interno della pagina
   E L’utente clicca sul tasto Continua
@@ -46,7 +46,7 @@ Scenario outline: Inserimento dati - errori -  Inserimento CF ente errato
 #======================================================
 
 @CheckoutValidazioneCampi_006_03
-Scenario outline: Inserimento dati - errori -  Inserimento indirizzo mail non valido
+Schema dello scenario: Inserimento dati - errori -  Inserimento indirizzo mail non valido
   Dato L’utente si trova sulla pagina /inserisci-email
   Quando L’utente Inserisce l’indirizzo email {indirizzo_email} in uno dei due campi mail presenti nella pagina
   E L’utente clicca sul tasto Continua
@@ -76,7 +76,7 @@ Scenario: Inserimento dati - errori - indirizzo email diverso da ripeti
 #======================================================
 
 @CheckoutValidazioneCampi_006_05
-Scenario outline: Inserimento dati - errori -  Click sul tasto continua con campo non compilato
+Schema dello scenario: Inserimento dati - errori -  Click sul tasto continua con campo non compilato
   Dato L’utente si trova sulla pagina {pagina_corrente}
   Quando L’utente lascia vuoto il solo campo {campo}
   E L’utente clicca sul tasto Continua

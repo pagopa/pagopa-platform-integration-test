@@ -5,7 +5,7 @@ Funzionalità: Navigazione Lineare per il flusso di Pagamento
 
   Contesto:
     Dato La pagina di checkout e aperta
-	E La lingua e impostata su "it"
+	  E La lingua e impostata su "it"
 
 #======================================================
 #======================================================
@@ -58,7 +58,7 @@ Scenario: Navigazione - Scelta metodo di pagamento “Carte di Credito”
 #======================================================
 
 @CheckoutBackNavigation_005_06
-Scenario outline: Click sul tasto indietro riporta alla pagina precedente del flusso
+Schema dello scenario: Click sul tasto indietro riporta alla pagina precedente del flusso
   Dato L’utente si trova sulla pagina {pagina_corrente}
   Quando L’utente clicca sul tasto “Indietro”
   Allora L’utente viene reindirizzato sulla pagina  {pagina_precedente}
