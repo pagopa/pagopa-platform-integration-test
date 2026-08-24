@@ -4,8 +4,8 @@
 Funzionalità: Validazione sintattica dei campi nel funnel di Checkout
 
   Contesto:
-    Dato La pagina di checkout e aperta
-	  E La lingua e impostata su "it"
+    Dato La pagina di checkout è aperta
+	  E La lingua è impostata su "it"
 
 
 #======================================================
