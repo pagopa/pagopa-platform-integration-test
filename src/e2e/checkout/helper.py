@@ -1,6 +1,7 @@
 import random
 import logging
 import json
+from urllib.parse import urlsplit
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 logger = logging.getLogger(__name__)
@@ -134,3 +135,9 @@ def locate_click_and_type(page, locator, text, click_count=1, timeout=5000):
         pass
     page.keyboard.type(str(text))
     logger.debug("Typed value into %s", locator)
+
+def get_page_url(context):
+    page = get_page(context)
+    current_url = page.url
+    last_path = urlsplit(current_url).path
+    return last_path
