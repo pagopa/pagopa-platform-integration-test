@@ -19,7 +19,7 @@ def before_all(context):
                         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
                         datefmt="%Y-%m-%d %H:%M:%S",
                         force=True)
-    # Opzionale: carica un file config passando ENV_FILE (es. .\dev.env)
+    # Opzionale: carica un file config passando ENV_FILE (es. .\dev.yaml)
     context.config = load_configurations(CHECKOUT_ROOT)
 
     timeout_raw = context.config.get("E2E_TIMEOUT_MS", os.getenv("E2E_TIMEOUT_MS", "80000"))

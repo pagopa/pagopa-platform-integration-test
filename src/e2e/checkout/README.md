@@ -14,7 +14,7 @@ Formati supportati nel file config:
 - valori quotati multi-linea
 
 Esempio locale già presente:
-- `dev.env`
+- `dev.yaml`
 
 ## Esecuzione dalla cartella `src/e2e/checkout`
 
