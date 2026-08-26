@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 jobs:
   checkout_e2e_tests:
@@ -48,6 +49,21 @@ jobs:
 
         run: |
           behave src/e2e/checkout/ --tags=@e2e --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+
+      - name: Build AI analysis prompt
+        if: always()
+        env:
+          ALLURE_RESULTS_DIR: allure-results
+          PROMPT_OUTPUT: ai-analysis-input/prompt.txt
+          SUITE_LABEL: Checkout E2E
+        run: python3 .github/scripts/build_ai_prompt.py
+
+      - name: Upload AI prompt artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ai-prompt-checkout-e2e
+          path: ai-analysis-input
 
       - name: Load previous allure history
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -106,3 +122,13 @@ jobs:
           name: allure-report-checkout-e2e
           path: allure-report-checkout-e2e
           if-no-files-found: warn
+
+  ai-analysis:
+    if: always()
+    needs: checkout_e2e_tests
+    uses: ./.github/workflows/ai-report-analysis.yml
+    with:
+      prompt_artifact: ai-prompt-checkout-e2e
+      analysis_artifact_name: ai-analysis-checkout-e2e
+      max_tokens: '16384'
+    secrets: inherit

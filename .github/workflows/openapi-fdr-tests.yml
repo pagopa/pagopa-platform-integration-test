@@ -5,7 +5,8 @@ on:
  
 
 permissions:
-    contents: read
+  contents: read
+  actions: write
 
 jobs:
   fetch_and_test_openapi:
@@ -48,6 +49,26 @@ jobs:
         #AZURE_KEY_VAULT_URL: ${{ case(matrix.env == 'dev', secrets.AZURE_KEY_VAULT_DEV_URL, secrets.AZURE_KEY_VAULT_UAT_URL) }}
       run: |
         python -u .github/scripts/openApi_test.py
+
+    - name: Build AI analysis prompt
+      if: always()
+      env:
+        JUNIT_RESULTS_DIR: junit
+        PROMPT_OUTPUT: ai-analysis-input/prompt.txt
+        SUITE_LABEL: OpenAPI FdR (${{ matrix.env }})
+      run: |
+        if ! find junit -maxdepth 1 -name '*.xml' -print -quit | grep -q .; then
+          echo "No Schemathesis JUnit reports found in junit/" >&2
+          exit 1
+        fi
+        python3 .github/scripts/build_ai_prompt.py
+
+    - name: Upload AI prompt artifact
+      if: always()
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      with:
+        name: ai-prompt-openapi-${{ matrix.env }}
+        path: ai-analysis-input
 
     - name: Load previous allure history
       uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -94,6 +115,18 @@ jobs:
           retention-days: 30
           if-no-files-found: error
 
+  ai-analysis:
+    if: always()
+    needs: fetch_and_test_openapi
+    strategy:
+      matrix:
+        env: [ "dev", "uat" ]
+    uses: ./.github/workflows/ai-report-analysis.yml
+    with:
+      prompt_artifact: ai-prompt-openapi-${{ matrix.env }}
+      analysis_artifact_name: ai-analysis-openapi-${{ matrix.env }}
+      max_tokens: '16384'
+    secrets: inherit
 
-     
-    
+
+
