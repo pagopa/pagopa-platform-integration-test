@@ -1,0 +1,35 @@
+name: OpenAPI Test Dispatch
+
+on:
+    workflow_dispatch:
+
+permissions:
+    contents: write
+    actions: read
+
+jobs:
+
+  trigger_openapi_fdr:
+    uses: ./.github/workflows/openapi-fdr-tests.yml
+    secrets: inherit
+
+  deploy:
+    if: always()
+    # deploy-test-report.yml pushes to gh-pages via peaceiris (needs contents: write)
+    # and downloads run artifacts (needs actions: read)
+    needs: [trigger_openapi_fdr]
+    permissions:
+      contents: write
+      actions: read
+    uses: ./.github/workflows/deploy-test-report.yml
+    secrets: inherit
+
+  create_confluence_report:
+    if: always()
+    needs: [deploy]
+    permissions:
+       contents: read
+    uses: ./.github/workflows/create_report_page.yml
+    secrets: inherit
+    with:
+      run_type: 'NO-PROMO'

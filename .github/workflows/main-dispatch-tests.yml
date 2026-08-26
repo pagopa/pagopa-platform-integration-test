@@ -14,7 +14,6 @@ on:
         options:
           - wisp
           - checkout
-          - openapi-fdr
           # - fdr
           - all
 
@@ -63,7 +62,7 @@ jobs:
     if: always()
     # deploy-test-report.yml pushes to gh-pages via peaceiris (needs contents: write)
     # and downloads run artifacts (needs actions: read)
-    needs: [trigger_wisp, trigger_checkout_e2e, trigger_openapi_fdr]
+    needs: [trigger_wisp, trigger_checkout_e2e]
     permissions:
       contents: write
       actions: read

@@ -337,7 +337,7 @@ def generate_activatepaymentnotice(context, index):
     rpts = context.flow_data['common']['rpts']
 
     request = requestgen.generate_activatepaymentnotice(test_data, payment_notices, rpts[payment_notice_index],
-                                                        session_id, context.secrets.CHANNEL_CHECKOUT_PASSWORD)
+                                                        session_id, context.environment.CHANNEL_CHECKOUT_PASSWORD)
 
     # update context with request to be sent
     context.flow_data['action']['request']['body'] = request
@@ -751,12 +751,12 @@ def generate_nodoinviacarrellorpt(context, options):
 
     # set channel and password regarding the required options
     channel = test_data['channel_wisp']
-    password = context.secrets.CHANNEL_WISP_PASSWORD
+    password = context.environment.CHANNEL_WISP_PASSWORD
     psp = test_data['psp_wisp']
     psp_broker = test_data['psp_broker_wisp']
     if 'WFESP channel' in options:
         channel = test_data['channel_wfesp']
-        password = context.secrets.CHANNEL_WFESP_PASSWORD
+        password = context.environment.CHANNEL_WFESP_PASSWORD
         psp = test_data['psp_wfesp']
         psp_broker = test_data['psp_broker_wfesp']
 
@@ -775,7 +775,7 @@ def generate_nodoinviarpt(context):
     test_data = context.commondata
     # generate nodoInviaRPT request from raw RPT
     raw_rpts = context.flow_data['common']['rpts']
-    request = requestgen.generate_nodoinviarpt(test_data, raw_rpts[0], context.secrets.STATION_PASSWORD)
+    request = requestgen.generate_nodoinviarpt(test_data, raw_rpts[0], context.environment.STATION_PASSWORD)
 
     # update context with request and edit flow_data
     context.flow_data['action']['request']['body'] = request

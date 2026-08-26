@@ -13,39 +13,20 @@ CHECKOUT_ROOT = Path(__file__).resolve().parent
 if str(CHECKOUT_ROOT) not in sys.path:
     sys.path.insert(0, str(CHECKOUT_ROOT))
 
-from src.utility.config.config_loader import _parse_config_content
-
-def _resolve_config_file(config_file: str) -> Path:
-    candidate = Path(config_file)
-    if candidate.is_file():
-        return candidate
-
-    local_candidate = Path(__file__).resolve().parent / config_file
-    if local_candidate.is_file():
-        return local_candidate
-
-    raise RuntimeError(f"File config non trovato: {config_file}")
-
-
-def _load_test_config(config_file: str) -> dict:
-    path = _resolve_config_file(config_file)
-    raw_content = path.read_text(encoding="utf-8")
-    return _parse_config_content(raw_content, path)
-
+from src.conf.configuration import load_configurations
 def before_all(context):
     logging.basicConfig(level=logging.INFO,
                         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
                         datefmt="%Y-%m-%d %H:%M:%S",
                         force=True)
     # Opzionale: carica un file config passando ENV_FILE (es. .\dev.env)
-    config_file = os.getenv("ENV_FILE")
-    context.test_config = _load_test_config(config_file) if config_file else {}
+    context.config = load_configurations(CHECKOUT_ROOT)
 
-    timeout_raw = context.test_config.get("E2E_TIMEOUT_MS", os.getenv("E2E_TIMEOUT_MS", "80000"))
+    timeout_raw = context.config.get("E2E_TIMEOUT_MS", os.getenv("E2E_TIMEOUT_MS", "80000"))
     context.timeout_ms = int(timeout_raw)
 
     context._playwright = sync_playwright().start()
-    headless_raw = str(context.test_config.get("HEADLESS", os.getenv("HEADLESS", "true"))).lower()
+    headless_raw = str(context.config.get("HEADLESS", os.getenv("HEADLESS", "true"))).lower()
     headless = headless_raw in {"1", "true", "yes", "on"}
     context.browser = context._playwright.chromium.launch(
         channel="chrome",

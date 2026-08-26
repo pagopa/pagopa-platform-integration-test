@@ -14,7 +14,6 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 GITHUB_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 from src.utility.confluence_utils import create_confluence_auth, create_confluence_page
-from src.conf.configuration import load_settings
 
 
 run = {
@@ -41,9 +40,6 @@ COMPONENTS_KEY = 'components'
 TITLE_PLACEHOLDER = '{title}'
 COMPONENTS_PLACEHOLDER = '{components}'
 TABLE_CLOSING_TAG = '</tr></tbody></table>'
-
-
-
 
 
 def read_page_components():
@@ -92,6 +88,7 @@ def read_stats(stats_file,suite_test_folder):
         time_formatted = datetime.strptime(run['time'], "%H:%M:%S")
         run['time'] = (time_formatted + timedelta(hours=2)).strftime("%H:%M:%S")
         run['date'] = start.split('_')[0]
+        run['allure_page'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}', start)
     print(f"[INFO][read_stats] Last history: failed={run['failed']}, duration={run['duration']}, time={run['time']}")
 
 
@@ -139,6 +136,11 @@ def build_page(folder_name, page_components, config):
     page += page_components[TITLE_COMPONENT_KEY].replace(TITLE_PLACEHOLDER, (run["date"] + " - " + folder_name))
     page += page_components[GO_TABLE_COMPONENT_KEY]
     main_table = page_components[MAIN_TABLE_COMPONENT_KEY]
+
+    # set the run['env'] to 'UAT' if it is not set
+    if not run['env']:
+      run['env'] = 'UAT'
+        
     for field in run:
       if field != 'runs':
         main_table = main_table.replace(f'{{{field}}}', str(run.get(field, MISSING_DATA)))
@@ -174,7 +176,16 @@ def read_config(key,config):
         raise RuntimeError(f"Config key '{key}' not found in config.yaml. Error: {str(e)}")
     except Exception as e:
         raise RuntimeError(f"Failed to read config from config.yaml. Error: {str(e)}")
-    
+
+
+def build_gh_pages_url(suite_folder):
+  try:
+    url = GH_PAGES_URL.replace('{suite_folder}', suite_folder).replace('{run}',run["start"]).replace('{run_id}', run['uid'])
+    print(f"[INFO][build_gh_pages_url] Built GH Pages URL: {url}")
+    return url
+  except Exception as e:
+    raise RuntimeError(f"Failed to build GH Pages URL for suite_folder={suite_folder}, run={run}. Error: {str(e)}")
+
 def main():
   # parse CLI args
   parser = argparse.ArgumentParser(description='Create Confluence page from test runs')
@@ -192,15 +203,22 @@ def main():
 
 
   # Read the last history data from stats.json
-  full_config = load_settings(config_folder_root=GITHUB_ROOT)
+  full_config = Dynaconf(
+            settings_files=[os.path.join(GITHUB_ROOT,'config.yaml')])
   for dir in sorted(os.listdir(processed_dir)):
     run_dir = os.path.join(processed_dir, dir)
     if os.path.isdir(run_dir):
       global suite
-      run["env"] = dir.split('-')[-1]
-      suite = '-'.join(dir.split('-')[:-1])
+
+      if dir.startswith('openapi-fdr'):
+        suite = '-'.join(dir.split('-')[:-1]) 
+        run['env'] = dir.split('-')[-1].upper()
+      else:
+        suite = str(dir)
+
       # build the suite test folder path based on the run directory name
       suite_test_folder = suite + "-tests"
+     
       if os.path.exists(os.path.join(run_dir, "stats.json")):
         try:
             # get run id from the run directory's data/suites.json file
@@ -215,10 +233,10 @@ def main():
             page_components = read_page_components()
             # read the suite configuration from config.yaml
             suite_config = read_config(suite, full_config)
+            # create the title for the Confluence page
+            page_title = str(run["date"]).replace('-', '') + " " +str(run["time"]) + " " + "Analisi RUN" + " " + suite.upper() + (" - " + run['env'].upper() if run['env'] else "")
             # build the Confluence page content 
             page = build_page(suite, page_components, suite_config)
-            # create the title for the Confluence page
-            page_title = str(run["date"]).replace('-', '') + " " +str(run["time"]) + " " + "Analisi RUN" + " " + suite.upper() + " - " + run["env"].upper()
             # create the Confluence page using the built content and title
             create_confluence_page(page.strip(), config=suite_config, page_title=page_title, auth_obj=create_confluence_auth())
         except Exception as e:
