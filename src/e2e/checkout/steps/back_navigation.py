@@ -77,7 +77,8 @@ def step_click_button(context, button_text):
     page = get_page(context)
     logger.debug("Clicking button: %s with selector %s", button_text, BUTTON_SELECTORS[button_text])
     locate_and_click(page, BUTTON_SELECTORS[button_text])
-    page.wait_for_timeout(5000)
+    page.wait_for_load_state("networkidle", timeout=5000)
+
 
 @when(u'L’utente clicca ripetutamente sul tasto "Indietro"')
 def step_click_back_button(context):
