@@ -208,7 +208,7 @@ Riferimenti: `config.yaml`, `config/.secrets_template.yaml`,
 ### E2E test
 
 Le suite Behave sotto `src/e2e/` caricano ognuna un file env locale tramite variabile `ENV_FILE`.
-Es. `dev.env` in checkout.
+Es. `dev.yaml` in checkout.
 
 PowerShell:
 
@@ -221,12 +221,12 @@ $env:E2E_TIMEOUT_MS = "80000"
 Bash:
 
 ```bash
-export ENV_FILE=dev.env
+export ENV_FILE=dev.yaml
 export HEADLESS=true
 export E2E_TIMEOUT_MS=80000
 ```
 
-Riferimenti: `src/e2e/checkout/environment.py`, `src/e2e/checkout/dev.env`.
+Riferimenti: `src/e2e/checkout/environment.py`, `src/e2e/checkout/dev.yaml`.
 
 ### Gestione dei secret
 
@@ -513,7 +513,7 @@ behave "src\e2e\checkout" `
 Bash:
 
 ```bash
-export ENV_FILE=dev.env
+export ENV_FILE=dev.yaml
 export HEADLESS=true
 out_dir="reports/allure-results/checkout-dev"
 
@@ -526,7 +526,7 @@ behave "src/e2e/checkout" \
 ```
 
 Riferimenti: `src/e2e/checkout/environment.py`,
-`src/e2e/checkout/dev.env`.
+`src/e2e/checkout/dev.yaml`.
 
 ### GPD Cucumber.js
 
