@@ -47,8 +47,6 @@ def _build_runtime_secrets() -> dict:
     return configurations
 
 
-secrets = _build_runtime_secrets()
-
 API_KEY_HEADER: str = "Ocp-Apim-Subscription-Key"
 DEFAULT_OPENAPI_DIR: Path = Path("tmp_fetched")
 DEFAULT_REPORT_BASE_DIR: Path = Path("schemathesis-test-reports")
@@ -146,6 +144,10 @@ def build_schemathesis_command(
         server_url,
         "--header",
         f"{API_KEY_HEADER}: {api_key}",
+        "--report",
+        "junit",
+        "--report-junit-path",
+        str(report_directory / f"{openapi_file.stem}.xml"),
     ]
     command += extra_args
     return command
@@ -159,6 +161,7 @@ def run_spec(
     url_override: str | None = None,
 ) -> int:
     """Execute Schemathesis against a single OpenAPI file and return the exit code."""
+    report_directory.mkdir(parents=True, exist_ok=True)
     server_url = url_override or extract_server_url(openapi_file)
     if not server_url:
         print(f"[SKIP] No server URL found in '{openapi_file.name}'. Pass --url to override.")
@@ -177,6 +180,7 @@ def main() -> int:
     """Entry point: resolve files, inject secrets, and run Schemathesis for each spec."""
     parser = build_arg_parser()
     args = parser.parse_args()
+    secrets = _build_runtime_secrets()
 
     openapi_files = resolve_openapi_files(args.openapi_dir, args.files)
     if not openapi_files:
@@ -184,6 +188,7 @@ def main() -> int:
         return 0
 
     exit_codes: list[int] = []
+    junit_report_directory = Path("junit")
 
     for openapi_file in openapi_files:
         file_stem = openapi_file.stem
@@ -198,7 +203,7 @@ def main() -> int:
         code = run_spec(
             openapi_file,
             api_key,
-            None,
+            junit_report_directory,
             args.schemathesis_args,
             args.url,
         )

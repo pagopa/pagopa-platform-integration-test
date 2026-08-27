@@ -47,45 +47,65 @@ permissions:
   actions: write
 
 env:
-  BASE_URL: "https://models.github.ai"
-  MODEL: "openai/gpt-4.1"
+  BASE_URL: "https://generativelanguage.googleapis.com/v1beta"
 
 jobs:
   check-model-catalog:
-    name: "Verify model in catalog"
+    name: "Discover Gemini fallback models"
     runs-on: ubuntu-latest
     outputs:
-      model_found: ${{ steps.check.outputs.model_found }}
+      available_models: ${{ steps.check.outputs.available_models }}
     steps:
-      - name: Check model availability in catalog
+      - name: Check fallback model availability
         id: check
         env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN_GITHUB_MODELS }}
+          GEMINI_API_KEY: ${{ secrets.REPORT_ANALYSIS_GEMINI_API_KEY }}
         run: |
-          echo "Calling GET $BASE_URL/catalog/models ..."
-          RESPONSE=$(curl -s -f -L \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer $PAT_TOKEN" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "$BASE_URL/catalog/models")
+          echo "Calling GET $BASE_URL/models ..."
+          RESPONSE=$(curl --silent --show-error --fail-with-body \
+            -H "x-goog-api-key: $GEMINI_API_KEY" \
+            "$BASE_URL/models?pageSize=1000")
 
-          FOUND=$(echo "$RESPONSE" | jq -r --arg model "$MODEL" \
-            'map(select(.id == $model)) | length > 0')
+          CANDIDATE_MODELS='[
+            "gemini-3.6-flash",
+            "gemini-3.5-flash-lite",
+            "gemini-3.1-pro-preview",
+            "gemini-2.5-pro"
+          ]'
+          AVAILABLE_MODELS=$(echo "$RESPONSE" | jq -c --argjson candidates "$CANDIDATE_MODELS" '
+            [.models[]
+              | select(.supportedGenerationMethods | index("generateContent"))
+              | .name
+              | sub("^models/"; "")
+            ] as $catalog
+            | [$candidates[] | select(. as $candidate | $catalog | index($candidate))]
+          ')
 
-          if [ "$FOUND" = "true" ]; then
-            echo "OK - Model '$MODEL' found in catalog"
-            echo "model_found=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "KO - Model '$MODEL' NOT found in catalog"
-            echo "model_found=false" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Gemini fallback chain"
+            echo
+            echo "$CANDIDATE_MODELS" | jq -r --argjson available "$AVAILABLE_MODELS" '
+              .[] as $model
+              | "- `\($model)`: \(if $available | index($model) then "available" else "unavailable" end)"
+            '
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$(echo "$AVAILABLE_MODELS" | jq 'length')" -eq 0 ]; then
+            echo "None of the fallback models is available for generateContent" >&2
             exit 1
           fi
 
+          echo "Available fallback models: $AVAILABLE_MODELS"
+          echo "available_models=$AVAILABLE_MODELS" >> "$GITHUB_OUTPUT"
+
   call-inference:
-    name: "Call inference endpoint"
+    name: "Call Gemini inference endpoint"
     needs: check-model-catalog
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository scripts
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
       - name: Download prompt artifact
         if: ${{ inputs.prompt_artifact != '' }}
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
@@ -111,35 +131,16 @@ jobs:
           fi
           echo "Prompt size (chars): $(wc -c < ai-analysis-output/prompt.txt)"
 
-      - name: Call chat completions
+      - name: Generate analysis with Gemini
         env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN_GITHUB_MODELS }}
+          GEMINI_API_KEY: ${{ secrets.REPORT_ANALYSIS_GEMINI_API_KEY }}
+          AVAILABLE_MODELS: ${{ needs.check-model-catalog.outputs.available_models }}
           MAX_TOKENS: ${{ inputs.max_tokens || '32' }}
         run: |
-          PROMPT_CONTENT=$(cat ai-analysis-output/prompt.txt)
-          BODY=$(jq -n \
-            --arg model "$MODEL" \
-            --arg content "$PROMPT_CONTENT" \
-            --argjson max_tokens "$MAX_TOKENS" \
-            '{"model":$model,"messages":[{"role":"user","content":$content}],"max_tokens":$max_tokens}')
-
-          echo "Calling POST $BASE_URL/inference/chat/completions ..."
-          RESPONSE=$(curl -s -f -L \
-            -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer $PAT_TOKEN" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            -H "Content-Type: application/json" \
-            -d "$BODY" \
-            "$BASE_URL/inference/chat/completions")
-
-          echo "$RESPONSE" > ai-analysis-output/response.json
-          echo "$RESPONSE" | jq -r '.choices[0].message.content // ""' > ai-analysis-output/analysis.md
-
-          echo "--- Response metadata ---"
-          echo "$RESPONSE" | jq '{model, usage, finish_reason: .choices[0].finish_reason}'
-          echo "--- Analysis content ---"
-          cat ai-analysis-output/analysis.md
+          python3 .github/scripts/gemini_analysis.py \
+            --prompt-file ai-analysis-output/prompt.txt \
+            --output-dir ai-analysis-output \
+            --max-output-tokens "$MAX_TOKENS"
 
       - name: Upload analysis artifact
         if: ${{ inputs.analysis_artifact_name != '' }}
