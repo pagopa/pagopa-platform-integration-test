@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>🤖 AI Analysis · CHECKOUT-E2E · 2026-08-27_13:46:45</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body { background-color: #f5f8fa; padding: 2rem; }
+    .hero {
+      background-color: #6f42c1;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      border-radius: 0.5rem;
+    }
+    .content-card {
+      background: white;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    }
+    .content-card h2 { margin-top: 1.5rem; color: #6f42c1; }
+    .content-card h3 { color: #495057; }
+    .content-card pre {
+      background: #f1f3f5;
+      padding: 0.75rem;
+      border-radius: 0.35rem;
+      overflow-x: auto;
+      font-size: 0.9rem;
+    }
+    .hero code {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      padding: 0.15rem 0.4rem;
+      border-radius: 0.35rem;
+    }
+    .content-card code {
+      color: #ff61b0;
+      background: #fff0f7;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    footer code {
+      color: #6f42c1;
+      background: #f3ebff;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    .btn-secondary { background-color: #6c757d; border: none; }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <h1 class="display-6">🤖 AI Analysis · CHECKOUT-E2E</h1>
+  <p class="lead mb-1">Run: <code>2026-08-27_13:46:45</code></p>
+  <div class="mt-3">
+    <a href="../index.html" class="btn btn-light">📊 View Report</a>
+    <a href="../../index.html" class="btn btn-light">🗂️ Storico</a>
+    <a href="../../../index.html" class="btn btn-light">🏠 Dashboard</a>
+  </div>
+</header>
+
+<div class="container">
+  <div class="content-card">
+    <div id="analysis-content">
+      <div class="text-center text-muted">Rendering in corso...</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Powered by GitHub Models · Model: <code>gemini-3.6-flash</code></p>
+</footer>
+
+<script>
+  const markdown = &#34;# 1. Logout SPID completato con successo\n- **status**: broken\n- **fullName**: `Flusso di accesso con SPID: Logout SPID completato con successo`\n- **message**: playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 80000ms exceeded.\nCall log:\n  - waiting for locator(\&#34;form#login-form\&#34;) to be visible\n- **trace**:\n```\nFile \&#34;/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/model.py\&#34;, line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/matchers.py\&#34;, line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/spid_auth.py\&#34;, line 13, in step_login_with_spid\n    step_click_login_button(context)\n    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^\n  File \&#34;/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/spid_auth.py\&#34;, line 30, in step_click_login_button\n```\n### Root cause\nThe test timed out after 80 seconds waiting for the login form locator (`form#login-form`), indicating the SPID IDP provider mock page did not load.\n\n### Category\nenvironment\n\n### Recommended action\nVerify the availability and response times of the mock SPID Identity Provider environment used during E2E test execution.\n\n---\n\n# 2. Un pagamento con configurazione carta \&#34;Postepay\&#34; viene completato con successo -- @1.1\n- **status**: broken\n- **fullName**: `Attivazione pagamento Checkout: Un pagamento con configurazione carta \&#34;Postepay\&#34; viene completato con successo`\n- **message**: RuntimeError: Timeout on locator &#39;#psp-radio-PPAYITR1XXX&#39; after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)\n- **trace**:\n```\nFile \&#34;/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/model.py\&#34;, line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/matchers.py\&#34;, line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py\&#34;, line 188, in step_select_psp\n    locate_and_click(page, f\&#34;#psp-radio-{psp_id}\&#34;)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py\&#34;, line 124, in locate_and_click\n```\n### Root cause\nThe PSP radio option `#psp-radio-PPAYITR1XXX` was not found on the PSP list page within the 5-second timeout window.\n\n### Category\ntest data\n\n### Recommended action\nEnsure that PSP `PPAYITR1XXX` (Postepay) is properly enabled and returned by the UAT list-psp service for this payment scenario.\n\n---\n\n# 3. Un pagamento con configurazione carta \&#34;Worldpay\&#34; viene completato con successo -- @1.3\n- **status**: broken\n- **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta \&#34;Worldpay\&#34; viene completato con successo`\n- **message**: playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 80000ms exceeded.\nCall log:\n  - waiting for locator(\&#34;form#login-form\&#34;) to be visible\n- **trace**:\n```\nFile \&#34;/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/model.py\&#34;, line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/matchers.py\&#34;, line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;src/e2e/checkout/steps/checkout_npg_auth.py\&#34;, line 14, in step_impl\n    step_click_login_button(context)\n    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^\n  File \&#34;/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/spid_auth.py\&#34;, line 30, in step_click_login_button\n```\n### Root cause\nTimeout exceeding 80 seconds when waiting for `form#login-form` during authenticated checkout via SPID.\n\n### Category\nenvironment\n\n### Recommended action\nCheck SPID mock service responsiveness and network latency between Playwright runners and the authentication endpoint.\n\n---\n\n# 4. Viene mostrato l&#39;errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell&#39;intervallo 302400000000000000-302409999999999999 -- @1.1\n- **status**: failed\n- **fullName**: `Attivazione pagamento Checkout: Viene mostrato l&#39;errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell&#39;intervallo 302400000000000000-302409999999999999`\n- **message**: AssertionError: Expected modal header to contain &#39;Non riusciamo a trovare l\u2019avviso&#39;, but got: &#39;L\u2019Ente Creditore sta avendo problemi nella risposta&#39;\n- **trace**:\n```\nFile \&#34;/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/model.py\&#34;, line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/matchers.py\&#34;, line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py\&#34;, line 245, in step_error_modal_header\n    assert expected_header in header_text, (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n```\n### Root cause\nThe system displayed a generic Creditor Institution error message instead of the specific &#39;unknown notice&#39; error modal header.\n\n### Category\napplication bug\n\n### Recommended action\nFix backend error handling logic for invalid notice codes in range 302400000000000000-302409999999999999 to correctly return `PAA_PAGAMENTO_SCONOSCIUTO`.\n\n---\n\n# 5. Un pagamento con configurazione carta \&#34;Wordline\&#34; viene completato con successo -- @1.2\n- **status**: broken\n- **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta \&#34;Wordline\&#34; viene completato con successo`\n- **message**: playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 80000ms exceeded.\nCall log:\n  - waiting for locator(\&#34;form#login-form\&#34;) to be visible\n- **trace**:\n```\nFile \&#34;/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/model.py\&#34;, line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/matchers.py\&#34;, line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;src/e2e/checkout/steps/checkout_npg_auth.py\&#34;, line 14, in step_impl\n    step_click_login_button(context)\n    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^\n  File \&#34;/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/spid_auth.py\&#34;, line 30, in step_click_login_button\n```\n### Root cause\nTimeout exceeding 80 seconds when waiting for `form#login-form` during authenticated checkout via SPID.\n\n### Category\nenvironment\n\n### Recommended action\nVerify health and status of SPID IDP login service in test environment.\n\n---\n\n# 6. Un pagamento con configurazione carta \&#34;Postepay\&#34; viene completato con successo -- @1.1\n- **status**: broken\n- **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta \&#34;Postepay\&#34; viene completato con successo`\n- **message**: playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 80000ms exceeded.\nCall log:\n  - waiting for locator(\&#34;form#login-form\&#34;) to be visible\n- **trace**:\n```\nFile \&#34;/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/model.py\&#34;, line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/matchers.py\&#34;, line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;src/e2e/checkout/steps/checkout_npg_auth.py\&#34;, line 14, in step_impl\n    step_click_login_button(context)\n    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^\n  File \&#34;/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/spid_auth.py\&#34;, line 30, in step_click_login_button\n```\n### Root cause\nTimeout exceeding 80 seconds when waiting for `form#login-form` during authenticated checkout via SPID.\n\n### Category\nenvironment\n\n### Recommended action\nInvestigate mock SPID provider container health in UAT pipeline execution.\n\n---\n\n# 7. Accesso SPID completato con successo\n- **status**: broken\n- **fullName**: `Flusso di accesso con SPID: Accesso SPID completato con successo`\n- **message**: playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 80000ms exceeded.\nCall log:\n  - waiting for locator(\&#34;form#login-form\&#34;) to be visible\n- **trace**:\n```\nFile \&#34;/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/model.py\&#34;, line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \&#34;/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/matchers.py\&#34;, line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&#34;/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/spid_auth.py\&#34;, line 30, in step_click_login_button\n    perform_login(page)\n    ~~~~~~~~~~~~~^^^^^^\n  File \&#34;/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py\&#34;, line 72, in perform_login\n```\n### Root cause\nTimeout exceeding 80 seconds waiting for `form#login-form` to appear on SPID authentication page.\n\n### Category\nenvironment\n\n### Recommended action\nRestart or inspect SPID authentication mock service used during test runs.\n\n---\n\n## Common patterns\n\n1. **SPID Service Unavailability / Environmental Failure**:\n   5 out of 7 test failures (#1, #3, #5, #6, #7) failed with the exact same error: `playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 80000ms exceeded` waiting for locator `form#login-form`. This strongly indicates a service outage or high latency in the SPID mock provider environment rather than an application defect.\n\n2. **Error Handling Logic Defects**:\n   Failure #4 highlights a functional application bug where backend status mapping for notice code range `302400000000000000-302409999999999999` returns a generic creditor failure modal instead of `PAA_PAGAMENTO_SCONOSCIUTO`.&#34;;
+  const target = document.getElementById('analysis-content');
+  if (markdown && markdown.trim().length > 0) {
+    target.innerHTML = marked.parse(markdown);
+  } else {
+    target.innerHTML = '<div class="alert alert-warning">Nessuna analisi disponibile per questa run.</div>';
+  }
+</script>
+
+</body>
+</html>
