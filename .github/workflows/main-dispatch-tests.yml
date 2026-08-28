@@ -48,15 +48,6 @@ jobs:
   #   uses: ./.github/workflows/fdr-tests.yml
   #   secrets: inherit
 
-  trigger_openapi_fdr:
-    if: |
-      github.event_name == 'schedule' ||
-      github.event.inputs.services == 'openapi-fdr' || github.event.inputs.services == 'all'
-    permissions:
-      contents: read
-      actions: write
-    uses: ./.github/workflows/openapi-fdr-tests.yml
-    secrets: inherit
 
   deploy:
     if: always()
