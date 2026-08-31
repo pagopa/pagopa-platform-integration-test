@@ -69,6 +69,11 @@ def perform_login(page):
     logger.debug("Waiting navigation state (networkidle)")
     page.wait_for_load_state("networkidle")
 
+    locate_and_click(page, "#spidButton")
+
+    locate_and_click(page,"button[id='https://idp.uat.oneid.pagopa.it']")
+
+    page.wait_for_url('***/idp.uat.oneid.pagopa.it/samlsso')
     page.wait_for_selector("form#login-form")
 
     locate_click_and_type(page, "#username", "oneidentity")
@@ -77,7 +82,7 @@ def perform_login(page):
     locate_and_click(page, "button[type='submit']")
 
     page.wait_for_load_state("networkidle")
-    page.wait_for_selector("button")
+    locate_and_click(page, "button[name='consent'][value='true']")
 
     icon = page.locator("svg[data-testid='AccountCircleRoundedIcon']").nth(0)
     assert icon is not None, "Icon 'AccountCircleRoundedIcon' non trovato"
