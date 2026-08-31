@@ -1,6 +1,9 @@
 #3236693113
 #language:it
 @CheckoutBackNavigation_005
+@e2e
+@checkout
+@ui
 Funzionalità: Navigazione Lineare per il flusso di Pagamento
 
   Contesto:
