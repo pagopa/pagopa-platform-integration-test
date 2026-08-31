@@ -1,6 +1,9 @@
 #3236593816
 #language:it
 @CheckoutValidazioneCampi_006
+@e2e
+@checkout
+@ui
 Funzionalità: Validazione sintattica dei campi nel funnel di Checkout
 
   Contesto:
