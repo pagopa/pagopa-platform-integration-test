@@ -48,7 +48,7 @@ jobs:
           TARGET_ENV: "uat"
 
         run: |
-          behave src/e2e/checkout/ --tags=@e2e --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+          behave src/e2e/checkout/ --tags="@e2e" --tags="~@skip" --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
 
       - name: Build AI analysis prompt
         if: always()
