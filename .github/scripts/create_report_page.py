@@ -19,7 +19,8 @@ from src.utility.confluence_utils import create_confluence_auth, create_confluen
 run = {
   'scope': '',
   'env': '',
-  'failures': 0,
+  'failed': 0,
+  'broken': 0,
   'duration': 0,
   'time': None,
   'date': None,
@@ -45,15 +46,12 @@ TABLE_CLOSING_TAG = '</tr></tbody></table>'
 def read_page_components():
   page_components = dict()
   try:
-    # use headerOnlyPage instead of actually calling the API to get the content of the page
     with open(PAGE_COMPONENTS_DIR / 'title.txt', 'r', encoding='utf-8') as f:
       page_components[TITLE_COMPONENT_KEY] = f.read().strip()
 
-    # use headerOnlyPage instead of actually calling the API to get the content of the page
     with open(PAGE_COMPONENTS_DIR / 'go_table.txt', 'r', encoding='utf-8') as f:
       page_components[GO_TABLE_COMPONENT_KEY] = f.read().strip()
 
-    # use headerOnlyPage instead of actually calling the API to get the content of the page
     with open(PAGE_COMPONENTS_DIR / 'main_table.txt', 'r', encoding='utf-8') as f:
       page_components[MAIN_TABLE_COMPONENT_KEY] = f.read().strip()
 
@@ -114,11 +112,15 @@ def read_runs(dir):
       except Exception as e:
         raise RuntimeError(f"Failed to read run file {file_path}. Error: {str(e)}")
 
-      if run_obj.get('status') == 'failed':
+      if run_obj.get('status') == 'failed' or run_obj.get('status') == 'broken':
+        # Increment the failures count adding broken runs
+        if run_obj.get('status') == 'broken':
+          run['broken'] += 1        
+
         run_stats = dict()
         run_stats['uid'] = run['allure_page'] + f'/{run_obj.get("uid")}'
         for stage in run_obj.get('testStage', {}).get('steps', []):
-          if stage.get('status') == 'failed':
+          if stage.get('status') == 'failed' or stage.get('status') == 'broken':
             run_stats['result'] = stage.get('statusMessage')
             if stage.get('statusTrace'):
               run_stats['error_log'] = extract_main_error_line(stage.get('statusTrace'))
