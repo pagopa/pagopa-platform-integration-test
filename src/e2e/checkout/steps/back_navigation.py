@@ -46,7 +46,7 @@ def step_enter_email(context, email):
 def step_on_insert_notice_data_page(context, page_url):
     """Check if the user is on the specified page."""
     page = get_page(context)
-    checkout_url = get_required_config(context, "CHECKOUT_URL") + page_url
+    checkout_url = get_required_config(context, "CHECKOUT_URL") + str(page_url).replace('/', '')
     logger.debug("Opening checkout page: %s", checkout_url)
     page.goto(checkout_url, wait_until="domcontentloaded")
     current_url = get_page_url(context)
