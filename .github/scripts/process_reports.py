@@ -120,16 +120,17 @@ def build_index_page(root_dir):
         else:
             # Default stats for schemathesis or other reports without stats.json
             stats = {'passed': 0, 'failed': 0, 'skipped': 0}
-        
-        report_entry = {
-            "name": name,
-            "passed": stats["passed"],
-            "failed": stats["failed"],
-            "link": f"./{name}/index.html",
-            "sort_key": name
-        }
-        print(f"[INFO][build_index_page] Adding report entry: {report_entry}")
-        reports.append(report_entry)
+            report_entry = {
+                "name": name,
+                "passed": stats["passed"],
+                "failed": stats["failed"],
+                "link": f"./{name}/index.html",
+                "has_analysis": False,
+                "analysis_link": None,
+                "sort_key": name
+            }
+            print(f"[INFO][build_index_page] Adding report entry: {report_entry}")
+            reports.append(report_entry)
 
     # Order by timestamp desc
     print(f"[INFO][build_index_page] sorting reports by date descending")
@@ -143,7 +144,7 @@ def build_index_page(root_dir):
     )
     template = env.get_template("history-index-template.html")
     output_path = os.path.join(root_dir, "index.html")
-    with open(output_path, "w") as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         print(f"[INFO][build_index_page] Writing index page to {output_path} ...")
         f.write(template.render(reports=reports))
     print(f"[INFO][build_index_page] written index page to {output_path}")
@@ -191,7 +192,7 @@ def deploy_ai_analysis(
         suite_label=suite_label.upper(),
         timestamp=timestamp or "unknown",
         model=model,
-        analysis_markdown_json=json.dumps(analysis_text),
+        analysis_markdown=analysis_text,
     )
 
     for base in (Path(run_dir), Path(last_history_dir)):
