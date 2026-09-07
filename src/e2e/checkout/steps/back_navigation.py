@@ -58,7 +58,8 @@ def step_click_button_given(context, button_text):
 
 @given(u'L’utente ha raggiunto la pagina "/lista-psp" dall’entry point "/scegli-metodo" (metodo APM)')
 def step_on_psp_list_page(context):
-    pass
+    naviga_lista_psp(context)
+
 
 @given(u'L’utente ha raggiunto la pagina "/lista-psp" dall’entry point "/inserisci-carta" (flusso carta con enablePspPage=true)')
 def step_on_psp_list_page_from_card_flow(context):
