@@ -84,7 +84,7 @@
 </footer>
 
 <script>
-  const markdown = {{ analysis_markdown_json }};
+  const markdown = {{ analysis_markdown | tojson }};
   const target = document.getElementById('analysis-content');
   if (markdown && markdown.trim().length > 0) {
     target.innerHTML = marked.parse(markdown);
