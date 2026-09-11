@@ -173,7 +173,7 @@ def main():
       
     print(f"[INFO][main] Found processed reports in {processed_dir}.")
 
-    os.environ['TARGET_ENV'] = args.env
+    os.environ['TARGET_ENV'] = args.env.lower()
 
     full_config = load_configurations(GITHUB_ROOT)
     for dir in sorted(os.listdir(processed_dir)):
