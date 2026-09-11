@@ -1,10 +1,15 @@
 import os
 import json
+import sys
+from pathlib import Path
 import argparse
 import requests
 from datetime import datetime
 
 from dynaconf import Dynaconf
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
 
 from src.models.test_models import Test_suites, Test_runs, Test_executions
 from src.utility.constants  import GITHUB_ROOT, SUMMARY_FILE_PATH, TEST_CASES_PATH
