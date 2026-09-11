@@ -67,3 +67,12 @@ jobs:
     secrets: inherit
     with:
       run_type: ${{ case(github.event_name == 'schedule',  'NIGHTLY', 'NO-PROMO') }}
+
+  save_test_data:
+    if: always()
+    needs: [deploy]
+    uses: ./.github/workflows/test-data-ingestion.yml
+    secrets: inherit
+    with:
+      env: UAT
+      run_type: ${{ case(github.event_name == 'schedule',  'CRON', 'MANUAL') }}
