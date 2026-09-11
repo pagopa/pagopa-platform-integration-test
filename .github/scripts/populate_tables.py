@@ -1,13 +1,10 @@
 import os
 import json
 import argparse
-from fastapi import HTTPException
 import requests
-from requests.models import Response
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from dynaconf import Dynaconf
-from requests.models import HTTPError
 
 from src.models.test_models import Test_suites, Test_runs, Test_executions
 from src.utility.constants  import GITHUB_ROOT, SUMMARY_FILE_PATH, TEST_CASES_PATH
