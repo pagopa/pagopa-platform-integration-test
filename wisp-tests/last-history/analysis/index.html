@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>🤖 AI Analysis · WISP · 2026-09-11_06:39:43</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body { background-color: #f5f8fa; padding: 2rem; }
+    .hero {
+      background-color: #6f42c1;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      border-radius: 0.5rem;
+    }
+    .content-card {
+      background: white;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    }
+    .content-card h2 { margin-top: 1.5rem; color: #6f42c1; }
+    .content-card h3 { color: #495057; }
+    .content-card pre {
+      background: #f1f3f5;
+      padding: 0.75rem;
+      border-radius: 0.35rem;
+      overflow-x: auto;
+      font-size: 0.9rem;
+    }
+    .hero code {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      padding: 0.15rem 0.4rem;
+      border-radius: 0.35rem;
+    }
+    .content-card code {
+      color: #ff61b0;
+      background: #fff0f7;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    footer code {
+      color: #6f42c1;
+      background: #f3ebff;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    .btn-secondary { background-color: #6c757d; border: none; }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <h1 class="display-6">🤖 AI Analysis · WISP</h1>
+  <p class="lead mb-1">Run: <code>2026-09-11_06:39:43</code></p>
+  <div class="mt-3">
+    <a href="../index.html" class="btn btn-light">📊 View Report</a>
+    <a href="../../index.html" class="btn btn-light">🗂️ Storico</a>
+    <a href="../../../index.html" class="btn btn-light">🏠 Dashboard</a>
+  </div>
+</header>
+
+<div class="container">
+  <div class="content-card">
+    <div id="analysis-content">
+      <div class="text-center text-muted">Rendering in corso...</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Powered by GitHub Models · Model: <code>gemini-3.5-flash-lite</code></p>
+</footer>
+
+<script>
+  const markdown = "# 1. L\u0027utente paga un carrello con due RPT, con quantita diverse di versamenti semplici e marche da bollo\n- **status**: failed\n- **fullName**: `L\u0027utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT: L\u0027utente paga un carrello con due RPT, con quantita diverse di versamenti semplici e marche da bollo`\n- **message**: AssertionError: There are not events with business process receipt-ok.\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/integration/wisp/steps/steps.py\", line 172, in user_redirected_to_checkout\n    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py\", line 898, in check_wisp_session_timers_del_and_rts_were_sent\n    check_event(context, \u0027receipt-ok\u0027, \u0027status\u0027, \u0027RT_SEND_SUCCESS\u0027)\n    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py\", line 403, in check_event\n    assert_show_message(len(needed_process_events) \u003e 0,\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                        f\u0027There are not events with business process {business_process}.\u0027)\n                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.p\n```\n### Root cause\nThe payment flow completed, but the expected `receipt-ok` event with `RT_SEND_SUCCESS` status was not generated within the monitored timeframe.\n\n### Category\napplication bug\n\n### Recommended action\nInvestigate the receipt generation and delivery service (nodo-dei-pagamenti / WISP backend) to ensure `RT_SEND_SUCCESS` events are correctly emitted for multi-RPT carts.\n\n---\n\n# 2. L\u0027utente paga un carrello con singola RPT con due versamenti\n- **status**: failed\n- **fullName**: `L\u0027utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L\u0027utente paga un carrello con singola RPT con due versamenti`\n- **message**: AssertionError: There are not events with business process receipt-ok.\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/integration/wisp/steps/steps.py\", line 172, in user_redirected_to_checkout\n    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py\", line 898, in check_wisp_session_timers_del_and_rts_were_sent\n    check_event(context, \u0027receipt-ok\u0027, \u0027status\u0027, \u0027RT_SEND_SUCCESS\u0027)\n    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py\", line 403, in check_event\n    assert_show_message(len(needed_process_events) \u003e 0,\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                        f\u0027There are not events with business process {business_process}.\u0027)\n                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.p\n```\n### Root cause\nThe payment flow completed, but the expected `receipt-ok` event with `RT_SEND_SUCCESS` status was not generated within the monitored timeframe.\n\n### Category\napplication bug\n\n### Recommended action\nCheck backend logs for errors related to receipt processing and forwarding for carts containing single RPTs with multiple payments.\n\n---\n\n# 3. Utente paga un pagamento singolo con tre versamenti e nessuna marca da bollo\n- **status**: failed\n- **fullName**: `Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con tre versamenti e nessuna marca da bollo`\n- **message**: AssertionError: There are not events with business process receipt-ok.\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/integration/wisp/steps/steps.py\", line 172, in user_redirected_to_checkout\n    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py\", line 898, in check_wisp_session_timers_del_and_rts_were_sent\n    check_event(context, \u0027receipt-ok\u0027, \u0027status\u0027, \u0027RT_SEND_SUCCESS\u0027)\n    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py\", line 403, in check_event\n    assert_show_message(len(needed_process_events) \u003e 0,\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                        f\u0027There are not events with business process {business_process}.\u0027)\n                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.p\n```\n### Root cause\nThe payment flow completed, but the expected `receipt-ok` event with `RT_SEND_SUCCESS` status was not generated within the monitored timeframe.\n\n### Category\napplication bug\n\n### Recommended action\nVerify why single payments with multiple installments fail to trigger the final `receipt-ok` event notification.\n\n---\n\n# 4. L\u0027utente paga un carrello con singola RPT con due versamenti semplici e una marca da bollo\n- **status**: failed\n- **fullName**: `L\u0027utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT: L\u0027utente paga un carrello con singola RPT con due versamenti semplici e una marca da bollo`\n- **message**: AssertionError: There are not events with business process receipt-ok.\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedhubcache/Python/3.14.7/x64/lib/python3.14/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/integration/wisp/steps/steps.py\", line 172, in user_redirected_to_checkout\n    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py\", line 898, in check_wisp_session_timers_del_and_rts_were_sent\n    check_event(context, \u0027receipt-ok\u0027, \u0027status\u0027, \u0027RT_SEND_SUCCESS\u0027)\n    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py\", line 403, in check_event\n    assert_show_message(len(needed_process_events) \u003e 0,\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                        f\u0027There are not events with business process {business_process}.\u0027)\n                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.p\n```\n### Root cause\nThe payment flow completed, but the expected `receipt-ok` event with `RT_SEND_SUCCESS` status was not generated within the monitored timeframe.\n\n### Category\napplication bug\n\n### Recommended action\nAnalyze transaction event logs for cart payments involving stamps (marche da bollo) to identify where the RT dispatch mechanism breaks.\n\n---\n\n## Common patterns\nAll 4 failures share the exact same assertion failure: missing `receipt-ok` business process events with `RT_SEND_SUCCESS` status during the `check_wisp_session_timers_del_and_rts_were_sent` step. This points to a systemic backend issue with receipt generation or event publishing across different payment types (single RPT, multi-RPT, with/without stamps, multiple installments).";
+  const target = document.getElementById('analysis-content');
+  if (markdown && markdown.trim().length > 0) {
+    target.innerHTML = marked.parse(markdown);
+  } else {
+    target.innerHTML = '<div class="alert alert-warning">Nessuna analisi disponibile per questa run.</div>';
+  }
+</script>
+
+</body>
+</html>
