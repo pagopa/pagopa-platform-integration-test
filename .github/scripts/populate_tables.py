@@ -95,9 +95,12 @@ def get_latest_suite_version(test_object: str, config: Dynaconf) -> Test_suites:
             params={"test_object": test_object}
         )
 
-        if test_suite.status_code != 200 and test_suite.status_code == 400:
-            raise Exception(f"Failed to retrieve latest suite version for test_object: {test_object}. Response: {test_suite.text}")
-
+        if test_suite.status_code != 200:
+            if test_suite.status_code == 400:
+                raise Exception(f"Failed to retrieve latest suite version for test_object: {test_object}. Response: {test_suite.text}")
+            elif test_suite.status_code == 404:
+                return None
+            
     except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as e:
         raise Exception(f"Failed to retrieve latest suite version for test_object: {test_object}. Error: {str(e)}")
     return Test_suites(**test_suite.json())
