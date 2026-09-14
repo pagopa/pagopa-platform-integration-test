@@ -121,7 +121,7 @@ def save_test_suite(test_suite: Test_suites, config: Dynaconf):
     except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as e:
         raise Exception(f"Failed to save test suite for test_object: {test_suite.test_object}. Error: {str(e)}")
     
-    return test_suite_out.json()
+    return Test_suites(**test_suite_out.json())
 
 def save_test_runs(test_run: Test_runs,  config: Dynaconf):
     api = config.get("qa_hub_apis", None).get("save_test_runs", None)
@@ -139,7 +139,7 @@ def save_test_runs(test_run: Test_runs,  config: Dynaconf):
     except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as e:
         raise Exception(f"Failed to save test run for test_run: {test_run}. Error: {str(e)}")
 
-    return test_run_out.json()
+    return Test_runs(**test_run_out.json())
 
 def save_test_executions(test_executions: list[Test_executions],  config: Dynaconf):
     api = config.get("qa_hub_apis", None).get("save_test_executions", None)
@@ -157,7 +157,7 @@ def save_test_executions(test_executions: list[Test_executions],  config: Dynaco
     except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as e:
         raise Exception(f"Failed to save test executions. Error: {str(e)}")
 
-    return test_executions_out.json()
+    return [Test_executions(**te) for te in test_executions_out.json()]
 
 def main():
     parser = argparse.ArgumentParser(description='Populate tables with test run data.')
@@ -220,12 +220,12 @@ def main():
             test_run.suite_id = latest_suite_version_obj.id
             # Save the newly created test run in the database and get the generated ID to associate with test executions
             test_run = save_test_runs(test_run, full_config)
-            print(f"[INFO][main] Saved new test run for test_object {latest_suite_version_obj.test_object} with run ID {test_run.get('id')}")
+            print(f"[INFO][main] Saved new test run for test_object {latest_suite_version_obj.test_object} with run ID {test_run.id}")
             for te in test_executions:
-                te.run_id = test_run.get('id')
+                te.run_id = test_run.id
             # Save all the test executions in the database
             test_executions = save_test_executions(test_executions, full_config)
-            print(f"[INFO][main] Saved all new test executions for test_object {latest_suite_version_obj.test_object} for run ID {test_run.get('id')}")
+            print(f"[INFO][main] Saved all new test executions for test_object {latest_suite_version_obj.test_object} for run ID {test_run.id}")
           
 
 if __name__ == "__main__":
