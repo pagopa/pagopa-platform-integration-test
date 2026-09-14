@@ -112,11 +112,11 @@ def save_test_suite(test_suite: Test_suites, config: Dynaconf):
         test_suite_out = requests.request(
             method=api.get("method"),
             url=api.get("url"),
-            headers={"Ocp-Apim-Subscription-Key": config.get("qa_hub_apis", None).get("save_test_suite", None).get("api_key", "")},
+            headers={"Ocp-Apim-Subscription-Key": api.get("api_key", "")},
             json=test_suite.__dict__
         )
         if test_suite_out.status_code != 200:
-            raise Exception(f"Failed to save test suite for test_object: {test_suite.test_object}. Response: {test_suite_out.text}")
+            raise Exception(f"Failed to save test suite for test_object: {test_suite.test_object}. Response: {test_suite_out.status_code}: {test_suite_out.text}")
 
     except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as e:
         raise Exception(f"Failed to save test suite for test_object: {test_suite.test_object}. Error: {str(e)}")
@@ -130,11 +130,11 @@ def save_test_runs(test_run: Test_runs,  config: Dynaconf):
         test_run_out = requests.request(
             method=api.get("method"),
             url=api.get("url"),
-            headers={"Ocp-Apim-Subscription-Key": config.get("qa_hub_apis", None).get("save_test_runs", None).get("api_key", "")},
+            headers={"Ocp-Apim-Subscription-Key": api.get("api_key", "")},
             json=test_run.__dict__
         )
         if test_run_out.status_code != 200:
-            raise Exception(f"Failed to save test run for test_run: {test_run}. Response: {test_run_out.text}")
+            raise Exception(f"Failed to save test run for test_run: {test_run}. Response: {test_run_out.status_code}: {test_run_out.text}")
 
     except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as e:
         raise Exception(f"Failed to save test run for test_run: {test_run}. Error: {str(e)}")
@@ -148,11 +148,11 @@ def save_test_executions(test_executions: list[Test_executions],  config: Dynaco
         test_executions_out = requests.request(
             method=api.get("method"),
             url=api.get("url"),
-            headers={"Ocp-Apim-Subscription-Key": config.get("qa_hub_apis", None).get("save_test_executions", None).get("api_key", "")},
+            headers={"Ocp-Apim-Subscription-Key": api.get("api_key", "")},
             json=[te.__dict__ for te in test_executions]
         )
         if test_executions_out.status_code != 200:
-            raise Exception(f"Failed to save test executions. Response: {test_executions_out.text}")
+            raise Exception(f"Failed to save test executions. Response: {test_executions_out.status_code}: {test_executions_out.text}")
 
     except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as e:
         raise Exception(f"Failed to save test executions. Error: {str(e)}")
