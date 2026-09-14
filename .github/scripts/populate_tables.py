@@ -197,7 +197,7 @@ def main():
                 test_suite.test_type = args.test_type
                 test_suite.test_object = args.suite
             else:
-                test_suite.test_object = '-'.join(dir.split('-')[:-1]) 
+                test_suite.test_object = str(dir)
 
            
             # if latest_version is not None and is smaller than the current version of the test, then fully populate the suite 
