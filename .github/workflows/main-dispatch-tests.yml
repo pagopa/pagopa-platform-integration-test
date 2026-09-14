@@ -74,5 +74,5 @@ jobs:
     uses: ./.github/workflows/test-data-ingestion.yml
     secrets: inherit
     with:
-      env: UAT
+      env: DEV
       run_type: ${{ case(github.event_name == 'schedule',  'CRON', 'MANUAL') }}
