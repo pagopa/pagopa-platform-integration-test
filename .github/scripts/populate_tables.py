@@ -15,6 +15,9 @@ from src.models.test_models import Test_suites, Test_runs, Test_executions
 from src.utility.constants  import GITHUB_ROOT, SUMMARY_FILE_PATH, TEST_CASES_PATH
 from src.conf.configuration import load_configurations
 
+# the location of the allure results when we execute the tests with the TAS
+ALLURE_RESULT_PATH = "allure-results"
+
 
 
 def populate_test_run(test_run: Test_runs, summary_path: str):
@@ -216,8 +219,11 @@ def main():
             # Populate the test run object based on the summary.json file 
             test_run = populate_test_run(test_run, os.path.join(run_dir, SUMMARY_FILE_PATH))
             # Populating test executions based on the test cases JSON files
-            test_executions = populate_test_executions(os.path.join(run_dir, TEST_CASES_PATH), test_run.id)
-            test_run.suite_id = latest_suite_version_obj.id
+            if os.path.exists(os.path.join(run_dir, TEST_CASES_PATH)):
+                test_executions = populate_test_executions(os.path.join(run_dir, TEST_CASES_PATH), test_run.id)
+            else:
+                 test_executions = populate_test_executions(os.path.join(run_dir, ALLURE_RESULT_PATH), test_run.id)
+                 
             # Save the newly created test run in the database and get the generated ID to associate with test executions
             test_run = save_test_runs(test_run, full_config)
             print(f"[INFO][main] Saved new test run for test_object {latest_suite_version_obj.test_object} with run ID {test_run.id}")

@@ -204,7 +204,7 @@ def deploy_ai_analysis(
 
 
 def main():
-    allure_apps = ["wisp", "checkout-e2e"]
+    allure_apps = ["wisp", "checkout"]
     artifact_dir = os.path.join("artifacts") # /artifacts
     print(f"[INFO][main] artifact_dir {artifact_dir}")
     
