@@ -1,5 +1,4 @@
 import logging
-import time
 
 from behave import given, when, then
 from src.e2e.checkout import get_page, get_required_config, generate_random_notice_code, locate_and_click, locate_click_and_type
@@ -15,7 +14,8 @@ BUTTON_SELECTORS = {
     "Indietro":"button:has-text('Indietro')",
     "Continua":"button:has-text('Continua')",
     "Vai al pagamento":"button:has-text('Vai al pagamento')",
-    "Carte di Credito":"[data-qaid=CP]"
+    "Carte di Credito":"[data-qaid=CP]",
+    "Modifica metodo di pagamento":"#cardEdit"
 }
 
 #──────────────────────────────────────────────
@@ -23,8 +23,13 @@ BUTTON_SELECTORS = {
 #──────────────────────────────────────────────
 @given(u'L’utente si trova sulla pagina "{page_url}"')
 def step_on_page(context, page_url):
-    """Check the page URL"""
+    """Navigate to the specified page and verify the URL."""
     navigate_to_page(context, page_url)
+    step_reach_page(context, page_url)
+
+@given(u'L’utente raggiunge la pagina "{page_url}"')
+def step_reach_page(context, page_url):
+    """Check the page URL"""
     current_url = get_page_url(context)
     assert current_url == page_url, f"Expected page '{page_url}', but found '{current_url}'"
 
@@ -77,8 +82,15 @@ def step_click_button(context, button_text):
     """Click a button with the specified text."""
     page = get_page(context)
     logger.debug("Clicking button: %s with selector %s", button_text, BUTTON_SELECTORS[button_text])
-    locate_and_click(page, BUTTON_SELECTORS[button_text])
-    page.wait_for_load_state("networkidle", timeout=5000)
+    if context.expect_navigation:
+        try:
+            with page.expect_navigation(timeout=15000):
+                locate_and_click(page, BUTTON_SELECTORS[button_text])
+        except Exception:
+            logger.error("Navigation did not occur after clicking button: %s", button_text)
+            raise
+    else:
+        locate_and_click(page, BUTTON_SELECTORS[button_text])
 
 
 @when(u'L’utente clicca ripetutamente sul tasto "Indietro"')
@@ -87,6 +99,8 @@ def step_click_back_button(context):
     context.loop_page_error = False
     context.visited_pages = []
     context.visited_pages_set = set()
+
+    step_click_button(context, "Indietro")
 
     while True and not context.loop_page_error:
         page = get_page(context)
@@ -103,9 +117,7 @@ def step_click_back_button(context):
 
         context.visited_pages_set.add(current_url)
         context.visited_pages.append(current_url)
-    
-        locate_and_click(page, BUTTON_SELECTORS["Indietro"])
-        page.wait_for_load_state("networkidle")
+        step_click_button(context, "Indietro")
 
 #──────────────────────────────────────────────
 # THEN steps
@@ -153,41 +165,69 @@ def navigate_to_page(context, page_url):
 
 
 def naviga_inserisci_dati_avviso(context):
-    locate_and_click(context.page, BUTTON_SELECTORS["Inserisci tu i dati"])
-    get_page(context).wait_for_load_state("load")
+    try:
+        with get_page(context).expect_navigation(timeout=15000):
+            locate_and_click(context.page, BUTTON_SELECTORS["Inserisci tu i dati"])
+    except Exception as e:
+        logger.error("Navigation did not occur after clicking 'Inserisci tu i dati': %s", e)
+        raise
 
 def naviga_dati_pagamento(context):
     naviga_inserisci_dati_avviso(context)
     notice_code = generate_random_notice_code("30200")
     locate_click_and_type(get_page(context), "#billCode", notice_code)
     step_enter_fiscal_code(context, "77777777777")
-    step_click_verify(context)
-    get_page(context).wait_for_load_state("load")
+    try:
+        with get_page(context).expect_navigation(timeout=15000):
+            step_click_verify(context)
+    except Exception as e:
+        logger.error("Navigation did not occur after clicking verify: %s", e)
+        raise
 
 def naviga_inserisci_email(context):
     naviga_dati_pagamento(context)
-    step_click_pay_on_summary(context)
-    get_page(context).wait_for_load_state("load")
+    try:
+        with get_page(context).expect_navigation(timeout=15000):
+            step_click_pay_on_summary(context)
+    except Exception as e:
+        logger.error("Navigation did not occur after clicking pay on summary: %s", e)
+        raise
 
 def naviga_scegli_metodo(context):
     naviga_inserisci_email(context)
     step_enter_email(context, "ecommerce-test-mailgroup@pagopa.it")
-    step_confirm_email(context, "ecommerce-test-mailgroup@pagopa.it")
-    get_page(context).wait_for_load_state("load")
+    try:
+        with get_page(context).expect_navigation(timeout=15000):
+            step_confirm_email(context, "ecommerce-test-mailgroup@pagopa.it")
+    except Exception as e:
+        logger.error("Navigation did not occur after confirming email: %s", e)
+        raise
 
 def naviga_inserisci_carta(context):
     naviga_scegli_metodo(context)
-    step_select_payment_method(context,"CP")
-    get_page(context).wait_for_load_state("load")
+    try:
+        with get_page(context).expect_navigation(timeout=15000):
+            step_select_payment_method(context,"CP")
+    except Exception as e:
+        logger.error("Navigation did not occur after selecting payment method: %s", e)
+        raise
 
 def naviga_lista_psp(context):
     naviga_scegli_metodo(context)
-    step_select_payment_method(context,"PPAL")
-    get_page(context).wait_for_load_state("load")
-    get_page(context).wait_for_timeout(5000) #Momentaneo
+    try:
+        with get_page(context).expect_navigation(timeout=15000):
+            step_select_payment_method(context,"PPAL")
+    except Exception as e:
+        logger.error("Navigation did not occur after selecting payment method: %s", e)
+        raise
 
 def naviga_riepilogo_pagamento(context):
     naviga_lista_psp(context)
     page = get_page(context)
     locate_and_click(page, "#psp-radio-MOONITMMXXX")
-    locate_and_click(page, "#paymentPspListPageButtonContinue")
+    try:
+        with get_page(context).expect_navigation(timeout=15000):
+            locate_and_click(page, "#paymentPspListPageButtonContinue")
+    except Exception as e:
+        logger.error("Navigation did not occur after clicking continue on payment PSP list: %s", e)
+        raise
