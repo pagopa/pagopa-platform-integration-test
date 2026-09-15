@@ -95,6 +95,8 @@ def step_click_back_button(context):
     context.visited_pages = []
     context.visited_pages_set = set()
 
+    step_click_button(context, "Indietro")
+
     while True and not context.loop_page_error:
         page = get_page(context)
         current_url = get_page_url(context)
