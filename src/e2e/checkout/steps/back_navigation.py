@@ -1,3 +1,5 @@
+import logging
+
 from behave import given, when, then
 from src.e2e.checkout import get_page, get_required_config, generate_random_notice_code, locate_and_click, locate_click_and_type
 from src.e2e.checkout.helper import get_page_url
@@ -80,12 +82,15 @@ def step_click_button(context, button_text):
     """Click a button with the specified text."""
     page = get_page(context)
     logger.debug("Clicking button: %s with selector %s", button_text, BUTTON_SELECTORS[button_text])
-    try:
-        with page.expect_navigation(timeout=15000):
-            locate_and_click(page, BUTTON_SELECTORS[button_text])
-    except Exception:
-        logger.error("Navigation did not occur after clicking button: %s", button_text)
-        raise
+    if context.expect_navigation:
+        try:
+            with page.expect_navigation(timeout=15000):
+                locate_and_click(page, BUTTON_SELECTORS[button_text])
+        except Exception:
+            logger.error("Navigation did not occur after clicking button: %s", button_text)
+            raise
+    else:
+        locate_and_click(page, BUTTON_SELECTORS[button_text])
 
 
 @when(u'L’utente clicca ripetutamente sul tasto "Indietro"')
