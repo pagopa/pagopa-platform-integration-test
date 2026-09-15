@@ -39,7 +39,7 @@ on:
         description: "Also produce an Allure results directory (allure-results/) inside the test-results artifact"
         required: false
         type: boolean
-        default: false
+        default: true
     outputs:
       passed:
         description: "Number of passed scenarios"
@@ -99,7 +99,7 @@ on:
         description: "Also produce an Allure results directory (allure-results/) inside the test-results artifact"
         required: false
         type: boolean
-        default: false
+        default: true
 
 # The run-name includes the correlation_id so the CLI bridge can reliably locate
 # this run via the API without depending on timestamps.
@@ -319,6 +319,7 @@ jobs:
 
           print(f"Parsed: {passed} passed | {failed} failed | {skipped} skipped | {round(total_duration,2)}s")
           EOF
+
 
       - name: Install Allure CLI
         if: always()
