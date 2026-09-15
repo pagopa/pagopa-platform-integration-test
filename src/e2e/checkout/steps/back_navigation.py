@@ -15,7 +15,8 @@ BUTTON_SELECTORS = {
     "Indietro":"button:has-text('Indietro')",
     "Continua":"button:has-text('Continua')",
     "Vai al pagamento":"button:has-text('Vai al pagamento')",
-    "Carte di Credito":"[data-qaid=CP]"
+    "Carte di Credito":"[data-qaid=CP]",
+    "Modifica metodo di pagamento":"#cardEdit"
 }
 
 #──────────────────────────────────────────────
