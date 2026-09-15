@@ -185,9 +185,9 @@ def main():
     full_config = load_configurations(GITHUB_ROOT)
     for dir in sorted(os.listdir(processed_dir)):
 
-        if args.suite and args.suite != dir:
+        if args.suite and args.test_type and (dir != f"{args.suite}-{args.test_type}"):
             continue
-
+            
         run_dir = os.path.join(processed_dir, dir)
         if os.path.isdir(run_dir):
             test_run = Test_runs()
