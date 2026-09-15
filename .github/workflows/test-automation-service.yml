@@ -400,7 +400,7 @@ jobs:
     with:
       env: UAT
       run_type: ${{ case(github.event_name == 'schedule',  'CRON', 'MANUAL') }}
-      test_object: ${{ inputs.test_suite }}
+      suite: ${{ inputs.test_suite }}
       test_type: ${{ inputs.test_type }}
       artifact_name: test-results
 
