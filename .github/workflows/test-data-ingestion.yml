@@ -11,7 +11,7 @@ on:
           required: true
           type: string
           default: CRON
-        test_object:
+        suite:
           required: false
           type: string
         test_type:
@@ -58,4 +58,4 @@ jobs:
                   SECRETS: ${{ secrets.QA_HUB_API_KEYS }}
             - name: Populate test data in database
               run: |
-                  python3 .github/scripts/populate_tables.py --env "${{ inputs.env }}" --run-type "${{ inputs.run_type }}"
+                  python3 .github/scripts/populate_tables.py --env "${{ inputs.env }}" --run-type "${{ inputs.run_type }}" --suite "${{ inputs.suite }}" --test_type "${{ inputs.test_type }}"
