@@ -1,6 +1,3 @@
-import logging
-import time
-
 from behave import given, when, then
 from src.e2e.checkout import get_page, get_required_config, generate_random_notice_code, locate_and_click, locate_click_and_type
 from src.e2e.checkout.helper import get_page_url
