@@ -80,8 +80,12 @@ def step_click_button(context, button_text):
     """Click a button with the specified text."""
     page = get_page(context)
     logger.debug("Clicking button: %s with selector %s", button_text, BUTTON_SELECTORS[button_text])
-    locate_and_click(page, BUTTON_SELECTORS[button_text])
-    page.wait_for_load_state("networkidle", timeout=5000)
+    try:
+        with page.expect_navigation(timeout=15000):
+            locate_and_click(page, BUTTON_SELECTORS[button_text])
+    except Exception:
+        logger.error("Navigation did not occur after clicking button: %s", button_text)
+        raise
 
 
 @when(u'L’utente clicca ripetutamente sul tasto "Indietro"')
