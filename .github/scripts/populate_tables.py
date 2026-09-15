@@ -128,7 +128,8 @@ def save_test_suite(test_suite: Test_suites, config: Dynaconf):
 
 def save_test_runs(test_run: Test_runs,  config: Dynaconf):
     api = config.get("qa_hub_apis", None).get("save_test_runs", None)
-    test_run.id = ''
+    test_run.id = ''    
+    test_run.suite_id = str(test_run.suite_id)
     try:
         test_run_out = requests.request(
             method=api.get("method"),
@@ -217,6 +218,7 @@ def main():
            
 
             # Populate the test run object based on the summary.json file 
+            test_run.suite_id = latest_suite_version_obj.id
             test_run = populate_test_run(test_run, os.path.join(run_dir, SUMMARY_FILE_PATH))
             # Populating test executions based on the test cases JSON files
             if os.path.exists(os.path.join(run_dir, TEST_CASES_PATH)):

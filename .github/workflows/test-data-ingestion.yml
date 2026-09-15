@@ -17,6 +17,10 @@ on:
         test_type:
           required: false
           type: string
+        artifact_name:
+          required: false
+          type: string
+          default: tmp_processed_reports
 
 permissions:
     contents: read
@@ -34,7 +38,7 @@ jobs:
             - name: Download processed reports artifact
               uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
               with:
-                  name: tmp_processed_reports
+                  name: ${{ inputs.artifact_name }}
                   path: artifacts
             - run: ls -R artifacts
 

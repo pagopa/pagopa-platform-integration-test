@@ -377,7 +377,7 @@ jobs:
         with:
           name: test-results
           path: |
-           ${{ inputs.test_suite }}
+           ${{ inputs.test_suite }}-${{inputs.test_type}}
             behave-results.json
             test-summary.json
             junit/
@@ -402,6 +402,7 @@ jobs:
       run_type: ${{ case(github.event_name == 'schedule',  'CRON', 'MANUAL') }}
       test_object: ${{ inputs.test_suite }}
       test_type: ${{ inputs.test_type }}
+      artifact_name: test-results
 
      
 
