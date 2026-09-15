@@ -1,6 +1,6 @@
 ---
 description: 'Update the readMe file with the content of the files passed in input '
-argument-hint: "Mandatory: file list"
+argument-hint: "Mandatory: content to write about in the README. Optional: file list of the files involved in the flow."
 model: "GPT-5 mini"
 agent: agent
 ---

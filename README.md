@@ -434,7 +434,7 @@ $outDir = "reports\allure-results\$suite-uat"
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $outDir
 New-Item $outDir -ItemType Directory -Force | Out-Null
 
-behave "src\integration\$suite" --tags=@runnable `
+behave "src\integration\$suite" --tags=@runnable  `
   -f allure_behave.formatter:AllureFormatter -o $outDir `
   -f progress --junit-directory=junit --junit --summary --show-timings -v
 ```
@@ -609,7 +609,7 @@ La logica e orientata al reporting operativo:
 - legge `stats.json` per recuperare data, durata e numero di failure;
 - estrae i test falliti dai file case in `data/test-cases/`;
 - compone la pagina usando template HTML sotto `.github/page_components/test_report_page/`;
-- pubblica la pagina nel target Confluence configurato in `config.yaml`.
+- pubblica la pagina nella cartella Confluence configurato in `dev.yaml` o `uat.yaml` .
 
 L'input `--run-type` (es. `NIGHTLY`, `NO-PROMO`) viene usato per valorizzare il contesto
 della run nella pagina.
@@ -794,9 +794,6 @@ Riferimenti: `.github/workflows/wisp-tests.yml`, `.github/workflows/fdr-tests.ym
 - `extract_allure_fail_rate.yml` legge `widgets/summary.json` da `gh-pages`, calcola fail
   rate e success rate, poi passa i dati al workflow di notifica.
 
-Riferimenti: `.github/workflows/main-dispatch-tests.yml`, `.github/workflows/run_behave_tests.yml`, `.github/workflows/deploy-test-report.yml`,
-`.github/workflows/create_report_page.yml`, `.github/workflows/extract_allure_fail_rate.yml`,
-`.github/workflows/send_notification.yml`.
 
 ### Documentazione GitHub Pages
 
@@ -886,6 +883,31 @@ Exit code:
 | `2` | errore di orchestrazione, configurazione, timeout o API |
 
 Riferimenti: `scripts/tas_orchestrator.py`, `docs/examples/tas-example-*.yml`.
+
+## Ingestione dati test
+
+Il flusso di *test data ingestion* raccoglie i risultati delle esecuzioni dei test per popolare il database del QA Hub e realizzare dashboard e metriche operative. Questa sezione descrive il comportamento operativo e la logica usata all'interno del flusso.
+
+### Logica riassunta
+
+- Il workflow `main-dispatch-tests.yml` esegue le suite programmate, processa i report e pubblica un artefatto chiamato `tmp_processed_reports`.
+- Il workflow riusabile `test-automation-service.yml` pubblica, al termine di una run, l'artefatto `test-results` contenente i risultati dei test quando presenti.
+- Entrambi i flussi richiamano il workflow `test-data-ingestion.yml`. Il workflow accetta un input `artifact_name` che di default vale `tmp_processed_reports` ma può essere sovrascritto (ad es. a `test-results`) dal caller.
+- Lo step di ingestion estrae JSON/JUnit/Allure dall'artefatto scaricato e popola le tabelle tramite lo script `.github/scripts/populate_tables.py`.
+
+### File di configurazione ambiente per le suite
+
+- Ogni suite può includere file `dev.yaml` e `uat.yaml` sotto `src/<test_type>/<suite>/` (es. `src/integration/wisp/dev.yaml`).
+- Questi file contengono metadati e mappe logiche (ad es. nomi delle API, nomi di secret come `NODO_SUBSCRIPTION_KEY`) che vengono poi risolti con `config/.secrets.yaml` o tramite Key Vault/APIM resolver.
+
+### Esempio d'uso pratico
+
+1. `main-dispatch` elabora i report nightly e carica `tmp_processed_reports`.
+2. `main-dispatch` invoca `test-data-ingestion.yml` senza impostare `artifact_name` (usa il default).
+3. `test-automation-service.yml` esegue una run on-demand e, alla fine, carica `test-results` invocando `test-data-ingestion.yml` con `artifact_name: test-results`.
+
+Riferimenti: `.github/workflows/test-data-ingestion.yml`, `.github/workflows/main-dispatch-tests.yml`, `.github/workflows/test-automation-service.yml`.
+
 
 ## Documentazione scenari
 
