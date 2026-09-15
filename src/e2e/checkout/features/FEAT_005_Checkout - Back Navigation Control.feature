@@ -96,7 +96,7 @@ Schema dello scenario: Click sul tasto indietro riporta alla pagina precedente d
 Scenario: Assenza loop di navigazione per indietro successivi da pagina Modifica metodo di pagamento
   Dato L’utente si trova sulla pagina "/riepilogo-pagamento"
   E L’utente ha cliccato sul tasto "Modifica metodo di pagamento"
-  E L’utente si trova sulla pagina "/scegli-metodo"
+  E L’utente raggiunge la pagina "/scegli-metodo"
   Quando L’utente clicca ripetutamente sul tasto "Indietro"
   Allora L’utente ritorna sulla HP dopo aver visitato una ed una sola volta, in ordine, le pagine "/inserisci-email", "/dati-pagamento", "/inserisci-dati-avviso", senza ripetizioni né ritorni a pagine già visitate
   

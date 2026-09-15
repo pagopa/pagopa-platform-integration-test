@@ -23,8 +23,13 @@ BUTTON_SELECTORS = {
 #──────────────────────────────────────────────
 @given(u'L’utente si trova sulla pagina "{page_url}"')
 def step_on_page(context, page_url):
-    """Check the page URL"""
+    """Navigate to the specified page and verify the URL."""
     navigate_to_page(context, page_url)
+    step_reach_page(context, page_url)
+
+@given(u'L’utente raggiunge la pagina "{page_url}"')
+def step_reach_page(context, page_url):
+    """Check the page URL"""
     current_url = get_page_url(context)
     assert current_url == page_url, f"Expected page '{page_url}', but found '{current_url}'"
 
