@@ -368,7 +368,7 @@ jobs:
           # Generate the HTML report.
           allure generate allure-results --clean -o ${{ inputs.test_suite }}-${{inputs.test_type}}
 
-          echo "Report generated: $(ls allure-report-${{ inputs.test_suite }}-${{inputs.test_type}} | wc -l) top-level entries"
+          echo "Report generated: $(ls ${{ inputs.test_suite }}-${{inputs.test_type}} | wc -l) top-level entries"
       
       
       - name: Upload test results artifact
