@@ -24,7 +24,7 @@ on:
 
 jobs:
   WISP_integration_tests:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ubuntu-latest]
     if: github.event.inputs.WISP == 'true' || !github.event.inputs.WISP
     outputs:
       wisp_success: ${{ steps.run_tests.outcome }}
@@ -48,6 +48,7 @@ jobs:
         run: echo "$SECRETS" >> ./config/.secrets.yaml
         env:
           SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS }}
+          AZURE_KEY_VAULT_URL: ${{ secrets.AZURE_KEY_VAULT_UAT_URL }}
       - name: Run tests with Behave (WISP)
         id: run_tests
         continue-on-error: true
@@ -74,7 +75,7 @@ jobs:
           path: allure-report-wisp
 
   FdR_integration_tests:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ubuntu-latest]
     if: github.event.inputs.FdR == 'true' || !github.event.inputs.FdR
     outputs:
       fdr_success: ${{ steps.run_tests.outcome }}
