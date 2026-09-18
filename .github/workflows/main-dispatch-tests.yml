@@ -71,6 +71,9 @@ jobs:
   save_test_data:
     if: always()
     needs: [deploy]
+    permissions:
+      contents: read
+      actions: read
     uses: ./.github/workflows/test-data-ingestion.yml
     secrets: inherit
     with:
