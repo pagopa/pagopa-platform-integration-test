@@ -43,10 +43,19 @@ def before_scenario(context, scenario):
     context.page.set_default_timeout(context.timeout_ms)
     context.page.set_default_navigation_timeout(context.timeout_ms)
 
+
 def after_scenario(context, scenario):
     if hasattr(context, "browser_context"):
         context.browser_context.close()
 
+def before_feature(context, feature):
+    # Log the feature name
+    fname = os.path.basename(getattr(feature, "filename", "") or "")
+    if fname == "FEAT_006_Checkout - Validazione sintattica dei campi.feature":
+        context.expect_navigation = False
+    else:
+        context.expect_navigation = True
+    logging.info(f"Expect navigation: {context.expect_navigation}")
 
 def after_all(context):
     if hasattr(context, "browser"):

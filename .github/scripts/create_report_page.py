@@ -103,6 +103,7 @@ def extract_main_error_line(trace: str) -> str:
 
 def read_runs(dir):
   failedRuns = list()
+  run['broken'] = 0    
   try:
     for file in os.listdir(dir):
       file_path = os.path.join(dir, file)

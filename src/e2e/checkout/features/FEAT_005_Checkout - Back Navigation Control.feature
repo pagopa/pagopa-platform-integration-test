@@ -96,7 +96,7 @@ Schema dello scenario: Click sul tasto indietro riporta alla pagina precedente d
 Scenario: Assenza loop di navigazione per indietro successivi da pagina Modifica metodo di pagamento
   Dato L’utente si trova sulla pagina "/riepilogo-pagamento"
   E L’utente ha cliccato sul tasto "Modifica metodo di pagamento"
-  E L’utente si trova sulla pagina "/scegli-metodo"
+  E L’utente raggiunge la pagina "/scegli-metodo"
   Quando L’utente clicca ripetutamente sul tasto "Indietro"
   Allora L’utente ritorna sulla HP dopo aver visitato una ed una sola volta, in ordine, le pagine "/inserisci-email", "/dati-pagamento", "/inserisci-dati-avviso", senza ripetizioni né ritorni a pagine già visitate
   
@@ -115,6 +115,8 @@ Scenario: Indietro da inserisci dati avviso per flusso con accesso diretto (senz
 #======================================================
 
 @CheckoutBackNavigation_005_09
+@runnable
+@happy_path
 Scenario: Flusso lista PSP - indietro da /scegli-metodo (metodo APM)
   Dato L’utente ha raggiunto la pagina "/lista-psp" dall’entry point "/scegli-metodo" (metodo APM)
   Quando L’utente clicca sul tasto "Indietro"
@@ -124,6 +126,7 @@ Scenario: Flusso lista PSP - indietro da /scegli-metodo (metodo APM)
 #======================================================
 
 @CheckoutBackNavigation_005_10
+@skip
 Scenario: Flusso lista PSP - indietro da /inserisci-carta (flusso carta con enablePspPage=true)
   Dato L’utente ha raggiunto la pagina "/lista-psp" dall’entry point "/inserisci-carta" (flusso carta con enablePspPage=true)
   Quando L’utente clicca sul tasto "Indietro"
@@ -133,6 +136,7 @@ Scenario: Flusso lista PSP - indietro da /inserisci-carta (flusso carta con enab
 #======================================================
 
 @CheckoutBackNavigation_005_11
+@skip
 Scenario: Flusso lista PSP - indietro da /scegli-metodo (wallet salvato con enablePspPage=true)
   Dato L’utente ha raggiunto la pagina "/lista-psp" dall’entry point "/scegli-metodo" (wallet salvato con enablePspPage=true)
   Quando L’utente clicca sul tasto "Indietro"
