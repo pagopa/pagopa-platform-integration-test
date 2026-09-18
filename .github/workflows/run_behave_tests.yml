@@ -24,7 +24,7 @@ on:
 
 jobs:
   WISP_integration_tests:
-    runs-on: [self-hosted, ubuntu-latest]
+    runs-on: [self-hosted-job, '${{ inputs.environment }}']
     if: github.event.inputs.WISP == 'true' || !github.event.inputs.WISP
     outputs:
       wisp_success: ${{ steps.run_tests.outcome }}
@@ -75,7 +75,7 @@ jobs:
           path: allure-report-wisp
 
   FdR_integration_tests:
-    runs-on: [self-hosted, ubuntu-latest]
+    runs-on: [self-hosted-job, '${{ inputs.environment }}']
     if: github.event.inputs.FdR == 'true' || !github.event.inputs.FdR
     outputs:
       fdr_success: ${{ steps.run_tests.outcome }}
