@@ -1,7 +1,11 @@
 import random
 import string
 import time
+import uuid
 
+def generate_uuid() -> str:
+    """Generate a random UUID string."""
+    return uuid.uuid4().hex
 
 def get_random_digit_string(length: int) -> str:
     """Return a random numeric string with the requested length."""
