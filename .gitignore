@@ -191,12 +191,6 @@ src/integration/cup/cup.md
 *.tfvars.env.local
 
 # ACE runtime data
-ace/config/project.json
-ace/proposals/*.json
-ace/proposals/applied/*.json
-ace/traces/*.json
-ace/traces/processed/*.json
-ace/state/*.json
 ace/state/applications/
 ace/state/*.lock
 ace/state/runtime/
@@ -206,3 +200,7 @@ ace/state/runtime/
 !ace/proposals/applied/.gitkeep
 !ace/traces/.gitkeep
 !ace/traces/processed/.gitkeep
+
+# Keep the ACE runtime libraries trackable despite the project-wide lib/ rule.
+!ace/scripts/lib/
+!ace/scripts/lib/*.js

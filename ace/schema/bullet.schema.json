@@ -1,0 +1,129 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ace.local/schema/bullet.schema.json",
+  "title": "ACE Playbook Bullet",
+  "description": "Unità atomica di un playbook ACE. Un bullet è una singola lezione operativa, con contatori di efficacia e provenienza. L'agente che lavora vede solo `id` e `content` (più eventualmente `tags` in fase di retrieval) — mai i contatori.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "status", "scope", "content", "counters", "provenance"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Identificatore stabile e univoco del bullet, usato per citazione da parte dell'agente e per le operazioni del curator (ADD/UPDATE/DEPRECATE/MERGE/PROMOTE). 'P' è una convenzione locale per 'Playbook (entry)' — vedi README.md, sezione 'Anatomia di un bullet'. Il contatore è unico su tutto il progetto, non per singolo file: mai riassegnato, anche dopo un DEPRECATE.",
+      "pattern": "^P-[0-9]{3,}$"
+    },
+    "status": {
+      "type": "string",
+      "description": "Stato del bullet nel ciclo di vita ACE.",
+      "enum": ["active", "quarantined", "deprecated"]
+    },
+    "scope": {
+      "type": "object",
+      "description": "A quale playbook appartiene questo bullet.",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["global", "agent", "family"]
+        },
+        "agent": {
+          "type": "string",
+          "description": "Nome dell'agente quando scope.type = 'agent'. Non un enum fisso in questo schema generico: la lista autorevole degli agenti validi (orchestratore + subagenti) vive in config/project.json, letta a runtime da scripts/gate.js — così aggiungere/rinominare un agente non richiede toccare questo file. Deve comunque combaciare esattamente con uno dei nomi in config/project.json."
+        },
+        "family": {
+          "type": "string",
+          "description": "Nome filesystem-safe della categoria trasversale di task quando scope.type = 'family'."
+        }
+      }
+    },
+    "content": {
+      "type": "string",
+      "description": "Contenuto operativo della lezione, in forma imperativa, specifico al progetto e non ovvio per un ingegnere/agente generico. Questo è l'unico campo (con id) mostrato all'agente al momento del task."
+    },
+    "tags": {
+      "type": "array",
+      "description": "Tag interni per retrieval fine. Non mostrati all'agente come metadato separato, ma usati per filtrare quali bullet servire.",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "counters": {
+      "type": "object",
+      "description": "Contatori di efficacia, mai esposti all'agente che lavora. Aggiornati meccanicamente da scripts/update_counters.js sulla base delle trace, non dal curator a giudizio. 'used'/'helped'/'hurt' restano l'aggregato storico, retrocompatibile con installazioni esistenti, ma non guidano più da soli alcuna decisione strutturale (DEPRECATE/PROMOTE/candidatura al baking): quel ruolo spetta ai contatori 'helped_confirmed'/'helped_provisional'/'hurt_confirmed'/'hurt_provisional' sotto, che distinguono l'evidenza confermata (outcome.evaluated_by su un tier forte: 'verified'/'manual'/'user_feedback'/'gate_replay'/'reflector_llm') da quella solo provvisoria (self-report immediato, es. '<team>-auto') — vedi trace.schema.json, outcome.evaluated_by.",
+      "additionalProperties": false,
+      "required": ["used", "helped", "hurt"],
+      "properties": {
+        "used": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Numero di volte che il bullet è stato servito nel contesto di un task."
+        },
+        "helped": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Numero di volte che il bullet è stato citato/usato e ha contribuito a un esito positivo. Aggregato informativo/retrocompatibile: somma di helped_confirmed + helped_provisional, non usato da solo per decisioni strutturali."
+        },
+        "hurt": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Numero di volte che il bullet è stato citato/usato e ha contribuito a un esito negativo. Aggregato informativo/retrocompatibile: somma di hurt_confirmed + hurt_provisional, non usato da solo per decisioni strutturali."
+        },
+        "helped_confirmed": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0,
+          "description": "Sottoinsieme di 'helped' con outcome.evaluated_by su un tier forte (verified/manual/user_feedback/gate_replay/reflector_llm): evidenza confermata da una verifica reale o una conferma esterna, non solo un self-report. Guida le decisioni strutturali difficili da invertire (DEPRECATE/PROMOTE/candidatura al baking — vedi prompts/curator.md)."
+        },
+        "helped_provisional": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0,
+          "description": "Sottoinsieme di 'helped' con outcome.evaluated_by su un self-report immediato (es. '<team>-auto'), senza verifica concreta né reazione esterna. Segnala un candidato all'attenzione del curator, ma non basta da sola a giustificare una decisione strutturale."
+        },
+        "hurt_confirmed": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0,
+          "description": "Sottoinsieme di 'hurt' con outcome.evaluated_by su un tier forte — vedi helped_confirmed. È questo il contatore che scripts/retrieval.js confronta con helped_confirmed per l'esclusione live (hurt_confirmed > helped_confirmed), non più il grezzo hurt > helped."
+        },
+        "hurt_provisional": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0,
+          "description": "Sottoinsieme di 'hurt' con outcome.evaluated_by su un self-report immediato — vedi helped_provisional."
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "description": "Origine del bullet, per audit e per il gate di validazione.",
+      "additionalProperties": false,
+      "required": ["source_trace_ids", "created_at", "created_by"],
+      "properties": {
+        "source_trace_ids": {
+          "type": "array",
+          "description": "Id delle trace (vedi trace.schema.json) da cui il reflector ha derivato la proposta poi promossa a questo bullet.",
+          "items": { "type": "string" }
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "description": "'reflector+curator' per bullet nati dal ciclo ACE, oppure identificativo umano se inserito manualmente in bootstrap.",
+          "default": "reflector+curator"
+        },
+        "last_updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "merged_from": {
+          "type": "array",
+          "description": "Se questo bullet è il risultato di un'operazione MERGE, gli id dei bullet originali confluiti qui.",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

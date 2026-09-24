@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "integration_mode": "embedded",
+  "team_name": "PagoPA Platform Integration Test",
+  "provisional_evaluator": "pagopa-platform-integration-test-auto",
+  "orchestrator_agent": "qa-orchestrator",
+  "participating_agents": [
+    "qa-analyst",
+    "qa-engineer",
+    "qa-runner",
+    "qa-closer"
+  ],
+  "agent_families": {},
+  "platforms": {
+    "copilot": {
+      "enabled": true,
+      "agents_dir": ".github/agents",
+      "global_instructions_file": ".github/copilot-instructions.md",
+      "agent_instructions_dir": ".github/instructions",
+      "runtime_prefix": "gh",
+      "canonical_to_runtime": {},
+      "orchestrator_entrypoints": {
+        "project": null,
+        "ace": null
+      },
+      "model": null,
+      "tools": {
+        "reflector": ["read/readFile", "edit/createFile", "edit/editFiles", "search/fileSearch", "execute", "execute/runInTerminal", "agent"],
+        "curator": ["read/readFile", "edit/createFile", "edit/editFiles", "search/fileSearch", "execute", "execute/runInTerminal", "agent"],
+        "warden": ["read/readFile", "execute", "execute/runInTerminal", "vscode/askQuestions"]
+      }
+    },
+    "claude": {
+      "enabled": false,
+      "agents_dir": ".claude/agents",
+      "global_instructions_file": "CLAUDE.md",
+      "agent_instructions_dir": ".claude/instructions",
+      "runtime_prefix": "cl",
+      "canonical_to_runtime": {},
+      "orchestrator_entrypoints": {
+        "project": null,
+        "ace": null
+      },
+      "model": null,
+      "tools": {
+        "reflector": ["Read", "Write", "Edit", "Grep", "Glob", "Bash", "Agent"],
+        "curator": ["Read", "Write", "Edit", "Grep", "Glob", "Bash", "Agent"],
+        "warden": ["Read", "Bash", "AskUserQuestion"]
+      }
+    }
+  }
+}

@@ -50,3 +50,5 @@ Each agent reads **only** the instruction files listed for its role. Instruction
 | `Marp-presentation-engineer` | [`.github/skills/marp-presentation/SKILL.md`](.github/skills/marp-presentation/SKILL.md) |
 
 > **Detailed instructions** live in `.github/instructions/`. Skills live in `.github/skills/<name>/SKILL.md`. Do not duplicate content here.
+
+The ACE-participating QA agents (`QA-orchestrator`, `QA-analyst`, `QA-engineer`, `QA-runner`, and `QA-closer`) additionally read only their respective generated `.github/instructions/ace-<canonical-id>.instructions.md` and any family instructions explicitly assigned to them in `ace/config/project.json`. This exception does not authorize reading another role's project instructions.
