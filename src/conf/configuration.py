@@ -2,6 +2,7 @@
 """
 import logging
 import os
+from typing import Any
 from src.utility.config.config_loader import load_json_config, resolve_value
 from src.utility.config.secrets.azure_secret_resolver import AzureKeyVaultSecretResolver
 from src.utility.config.secrets.apim_subscription_resolver import ApimSubscriptionResolver
