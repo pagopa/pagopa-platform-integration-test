@@ -7,11 +7,12 @@ from src.utility.data_generators import generate_ccp
 from src.utility.data_generators import generate_iuv
 from src.utility.data_generators import generate_nav
 from src.utility.data_generators import generate_random_monetary_amount
-from src.utility.data_generators import get_random_alphanumeric_string
 from src.utility.data_generators import get_random_digit_string
+from src.utility.data_generators import generate_uuid
 from src.utility.datetime_utils import get_current_date
 from src.utility.datetime_utils import get_current_datetime
 from src.utility.datetime_utils import get_tomorrow_datetime
+
 from . import constants
 
 
@@ -246,7 +247,7 @@ def generate_activatepaymentnotice(test_data, payment_notices, rpt, session_id,
 # ==============================================
 
 def generate_closepayment(test_data, payment_notices, rpts, outcome):
-    transactionId = get_random_alphanumeric_string(32)
+    transactionId = generate_uuid()
     amount = round(sum(rpt['payment_data']['total_amount'] for rpt in rpts), 2)
     fees = round(sum(rpt['payment_data']['total_fee'] for rpt in rpts), 2)
     grand_total = round((amount + fees) * 100, 2)
