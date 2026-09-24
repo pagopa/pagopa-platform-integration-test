@@ -194,8 +194,8 @@ def main():
             test_suite = Test_suites()
             test_executions = list()
 
-            test_run.env = args.env
-            test_run.trigger_type = args.run_type
+            test_run.env = str(args.env).upper()
+            test_run.trigger_type = str(args.run_type).upper()
 
             if args.suite:
                 test_suite.test_type = args.test_type
