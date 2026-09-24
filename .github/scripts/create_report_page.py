@@ -12,7 +12,8 @@ from datetime import datetime, timedelta
 # script runs from .github/scripts in CI environments.
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
-GITHUB_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+from src.utility.constants  import GITHUB_ROOT
+from src.conf.configuration import load_configurations
 from src.utility.confluence_utils import create_confluence_auth, create_confluence_page
 
 
@@ -204,10 +205,12 @@ def main():
   
   print(f"[INFO][main] Found processed reports in {processed_dir}.")
 
+  if not os.environ.get('TARGET_ENV'):
+    print(f"[INFO][main] TARGET_ENV not set. Setting it to the default value: UAT.")
+    os.environ['TARGET_ENV'] = 'UAT'
 
   # Read the last history data from stats.json
-  full_config = Dynaconf(
-            settings_files=[os.path.join(GITHUB_ROOT,'config.yaml')])
+  full_config = load_configurations(GITHUB_ROOT)
   for dir in sorted(os.listdir(processed_dir)):
     run_dir = os.path.join(processed_dir, dir)
     if os.path.isdir(run_dir):
