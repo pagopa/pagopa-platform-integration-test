@@ -40,6 +40,11 @@ jobs:
                     pip install --upgrade pip
                     pip install -r requirements.txt
 
+            - name: Load secrets
+              run: echo "$SECRETS" >> ./config/.secrets.yaml
+              env:
+                SECRETS: ${{ secrets.CHECKOUT_TESTS_SECRETS }}
+
             - name: Create Confluence Report Page
               env:
                   CONFLUENCE_KEY: ${{ secrets.CONFLUENCE_KEY }}
