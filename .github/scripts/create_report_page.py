@@ -194,7 +194,7 @@ def build_gh_pages_url(suite_folder):
   
 def get_month_folder_id(descendants, suite_config, confluence_auth):
     current_month = str(format_date(datetime.now(), "LLLL", locale="it_IT")).capitalize()
-    current_month_folder = [x.id for x in descendants['results'] if x.title == current_month]
+    current_month_folder = [x['id'] for x in descendants['results'] if x['title'] == current_month]
     if current_month_folder:
         return current_month_folder[0]
     else:
