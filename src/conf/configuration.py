@@ -57,7 +57,7 @@ def load_configurations(config_folder_root: str):
     if not os.path.isdir(config_folder_root):
         raise ValueError(f"config_folder_root '{config_folder_root}' is not a valid directory.")
 
-    env_file = os.path.join(config_folder_root, os.getenv('TARGET_ENV', 'uat') + ".yaml")
+    env_file = os.path.join(config_folder_root, os.getenv('TARGET_ENV', 'uat').lower() + ".yaml")
 
     if not os.path.isfile(env_file):
         raise FileNotFoundError(f"Configuration file '{env_file}' not found.")
