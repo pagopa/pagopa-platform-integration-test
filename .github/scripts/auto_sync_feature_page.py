@@ -168,7 +168,7 @@ def main():
             confluencePageId = f.readline()[1:].strip('\n ')
             check_language(f.readline().strip('\n '), fileIn)
         auth = create_confluence_auth()
-        existing_page = get_existing_page_content(fileIn, page_id=confluencePageId, auth_obj=auth)
+        existing_page = get_existing_page_content( page_id=confluencePageId, auth_obj=auth)
         get_page_components()
         h2_index = existing_page['body']['storage']['value'].find('<h2>')
         if h2_index != -1: # if the <h2> tag is found, we use it to keep only the header section of the page, else we just append the new content
