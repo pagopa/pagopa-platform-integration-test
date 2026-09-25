@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 from datetime import datetime, timedelta
 import locale
-locale.setlocale(locale.LC_TIME, 'it_IT.UTF-8')
+locale.setlocale(locale.LC_TIME, 'it_IT.utf8')
 
 # Ensure repository root is on sys.path so `src` package is importable when this
 # script runs from .github/scripts in CI environments.
