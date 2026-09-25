@@ -192,13 +192,14 @@ def build_gh_pages_url(suite_folder):
   except Exception as e:
     raise RuntimeError(f"Failed to build GH Pages URL for suite_folder={suite_folder}, run={run}. Error: {str(e)}")
   
-def get_month_folder_id(descendants, suite_config, confluence_auth):
+def get_month_folder_id(descendants, suite_config, confluence_auth, suite):
     current_month = str(format_date(datetime.now(), "LLLL", locale="it_IT")).capitalize()
-    current_month_folder = [x['id'] for x in descendants['results'] if x['title'] == current_month]
+    folder_name = f"{suite}-{current_month}"
+    current_month_folder = [x['id'] for x in descendants['results'] if x['title'] == folder_name]
     if current_month_folder:
         return current_month_folder[0]
     else:
-        month_folder = create_confluence_folder(suite_config, current_month, confluence_auth)
+        month_folder = create_confluence_folder(suite_config, folder_name, confluence_auth)
         if month_folder:
             return month_folder['id']
     return None
@@ -263,7 +264,7 @@ def main():
             # obtain the descendant of the suite folder on Confluence
             descendants = get_descendants(suite_config, confluence_auth)
             # get the month folder ID from the descendants of the suite folder, or else create it if it doesn't exist
-            month_folder_id = get_month_folder_id(descendants, suite_config, confluence_auth)
+            month_folder_id = get_month_folder_id(descendants, suite_config, confluence_auth, suite)
             # create the Confluence page using the built content and title
             create_confluence_page(page.strip(), parent_id=month_folder_id, page_title=page_title, auth_obj=confluence_auth)
         except Exception as e:
