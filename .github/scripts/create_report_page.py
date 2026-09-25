@@ -263,7 +263,7 @@ def main():
             # obtain the descendant of the suite folder on Confluence
             descendants = get_descendants(suite_config, confluence_auth)
             # get the month folder ID from the descendants of the suite folder, or else create it if it doesn't exist
-            month_folder_id = get_month_folder_id(descendants, suite_config)
+            month_folder_id = get_month_folder_id(descendants, suite_config, confluence_auth)
             # create the Confluence page using the built content and title
             create_confluence_page(page.strip(), parent_id=month_folder_id, page_title=page_title, auth_obj=confluence_auth)
         except Exception as e:
