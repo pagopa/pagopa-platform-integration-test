@@ -43,7 +43,7 @@ jobs:
             - name: Load secrets
               run: echo "$SECRETS" >> ./config/.secrets.yaml
               env:
-                SECRETS: ${{ secrets.CHECKOUT_TESTS_SECRETS }}
+                SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS }}
 
             - name: Create Confluence Report Page
               env:
