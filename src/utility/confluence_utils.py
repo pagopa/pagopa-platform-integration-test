@@ -14,6 +14,7 @@ PAGOPA_QA_SPACE_ID = '2561638408'
 PAGES = 'pages'
 FOLDERS = 'folders'
 DESCENDANTS = 'descendants'
+DESCENDANTS_LIMIT = '?limit=100'
 
 def create_confluence_auth():
     """Create an HTTPBasicAuth object for Confluence API authentication.
@@ -181,7 +182,7 @@ def get_descendants(config,confluence_auth, confluence_url: str = CONFLUENCE_BAS
         
         try:
             # parent config key: all parts except last joined by '-'; fallback to folder_name
-            url = CONFLUENCE_BASE_URL.replace("{context}", FOLDERS + f"/{parent_id}/" + DESCENDANTS)
+            url = CONFLUENCE_BASE_URL.replace("{context}", FOLDERS + f"/{parent_id}/" + DESCENDANTS + DESCENDANTS_LIMIT)
             response = requests.get(url, headers=headers, auth=confluence_auth)
             response.raise_for_status()
             print(f"[INFO][get_descendants] Successfully retrieved descendants (status={response.status_code})")
