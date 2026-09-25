@@ -40,9 +40,6 @@ jobs:
                     pip install --upgrade pip
                     pip install -r requirements.txt
 
-            - name: list locales
-              run: locale -a
-
             - name: Create Confluence Report Page
               env:
                   CONFLUENCE_KEY: ${{ secrets.CONFLUENCE_KEY }}

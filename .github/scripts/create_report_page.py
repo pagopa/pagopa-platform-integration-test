@@ -8,8 +8,7 @@ import argparse
 import sys
 from pathlib import Path
 from datetime import datetime, timedelta
-import locale
-locale.setlocale(locale.LC_TIME, 'it_IT.utf8')
+from babel.dates import format_date
 
 # Ensure repository root is on sys.path so `src` package is importable when this
 # script runs from .github/scripts in CI environments.
@@ -194,7 +193,7 @@ def build_gh_pages_url(suite_folder):
     raise RuntimeError(f"Failed to build GH Pages URL for suite_folder={suite_folder}, run={run}. Error: {str(e)}")
   
 def get_month_folder_id(descendants, suite_config, confluence_auth):
-    current_month = str(calendar.month_name[datetime.now().month]).capitalize()
+    current_month = str(format_date(datetime.now(), "LLLL", locale="it_IT")).capitalize()
     current_month_folder = [x.id for x in descendants['results'] if x.title == current_month]
     if current_month_folder:
         return current_month_folder[0]
