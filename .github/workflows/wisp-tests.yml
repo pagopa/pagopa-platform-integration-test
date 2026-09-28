@@ -10,6 +10,9 @@ permissions:
 jobs:
   wisp_tests:
     runs-on: [self-hosted-job, uat]
+    environment: uat
+    env:
+      AZURE_KEY_VAULT_URL: ${{ vars.AZURE_KEY_VAULT_URL }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
@@ -28,11 +31,6 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Load secrets
-        run: echo "$SECRETS" >> ./config/.secrets.yaml
-        env:
-          SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS }}
 
       - name: Run WISP tests
         id: run_tests
@@ -79,7 +77,9 @@ jobs:
 
       - name: Install Allure CLI
         if: always()
-        run: npm install -g allure-commandline@2.27.0
+        run: |
+          npm install --prefix "$RUNNER_TEMP/allure" --no-save --no-package-lock allure-commandline@2.27.0
+          echo "$RUNNER_TEMP/allure/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Build WISP Allure report
         if: always()

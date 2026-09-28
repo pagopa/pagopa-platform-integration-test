@@ -87,7 +87,9 @@ jobs:
 
       - name: Install Allure CLI
         if: always()
-        run: npm install -g allure-commandline@2.27.0
+        run: |
+          npm install --prefix "$RUNNER_TEMP/allure" --no-save --no-package-lock allure-commandline@2.27.0
+          echo "$RUNNER_TEMP/allure/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Build Checkout E2E Allure report
         if: always()
