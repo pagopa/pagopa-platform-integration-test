@@ -2,6 +2,7 @@
 """
 import logging
 import os
+from typing import Any
 from src.utility.config.config_loader import load_json_config, resolve_value
 from src.utility.config.secrets.azure_secret_resolver import AzureKeyVaultSecretResolver
 from src.utility.config.secrets.apim_subscription_resolver import ApimSubscriptionResolver
@@ -56,7 +57,7 @@ def load_configurations(config_folder_root: str):
     if not os.path.isdir(config_folder_root):
         raise ValueError(f"config_folder_root '{config_folder_root}' is not a valid directory.")
 
-    env_file = os.path.join(config_folder_root, os.getenv('TARGET_ENV', 'uat') + ".yaml")
+    env_file = os.path.join(config_folder_root, os.getenv('TARGET_ENV', 'uat').lower() + ".yaml")
 
     if not os.path.isfile(env_file):
         raise FileNotFoundError(f"Configuration file '{env_file}' not found.")

@@ -1,20 +1,32 @@
-name: Create Confluence Report Page
+name: Test Data Ingestion on database
 
 on:
     workflow_call:
-        inputs:
-            run_type:
-                description: "Type of run"
-                type: string
-                required: true
-                default: NO-PROMO
-                
+      inputs:
+        env:
+          required: true
+          type: string
+          default: UAT
+        run_type:
+          required: true
+          type: string
+          default: CRON
+        suite:
+          required: false
+          type: string
+        test_type:
+          required: false
+          type: string
+        artifact_name:
+          required: false
+          type: string
+          default: tmp_processed_reports
 
 permissions:
     contents: read
 
 jobs:
-    create_report_page:
+    test_data_ingestion:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout repository
@@ -26,7 +38,7 @@ jobs:
             - name: Download processed reports artifact
               uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
               with:
-                  name: tmp_processed_reports
+                  name: ${{ inputs.artifact_name }}
                   path: artifacts
             - run: ls -R artifacts
 
@@ -43,11 +55,7 @@ jobs:
             - name: Load secrets
               run: echo "$SECRETS" >> ./config/.secrets.yaml
               env:
-                SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS }}
-
-            - name: Create Confluence Report Page
-              env:
-                  CONFLUENCE_KEY: ${{ secrets.CONFLUENCE_KEY }}
-                  CONFLUENCE_EMAIL: ${{ secrets.CONFLUENCE_EMAIL }}
+                  SECRETS: ${{ secrets.QA_HUB_API_KEYS }}
+            - name: Populate test data in database
               run: |
-                  python3 .github/scripts/create_report_page.py --run-type "${{ inputs.run_type }}"
+                  python3 .github/scripts/populate_tables.py --env "${{ inputs.env }}" --run-type "${{ inputs.run_type }}" --suite "${{ inputs.suite }}" --test_type "${{ inputs.test_type }}"

@@ -1,3 +1,4 @@
+from calendar import calendar
 import json
 import os
 import re
@@ -7,13 +8,15 @@ import argparse
 import sys
 from pathlib import Path
 from datetime import datetime, timedelta
+from babel.dates import format_date
 
 # Ensure repository root is on sys.path so `src` package is importable when this
 # script runs from .github/scripts in CI environments.
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
-GITHUB_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-from src.utility.confluence_utils import create_confluence_auth, create_confluence_page
+from src.utility.constants  import GITHUB_ROOT
+from src.conf.configuration import load_configurations
+from src.utility.confluence_utils import create_confluence_auth, create_confluence_page, get_descendants, create_confluence_folder
 
 
 run = {
@@ -188,6 +191,20 @@ def build_gh_pages_url(suite_folder):
     return url
   except Exception as e:
     raise RuntimeError(f"Failed to build GH Pages URL for suite_folder={suite_folder}, run={run}. Error: {str(e)}")
+  
+def get_month_folder_id(descendants, suite_config, confluence_auth, suite):
+    current_month = str(format_date(datetime.now(), "LLLL", locale="it_IT")).capitalize()
+    folder_name = f"{str(suite).capitalize()}-{current_month}-{datetime.now().year}"
+    current_month_folder = [x['id'] for x in descendants['results'] if x['title'] == folder_name]
+    if current_month_folder:
+        return current_month_folder[0]
+    else:
+        month_folder = create_confluence_folder(suite_config, folder_name, confluence_auth)
+        if month_folder:
+            return month_folder['id']
+    return None
+      
+
 
 def main():
   # parse CLI args
@@ -204,10 +221,12 @@ def main():
   
   print(f"[INFO][main] Found processed reports in {processed_dir}.")
 
+  if not os.environ.get('TARGET_ENV'):
+    print(f"[INFO][main] TARGET_ENV not set. Setting it to the default value: UAT.")
+    os.environ['TARGET_ENV'] = 'UAT'
 
   # Read the last history data from stats.json
-  full_config = Dynaconf(
-            settings_files=[os.path.join(GITHUB_ROOT,'config.yaml')])
+  full_config = load_configurations(GITHUB_ROOT)
   for dir in sorted(os.listdir(processed_dir)):
     run_dir = os.path.join(processed_dir, dir)
     if os.path.isdir(run_dir):
@@ -240,8 +259,14 @@ def main():
             page_title = str(run["date"]).replace('-', '') + " " +str(run["time"]) + " " + "Analisi RUN" + " " + suite.upper() + (" - " + run['env'].upper() if run['env'] else "")
             # build the Confluence page content 
             page = build_page(suite, page_components, suite_config)
+            # create an auth object for Confluence
+            confluence_auth = create_confluence_auth()
+            # obtain the descendant of the suite folder on Confluence
+            descendants = get_descendants(suite_config, confluence_auth)
+            # get the month folder ID from the descendants of the suite folder, or else create it if it doesn't exist
+            month_folder_id = get_month_folder_id(descendants, suite_config, confluence_auth, suite)
             # create the Confluence page using the built content and title
-            create_confluence_page(page.strip(), config=suite_config, page_title=page_title, auth_obj=create_confluence_auth())
+            create_confluence_page(page.strip(), parent_id=month_folder_id, page_title=page_title, auth_obj=confluence_auth)
         except Exception as e:
             print(f"[ERROR][main] Failed processing run directory {run_dir}. Error: {str(e)}")
             continue

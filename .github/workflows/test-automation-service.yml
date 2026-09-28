@@ -39,7 +39,7 @@ on:
         description: "Also produce an Allure results directory (allure-results/) inside the test-results artifact"
         required: false
         type: boolean
-        default: false
+        default: true
     outputs:
       passed:
         description: "Number of passed scenarios"
@@ -99,7 +99,7 @@ on:
         description: "Also produce an Allure results directory (allure-results/) inside the test-results artifact"
         required: false
         type: boolean
-        default: false
+        default: true
 
 # The run-name includes the correlation_id so the CLI bridge can reliably locate
 # this run via the API without depending on timestamps.
@@ -320,6 +320,12 @@ jobs:
           print(f"Parsed: {passed} passed | {failed} failed | {skipped} skipped | {round(total_duration,2)}s")
           EOF
 
+
+      - name: Install Allure CLI
+        if: always()
+        run: npm install -g allure-commandline@2.27.0
+
+
       - name: Write job summary (GitHub UI)
         if: always()
         run: |
@@ -339,12 +345,25 @@ jobs:
           echo "| **Duration** | ${{ steps.summary.outputs.duration }}s |" >> $GITHUB_STEP_SUMMARY
           echo "| **Outcome** | ${{ steps.summary.outputs.outcome == 'success' && '✅ PASSED' || '❌ FAILED' }} |" >> $GITHUB_STEP_SUMMARY
 
+      - name: Build ${{ inputs.test_suite }} E2E Allure report
+        if: always()
+        continue-on-error: true
+        env:
+          SUBFOLDER: ${{ inputs.test_suite }}-tests
+        run: |
+          # Generate the HTML report.
+          allure generate allure-results --clean -o ${{ inputs.test_suite }}-${{inputs.test_type}}
+
+          echo "Report generated: $(ls ${{ inputs.test_suite }}-${{inputs.test_type}} | wc -l) top-level entries"
+      
+      
       - name: Upload test results artifact
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: test-results
           path: |
+           ${{ inputs.test_suite }}-${{inputs.test_type}}
             behave-results.json
             test-summary.json
             junit/
@@ -358,3 +377,18 @@ jobs:
         run: |
           echo "::error::${{ steps.summary.outputs.failed }} scenario(s) failed out of ${{ steps.summary.outputs.total }} total."
           exit 1
+
+  save_test_data:
+    if: always()
+    needs: [run_tests]
+    uses: ./.github/workflows/test-data-ingestion.yml
+    secrets: inherit
+    with:
+      env: ${{ inputs.environment }}
+      run_type: ${{ case(github.event_name == 'schedule',  'CRON', 'MANUAL') }}
+      suite: ${{ inputs.test_suite }}
+      test_type: ${{ inputs.test_type }}
+      artifact_name: test-results
+
+     
+
