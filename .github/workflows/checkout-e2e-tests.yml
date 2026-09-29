@@ -64,11 +64,17 @@ jobs:
           name: ai-prompt-checkout-e2e
           path: ai-analysis-input
 
+      # gh-pages holds every historical Allure report (tens of thousands of files):
+      # only the trend history folder is checked out, otherwise the step hangs.
       - name: Load previous allure history
+        if: always()
+        continue-on-error: true
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           ref: gh-pages
           path: gh-pages
+          fetch-depth: 1
+          sparse-checkout: checkout-e2e-tests/last-history
 
       - name: Prepare allure-results for report generation
         if: always()
