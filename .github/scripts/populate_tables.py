@@ -43,7 +43,7 @@ def populate_test_run(test_run: Test_runs, summary_path: str, config: Dynaconf):
         test_run.timestamp_end = datetime.fromtimestamp(summary_data.get("time", {}).get('stop', 0)/1000.0).isoformat()
         test_run.duration_ms = summary_data.get("time", {}).get('duration', 0)
         if config is not None:
-            test_run.test_version = config.get("version", None)
+            test_run.test_version = str(config.get("version", None))
       
     return test_run
 
