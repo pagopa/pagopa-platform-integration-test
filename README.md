@@ -88,7 +88,7 @@ Riferimenti: struttura workspace, `.gitignore`, `.github/workflows/*`, `.github/
 | Java | Allure CLI e workflow report | 17 consigliata |
 | Allure CLI | generazione e apertura report | 2.x compatibile |
 | Node.js + npm/yarn | GPD Cucumber.js e Playwright JS | 18+ consigliata |
-| jq | parsing JSON nei workflow Linux | richiesto in CI WISP/FdR |
+| jq | parsing JSON nei workflow Linux | richiesto in CI FdR e AI report analysis |
 
 Dipendenze Python principali presenti nel progetto:
 
@@ -763,7 +763,7 @@ Riferimenti: `.github/workflows/check_pr.yml`, `.github/auto_assign.yml`.
 
 ### WISP e FdR
 
-I workflow dedicati installano Python, Java 17, dipendenze Python e `jq`, poi eseguono:
+I workflow dedicati installano Python, Java 17 e dipendenze Python, poi eseguono:
 
 ```bash
 behave src/integration/wisp --tags=@runnable \

@@ -20,6 +20,10 @@ locals {
     name           = "${local.prefix}-${var.env_short}-${local.location_short}-github-runner-cae",
     resource_group = "${local.prefix}-${var.env_short}-${local.location_short}-github-runner-rg",
   }
+
+  domain_key_vault = {
+    url = "https://${local.prefix}-${var.env_short}-${local.location_short}-qa-kv.vault.azure.net/",
+  }
 }
 
 variable "env" {
