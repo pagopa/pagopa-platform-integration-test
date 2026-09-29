@@ -9,10 +9,7 @@ permissions:
 
 jobs:
   wisp_tests:
-    runs-on: [self-hosted-job, uat]
-    environment: uat
-    env:
-      AZURE_KEY_VAULT_URL: ${{ vars.AZURE_KEY_VAULT_URL }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
@@ -31,6 +28,13 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
+          sudo apt-get install -y jq
+
+      # No Key Vault on GitHub-hosted runners: secrets come from the repo secret.
+      - name: Load secrets
+        run: echo "$SECRETS" >> ./config/.secrets.yaml
+        env:
+          SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS }}
 
       - name: Run WISP tests
         id: run_tests
