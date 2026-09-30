@@ -20,7 +20,7 @@ ALLURE_RESULT_PATH = "allure-results"
 
 
 
-def populate_test_run(test_run: Test_runs, summary_path: str):
+def populate_test_run(test_run: Test_runs, summary_path: str, config: Dynaconf):
     '''
     Populate the test_run object based on the data found in summary.json file.
 
@@ -42,8 +42,9 @@ def populate_test_run(test_run: Test_runs, summary_path: str):
         test_run.timestamp_start = datetime.fromtimestamp(summary_data.get("time", {}).get('start', 0)/1000.0).isoformat()
         test_run.timestamp_end = datetime.fromtimestamp(summary_data.get("time", {}).get('stop', 0)/1000.0).isoformat()
         test_run.duration_ms = summary_data.get("time", {}).get('duration', 0)
-        # Empty since at the moment we don't trace the test suite version
-        # test_run.test_version = ???
+        if config is not None:
+            test_run.test_version = str(config.get("version", None))
+      
     return test_run
 
 def populate_test_executions(test_cases_dir: str, run_id) -> list[Test_executions]:
@@ -88,7 +89,7 @@ def populate_test_suite(config: Dynaconf, test_suite: Test_suites = None) -> Tes
     return test_suite
 
 
-def get_latest_suite_version(test_object: str, config: Dynaconf) -> Test_suites:
+def get_latest_saved_suite_version(test_object: str, config: Dynaconf) -> Test_suites:
     # This function should implement the logic to retrieve the latest suite version and its uuid by test_object from the QA HUB API.
     api = config.get("qa_hub_apis", None).get("latest_suite_version", None)
     try:
@@ -163,6 +164,27 @@ def save_test_executions(test_executions: list[Test_executions],  config: Dynaco
 
     return [Test_executions(**te) for te in test_executions_out.json()]
 
+
+def get_current_product_version(test_object: str, config: Dynaconf) -> str:
+    version_api = config.get('product_versions_apis', None).get(test_object, None)
+
+    if version_api is None:
+        print(f"[INFO][get_current_product_version] No path for the current product version for test_object: {test_object}. Setting default: 0.0.1")
+        return "0.0.1"
+
+    try:
+        current_product_obj = requests.request(method='GET',url=version_api)
+
+        if current_product_obj.status_code != 200:
+            print(f"[INFO][get_current_product_version] Failed to get current product version for test_object: {test_object}. Setting default: 0.0.1. Response: {current_product_obj.status_code}: {current_product_obj.text}")
+            return "0.0.1"
+
+        return current_product_obj.json().get("version", "0.0.1")
+    except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as e:
+        print(f"[INFO][get_current_product_version] Failed to get current product version for test_object: {test_object}. Setting default: 0.0.1.")        
+        return "0.0.1"
+
+
 def main():
     parser = argparse.ArgumentParser(description='Populate tables with test run data.')
     parser.add_argument('--run-type', '-t', default='CRON', help='Type of run (CRON, MANUAL, CI_PIPELINE)')
@@ -203,15 +225,16 @@ def main():
             else:
                 test_suite.test_object = str(dir)
 
-           
+            # get the actual product version
+            current_product_version = get_current_product_version(test_suite.test_object, full_config)
+            # get the latest product version saved in the database for this suite
+            latest_suite_version_obj = get_latest_saved_suite_version(test_suite.test_object, full_config)
+
             # if latest_version is not None and is smaller than the current version of the test, then fully populate the suite 
             # object and use the proper API to insert a new record in the DB.
-            latest_suite_version_obj = get_latest_suite_version(test_suite.test_object, full_config)
-            current_version = 'LATEST'
-            
-            if (latest_suite_version_obj is not None and latest_suite_version_obj.suite_version < current_version) or (latest_suite_version_obj is None):
+            if (latest_suite_version_obj is None) or (latest_suite_version_obj is not None and latest_suite_version_obj.suite_version < current_product_version):
                 print(f"[INFO][main] No suite found for test_object {test_suite.test_object} or the latest version is outdated. Creating and saving a new suite version.")
-                test_suite.suite_version = current_version
+                test_suite.suite_version = current_product_version
                 test_suite = populate_test_suite( full_config, test_suite)
                 latest_suite_version_obj = save_test_suite(test_suite, full_config)
                 print(f"[INFO][main] Saved new suite version for test_object {test_suite.test_object}.")
@@ -219,7 +242,7 @@ def main():
 
             # Populate the test run object based on the summary.json file 
             test_run.suite_id = latest_suite_version_obj.id
-            test_run = populate_test_run(test_run, os.path.join(run_dir, SUMMARY_FILE_PATH))
+            test_run = populate_test_run(test_run, os.path.join(run_dir, SUMMARY_FILE_PATH), full_config.get(test_suite.test_object, {}))
             # Populating test executions based on the test cases JSON files
             if os.path.exists(os.path.join(run_dir, TEST_CASES_PATH)):
                 test_executions = populate_test_executions(os.path.join(run_dir, TEST_CASES_PATH), test_run.id)

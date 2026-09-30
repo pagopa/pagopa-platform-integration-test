@@ -19,6 +19,7 @@ alcune suite storiche usano Cucumber.js o Playwright.
 - [Servizio di test riusabile](#servizio-di-test-riusabile)
 - [Documentazione scenari](#documentazione-scenari)
 - [Contribuire](#contribuire)
+- [Release e versionamento](#release-e-versionamento)
 - [Troubleshooting](#troubleshooting)
 - [Tracciabilita delle fonti](#tracciabilita-delle-fonti)
 
@@ -977,6 +978,55 @@ La PR deve descrivere cambiamenti, motivazione, test eseguiti e tipo di modifica
 di PR applica automaticamente label di dimensione in base alle righe modificate.
 
 Riferimenti: `.github/PULL_REQUEST_TEMPLATE.md`, `.github/workflows/check_pr.yml`, regole operative di progetto.
+
+## Release e versionamento
+
+A ogni push su `main`, incluso il merge di una PR, il workflow `Release` crea automaticamente
+un tag e una GitHub Release seguendo il [Semantic Versioning](https://semver.org/)
+(`vMAJOR.MINOR.PATCH`).
+
+Il workflow usa due action:
+
+- `mathieudutour/github-tag-action` calcola la nuova versione a partire dai messaggi di commit
+  ([Conventional Commits](https://www.conventionalcommits.org/)) e pubblica il tag;
+- `ncipollo/release-action` crea la GitHub Release con note generate automaticamente, raggruppate
+  secondo le categorie definite in `.github/release.yml`.
+
+Non servono file di versione nel repository: la versione corrente e sempre l'ultimo tag SemVer
+con prefisso `v`. I tag non SemVer esistenti (es. `WISP_v1.0`, `CHECKOUT_v1.0`) vengono ignorati.
+La base di partenza e `1.0.0` (`initial_version`).
+
+### Regole di incremento
+
+| Commit | Incremento | Esempio |
+|---|---|---|
+| `fix:`, `perf:` | patch | `v1.2.3` -> `v1.2.4` |
+| `feat:` | minor | `v1.2.3` -> `v1.3.0` |
+| `feat!:`, `fix!:` o footer `BREAKING CHANGE:` | major | `v1.2.3` -> `v2.0.0` |
+| solo altri prefissi (`chore:`, `docs:`, `refactor:`, `test:`) o messaggi non convenzionali | patch (default) | `v1.2.3` -> `v1.2.4` |
+
+Per non generare alcuna release, inserire `[no-release]` o `[skip-release]` nel messaggio di commit.
+
+### Incremento unico per push
+
+L'action analizza **tutti** i commit arrivati su `main` dall'ultimo tag, ma applica **un solo
+incremento: quello di livello piu alto trovato**. Il numero di commit non conta, conta solo il
+tipo piu "forte".
+
+| Commit inclusi nel merge | Risultato |
+|---|---|
+| 10 `fix:` | `v1.2.3` -> `v1.2.4` |
+| 8 `fix:` + 2 `feat:` | `v1.2.3` -> `v1.3.0` |
+| 9 `feat:` + 1 `feat!:` | `v1.2.3` -> `v2.0.0` |
+
+Quindi una PR con molti commit `feat:`/`fix:` produce comunque una sola release. Con il merge commit (strategia attuale) i singoli commit della PR restano nella storia di `main` e vengono letti correttamente; il commit `Merge pull request #...` non e convenzionale e viene ignorato.
+In caso di squash merge, invece, il titolo della PR diventa l'unico commit analizzato e deve
+quindi rispettare il formato convenzionale (es. `feat(PQ-123): descrizione`).
+
+Attenzione: un solo `!` o `BREAKING CHANGE:` in un qualsiasi commit della PR porta a un
+incremento major.
+
+Riferimenti: `.github/workflows/release.yml`, `.github/release.yml`.
 
 ## Troubleshooting
 
