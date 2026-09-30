@@ -176,10 +176,12 @@ jobs:
           failed=false
           if [ "$PREPARE_RESULT" != success ] || [ "$SUITES_RESULT" != success ]; then
             failed=true
+            echo "::error title=NRT orchestration::prepare=$PREPARE_RESULT, run_suites=$SUITES_RESULT"
           fi
           if [ "${#outcome_files[@]}" -ne "${EXPECTED_SUITE_COUNT:-0}" ]; then
-            echo "Expected ${EXPECTED_SUITE_COUNT:-0} outcome file(s), found ${#outcome_files[@]}." \
-              | tee -a "$GITHUB_STEP_SUMMARY"
+            message="Expected ${EXPECTED_SUITE_COUNT:-0} outcome file(s), found ${#outcome_files[@]}."
+            echo "$message" | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "::error title=NRT outcome artifacts::$message"
             failed=true
           fi
 
@@ -187,14 +189,21 @@ jobs:
             suite_id=$(jq -r '.suite_id' "$outcome")
             test_outcome=$(jq -r '.test_outcome' "$outcome")
             job_outcome=$(jq -r '.job_outcome' "$outcome")
-            printf -- '- **%s**: tests `%s`, job `%s`\n' \
+            message="Suite $suite_id: tests=$test_outcome, setup/report=$job_outcome"
+            echo "$message"
+            printf -- '- **%s**: tests `%s`, setup/report `%s`\n' \
               "$suite_id" "$test_outcome" "$job_outcome" >> "$GITHUB_STEP_SUMMARY"
-            if [ "$test_outcome" != success ] || [ "$job_outcome" != success ]; then
+            if [ "$test_outcome" != success ]; then
+              echo "::error title=NRT test failure::$suite_id test execution ended with $test_outcome"
+              failed=true
+            fi
+            if [ "$job_outcome" != success ]; then
+              echo "::error title=NRT suite infrastructure failure::$suite_id setup or reporting ended with $job_outcome"
               failed=true
             fi
           done
 
           if [ "$failed" = true ]; then
-            echo 'One or more NRT suites failed or did not publish an outcome.' >&2
+            echo 'NRT failed; inspect the suite-specific errors above and the Behave/Allure logs.' >&2
             exit 1
           fi
