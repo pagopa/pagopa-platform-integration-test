@@ -30,6 +30,7 @@ jobs:
           pip install -r requirements.txt
           sudo apt-get install -y jq
 
+      # No Key Vault on GitHub-hosted runners: secrets come from the repo secret.
       - name: Load secrets
         run: echo "$SECRETS" >> ./config/.secrets.yaml
         env:
@@ -59,11 +60,17 @@ jobs:
           name: ai-prompt-wisp
           path: ai-analysis-input
 
+      # gh-pages holds every historical Allure report (tens of thousands of files):
+      # only the trend history folder is checked out, otherwise the step hangs.
       - name: Load previous allure history
+        if: always()
+        continue-on-error: true
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           ref: gh-pages
           path: gh-pages
+          fetch-depth: 1
+          sparse-checkout: wisp-tests/last-history
 
       - name: Prepare allure-results for report generation
         if: always()
@@ -80,7 +87,9 @@ jobs:
 
       - name: Install Allure CLI
         if: always()
-        run: npm install -g allure-commandline@2.27.0
+        run: |
+          npm install --prefix "$RUNNER_TEMP/allure" --no-save --no-package-lock allure-commandline@2.27.0
+          echo "$RUNNER_TEMP/allure/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Build WISP Allure report
         if: always()
