@@ -1,0 +1,36 @@
+{
+  "suites": [
+    {
+      "id": "wisp",
+      "label": "WISP",
+      "behave_path": "src/integration/wisp",
+      "tags": ["@runnable"],
+      "allure_subfolder": "wisp-tests",
+      "report_artifact": "allure-report-wisp",
+      "secret_set": "integration",
+      "needs_playwright": false,
+      "envs": ["dev", "uat"],
+      "depends_on": [],
+      "on_dependency_failure": "skip",
+      "provides": [],
+      "consumes": [],
+      "resource_group": null
+    },
+    {
+      "id": "checkout",
+      "label": "Checkout E2E",
+      "behave_path": "src/e2e/checkout",
+      "tags": ["@e2e", "~@skip"],
+      "allure_subfolder": "checkout-e2e-tests",
+      "report_artifact": "allure-report-checkout",
+      "secret_set": "checkout",
+      "needs_playwright": true,
+      "envs": ["uat"],
+      "depends_on": [],
+      "on_dependency_failure": "skip",
+      "provides": [],
+      "consumes": [],
+      "resource_group": null
+    }
+  ]
+}
