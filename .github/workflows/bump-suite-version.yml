@@ -1,0 +1,69 @@
+name: Bump test suite version
+
+on:
+    workflow_dispatch:
+    pull_request: 
+     types:
+      - closed
+
+permissions:
+    contents: write
+    
+
+jobs:
+  bump_suite_version:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+        with:
+          fetch-depth: 2
+          ref: ${{ github.event_name == 'pull_request' && 'main' || github.ref }}
+
+      - name: Detect changed files under src
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip') }}
+        uses: actions/github-script@d556feaca394842dc55e4734bf3bb9f685482fa0 # v6.3.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            var lables = await github.rest.pulls.listFiles({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number
+            });
+
+            const versionLabels = ['minor', 'major', 'patch']
+            const suiteLabels = ['wisp','checkout','fdr']
+            var versionLabel = null;
+            var suiteLabel = null;
+            for (const label of lables.data) {
+
+                if(versionLabels.includes(label.name)) {
+                    versionLabel = label.name;
+                    continue;
+                }
+
+                if(suiteLabels.includes(label.name)) {
+                    suiteLabel = label.name;
+                    continue;
+                }
+            }
+            console.log(`Detected version label: ${versionLabel}, suite label: ${suiteLabel}`)
+            process.env.VERSION_LABEL = versionLabel;
+            process.env.SUITE_LABEL = suiteLabel;
+
+      - name: Set up Python
+        uses: actions/setup-python@7f4fc3e22c37d6ff65e88745f38bd3157c663f7c # v4
+        with: 
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Update test suite version
+        run: |
+            python -u .github/scripts/auto_update_test_suite_version.py "${{ env.VERSION_LABEL }}" "${{ env.SUITE_LABEL }}"
+    
