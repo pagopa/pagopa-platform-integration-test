@@ -33,6 +33,9 @@ flowchart TD
     RA --> AI[Aggregate AI analysis]
     RA --> DEP[Deploy reports]
     AI --> DEP
+    RA --> SL[Slack notification<br/>suite stats and run status]
+    PREP --> SL
+    MAT --> SL
     DEP --> CON[Confluence report]
     DEP --> DATA[Test data ingestion]
 ```
@@ -48,7 +51,7 @@ the new process is adopted.
 
 | Component | Responsibility |
 |---|---|
-| `.github/workflows/nrt-main-dispatch-tests.yml` | Entry point for scheduled and manual runs; accepts suite selection and target environment; prepares the selected suite matrix; coordinates suite execution and downstream reporting. |
+| `.github/workflows/nrt-main-dispatch-tests.yml` | Entry point for scheduled and manual runs; accepts suite selection and target environment; prepares the selected suite matrix; coordinates suite execution, final status, and Slack notification. |
 | `.github/nrt-suites.json` | Declarative catalog of suite IDs, labels, Behave paths/tags, environment support, setup requirements, and dependency metadata. |
 | `.github/workflows/nrt-run-suite.yml` | Reusable workflow containing the common setup, secret materialization, test execution, Allure generation, and artifact publication for one suite. |
 | `.github/workflows/nrt-sync-secrets.yml` | Runs on the self-hosted network path, reads Key Vault values, builds and validates per-environment bundles, encrypts them, and updates GitHub Actions secrets. |
@@ -211,6 +214,13 @@ AI analysis runs once after suite execution and consumes an aggregate prompt bui
 the suite outcomes and relevant failures. If the input exceeds the model context limit,
 the prompt is reduced to failed scenarios and diagnostics. The analysis is supplemental:
 it does not replace the authoritative test outcome.
+
+The NRT Slack notification runs after suite execution and final-status evaluation, even
+when tests fail. During rollout, its heading is explicitly marked **NRT BETA TEST** so it
+cannot be confused with the established production notification. It combines each outcome artifact with the corresponding Allure
+`widgets/summary.json` to report suite status, passed/failed/skipped counts, duration, and a
+link to the workflow run. It uses the existing `SLACK_INTEGRATION_TEST_WEBHOOK_URL` secret
+and does not depend on the legacy report-deployment workflow.
 
 Report publication, Confluence reporting, and test-data ingestion run with an
 always-evaluate condition so test failures do not prevent diagnostic artifacts from being

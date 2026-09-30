@@ -207,3 +207,86 @@ jobs:
             echo 'NRT failed; inspect the suite-specific errors above and the Behave/Allure logs.' >&2
             exit 1
           fi
+
+  notify_slack:
+    name: NRT - Slack notification
+    if: always()
+    needs: [prepare, run_suites, final_status]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Allure reports
+        if: needs.prepare.result == 'success'
+        continue-on-error: true
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: allure-report-*
+          path: nrt-reports
+
+      - name: Download suite outcomes
+        if: needs.prepare.result == 'success'
+        continue-on-error: true
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: nrt-outcome-*
+          path: nrt-outcomes
+          merge-multiple: true
+
+      - name: Send NRT results to Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_INTEGRATION_TEST_WEBHOOK_URL }}
+          TARGET_ENV: ${{ needs.prepare.outputs.target_env }}
+          FINAL_STATUS: ${{ needs.final_status.result }}
+          WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        shell: bash
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo 'SLACK_INTEGRATION_TEST_WEBHOOK_URL is not configured.' >&2
+            exit 1
+          fi
+
+          if [ "$FINAL_STATUS" = success ]; then
+            status_text='✅ Passed'
+          else
+            status_text='❌ Failed'
+          fi
+
+          message="*🧪 NRT BETA TEST — ${TARGET_ENV:-unknown} — $status_text*"
+          message+=$'\n<'"$WORKFLOW_URL"$'|Open workflow run>\n'
+
+          outcome_count=0
+          while IFS= read -r -d '' outcome; do
+            outcome_count=$((outcome_count + 1))
+            suite_id=$(jq -r '.suite_id' "$outcome")
+            suite_label=$(jq -r '.suite_label // .suite_id' "$outcome")
+            report_artifact=$(jq -r '.report_artifact // empty' "$outcome")
+            test_outcome=$(jq -r '.test_outcome' "$outcome")
+            job_outcome=$(jq -r '.job_outcome' "$outcome")
+            summary_file="nrt-reports/${report_artifact}/widgets/summary.json"
+
+            if [ -f "$summary_file" ]; then
+              passed=$(jq -r '(.statistic | if type == "array" then .[0] else . end).passed // 0' "$summary_file")
+              failed=$(jq -r '(.statistic | if type == "array" then .[0] else . end) | ((.failed // 0) + (.broken // 0))' "$summary_file")
+              skipped=$(jq -r '(.statistic | if type == "array" then .[0] else . end).skipped // 0' "$summary_file")
+              duration_ms=$(jq -r '(.time | if type == "array" then .[0] else . end).duration // 0' "$summary_file")
+              duration_seconds=$((duration_ms / 1000))
+              duration="$((duration_seconds % 60))s"
+              if [ "$duration_seconds" -ge 60 ]; then
+                duration="$((duration_seconds / 60))m $((duration_seconds % 60))s"
+              fi
+              details="tests=${test_outcome}, setup/report=${job_outcome}; passed=${passed}, failed=${failed}, skipped=${skipped}; duration=${duration}"
+            else
+              details="tests=${test_outcome}, setup/report=${job_outcome}; Allure statistics unavailable"
+            fi
+
+            message+=$'\n• *'"$suite_label"$'* — '"$details"
+          done < <(find nrt-outcomes -type f -name '*.json' -print0 2>/dev/null | sort -z)
+
+          if [ "$outcome_count" -eq 0 ]; then
+            message+=$'\n\nNo suite outcomes were available: prepare=${{ needs.prepare.result }}, suites=${{ needs.run_suites.result }}.'
+          fi
+
+          payload=$(jq -cn --arg text "$message" '{text:$text}')
+          curl --silent --show-error --fail-with-body --max-time 20 \
+            -H 'Content-Type: application/json' \
+            --data "$payload" \
+            "$SLACK_WEBHOOK_URL"

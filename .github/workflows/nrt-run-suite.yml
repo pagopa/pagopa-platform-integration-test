@@ -219,6 +219,7 @@ jobs:
           AI_PROMPT_OUTCOME: ${{ steps.build_ai_prompt.outcome }}
           ALLURE_OUTCOME: ${{ steps.install_allure.outcome }}
           REPORT_OUTCOME: ${{ steps.build_report.outcome }}
+          REPORT_ARTIFACT: ${{ inputs.report_artifact }}
         run: |
           job_outcome=success
           for outcome in \
@@ -239,10 +240,12 @@ jobs:
           mkdir -p nrt-outcome
           jq -n \
             --arg suite_id "$SUITE_ID" \
+            --arg suite_label "$SUITE_LABEL" \
+            --arg report_artifact "$REPORT_ARTIFACT" \
             --arg target_env "$TARGET_ENV" \
             --arg test_outcome "${TEST_OUTCOME:-skipped}" \
             --arg job_outcome "$job_outcome" \
-            '{suite_id: $suite_id, target_env: $target_env, test_outcome: $test_outcome, job_outcome: $job_outcome}' \
+            '{suite_id: $suite_id, suite_label: $suite_label, report_artifact: $report_artifact, target_env: $target_env, test_outcome: $test_outcome, job_outcome: $job_outcome}' \
             > "nrt-outcome/${SUITE_ID}.json"
 
       - name: Upload suite outcome
