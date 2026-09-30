@@ -250,10 +250,19 @@ jobs:
             status_text='❌ Failed'
           fi
 
-          message="*🧪 NRT BETA TEST — ${TARGET_ENV:-unknown} — $status_text*"
-          message+=$'\n<'"$WORKFLOW_URL"$'|Open workflow run>\n'
+          blocks=$(jq -cn \
+            --arg env "${TARGET_ENV:-unknown}" \
+            --arg status "$status_text" \
+            --arg url "$WORKFLOW_URL" \
+            '[
+              {type:"header", text:{type:"plain_text", text:("🧪 NRT BETA TEST · " + ($env | ascii_upcase) + " · " + $status), emoji:true}},
+              {type:"context", elements:[{type:"mrkdwn", text:("<" + $url + "|Open workflow run>")}]},
+              {type:"divider"}
+            ]')
 
           outcome_count=0
+          section_count=0
+          suite_fields='[]'
           while IFS= read -r -d '' outcome; do
             outcome_count=$((outcome_count + 1))
             suite_id=$(jq -r '.suite_id' "$outcome")
@@ -273,19 +282,58 @@ jobs:
               if [ "$duration_seconds" -ge 60 ]; then
                 duration="$((duration_seconds / 60))m $((duration_seconds % 60))s"
               fi
-              details="tests=${test_outcome}, setup/report=${job_outcome}; passed=${passed}, failed=${failed}, skipped=${skipped}; duration=${duration}"
+              statistics="✅ ${passed}  ·  ❌ ${failed}  ·  ⚡ ${skipped}"
             else
-              details="tests=${test_outcome}, setup/report=${job_outcome}; Allure statistics unavailable"
+              duration='duration unavailable'
+              statistics='Allure statistics unavailable'
             fi
 
-            message+=$'\n• *'"$suite_label"$'* — '"$details"
+            if [ "$test_outcome" = success ] && [ "$job_outcome" = success ]; then
+              suite_status='✅ Passed'
+            elif [ "$test_outcome" = failure ]; then
+              suite_status='❌ Tests failed'
+            else
+              suite_status='⚠️ Setup/report issue'
+            fi
+
+            field_text="*${suite_label}*\n${suite_status}  ·  ${duration}\n${statistics}"
+            if [ "$job_outcome" != success ] && [ "$test_outcome" = failure ]; then
+              field_text+=$'\n⚠️ Setup/report also failed'
+            fi
+            suite_fields=$(jq -cn \
+              --argjson fields "$suite_fields" \
+              --arg text "$field_text" \
+              '$fields + [{type:"mrkdwn", text:$text}]')
+            section_count=$((section_count + 1))
+
+            if [ "$section_count" -eq 8 ]; then
+              blocks=$(jq -cn \
+                --argjson blocks "$blocks" \
+                --argjson fields "$suite_fields" \
+                '$blocks + [{type:"section", fields:$fields}]')
+              section_count=0
+              suite_fields='[]'
+            fi
           done < <(find nrt-outcomes -type f -name '*.json' -print0 2>/dev/null | sort -z)
 
-          if [ "$outcome_count" -eq 0 ]; then
-            message+=$'\n\nNo suite outcomes were available: prepare=${{ needs.prepare.result }}, suites=${{ needs.run_suites.result }}.'
+          if [ "$section_count" -gt 0 ]; then
+            blocks=$(jq -cn \
+              --argjson blocks "$blocks" \
+              --argjson fields "$suite_fields" \
+              '$blocks + [{type:"section", fields:$fields}]')
           fi
 
-          payload=$(jq -cn --arg text "$message" '{text:$text}')
+          if [ "$outcome_count" -eq 0 ]; then
+            blocks=$(jq -cn \
+              --argjson blocks "$blocks" \
+              --arg status "No suite outcomes were available: prepare=${{ needs.prepare.result }}, suites=${{ needs.run_suites.result }}." \
+              '$blocks + [{type:"section", text:{type:"mrkdwn", text:$status}}]')
+          fi
+
+          payload=$(jq -cn \
+            --argjson blocks "$blocks" \
+            --arg text "NRT BETA TEST ${TARGET_ENV:-unknown}: $status_text" \
+            '{text:$text, blocks:$blocks}')
           curl --silent --show-error --fail-with-body --max-time 20 \
             -H 'Content-Type: application/json' \
             --data "$payload" \
