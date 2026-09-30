@@ -32,7 +32,7 @@ jobs:
       SUITE_SELECTION: ${{ github.event_name == 'workflow_dispatch' && inputs.suites || 'all' }}
       TARGET_ENV: ${{ github.event_name == 'workflow_dispatch' && inputs.target_env || 'uat' }}
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Build suite matrix
         id: plan
@@ -100,7 +100,7 @@ jobs:
       - name: Download suite prompts
         if: always()
         continue-on-error: true
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: nrt-ai-prompt-*
           path: suite-prompts
@@ -128,7 +128,7 @@ jobs:
           echo "Aggregated $prompt_count suite prompt(s)."
 
       - name: Upload aggregate prompt
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: nrt-ai-prompt-aggregate
           path: ai-analysis-input
@@ -154,7 +154,7 @@ jobs:
       - name: Download suite outcomes
         if: needs.prepare.result == 'success'
         continue-on-error: true
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: nrt-outcome-*
           path: suite-outcomes
@@ -217,7 +217,7 @@ jobs:
       - name: Download Allure reports
         if: needs.prepare.result == 'success'
         continue-on-error: true
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: allure-report-*
           path: nrt-reports
@@ -225,7 +225,7 @@ jobs:
       - name: Download suite outcomes
         if: needs.prepare.result == 'success'
         continue-on-error: true
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: nrt-outcome-*
           path: nrt-outcomes
