@@ -996,6 +996,15 @@ Non servono file di versione nel repository: la versione corrente e sempre l'ult
 con prefisso `v`. I tag non SemVer esistenti (es. `WISP_v1.0`, `CHECKOUT_v1.0`) vengono ignorati.
 La base di partenza e `1.0.0` (`initial_version`).
 
+### Versioni delle suite di test
+
+Le versioni delle singole suite sono indipendenti dal tag di release del repository e sono
+registrate in `suite_versions.json`. Il loro aggiornamento e guidato dalle **label della PR**:
+assegnare una label di incremento (`major`, `minor` o `patch`) e una label della suite coinvolta(`wisp`, `checkout` o `fdr`). Usare `skip` quando non si vuole aggiornare la versione di una suite.
+
+Quando la PR viene mergiata, il workflow `Bump test suite version` legge le label. Se trova sia l'incremento sia la suite, esegue lo script che aumenta la versione di quella suite all'interno del file json; infine crea un commit e pubblica il file aggiornato su `main`.
+Con `skip`, o senza una delle due label necessarie, il file non viene aggiornato. Questo flusso e separato dal versionamento della release, che dipende invece dai messaggi di commit.
+
 ### Regole di incremento
 
 | Commit | Incremento | Esempio |
