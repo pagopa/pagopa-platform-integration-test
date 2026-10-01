@@ -262,7 +262,7 @@ jobs:
 
           outcome_count=0
           section_count=0
-          suite_fields='[]'
+          section_text=''
           while IFS= read -r -d '' outcome; do
             outcome_count=$((outcome_count + 1))
             suite_id=$(jq -r '.suite_id' "$outcome")
@@ -296,31 +296,31 @@ jobs:
               suite_status='⚠️ Setup/report issue'
             fi
 
-            field_text="*${suite_label}*\n${suite_status}  ·  ${duration}\n${statistics}"
+            suite_entry="*${suite_label}*"$'\n'"${suite_status}  ·  ${duration}"$'\n'"${statistics}"
             if [ "$job_outcome" != success ] && [ "$test_outcome" = failure ]; then
-              field_text+=$'\n⚠️ Setup/report also failed'
+              suite_entry+=$'\n⚠️ Setup/report also failed'
             fi
-            suite_fields=$(jq -cn \
-              --argjson fields "$suite_fields" \
-              --arg text "$field_text" \
-              '$fields + [{type:"mrkdwn", text:$text}]')
+            if [ -n "$section_text" ]; then
+              section_text+=$'\n\n'
+            fi
+            section_text+="$suite_entry"
             section_count=$((section_count + 1))
 
-            if [ "$section_count" -eq 8 ]; then
+            if [ "$section_count" -eq 6 ]; then
               blocks=$(jq -cn \
                 --argjson blocks "$blocks" \
-                --argjson fields "$suite_fields" \
-                '$blocks + [{type:"section", fields:$fields}]')
+                --arg text "$section_text" \
+                '$blocks + [{type:"section", text:{type:"mrkdwn", text:$text}}]')
               section_count=0
-              suite_fields='[]'
+              section_text=''
             fi
           done < <(find nrt-outcomes -type f -name '*.json' -print0 2>/dev/null | sort -z)
 
           if [ "$section_count" -gt 0 ]; then
             blocks=$(jq -cn \
               --argjson blocks "$blocks" \
-              --argjson fields "$suite_fields" \
-              '$blocks + [{type:"section", fields:$fields}]')
+              --arg text "$section_text" \
+              '$blocks + [{type:"section", text:{type:"mrkdwn", text:$text}}]')
           fi
 
           if [ "$outcome_count" -eq 0 ]; then
