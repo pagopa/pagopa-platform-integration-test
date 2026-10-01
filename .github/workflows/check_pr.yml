@@ -251,11 +251,10 @@ jobs:
                   body: `A suite label is already present on this pull request. To update multiple suites, please create multiple pull requests with the appropriate suite labels.`
                 })
                 core.setFailed('More than one suite label is present')
-            }
                 }
                 suiteTag = true
               }
-            }
+             }
             if (!suiteTag) {
               github.rest.issues.createComment({
                 issue_number: context.issue.number,
@@ -265,3 +264,4 @@ jobs:
               })
               core.setFailed('Missing suite label')
             }
+          
