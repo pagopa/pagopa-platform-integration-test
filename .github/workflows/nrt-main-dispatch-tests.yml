@@ -282,10 +282,9 @@ jobs:
               if [ "$duration_seconds" -ge 60 ]; then
                 duration="$((duration_seconds / 60))m $((duration_seconds % 60))s"
               fi
-              statistics="✅ ${passed}  ·  ❌ ${failed}  ·  ⚡ ${skipped}"
+              statistics="✅ Passed: ${passed}"$'\n'"❌ Failed: ${failed}"$'\n'"⚡ Skipped: ${skipped}"$'\n'"⏱️ Duration: ${duration}"
             else
-              duration='duration unavailable'
-              statistics='Allure statistics unavailable'
+              statistics=$'✅ Passed: unavailable\n❌ Failed: unavailable\n⚡ Skipped: unavailable\n⏱️ Duration: unavailable'
             fi
 
             if [ "$test_outcome" = success ] && [ "$job_outcome" = success ]; then
@@ -296,7 +295,7 @@ jobs:
               suite_status='⚠️ Setup/report issue'
             fi
 
-            suite_entry="*${suite_label}*"$'\n'"${suite_status}  ·  ${duration}"$'\n'"${statistics}"
+            suite_entry="*${suite_label}*"$'\n'"${suite_status} · Setup/report: ${job_outcome}"$'\n'"${statistics}"
             if [ "$job_outcome" != success ] && [ "$test_outcome" = failure ]; then
               suite_entry+=$'\n⚠️ Setup/report also failed'
             fi
