@@ -27,42 +27,17 @@ jobs:
         uses: actions/github-script@d556feaca394842dc55e4734bf3bb9f685482fa0 # v6.3.3
         with:
           script: |
-            const https = require('https');
-            const labels = await new Promise((resolve, reject) => {
-              const request = https.get(
-                `${process.env.GITHUB_API_URL}/repos/${context.repo.owner}/${context.repo.repo}/issues/${context.issue.number}/labels`,
-                {
-                    headers: {
-                        Accept: 'application/vnd.github+json',
-                        'User-Agent': 'pagopa-platform-integration-test',
-                        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-                    }
-                      },
-                      response => {
-                        let body = '';
-                        response.setEncoding('utf8');
-                        response.on('data', chunk => body += chunk);
-                        response.on('end', () => {
-                          if (response.statusCode < 200 || response.statusCode >= 300) {
-                            reject(new Error(`Failed to fetch issue labels: ${response.statusCode} ${body}`));
-                            return;
-                          }
-                          try {
-                            resolve(JSON.parse(body));
-                          } catch (error) {
-                            reject(error);
-                          }
-                        });
-                      }
-                    );
-                    request.on('error', reject);
-                  });
+            var labels = await github.rest.issues.listLabelsOnIssue({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo
+            });
 
             const versionLabels = ['minor', 'major', 'patch']
             const suiteLabels = ['wisp','checkout','fdr']
             var versionLabel = null;
             var suiteLabel = null;
-            for (const label of labels) {
+            for (const label of labels.data) {
                 label.name = label.name.toLowerCase();
                 if(versionLabels.includes(label.name)) {
                     versionLabel = label.name;
