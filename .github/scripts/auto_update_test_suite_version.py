@@ -2,10 +2,12 @@ import sys
 import argparse
 import pathlib
 from dynaconf import Dynaconf
+import json
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
 from src.utility.constants import TEST_SUITE_VERSIONS_FILE
+
 
 
 def main():
@@ -15,7 +17,7 @@ def main():
 
     args = parser.parse_args()
     version_label = str(args.version_change).lower()
-    suite_label = str(args.suite).lower()
+    suite_label = str(args.suite).upper()
 
     if version_label == 'skip' or suite_label == '':
         print("Skipping test suite version update due to missing version or suite label")
@@ -23,7 +25,9 @@ def main():
 
     if version_label != 'skip' and suite_label:
         print(f"Updating test suite version for version: {version_label}, suite: {suite_label}")
-        versions = Dynaconf(settings_files=[TEST_SUITE_VERSIONS_FILE])
+        with open(TEST_SUITE_VERSIONS_FILE, 'r') as f:
+            versions = json.load(f)
+
         current_version = versions.get(suite_label)
         if not current_version:
             print(f"No current version found for suite: {suite_label}")
@@ -41,7 +45,7 @@ def main():
         versions[suite_label] = new_version
 
         with open(TEST_SUITE_VERSIONS_FILE, 'w') as f:
-            f.write(str(versions.to_dict()))
+            json.dump(versions, f)
 
 if __name__ == "__main__":
     try:

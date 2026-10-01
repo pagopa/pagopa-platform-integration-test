@@ -22,7 +22,7 @@ jobs:
           fetch-depth: 2
           ref: ${{ github.event_name == 'pull_request' && 'main' || github.ref }}
 
-      - name: Detect changed files under src
+      - name: Obtain labels
         if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip') }}
         uses: actions/github-script@d556feaca394842dc55e4734bf3bb9f685482fa0 # v6.3.3
         with:
@@ -103,6 +103,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add suite_versions.yaml
+          git add suite_versions.json
           git commit -m "Update test suite version"
           git push
