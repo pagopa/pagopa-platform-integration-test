@@ -6,7 +6,7 @@ import json
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
-from src.utility.constants import TEST_SUITE_VERSIONS_FILE
+from src.utility.constants import NRT_SUITES_FILE
 
 
 
@@ -25,27 +25,34 @@ def main():
 
     if version_label != 'skip' and suite_label:
         print(f"Updating test suite version for version: {version_label}, suite: {suite_label}")
-        with open(TEST_SUITE_VERSIONS_FILE, 'r') as f:
-            versions = json.load(f)
+        with open(NRT_SUITES_FILE, 'r') as f:
+            suites = json.load(f)
 
-        current_version = versions.get(suite_label)
+        current_version = [x.get('version') for x in suites.get('suites', []) if x.get('id') == suite_label.lower()][0]
         if not current_version:
             print(f"No current version found for suite: {suite_label}")
             return
+        
         
         major, minor, patch = map(int, current_version.split('.'))
         match version_label:
             case 'major':
                 major += 1
+                minor = 0
+                patch = 0
             case 'minor':
                 minor += 1
+                patch = 0
             case 'patch':
                 patch += 1
         new_version = f"{major}.{minor}.{patch}"
-        versions[suite_label] = new_version
+        for suite in suites.get('suites', []):
+            if suite.get('id') == suite_label.lower():
+                suite['version'] = new_version
+                break
 
-        with open(TEST_SUITE_VERSIONS_FILE, 'w') as f:
-            json.dump(versions, f)
+        with open(NRT_SUITES_FILE, 'w') as f:
+            json.dump(suites, f)
 
 if __name__ == "__main__":
     try:

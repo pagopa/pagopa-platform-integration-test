@@ -12,7 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
 from src.models.test_models import Test_suites, Test_runs, Test_executions
-from src.utility.constants  import GITHUB_ROOT, SUMMARY_FILE_PATH, TEST_CASES_PATH, TEST_SUITE_VERSIONS_FILE
+from src.utility.constants  import GITHUB_ROOT, SUMMARY_FILE_PATH, TEST_CASES_PATH, NRT_SUITES_FILE
 from src.conf.configuration import load_configurations
 
 # the location of the allure results when we execute the tests with the TAS
@@ -205,7 +205,9 @@ def main():
     os.environ['TARGET_ENV'] = args.env.lower()
 
     full_config = load_configurations(GITHUB_ROOT)
-    suite_version = Dynaconf(settings_files=[TEST_SUITE_VERSIONS_FILE])
+    with open(NRT_SUITES_FILE, 'r') as f:
+        suites = json.load(f)
+
     for dir in sorted(os.listdir(processed_dir)):
 
         if args.suite and args.test_type and (dir != f"{args.suite}-{args.test_type}"):
@@ -243,7 +245,7 @@ def main():
 
             # Populate the test run object based on the summary.json file 
             test_run.suite_id = latest_suite_version_obj.id
-            test_run = populate_test_run(test_run, os.path.join(run_dir, SUMMARY_FILE_PATH), suite_version.get(test_suite.test_object, None))
+            test_run = populate_test_run(test_run, os.path.join(run_dir, SUMMARY_FILE_PATH), [x.get('version') for x in suites.get('suites', []) if x.get('id') == test_suite.test_object.lower()][0])
             # Populating test executions based on the test cases JSON files
             if os.path.exists(os.path.join(run_dir, TEST_CASES_PATH)):
                 test_executions = populate_test_executions(os.path.join(run_dir, TEST_CASES_PATH), test_run.id)
