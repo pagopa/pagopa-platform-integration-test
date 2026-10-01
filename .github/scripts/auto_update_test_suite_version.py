@@ -52,7 +52,8 @@ def main():
                 break
 
         with open(NRT_SUITES_FILE, 'w') as f:
-            json.dump(suites, f)
+            json.dump(suites, f, indent=2)
+            f.write('\n')
 
 if __name__ == "__main__":
     try:
