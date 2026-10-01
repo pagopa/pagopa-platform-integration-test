@@ -12,7 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
 from src.models.test_models import Test_suites, Test_runs, Test_executions
-from src.utility.constants  import GITHUB_ROOT, SUMMARY_FILE_PATH, TEST_CASES_PATH
+from src.utility.constants  import GITHUB_ROOT, SUMMARY_FILE_PATH, TEST_CASES_PATH, TEST_SUITE_VERSIONS_FILE
 from src.conf.configuration import load_configurations
 
 # the location of the allure results when we execute the tests with the TAS
@@ -20,7 +20,7 @@ ALLURE_RESULT_PATH = "allure-results"
 
 
 
-def populate_test_run(test_run: Test_runs, summary_path: str, config: Dynaconf):
+def populate_test_run(test_run: Test_runs, summary_path: str, version: str):
     '''
     Populate the test_run object based on the data found in summary.json file.
 
@@ -42,8 +42,8 @@ def populate_test_run(test_run: Test_runs, summary_path: str, config: Dynaconf):
         test_run.timestamp_start = datetime.fromtimestamp(summary_data.get("time", {}).get('start', 0)/1000.0).isoformat()
         test_run.timestamp_end = datetime.fromtimestamp(summary_data.get("time", {}).get('stop', 0)/1000.0).isoformat()
         test_run.duration_ms = summary_data.get("time", {}).get('duration', 0)
-        if config is not None:
-            test_run.test_version = str(config.get("version", None))
+        if version is not None:
+            test_run.test_version = str(version)
       
     return test_run
 
@@ -205,6 +205,7 @@ def main():
     os.environ['TARGET_ENV'] = args.env.lower()
 
     full_config = load_configurations(GITHUB_ROOT)
+    suite_version = Dynaconf(settings_files=[TEST_SUITE_VERSIONS_FILE])
     for dir in sorted(os.listdir(processed_dir)):
 
         if args.suite and args.test_type and (dir != f"{args.suite}-{args.test_type}"):
@@ -242,7 +243,7 @@ def main():
 
             # Populate the test run object based on the summary.json file 
             test_run.suite_id = latest_suite_version_obj.id
-            test_run = populate_test_run(test_run, os.path.join(run_dir, SUMMARY_FILE_PATH), full_config.get(test_suite.test_object, {}))
+            test_run = populate_test_run(test_run, os.path.join(run_dir, SUMMARY_FILE_PATH), suite_version.get(test_suite.test_object, None))
             # Populating test executions based on the test cases JSON files
             if os.path.exists(os.path.join(run_dir, TEST_CASES_PATH)):
                 test_executions = populate_test_executions(os.path.join(run_dir, TEST_CASES_PATH), test_run.id)
