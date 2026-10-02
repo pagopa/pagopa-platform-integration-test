@@ -16,7 +16,14 @@
 Gli step comuni sono gli unici responsabili della sintassi generica:
 
 ```gherkin
-Quando il PSP invia la richiesta "{request}" con il payload "{payload_name}"
+Quando il PSP invia la richiesta di "{request}" con il payload "{payload_name}"
+```
+
+La variante per testare l'autenticazione mantiene la stessa logica e forza
+`Ocp-Apim-Subscription-Key` a `invalid-key`:
+
+```gherkin
+Quando il PSP invia la richiesta di "{request}" con il payload "{payload_name}" con subscription_key non valida
 ```
 
 Il parametro `partner` seleziona il client: `PSP` usa il client PSP, gli altri
@@ -56,11 +63,15 @@ Gli step non generici sono mantenuti nei moduli della feature:
 - `feat_002_steps.py`: revisioni e `totPayments`;
 - `feat_003_steps.py`: verifica della cancellazione del flusso;
 - `feat_004_steps.py`: cancellazione e conteggio pagamenti;
-- `feat_005_steps.py`: aggiunta pagamenti con subscription key non valida;
-- `feat_006_steps.py`: cancellazione FdR con dati o subscription key non validi;
-- `feat_007_steps.py`: cancellazione pagamenti con subscription key non valida;
-- `feat_008_steps.py`: pubblicazione con subscription key non valida.
+- `feat_006_steps.py`: impostazione di dati non validi per la cancellazione FdR.
+
+La richiesta con subscription key non valida è gestita dallo step comune:
+
+```gherkin
+Quando il PSP invia la richiesta di "{request}" con il payload "{payload_name}" con subscription_key non valida
+```
 
 Gli endpoint non devono essere definiti negli step. Il nome funzionale della
 richiesta viene risolto in `utils_fdr.py`, che contiene anche metodo HTTP e
-path.
+path. `perform_fdr_action` registra metadati non sensibili della richiesta e
+lo status della risposta; per i dettagli completi usare `DUMP_HTTP=1`.

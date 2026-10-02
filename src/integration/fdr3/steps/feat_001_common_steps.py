@@ -17,6 +17,7 @@ from src.utility.data_generators import generate_iuv, generate_uuid
 
 LOGGER = logging.getLogger("fdr3")
 
+
 @given("i sistemi sono operativi")
 def step_systems_up(context):
     context.response = None
@@ -183,13 +184,23 @@ def _flow_value(context, name):
     return context.vars.get(name) or getattr(context, name, None)
 
 
-@when('il {partner} invia la richiesta "{request}" con il payload "{payload_name}"')
-def step_send_request(context, partner: str, request: str, payload_name: str = None):
+def _send_request(
+    context,
+    partner: str,
+    request: str,
+    payload_name: str,
+    invalid_key: bool = False,
+):
     action = resolve_fdr_action(request)
     client = _get_partner_client(context, partner)
     flow_name = _flow_value(context, "flow_name")
     flow_date = _flow_value(context, "flow_date")
     payload = _get_request_payload(context, payload_name)
+    if invalid_key and action == "aggiunta pagamenti" and payload is None:
+        number = int(getattr(context, "tot_payments", 0) or 3)
+        amount = float(getattr(context, "sum_payments", 0) or (number * 100))
+        payload = _build_payments_payload(number, amount)
+
     response = perform_fdr_action(
         client=client,
         context=context,
@@ -198,9 +209,28 @@ def step_send_request(context, partner: str, request: str, payload_name: str = N
         flow_date=flow_date,
         payload_override=payload,
         omit_payload=payload is None,
+        headers=(
+            {"Ocp-Apim-Subscription-Key": "invalid-key"}
+            if invalid_key
+            else None
+        ),
     )
     context.response = response
 
+
+@when('il {partner} invia la richiesta di "{request}" con il payload "{payload_name}"')
+def step_send_request(context, partner: str, request: str, payload_name: str):
+    _send_request(context, partner, request, payload_name)
+
+
+@when('il {partner} invia la richiesta di "{request}" con il payload "{payload_name}" con subscription_key non valida')
+def step_send_request_with_invalid_subscription_key(
+    context,
+    partner: str,
+    request: str,
+    payload_name: str,
+):
+    _send_request(context, partner, request, payload_name, invalid_key=True)
 
 
 
