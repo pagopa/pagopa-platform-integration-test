@@ -130,6 +130,7 @@ Funzionalità: Workflow di creazione e gestione delle revisioni di un flusso di 
     Dato una data di flusso di rendicontazione univoco chiamato flow_date
     E che lo scenario "Verifica revisione dopo seconda pubblicazione" è stato eseguito con successo
     E che il PSP deve inviare 1 pagamento al flusso
+    E che lo scenario "Creazione di una nuova versione (revisione 2) dello stesso FdR" è stato eseguito con successo
     Quando il PSP invia la richiesta "Get created FdR" con il payload "None"
     Allora il PSP riceve il codice di stato HTTP 200
     E la risposta contiene revision = 3
