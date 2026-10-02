@@ -43,18 +43,15 @@ def _populate_placeholder_vars(context):
         context.vars = {}
 
     global_conf = _config_value(context.config, "global_configuration")
-    create_conf = _config_value(context.config, "create_fdr")
-    sender = _config_value(create_conf, "sender")
-    receiver = _config_value(create_conf, "receiver")
 
     configured = {
-        "psp": _config_value(global_conf, "psp") or _config_value(sender, "psp_id", "pspId"),
-        "psp_id": _config_value(global_conf, "psp") or _config_value(sender, "psp_id", "pspId"),
-        "channel": _config_value(global_conf, "channel") or _config_value(sender, "channel_id", "channelId"),
-        "channel_password": _config_value(global_conf, "channel_password") or _config_value(sender, "password", "channel_password"),
-        "organization": _config_value(global_conf, "organization") or _config_value(receiver, "organization_id", "organizationId"),
+        "psp": _config_value(global_conf, "psp"),
+        "psp_id": _config_value(global_conf, "psp"),
+        "channel": _config_value(global_conf, "channel"),
+        "channel_password": _config_value(global_conf, "channel_password"),
+        "organization": _config_value(global_conf, "organization"),
         "broker_org": _config_value(global_conf, "broker_org"),
-        "broker_psp": _config_value(global_conf, "broker_psp") or _config_value(sender, "broker_id", "brokerId"),
+        "broker_psp": _config_value(global_conf, "broker_psp"),
         "station": _config_value(global_conf, "station"),
         "station_password": _config_value(global_conf, "station_password"),
     }
@@ -109,7 +106,6 @@ def before_all(context):
     except Exception as exc:
         LOGGER.warning(f"Failed to initialize PSP client: {exc}")
 
-    context.create_fdr = getattr(context.config, "create_fdr", None)
     _populate_placeholder_vars(context)
 
 
