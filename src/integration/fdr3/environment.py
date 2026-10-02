@@ -19,6 +19,51 @@ from src.conf.configuration import load_configurations
 LOGGER = logging.getLogger("fdr3")
 
 
+def _config_value(node, *keys):
+    """Read a value from a Dynaconf node or a regular mapping."""
+    if node is None:
+        return None
+    if hasattr(node, "to_dict"):
+        node = node.to_dict()
+    for key in keys:
+        if isinstance(node, dict):
+            if key in node:
+                return node[key]
+            for configured_key, value in node.items():
+                if str(configured_key).lower() == key.lower():
+                    return value
+        if hasattr(node, key):
+            return getattr(node, key)
+    return None
+
+
+def _populate_placeholder_vars(context):
+    """Expose configured global and FdR values to the placeholder resolver."""
+    if not hasattr(context, "vars"):
+        context.vars = {}
+
+    global_conf = _config_value(context.config, "global_configuration")
+    create_conf = _config_value(context.config, "create_fdr")
+    sender = _config_value(create_conf, "sender")
+    receiver = _config_value(create_conf, "receiver")
+
+    configured = {
+        "psp": _config_value(global_conf, "psp") or _config_value(sender, "psp_id", "pspId"),
+        "psp_id": _config_value(global_conf, "psp") or _config_value(sender, "psp_id", "pspId"),
+        "channel": _config_value(global_conf, "channel") or _config_value(sender, "channel_id", "channelId"),
+        "channel_password": _config_value(global_conf, "channel_password") or _config_value(sender, "password", "channel_password"),
+        "organization": _config_value(global_conf, "organization") or _config_value(receiver, "organization_id", "organizationId"),
+        "broker_org": _config_value(global_conf, "broker_org"),
+        "broker_psp": _config_value(global_conf, "broker_psp") or _config_value(sender, "broker_id", "brokerId"),
+        "station": _config_value(global_conf, "station"),
+        "station_password": _config_value(global_conf, "station_password"),
+    }
+    for key, value in configured.items():
+        if value is not None:
+            context.vars[key] = str(value)
+    LOGGER.info("Populated placeholder configuration: %s", sorted(configured))
+
+
 def _ensure_actor(context, name: str):
     """Ensure context.<name> exists and has a .rest attribute with a client slot."""
     if not hasattr(context, name) or getattr(context, name) is None:
@@ -64,6 +109,9 @@ def before_all(context):
     except Exception as exc:
         LOGGER.warning(f"Failed to initialize PSP client: {exc}")
 
+    context.create_fdr = getattr(context.config, "create_fdr", None)
+    _populate_placeholder_vars(context)
+
 
 def before_feature(context, feature):
     """Run before each feature. Clear transient context and add feature-scoped defaults."""
@@ -74,6 +122,7 @@ def before_feature(context, feature):
         context.vars = {}
     if not hasattr(context, "payloads"):
         context.payloads = {}
+    _populate_placeholder_vars(context)
     # place to set feature-level defaults if needed
 
 
@@ -113,8 +162,10 @@ def after_all(context):
     # Close FDR client if present
     if getattr(context, "fdr", None) and getattr(context.fdr, "rest", None) and getattr(context.fdr.rest, "client", None):
         try:
-            context.fdr.rest.client.close()
-            LOGGER.info("Closed FDR REST client")
+            close = getattr(context.fdr.rest.client, "close", None)
+            if callable(close):
+                close()
+                LOGGER.info("Closed FDR REST client")
         except Exception:
             LOGGER.exception("Error closing FDR client")
         context.fdr.rest.client = None
@@ -122,8 +173,10 @@ def after_all(context):
     # Close PSP client if present
     if getattr(context, "psp", None) and getattr(context.psp, "rest", None) and getattr(context.psp.rest, "client", None):
         try:
-            context.psp.rest.client.close()
-            LOGGER.info("Closed PSP REST client")
+            close = getattr(context.psp.rest.client, "close", None)
+            if callable(close):
+                close()
+                LOGGER.info("Closed PSP REST client")
         except Exception:
             LOGGER.exception("Error closing PSP client")
         context.psp.rest.client = None

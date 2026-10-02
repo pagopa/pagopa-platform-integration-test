@@ -3,6 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, Optional, Union
+import os
+
+import truststore
+
+truststore.inject_into_ssl()
 
 import requests
 from requests import Response, Session
@@ -324,9 +329,28 @@ class RestClient:
         # Per OAuth2 questo garantisce che il token sia sempre valido.
         auth_kwargs = self._prepare_auth(final_headers, final_params)
 
-        return self.session.request(
+        # Build final URL once for logging and request
+        final_url = self._build_url(path)
+
+        # Optional debug dump controlled by environment variable
+        if os.environ.get('DUMP_HTTP'):
+            try:
+                print('\n--- HTTP REQUEST DUMP ---')
+                print('METHOD:', method.upper())
+                print('URL:', final_url)
+                print('HEADERS:', final_headers)
+                print('PARAMS:', final_params)
+                print('JSON BODY:', json_body)
+                print('TIMEOUT:', timeout or self.config.timeout)
+                print('VERIFY_SSL:', self.config.verify_ssl)
+                print('AUTH_KWARGS_KEYS:', list(auth_kwargs.keys()))
+                print('--- END REQUEST DUMP ---\n')
+            except Exception:
+                pass
+
+        resp = self.session.request(
             method=method.upper(),
-            url=self._build_url(path),
+            url=final_url,
             headers=final_headers,
             params=final_params,
             json=json_body,
@@ -335,6 +359,26 @@ class RestClient:
             verify=self.config.verify_ssl,
             **auth_kwargs,
         )
+
+        if os.environ.get('DUMP_HTTP'):
+            try:
+                print('\n--- HTTP RESPONSE DUMP ---')
+                print('STATUS:', getattr(resp, 'status_code', None))
+                # truncate body to avoid massive dumps
+                body = None
+                try:
+                    body = resp.text
+                except Exception:
+                    body = '<non-text body>'
+                if body and len(body) > 8000:
+                    print('BODY (truncated 8k):', body[:8000] + '...')
+                else:
+                    print('BODY:', body)
+                print('--- END RESPONSE DUMP ---\n')
+            except Exception:
+                pass
+
+        return resp
 
     # -------------------------------------------------------------------------
     # Convenience methods
