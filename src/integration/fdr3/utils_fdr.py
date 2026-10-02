@@ -1,4 +1,5 @@
 import re
+import logging
 from datetime import datetime
 from typing import Any, Dict, Optional
 
@@ -7,59 +8,32 @@ from requests import Response
 from src.utility.rest.rest_client import RestClient
 
 
+LOGGER = logging.getLogger("fdr3")
+
+
 DEFAULT_ENDPOINTS = {
-    "create": ("POST", "/psps/#psp#/fdrs/$flow_name$"),
-    "add_payments": ("PUT", "/psps/#psp#/fdrs/$flow_name$/payments/add"),
-    "publish": ("POST", "/psps/#psp#/fdrs/$flow_name$/publish"),
-    "delete_flow": ("DELETE", "/psps/#psp#/fdrs/$flow_name$"),
-    "get_published": ("GET", "/psps/#psp#/published/fdrs/$flow_name$/revisions/$revision$/organizations/#organization#"),
-    "get_created_payments": ("GET", "/psps/#psp#/created/fdrs/$flow_name$/organizations/#organization#/payments"),
-    "get_created_fdr": ("GET", "/psps/#psp#/created/fdrs/$flow_name$/organizations/#organization#"),
-    "get_all_created": ("GET", "/psps/#psp#/created"),
-    "delete_payments": ("PUT", "/psps/#psp#/fdrs/$flow_name$/payments/del"),
-    "org_get_all_published_fdr": ("GET", "/organizations/#organization#/fdrs"),
-    "org_get_published_fdr": ("GET", "/organizations/#organization#/fdrs/$flow_name$/revisions/$revision$/psps/#psp#"),
-    "org_get_payments": ("GET", "/organizations/#organization#/fdrs/$flow_name$/revisions/$revision$/psps/#psp#/payments"),
-    "org_get_all_published_fdr_by_psp": ("GET", "/organizations/#organization#/fdrs?pspId=#psp#&page=1&size=1000&publishedGt=$today_date$"),
-    "psp_get_published_payments": ("GET", "/psps/#psp#/published/fdrs/$flow_name$/revisions/$revision$/organizations/#organization#/payments"),
-    "psp_get_published_fdr": ("GET", "/psps/#psp#/published/fdrs/$flow_name$/revisions/$revision$/organizations/#organization#"),
-    "psp_get_all_published_fdr": ("GET", "/psps/#psp#/published")
-
-}
-
-REQUEST_ACTIONS = {
-    "create a new flow structure": "create",
-    "add payments": "add_payments",
-    "publish": "publish",
-    "get published fdr": "get_published",
-    "delete flow": "delete_flow",
-    "delete payments": "delete_payments",
-    "get created fdr": "get_created_fdr",
-    "get created payments": "get_created_payments",
-    "get all created": "get_all_created",
-    "get all created fdr": "get_all_created",
-    "get all published fdr by psp": "org_get_all_published_fdr_by_psp",
-    "get published payments": "psp_get_published_payments",
-    "psp get published fdr": "psp_get_published_fdr",
-    "psp get all published fdr": "psp_get_all_published_fdr",
-    "org get all published fdr": "org_get_all_published_fdr",
+    "creazione di una nuova struttura di flusso": ("POST", "/psps/#psp#/fdrs/$flow_name$"),
+    "aggiunta pagamenti": ("PUT", "/psps/#psp#/fdrs/$flow_name$/payments/add"),
+    "pubblicazione": ("POST", "/psps/#psp#/fdrs/$flow_name$/publish"),
+    "cancellazione flusso": ("DELETE", "/psps/#psp#/fdrs/$flow_name$"),
+    "recupero fdr pubblicato": ("GET", "/psps/#psp#/published/fdrs/$flow_name$/revisions/$revision$/organizations/#organization#"),
+    "recupero pagamenti creati": ("GET", "/psps/#psp#/created/fdrs/$flow_name$/organizations/#organization#/payments"),
+    "recupero fdr creato": ("GET", "/psps/#psp#/created/fdrs/$flow_name$/organizations/#organization#"),
+    "cancellazione pagamenti": ("PUT", "/psps/#psp#/fdrs/$flow_name$/payments/del"),
+    "recupero di tutti i fdr pubblicati dal psp": ("GET", "/psps/#psp#/published"),
 }
 
 
 def resolve_fdr_action(request: str) -> str:
-    """Convert the API request label used in a feature into an endpoint action."""
-    key = " ".join(request.strip().lower().split())
-    action = REQUEST_ACTIONS.get(key)
-    if action is None:
-        normalized = re.sub(r"[^a-z0-9]+", "_", key).strip("_")
-        if normalized in DEFAULT_ENDPOINTS:
-            action = normalized
-    if action is None:
+    """Resolve the Italian request label directly to an endpoint key."""
+    key = " ".join(request.strip().casefold().split())
+    if key not in DEFAULT_ENDPOINTS:
+        LOGGER.error("Unknown FdR request label: %s", request)
         raise ValueError(
             f"Unknown FdR request '{request}'. "
-            f"Available: {sorted(REQUEST_ACTIONS)}"
+            f"Available: {sorted(DEFAULT_ENDPOINTS)}"
         )
-    return action
+    return key
 
 
 def perform_fdr_action(
@@ -82,8 +56,9 @@ def perform_fdr_action(
 
     Args:
         client: istanza di RestClient (vedi src.utility.rest)
-        action: nome dell'azione (es. "create", "add_payments", "publish", ...)
-        flow_name / flow_date: usati per costruire path o payload quando necessari
+        action: dicitura italiana dell'azione definita in DEFAULT_ENDPOINTS
+        flow_name: nome del flusso usato per costruire il path o il payload
+        flow_date: data del flusso usata per costruire il payload
         payload_override: body JSON completo (se presente viene usato al posto del payload factory)
         n_payments: usato per il payload di cancellazione pagamenti
         expected_status: se fornito, viene assertato che response.status_code == expected_status
@@ -91,16 +66,19 @@ def perform_fdr_action(
         endpoints: mappatura custom per sovrascrivere DEFAULT_ENDPOINTS
         query_params: query string da passare alla chiamata
         context: behave context per sostituire placeholder #psp#, $flow_name$, ecc.
+        omit_payload: evita l'invio del body JSON quando impostato a True
+        headers: header aggiuntivi o sostitutivi per la singola richiesta
 
     Ritorna:
         requests.Response
 
-    Nota: le path di DEFAULT_ENDPOINTS sono indicative e devono essere adattate se
-    l'API reale usa nomi differenti.
+    Nota: le path di DEFAULT_ENDPOINTS rappresentano gli endpoint API utilizzati
+    dalla suite FdR3.
     """
     endpoints = {**DEFAULT_ENDPOINTS, **(endpoints or {})}
 
     if action not in endpoints:
+        LOGGER.error("Unknown FdR action: %s", action)
         raise ValueError(f"Unknown action '{action}'. Available: {list(endpoints.keys())}")
 
     method, path_template = endpoints[action]
@@ -142,14 +120,16 @@ def perform_fdr_action(
 
     # Build JSON body if needed
     json_body = None
-    if action == "create" and not omit_payload:
+    if action == "creazione di una nuova struttura di flusso" and not omit_payload:
         json_body = payload_override
 
-    elif action == "add_payments" and not omit_payload:
+    elif action == "aggiunta pagamenti" and not omit_payload:
         json_body = payload_override
 
-    elif action == "delete_payments" and not omit_payload:
-        json_body = payload_override or {"deleteCount": n_payments or 0}
+    elif action == "cancellazione pagamenti" and not omit_payload:
+        json_body = payload_override or {
+            "indexList": list(range(1, (n_payments or 0) + 1))
+        }
 
     # Substitute placeholders inside json_body strings if any
     def _substitute_in_obj(obj):
@@ -167,6 +147,15 @@ def perform_fdr_action(
     if json_body is not None:
         json_body = _substitute_in_obj(json_body)
 
+    LOGGER.info(
+        "FdR request: action=%s method=%s path=%s body=%s query=%s headers_override=%s",
+        action,
+        method,
+        path,
+        json_body is not None,
+        bool(query_params),
+        bool(headers),
+    )
     response = client.request(
         method,
         path,
@@ -174,11 +163,24 @@ def perform_fdr_action(
         params=query_params,
         headers=headers,
     )
+    LOGGER.info(
+        "FdR response: action=%s status=%s",
+        action,
+        response.status_code,
+    )
 
     if expected_status is not None:
-        assert (
-            response.status_code == expected_status
-        ), f"Expected status {expected_status} for action {action}, got {response.status_code}: {response.text}"
+        if response.status_code != expected_status:
+            LOGGER.error(
+                "Unexpected FdR status: action=%s expected=%s actual=%s",
+                action,
+                expected_status,
+                response.status_code,
+            )
+            raise AssertionError(
+                f"Expected status {expected_status} for action {action}, "
+                f"got {response.status_code}: {response.text}"
+            )
 
     if checks:
         try:
@@ -194,6 +196,16 @@ def perform_fdr_action(
                     val = val[p]
                 else:
                     raise AssertionError(f"Missing key '{key}' in response body")
-            assert val == expected, f"Check {key} expected {expected} got {val}"
+            if val != expected:
+                LOGGER.error(
+                    "FdR response check failed: action=%s key=%s expected=%s actual=%s",
+                    action,
+                    key,
+                    expected,
+                    val,
+                )
+                raise AssertionError(
+                    f"Check {key} expected {expected} got {val}"
+                )
 
     return response

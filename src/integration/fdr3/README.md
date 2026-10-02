@@ -14,7 +14,7 @@ scenari definiti in `feature/`.
 - `helper.py`: selezione client, gestione del contesto e sostituzione
   placeholder.
 - `utils_fdr.py`: mappa tra nome funzionale della richiesta, metodo HTTP e
-  endpoint.
+  endpoint, oltre alla costruzione e validazione delle richieste.
 
 ## Configurazione
 
@@ -28,6 +28,10 @@ $env:AZURE_KEY_VAULT_URL = "https://pagopa-d-itn-qa-kv.vault.azure.net/"
 I valori globali configurati vengono esposti agli scenari come placeholder
 `#psp#`, `#organization#`, `#channel#`, `#channel_password#` e
 `#broker_psp#`.
+
+I client sono inizializzati dagli hook di `environment.py`. Il partner indicato
+nello step determina il client usato: `PSP` seleziona il client PSP, mentre ogni
+altro valore seleziona il client FdR.
 
 ## Esecuzione
 
@@ -49,17 +53,57 @@ $env:DUMP_HTTP = "1"
 Le richieste usano il nome funzionale e un payload nominato:
 
 ```gherkin
-Quando il PSP invia la richiesta "Create a new flow structure" con il payload "create_payload"
-Quando il PSP invia la richiesta "Add payments" con il payload "payments_payload"
-Quando il PSP invia la richiesta "Publish" con il payload "None"
+Quando il PSP invia la richiesta di "Creazione di una nuova struttura di flusso" con il payload "create_payload"
+Quando il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "payments_payload"
+Quando il PSP invia la richiesta di "Pubblicazione" con il payload "None"
+```
+
+Per verificare gli scenari di autenticazione è disponibile anche la variante:
+
+```gherkin
+Quando il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "None" con subscription_key non valida
 ```
 
 I payload di creazione usano `$tot_payments$` e `$sum_payments$`. Gli step
 che impostano questi valori devono precedere lo step del payload.
 
-Il partner determina il client utilizzato: `PSP` usa `context.psp`, mentre
-qualsiasi altro partner usa `context.fdr`.
+Per aggiungere una nuova richiesta, aggiungere direttamente la dicitura italiana
+e il relativo metodo/path in `DEFAULT_ENDPOINTS` in `utils_fdr.py`; non
+introdurre endpoint direttamente nei feature.
 
-Per aggiungere una nuova richiesta, aggiornare `REQUEST_ACTIONS` e
-`DEFAULT_ENDPOINTS` in `utils_fdr.py`; non introdurre endpoint direttamente
-nei feature.
+## Azioni ed endpoint
+
+`DEFAULT_ENDPOINTS` è l'unica fonte della relazione tra dicitura Gherkin,
+metodo HTTP e path:
+
+| Dicitura | Metodo | Endpoint |
+| --- | --- | --- |
+| Creazione di una nuova struttura di flusso | POST | `/psps/#psp#/fdrs/$flow_name$` |
+| Aggiunta pagamenti | PUT | `/psps/#psp#/fdrs/$flow_name$/payments/add` |
+| Pubblicazione | POST | `/psps/#psp#/fdrs/$flow_name$/publish` |
+| Cancellazione flusso | DELETE | `/psps/#psp#/fdrs/$flow_name$` |
+| Recupero FdR pubblicato | GET | `/psps/#psp#/published/fdrs/$flow_name$/revisions/$revision$/organizations/#organization#` |
+| Recupero pagamenti creati | GET | `/psps/#psp#/created/fdrs/$flow_name$/organizations/#organization#/payments` |
+| Recupero FdR creato | GET | `/psps/#psp#/created/fdrs/$flow_name$/organizations/#organization#` |
+| Cancellazione pagamenti | PUT | `/psps/#psp#/fdrs/$flow_name$/payments/del` |
+| Recupero di tutti i FdR pubblicati dal PSP | GET | `/psps/#psp#/published` |
+
+I placeholder nel path e nei payload vengono risolti dal contesto Behave. Per
+la cancellazione pagamenti il body usa `indexList`, con gli indici da `1` a
+`n`.
+
+## Logging e troubleshooting
+
+La suite usa il logger `fdr3`. Per ogni richiesta vengono registrati a livello
+`INFO` azione, metodo, path, presenza del body, query parameter e presenza di
+header sovrascritti; la risposta registra lo status HTTP. Non vengono
+registrati body o valori degli header, così da non esporre dati di test o
+segreti.
+
+Per il dettaglio HTTP completo, inclusi request e response, usare
+`DUMP_HTTP=1` come descritto nella sezione [Esecuzione](#esecuzione).
+
+Gli errori di configurazione del client vengono riportati dagli hook di
+`environment.py`; gli errori di azione, status atteso o asserzione JSON
+vengono registrati da `utils_fdr.py` prima di essere rilanciati come errori
+Behave.
