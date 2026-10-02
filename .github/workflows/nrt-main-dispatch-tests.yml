@@ -86,7 +86,6 @@ jobs:
       tags_json: ${{ toJSON(matrix.tags) }}
       allure_subfolder: ${{ matrix.allure_subfolder }}
       report_artifact: ${{ matrix.report_artifact }}
-      secret_set: ${{ matrix.secret_set }}
       needs_playwright: ${{ matrix.needs_playwright }}
       target_env: ${{ needs.prepare.outputs.target_env }}
     secrets: inherit

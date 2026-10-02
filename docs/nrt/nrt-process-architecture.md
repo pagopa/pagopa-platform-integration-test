@@ -51,10 +51,10 @@ the new process is adopted.
 
 | Component | Responsibility |
 |---|---|
-| `.github/workflows/nrt-main-dispatch-tests.yml` | Entry point for scheduled and manual runs; accepts suite selection and target environment; prepares the selected suite matrix; coordinates suite execution, final status, and Slack notification. |
+| `.github/workflows/nrt-main-dispatch-tests.yml` | Manual NRT entry point; accepts suite selection and target environment; prepares the selected suite matrix; coordinates suite execution, final status, and Slack notification. Scheduling remains disabled until the legacy schedule is retired. |
 | `.github/nrt-suites.json` | Declarative catalog of suite IDs, labels, Behave paths/tags, environment support, setup requirements, and dependency metadata. |
 | `.github/workflows/nrt-run-suite.yml` | Reusable workflow containing the common setup, secret materialization, test execution, Allure generation, and artifact publication for one suite. |
-| `.github/workflows/nrt-sync-secrets.yml` | Runs on the self-hosted network path, reads Key Vault values, builds and validates per-environment bundles, encrypts them, and updates GitHub Actions secrets. |
+| `.github/workflows/nrt-sync-secrets.yml` | Runs daily or manually on self-hosted runners; reads Key Vault values, builds and validates per-environment bundles, then updates the matching GitHub Environment secret using GitHub's LibSodium-encrypted REST API. |
 | Existing report workflows | Consume NRT artifacts to publish reports, create the Confluence page, and ingest test data. They are downstream consumers, not suite definitions. |
 
 The reusable workflow gives each suite an isolated job and runner. Shared job-level
@@ -123,16 +123,23 @@ trend data.
 
 ### 6.1 Synchronization flow
 
-`nrt-sync-secrets.yml` runs on a self-hosted runner that can reach Azure Key Vault. It
-retrieves the required secrets for each supported environment, maps them to the existing
-`config/.secrets.yaml` structure, validates the generated files, and encrypts each bundle
-using authenticated public-key encryption (for example, `age`). It then publishes the
-ciphertext as environment-specific GitHub Actions secrets, such as
-`NRT_SECRETS_BUNDLE_UAT` and `NRT_SECRETS_BUNDLE_DEV`.
+`nrt-sync-secrets.yml` runs daily on a self-hosted runner for each supported environment;
+it can also be dispatched manually for one or both environments. The runner uses its
+managed identity to access `https://pagopa-<short-env>-itn-qa-kv.vault.azure.net/`, where
+`d` maps to `dev` and `u` maps to `uat`.
 
-The encryption public key is available to the synchronization workflow. The decryption
-identity is stored as a protected GitHub Actions secret and is available only to the NRT
-test workflow. Plaintext bundles are never uploaded as artifacts or job outputs.
+The workflow scans every `*.json` file in `config/suites/` and merges the placeholders for
+the selected environment by placeholder name. Every placeholder must specify the actual
+Key Vault secret name; lookup normalizes it to lowercase only. No prefix is added and
+underscores are not converted to hyphens. Duplicate
+placeholders are resolved only once; invalid or unresolved values fail the sync before the
+GitHub secret is updated.
+
+The merged result is one JSON bundle per environment, shaped as `{"dev": {...}}` or
+`{"uat": {...}}`, published as `NRT_SECRETS_BUNDLE` in the matching GitHub Environment.
+The GitHub REST API encrypts the value with the target Environment's LibSodium public key;
+the workflow does not keep a separate decryption key or upload plaintext as an
+artifact/output. Checkout currently declares no secret placeholders and adds no entries.
 
 The workflow updates a bundle only after retrieval, mapping, and validation all succeed.
 If a refresh fails, the previously published bundle remains usable. A failure notification
@@ -140,16 +147,30 @@ and a manual refresh trigger provide operational visibility and recovery.
 
 ### 6.2 Test-job consumption
 
-The suite job receives the encrypted bundle for its selected environment, decrypts it in
-the runner workspace, and writes it to `config/.secrets.yaml` before starting Behave. The
-existing resolver in [`src/conf/configuration.py`](../../src/conf/configuration.py) loads
-this file when `AZURE_KEY_VAULT_URL` is absent; no test-code Key Vault access is required.
+The suite job selects the matching GitHub Environment and receives its `NRT_SECRETS_BUNDLE`
+secret. It writes the JSON/YAML-compatible bundle to `config/.secrets.yaml` before starting
+Behave. The existing resolver in [`src/conf/configuration.py`](../../src/conf/configuration.py)
+selects the `dev` or `uat` section using `TARGET_ENV`; no test-code Key Vault access is
+required.
 
 The plaintext file is created with restrictive permissions and removed after test and
 report generation, including on failure. Secret values must not be printed, included in
-step summaries, or placed in artifacts. GitHub Actions secret values have a 48 KB limit;
-the encrypted bundle size must be validated against that limit before adopting this
-storage contract.
+step summaries, or placed in artifacts. GitHub Environment secrets have a 48 KB limit;
+the generated bundle is checked against that limit before publication.
+
+### 6.3 Published bundle verification
+
+After a successful sync, start a new manual run of `nrt-verify-secrets.yml` and select
+`dev` or `uat`. Its self-hosted job selects the matching GitHub Environment and executes
+`nrt-sync-secrets.py --verify`. It reads `NRT_SECRETS_BUNDLE`, validates its JSON structure
+and single-environment scope, then reconstructs the expected bundle from all suite
+manifests and current Key Vault values using the same resolution logic as the sync.
+
+The comparison requires identical keys and values. Only the environment, verified key
+count, and mismatch counts are reported; no values or hashes are logged. This mode does
+not update GitHub secrets, run tests, or upload artifacts. A mismatch can also indicate
+that a Key Vault secret was rotated after the last sync. Verification and synchronization
+share a per-environment concurrency group to prevent simultaneous execution.
 
 ## 7. Suite dependencies and resource coordination
 
