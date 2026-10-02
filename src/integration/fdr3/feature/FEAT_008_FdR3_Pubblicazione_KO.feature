@@ -36,7 +36,7 @@ Funzionalità: Verifica KO della pubblicazione FdR
         "sumPayments": $sum_payments$
       }
     """
-    Quando il PSP invia la richiesta "Create a new flow structure" con il payload "create_payload"
+    Quando il PSP invia la richiesta di "Creazione di una nuova struttura di flusso" con il payload "create_payload"
     Allora il PSP riceve il codice di stato HTTP 201
 
   @fdr3_008_2
@@ -45,18 +45,18 @@ Funzionalità: Verifica KO della pubblicazione FdR
     E che la somma totale dei pagamenti da inviare è 300
     E che lo scenario "Creazione del FdR" è stato eseguito con successo
     Quando il PSP aggiunge 5 pagamenti la cui somme è 300 al flusso di rendicontazione flow_name come payments_payload
-    E il PSP invia la richiesta "Add payments" con il payload "payments_payload"
+    E il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "payments_payload"
     Allora il PSP riceve il codice di stato HTTP 200
 
   @fdr3_008_3
   Scenario: Pubblicazione FdR con bad request
     Dato che lo scenario "Aggiunta di pagamenti" è stato eseguito con successo
-    Quando il PSP invia la richiesta "Publish" con il payload "None"
+    Quando il PSP invia la richiesta di "Pubblicazione" con il payload "None"
     Allora il PSP riceve il codice di stato HTTP 400
 
   @runnable
   @fdr3_008_4
   Scenario: Pubblicazione FdR non autorizzata
     Dato che lo scenario "Pubblicazione FdR con bad request" è stato eseguito con successo
-    Quando il PSP invia la richiesta "Publish" con il payload "None" con subscription_key non valida
+    Quando il PSP invia la richiesta di "Pubblicazione" con il payload "None" con subscription_key non valida
     Allora il PSP riceve il codice di stato HTTP 401

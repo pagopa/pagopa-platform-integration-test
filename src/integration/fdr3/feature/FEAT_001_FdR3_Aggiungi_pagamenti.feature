@@ -35,7 +35,7 @@ Funzionalità: Aggiunta di pagamenti a un flusso di rendicontazione
           "sumPayments": $sum_payments$
         }
       """
-    Quando il PSP invia la richiesta "Create a new flow structure" con il payload "create_payload"
+    Quando il PSP invia la richiesta di "Creazione di una nuova struttura di flusso" con il payload "create_payload"
     Allora il PSP riceve il codice di stato HTTP 201
 
   @runnable
@@ -45,7 +45,7 @@ Funzionalità: Aggiunta di pagamenti a un flusso di rendicontazione
     E che la somma totale dei pagamenti da inviare è <amount>
     E che lo scenario "Creazione del flusso di rendicontazione per il test di aggiunta pagamenti" è stato eseguito con successo
     Quando il PSP aggiunge <n> pagamenti la cui somme è <amount> al flusso di rendicontazione flow_name come payments_payload
-    E il PSP invia la richiesta "Add payments" con il payload "payments_payload"
+    E il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "payments_payload"
     Allora il PSP riceve il codice di stato HTTP <code>
 
     Esempi:
