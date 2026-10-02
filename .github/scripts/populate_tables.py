@@ -191,6 +191,7 @@ def main():
     parser.add_argument('--env', '-e', default='DEV', help='ENV of the test run (DEV, UAT, PROD)')
     parser.add_argument('--suite', '-s',  help='Suite being tested')
     parser.add_argument('--test_type', '-tt',  help='Type of the suite being tested (integration, e2e, ecc...)')
+    parser.add_argument('--origin', '-o', default='NRT', help='Origin of the test run (NRT, TAS, etc.)')
 
     args = parser.parse_args()
 
@@ -221,12 +222,15 @@ def main():
 
             test_run.env = str(args.env).upper()
             test_run.trigger_type = str(args.run_type).upper()
+            test_run.origin = str(args.origin).upper()
+
 
             if args.suite:
                 test_suite.test_type = args.test_type
                 test_suite.test_object = args.suite
             else:
                 test_suite.test_object = str(dir)
+
 
             # get the actual product version
             current_product_version = get_current_product_version(test_suite.test_object, full_config)
