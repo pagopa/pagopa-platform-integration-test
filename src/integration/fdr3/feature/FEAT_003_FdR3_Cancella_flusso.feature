@@ -1,40 +1,62 @@
 # language: it
-@Fdr3_003_CancellaFlusso
+@fdr3_003_Cancellazione_flusso
 Funzionalità: Cancellazione di un flusso di rendicontazione
 
   Contesto:
     Dato i sistemi sono operativi
 
-  @runnable
-  @positive
+  @fdr3_003_01
   Scenario: Creazione del flusso e inserimento pagamenti preliminari
-    Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
-    E un nome di flusso di rendicontazione univoco chiamato flow_name
-    E una data del flusso univoca chiamata flow_date
-    E un payload di creazione FdR
+    Dato un nome di flusso di rendicontazione univoco chiamato flow_name
+    E una data di flusso di rendicontazione univoco chiamato flow_date
+    E un payload di creazione FdR create_payload
       """
-        { "fdr": "$flow_name$", "fdrDate": "$flow_date$", "totPayments": $number_of_payments$, "sumPayments": $payments_amount$ }
-      """
-    Quando il PSP invia la richiesta di creazione flusso tramite l'API "Create a new flow structure"
+      {
+        "fdr": "$flow_name$",
+        "fdrDate": "$flow_date$",
+        "sender": {
+          "type": "LEGAL_PERSON",
+          "id": "SELBIT2B",
+          "pspId": "#psp#",
+          "pspName": "Bank",
+          "pspBrokerId": "#broker_psp#",
+          "channelId": "#channel#",
+          "password": "#channel_password#"
+        },
+        "receiver": {
+          "id": "APPBIT2B",
+          "organizationId": "#organization#",
+          "organizationName": "Comune di XYZ"
+        },
+        "regulation": "SEPA - Bonifico xzy",
+        "regulationDate": "$flow_date$",
+        "bicCodePouringBank": "UNCRITMMXXX",
+        "totPayments": $tot_payments$,
+        "sumPayments": $sum_payments$
+      }
+    """
+    Quando il PSP invia la richiesta "Create a new flow structure" con il payload "create_payload"
     Allora il PSP riceve il codice di stato HTTP 201
 
+  @fdr3_003_02
   Scenario: Inserimento di 3 pagamenti
-    Dato che il flusso è stato creato con successo
-    E che il PSP deve inviare 3 pagamenti al flusso
+    Dato che il PSP deve inviare 3 pagamenti al flusso
     E che la somma totale dei pagamenti da inviare è 300
-    Quando il PSP invia la richiesta di aggiunta pagamenti (API "Add payments") con 3 pagamenti per il flusso "flow_name"
+    E che lo scenario "Creazione del flusso e inserimento pagamenti preliminari" è stato eseguito con successo
+    Quando il PSP aggiunge 3 pagamenti la cui somme è 300 al flusso di rendicontazione flow_name come payments_payload
+    E il PSP invia la richiesta "Add payments" con il payload "payments_payload"
     Allora il PSP riceve il codice di stato HTTP 200
 
+  @fdr3_003_03
   Scenario: Cancellazione del flusso
-    Dato che l'inserimento dei pagamenti è avvenuto con successo
-    Quando il PSP invia la richiesta di cancellazione del flusso (API "Delete flow")
+    Dato che lo scenario "Inserimento di 3 pagamenti" è stato eseguito con successo
+    Quando il PSP invia la richiesta "Delete flow" con il payload "None"
     Allora il PSP riceve il codice di stato HTTP 200
 
   @runnable
+  @fdr3_003_04
   Scenario: Verifica cancellazione del flusso
-    Dato che la cancellazione del flusso è stata eseguita con successo
-    E la configurazione dell'organizzazione è valorizzata come organizationId nei parametri di query
-    E la configurazione del PSP è valorizzata come flow_name nei parametri di query
-    Quando il PSP richiede la lista dei flussi pubblicati (API "Get all published FdR")
+    Dato che lo scenario "Cancellazione del flusso" è stato eseguito con successo
+    Quando il PSP invia la richiesta "psp get all published fdr" con il payload "None"
     Allora il PSP riceve il codice di stato HTTP 200
     E la lista dei flussi restituita non contiene il flusso con fdr = "flow_name"
