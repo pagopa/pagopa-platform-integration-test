@@ -1,5 +1,6 @@
 from behave import when
 from src.integration.fdr3.helper import _get_partner_client
+from src.integration.fdr3.steps.feat_001_common_steps import _build_payments_payload
 from src.integration.fdr3.utils_fdr import perform_fdr_action
 
 
@@ -12,11 +13,7 @@ def step_add_with_invalid_sub_key(context, partner: str, payload_name: str):
     if n <= 0:
         n = 3
     sum_payments = int(getattr(context, "sum_payments", None) or (n * 100))
-    payments = [{"amount": max(1, sum_payments // n)} for _ in range(n)]
-    if n > 0:
-        diff = sum_payments - sum(p["amount"] for p in payments)
-        payments[-1]["amount"] += diff
-    json_body = {"payments": payments}
+    json_body = _build_payments_payload(n, sum_payments)
     response = perform_fdr_action(
         client=client,
         context=context,

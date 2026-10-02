@@ -261,9 +261,9 @@ class RestClient:
 
         if self.auth_config.auth_type == AuthType.API_KEY:
             if self.auth_config.location == ApiKeyLocation.HEADER:
-                headers[self.auth_config.key_name] = self.auth_config.key_value
+                headers.setdefault(self.auth_config.key_name, self.auth_config.key_value)
             else:
-                params[self.auth_config.key_name] = self.auth_config.key_value
+                params.setdefault(self.auth_config.key_name, self.auth_config.key_value)
             return request_kwargs
 
         if self.auth_config.auth_type == AuthType.OAUTH2_CLIENT_CREDENTIALS:
