@@ -1,6 +1,7 @@
 """Parse configuration file to obtain current settings.
 """
 import logging
+import json
 import os
 from typing import Any
 from src.utility.config.config_loader import load_json_config, resolve_value
@@ -22,6 +23,14 @@ def check_apim_variables():
     missing_vars = [var for var in required_vars if not os.environ.get(var)]
     return True if missing_vars == [] else False
 
+def _contains_secret_placeholder(value: Any) -> bool:
+    if isinstance(value, dict):
+        return any(_contains_secret_placeholder(item) for item in value.values())
+    if isinstance(value, list):
+        return any(_contains_secret_placeholder(item) for item in value)
+    return isinstance(value, str) and value.startswith('$')
+
+
 def solve_configurations(configurations) -> dict:
     """Extract secrets placeholders from the configurations.
 
@@ -33,9 +42,7 @@ def solve_configurations(configurations) -> dict:
     """
     secret_resolver = None
     for key, value in configurations.items():
-        if isinstance(value, dict):
-            solve_configurations(value)
-        if isinstance(value, str) and value.startswith('$'):
+        if _contains_secret_placeholder(value):
             # obtain the secrets resolver ONLY if there are secrets to resolve, to avoid unnecessary initialization
             if secret_resolver is None:
                 secret_resolver = get_secrets_resolver()
@@ -76,6 +83,7 @@ def load_secrets(secrets_to_solve: dict) -> dict:
     
 
     Logic:
+    - `SECRETS_RESOLVER=dict` forces local file resolution even if a vault URL is set.
     - If the environment variable `AZURE_KEY_VAULT_URL` is set, use
       `AzureKeyVaultSecretResolver` (secrets will be resolved from the vault).
       In this case the function still requires the suite and the target env
@@ -101,19 +109,7 @@ def load_secrets(secrets_to_solve: dict) -> dict:
     if secrets_to_solve is None:
         raise ValueError("secrets_to_solve must be provided to load secrets.")
 
-    if os.getenv("AZURE_KEY_VAULT_URL"):
-        # Use Azure Key Vault resolver (requires AZURE_KEY_VAULT_URL env var)
-        secrets_resolver = AzureKeyVaultSecretResolver()
-        # For Azure we don't have a local dict to pre-populate; the resolver
-        # will be used by `load_json_config` to resolve placeholders.
-    else:
-        # resolve secrets from DictSecretResolver for local testing, takes a dictonary of secrets which he uses to resolve secrets founds in the test config file
-        try:
-            all_secrets = Dynaconf(settings_files=[SECRETS_PATH])
-            secrets_resolver = DictSecretResolver(all_secrets[str(os.getenv('TARGET_ENV', 'uat')).lower()])
-        except Exception as e:
-            logging.exception("Failed to load secrets from %s", SECRETS_PATH)
-            raise RuntimeError("Failed to initialize local secrets resolver") from e
+    secrets_resolver = get_secrets_resolver()
     try:
         secrets = load_json_config(secrets_resolver, secrets_to_solve)
     except Exception as e:
@@ -131,11 +127,21 @@ def get_secrets_resolver() -> Any:
     Returns:
         An instance of the secrets resolver (AzureKeyVaultSecretResolver or DictSecretResolver).
     """
-    if os.getenv("AZURE_KEY_VAULT_URL"):
+    resolver_mode = os.getenv("SECRETS_RESOLVER", "auto").lower()
+    if resolver_mode not in ("auto", "dict", "azure"):
+        raise ValueError("SECRETS_RESOLVER must be auto, dict, or azure")
+    if resolver_mode == "azure" and not os.getenv("AZURE_KEY_VAULT_URL"):
+        raise ValueError("AZURE_KEY_VAULT_URL is required for the azure resolver")
+    if resolver_mode == "azure" or (resolver_mode == "auto" and os.getenv("AZURE_KEY_VAULT_URL")):
         return AzureKeyVaultSecretResolver()
     else:
         try:
-            all_secrets = Dynaconf(settings_files=[SECRETS_PATH])
+            with open(SECRETS_PATH, encoding="utf-8") as secrets_file:
+                raw_secrets = secrets_file.read()
+            try:
+                all_secrets = json.loads(raw_secrets)
+            except json.JSONDecodeError:
+                all_secrets = Dynaconf(settings_files=[SECRETS_PATH])
             return DictSecretResolver(all_secrets[str(os.getenv('TARGET_ENV', 'uat')).lower()])
         except Exception as e:
             logging.exception("Failed to load secrets from %s", SECRETS_PATH)

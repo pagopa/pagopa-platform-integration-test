@@ -48,7 +48,7 @@ def _key_vault_secret_name(placeholder_name: str) -> str:
 
 
 def _resolve_bundle(resolver, target_env: str, resolved_values: dict[str, str]) -> dict[str, str]:
-    config_files = sorted(CONFIG_DIR.glob("*.json"))
+    config_files = sorted(CONFIG_DIR.glob("*_secrets_config.json"))
     if not config_files:
         raise RuntimeError(f"No suite JSON configs found in {CONFIG_DIR}")
 
