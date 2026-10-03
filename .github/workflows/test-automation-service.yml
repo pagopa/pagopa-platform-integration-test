@@ -111,7 +111,10 @@ permissions:
 jobs:
   run_tests:
     runs-on: ubuntu-latest
-    environment: integration-tests
+    environment: ${{ inputs.environment }}
+    env:
+      TARGET_ENV: ${{ inputs.environment }}
+      SECRETS_RESOLVER: dict
     outputs:
       passed:   ${{ steps.summary.outputs.passed }}
       failed:   ${{ steps.summary.outputs.failed }}
@@ -161,20 +164,6 @@ jobs:
           pip install playwright==1.55.0
           python -m playwright install --with-deps chrome
 
-      - name: Load secrets
-        run: echo "$SECRETS" >> ./config/.secrets.yaml
-        env:
-          SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS }}
-
-      - name: Verify secrets loaded
-        run: |
-          if [ -s ./config/.secrets.yaml ]; then
-            echo "✅ .secrets.yaml loaded ($(wc -l < ./config/.secrets.yaml) lines)"
-          else
-            echo "❌ .secrets.yaml is empty or missing — INTEGRATION_TESTS_SECRETS not available"
-            exit 1
-          fi
-
       - name: Determine test path
         id: test_path
         run: |
@@ -194,6 +183,12 @@ jobs:
           else
             echo "path=src/${TEST_TYPE}/${{ inputs.test_suite }}" >> $GITHUB_OUTPUT
           fi
+
+      - name: Validate and load environment secrets
+        env:
+          NRT_SECRETS_BUNDLE: ${{ secrets.NRT_SECRETS_BUNDLE }}
+          TEST_PATH: ${{ steps.test_path.outputs.path }}
+        run: python .github/scripts/nrt-prepare-secrets.py "$TEST_PATH"
 
       # continue-on-error=true: the workflow must not stop on test failures;
       # artifact upload and result parsing must always run.
@@ -369,6 +364,10 @@ jobs:
             junit/
             allure-results/
           if-no-files-found: warn
+
+      - name: Remove plaintext secrets
+        if: always()
+        run: rm -f config/.secrets.yaml
 
       # This step fails the job when scenarios have failed, ensuring that
       # workflow_call callers receive the correct exit code.
