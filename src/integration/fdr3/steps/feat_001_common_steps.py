@@ -12,6 +12,12 @@ from src.integration.fdr3.helper import (
     _get_client,
     _get_partner_client,
     _substitute_placeholders,
+    step_unique_flow_date,
+    _store_create_payload,
+    _build_payments_payload,
+    _get_request_payload,
+    _flow_value,
+    _send_request,
 )
 from src.utility.data_generators import generate_iuv, generate_uuid
 
@@ -47,8 +53,6 @@ def step_unique_flow_field(context, field_type: str, varname: str):
     context.vars[varname] = value
 
 
-def step_unique_flow_date(context, varname: str):
-    step_unique_flow_field(context, "data", varname)
 
 
 @given('una data di flusso di rendicontazione univoco chiamato {varname}')
@@ -56,24 +60,6 @@ def step_unique_flow_date_legacy(context, varname: str):
     return step_unique_flow_date(context, varname)
 
 
-def _store_create_payload(context, payload_name: str):
-    _ensure_vars_container(context)
-    raw = getattr(context, "text", None)
-    if not raw:
-        context.payloads[payload_name] = None
-        return
-    for key in ("tot_payments", "sum_payments", "totPayments", "sumPayments"):
-        if (
-            key not in context.vars
-            and not hasattr(context, key)
-        ):
-            raw = raw.replace(f"${key}$", "1")
-    processed = _substitute_placeholders(raw, context)
-    try:
-        obj = json.loads(processed)
-    except json.JSONDecodeError:
-        obj = processed
-    context.payloads[payload_name] = obj
 
 
 @given('un payload di creazione FdR {payload_name}')
@@ -112,6 +98,7 @@ def step_prior_scenario_executed(context, scenario_name: str):
         steps_text,
     )
     context.execute_steps(steps_text)
+
 @given('che il PSP deve inviare {n:d} pagamenti al flusso')
 @given('che il PSP deve inviare {n:d} pagamento al flusso')
 def step_set_tot_payments(context, n: int):
@@ -127,27 +114,44 @@ def step_set_sum_payments(context, amount: int):
     context.vars["payments_amount"] = amount
 
 
-def _build_payments_payload(number: int, amount: float) -> dict:
-    if number <= 0:
-        raise AssertionError("Il numero di pagamenti deve essere maggiore di zero")
-    single_amount = float(f"{float(amount) / number:.2f}")
-    today = datetime.today().astimezone(timezone.utc)
-    payments = []
+@given("{partner} aggiunge {value} come {key} nei parametri di query")
+@given("il {partner} aggiunge {value} come {key} nei parametri di query")
+def step_partner_add_query_param(context, partner: str, value: str, key: str):
+    """Generic step to add/override query parameters for a partner request.
 
-    for index in range(number):
-        pay_date = today - timedelta(days=index)
-        payments.append(
-            {
-                "idTransfer": 1,
-                "iuv": generate_iuv(),
-                "iur": generate_uuid(),
-                "index": index + 1,
-                "pay": single_amount,
-                "payStatus": "EXECUTED",
-                "payDate": pay_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            }
-        )
-    return {"payments": payments}
+    Examples handled:
+      - l'organizzazione aggiunge ieri come createdGt nei parametri di query
+      - l'organizzazione aggiunge 1 come page nei parametri di query
+      - l'organizzazione aggiunge 99 come size nei parametri di query
+
+    The partner token is accepted but not used for routing here; it documents
+    who is adding the parameter. Value supports placeholders and special tokens
+    like 'ieri' -> yesterday timestamp.
+    """
+    _ensure_vars_container(context)
+    if not hasattr(context, "query_params"):
+        context.query_params = {}
+
+    val = value
+    low = value.strip().lower()
+    if low in ("ieri", "yesterday"):
+        # ISO timezone-free format used elsewhere
+        from datetime import timedelta
+
+        val = (datetime.utcnow() - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    else:
+        # substitute placeholders like $flow_name$ or #psp# using helper
+        try:
+            val = _substitute_placeholders(value, context)
+        except Exception:
+            val = value
+        # numeric conversion when appropriate
+        if isinstance(val, str) and val.isdigit():
+            val = int(val)
+    # store into query_params using the raw key as provided
+    context.query_params[key] = val
+
+
 
 
 @when('il PSP aggiunge {number:d} pagamenti la cui somme è {amount} al flusso di rendicontazione {flow_name} come {payload}')
@@ -158,72 +162,15 @@ def step_build_payments_payload(context, number: int, amount: str, flow_name: st
     context.payloads[payload] = value
 
 
-def _get_request_payload(context, payload_name=None):
-    if payload_name is not None and payload_name.lower() == "none":
-        return None
-    if payload_name is not None:
-        payloads = getattr(context, "payloads", {}) or {}
-        if payload_name not in payloads:
-            if payload_name == "payments_payload":
-                number = int(getattr(context, "tot_payments", 0) or 0)
-                amount = float(getattr(context, "sum_payments", 0) or 0)
-                if number > 0 and amount > 0:
-                    return _build_payments_payload(number, amount)
-            raise AssertionError(
-                f"Nessun payload disponibile con nome '{payload_name}'"
-            )
-        payload = payloads[payload_name]
-    else:
-        payload = getattr(context, "text", None)
-    if isinstance(payload, str):
-        payload = json.loads(_substitute_placeholders(payload, context))
-    return payload
 
 
-def _flow_value(context, name):
-    return context.vars.get(name) or getattr(context, name, None)
-
-
-def _send_request(
-    context,
-    partner: str,
-    request: str,
-    payload_name: str,
-    invalid_key: bool = False,
-):
-    action = resolve_fdr_action(request)
-    client = _get_partner_client(context, partner)
-    flow_name = _flow_value(context, "flow_name")
-    flow_date = _flow_value(context, "flow_date")
-    payload = _get_request_payload(context, payload_name)
-    if invalid_key and action == "aggiunta pagamenti" and payload is None:
-        number = int(getattr(context, "tot_payments", 0) or 3)
-        amount = float(getattr(context, "sum_payments", 0) or (number * 100))
-        payload = _build_payments_payload(number, amount)
-
-    response = perform_fdr_action(
-        client=client,
-        context=context,
-        action=action,
-        flow_name=flow_name,
-        flow_date=flow_date,
-        payload_override=payload,
-        omit_payload=payload is None,
-        headers=(
-            {"Ocp-Apim-Subscription-Key": "invalid-key"}
-            if invalid_key
-            else None
-        ),
-    )
-    context.response = response
-
-
-@when('il {partner} invia la richiesta di "{request}" con il payload "{payload_name}"')
+@when('{partner} invia la richiesta di "{request}" con il payload "{payload_name}"')
 def step_send_request(context, partner: str, request: str, payload_name: str):
     _send_request(context, partner, request, payload_name)
 
 
-@when('il {partner} invia la richiesta di "{request}" con il payload "{payload_name}" con subscription_key non valida')
+@when('{partner} invia la richiesta di "{request}" con il payload "{payload_name}" con subscription_key non valida')
+
 def step_send_request_with_invalid_subscription_key(
     context,
     partner: str,
@@ -236,8 +183,10 @@ def step_send_request_with_invalid_subscription_key(
 
 # -------------------- THEN steps --------------------
 
-@then('il PSP riceve il codice di stato HTTP {status:d}')
-def step_assert_status(context, status: int):
+@then('{partner} riceve il codice di stato HTTP {status:d}')
+def step_assert_status(context, partner: str, status: int):
+    # partner parameter is accepted for reuse across different actors (es. 'il PSP', "l'organizzazione").
+    # Implementation intentionally unchanged: it asserts the HTTP status of last response.
     assert hasattr(context, "response") and context.response is not None, "Nessuna risposta salvata in context.response"
     assert context.response.status_code == status, f"Expected HTTP {status} but got {context.response.status_code}: {context.response.text}"
 

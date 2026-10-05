@@ -10,7 +10,6 @@ from src.utility.rest.rest_client import RestClient
 
 LOGGER = logging.getLogger("fdr3")
 
-
 DEFAULT_ENDPOINTS = {
     "creazione di una nuova struttura di flusso": ("POST", "/psps/#psp#/fdrs/$flow_name$"),
     "aggiunta pagamenti": ("PUT", "/psps/#psp#/fdrs/$flow_name$/payments/add"),
@@ -18,9 +17,11 @@ DEFAULT_ENDPOINTS = {
     "cancellazione flusso": ("DELETE", "/psps/#psp#/fdrs/$flow_name$"),
     "recupero fdr pubblicato": ("GET", "/psps/#psp#/published/fdrs/$flow_name$/revisions/$revision$/organizations/#organization#"),
     "recupero pagamenti creati": ("GET", "/psps/#psp#/created/fdrs/$flow_name$/organizations/#organization#/payments"),
+    "recupero di tutti i pagamenti creati dall'organizzazione": ("GET", "/psps/#psp#/created/fdrs/$flow_name$/organizations/#organization#/payments"),
     "recupero fdr creato": ("GET", "/psps/#psp#/created/fdrs/$flow_name$/organizations/#organization#"),
     "cancellazione pagamenti": ("PUT", "/psps/#psp#/fdrs/$flow_name$/payments/del"),
     "recupero di tutti i fdr pubblicati dal psp": ("GET", "/psps/#psp#/published"),
+    "recupero di tutti i fdr pubblicati dall'organizzazione": ("GET", "/organizations/#organization#/fdrs"),
 }
 
 
@@ -146,6 +147,10 @@ def perform_fdr_action(
 
     if json_body is not None:
         json_body = _substitute_in_obj(json_body)
+
+    # If caller didn't pass query_params explicitly, try to read them from context
+    if query_params is None and context is not None and hasattr(context, "query_params"):
+        query_params = getattr(context, "query_params") or None
 
     LOGGER.info(
         "FdR request: action=%s method=%s path=%s body=%s query=%s headers_override=%s",
