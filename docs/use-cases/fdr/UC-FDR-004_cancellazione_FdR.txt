@@ -1,0 +1,42 @@
+## UC-FDR-004 - Cancellazione di un flusso di rendicontazione
+
+JTBD di riferimento : JTBD-002
+Attore principale : PSP
+Attori secondari : fdr-microservice
+
+### Precondizioni
+- I sistemi necessari all'elaborazione del flusso di rendicontazione sono disponibili.
+- Il PSP dispone delle configurazioni necessarie per invocare fdr-microservice.
+- Esiste un FdR identificato da flow_name, associato al PSP configurato e contenente 3 pagamenti con somma complessiva pari a 300.
+
+### Flusso principale
+1. Il PSP identifica tramite flow_name il FdR da cancellare.
+2. Il PSP invia a fdr-microservice la richiesta `del_flow` relativa al FdR, senza payload.
+3. fdr-microservice cancella il FdR e restituisce lo stato HTTP 200.
+4. Il PSP imposta nella richiesta di verifica i query parameter indicati dal feature: la configurazione dell'organizzazione come `organizationId` e la configurazione PSP come `flow_name`.
+5. Il PSP invia a fdr-microservice la richiesta `psp_get_all_published_fdr` senza payload.
+6. fdr-microservice restituisce lo stato HTTP 200 e una lista di FdR che non contiene flow_name nel campo `fdr`.
+
+### Flussi alternativi (AF)
+- —
+
+### Eccezioni (EF)
+- EF-01: Al passo 2, il PSP imposta un flow_name non valido e invia la richiesta `del_flow` senza payload. fdr-microservice restituisce HTTP 404 e non completa la cancellazione richiesta.
+- EF-02: Al passo 2, il PSP imposta un PSP non valido e invia la richiesta `del_flow` senza payload. fdr-microservice restituisce HTTP 400 e non completa la cancellazione richiesta.
+- EF-03: Al passo 2, il PSP invia la richiesta `del_flow` utilizzando una subscription_key non valida. fdr-microservice restituisce HTTP 401 e non completa la cancellazione richiesta.
+
+### Postcondizioni
+- In caso di successo, la richiesta di cancellazione del FdR termina con HTTP 200.
+- In caso di successo, la lista restituita dalla richiesta `psp_get_all_published_fdr` non contiene flow_name nel campo `fdr`.
+- In caso di errore HTTP 404, HTTP 400 o HTTP 401, la cancellazione richiesta non è completata.
+
+### Acceptance Criteria
+- AC-01: Dato un FdR identificato da flow_name e associato al PSP configurato, quando il PSP invia la richiesta `del_flow` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-02: Dopo una richiesta `del_flow` conclusa con HTTP 200, quando il PSP invia la richiesta `psp_get_all_published_fdr` con i query parameter indicati nel flusso principale, fdr-microservice restituisce HTTP 200.
+- AC-03: Nella risposta alla richiesta `psp_get_all_published_fdr` eseguita dopo la cancellazione, la lista restituita non contiene flow_name nel campo `fdr`.
+- AC-04: Dato un flow_name non valido, quando il PSP invia la richiesta `del_flow` senza payload, fdr-microservice restituisce HTTP 404.
+- AC-05: Dopo una richiesta `del_flow` conclusa con HTTP 404, la cancellazione richiesta non risulta completata.
+- AC-06: Dato un PSP non valido, quando il PSP invia la richiesta `del_flow` senza payload, fdr-microservice restituisce HTTP 400.
+- AC-07: Dopo una richiesta `del_flow` conclusa con HTTP 400, la cancellazione richiesta non risulta completata.
+- AC-08: Data una subscription_key non valida, quando il PSP invia la richiesta `del_flow`, fdr-microservice restituisce HTTP 401.
+- AC-09: Dopo una richiesta `del_flow` conclusa con HTTP 401, la cancellazione richiesta non risulta completata.

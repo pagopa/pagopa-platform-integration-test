@@ -1,0 +1,37 @@
+## UC-FDR-003 - Pubblicazione di un flusso di rendicontazione
+
+JTBD di riferimento : JTBD-001
+Attore principale : PSP
+Attori secondari : fdr-microservice
+
+### Precondizioni
+- I sistemi necessari all'elaborazione del flusso di rendicontazione sono disponibili.
+- Il PSP dispone delle configurazioni e di una subscription_key valida per invocare fdr-microservice.
+- Esiste un FdR identificato da flow_name e associato al PSP configurato.
+- Il FdR dichiara 3 pagamenti con somma complessiva pari a 300.
+- Al FdR sono associati 3 pagamenti con somma complessiva pari a 300.
+
+### Flusso principale
+1. Il PSP identifica tramite flow_name il FdR da pubblicare.
+2. Il PSP invia a fdr-microservice la richiesta `publish` relativa al FdR, senza payload.
+3. fdr-microservice verifica la coerenza tra i totali dichiarati nel FdR e i pagamenti associati.
+4. fdr-microservice pubblica il FdR e restituisce lo stato HTTP 200.
+
+### Flussi alternativi (AF)
+- —
+
+### Eccezioni (EF)
+- EF-01: Al passo 3, il FdR dichiara 3 pagamenti ma contiene 5 pagamenti, con somma complessiva pari a 300. fdr-microservice rifiuta la pubblicazione, restituisce HTTP 400 e mantiene il FdR non pubblicato.
+- EF-02: Al passo 2, il PSP invia la richiesta `publish` utilizzando una subscription_key non valida. fdr-microservice rifiuta la pubblicazione, restituisce HTTP 401 e mantiene il FdR non pubblicato.
+
+### Postcondizioni
+- In caso di successo, il FdR identificato da flow_name è pubblicato.
+- In caso di errore HTTP 400 o HTTP 401, il FdR non è pubblicato.
+
+### Acceptance Criteria
+- AC-01: Dato un FdR che dichiara 3 pagamenti con somma complessiva pari a 300 e contiene 3 pagamenti con somma complessiva pari a 300, quando il PSP invia la richiesta `publish` senza payload e con una subscription_key valida, fdr-microservice restituisce HTTP 200.
+- AC-02: Dopo una richiesta `publish` conclusa con HTTP 200, il FdR identificato da flow_name risulta pubblicato.
+- AC-03: Dato un FdR che dichiara 3 pagamenti ma contiene 5 pagamenti con somma complessiva pari a 300, quando il PSP invia la richiesta `publish`, fdr-microservice restituisce HTTP 400.
+- AC-04: Dopo una richiesta `publish` conclusa con HTTP 400, il FdR identificato da flow_name risulta non pubblicato.
+- AC-05: Dato un FdR esistente, quando il PSP invia la richiesta `publish` utilizzando una subscription_key non valida, fdr-microservice restituisce HTTP 401.
+- AC-06: Dopo una richiesta `publish` conclusa con HTTP 401, il FdR identificato da flow_name risulta non pubblicato.

@@ -1,0 +1,40 @@
+## UC-FDR-002 - Aggiunta di pagamenti a un flusso di rendicontazione
+
+JTBD di riferimento : JTBD-001
+Attore principale : PSP
+Attori secondari : fdr-microservice
+
+### Precondizioni
+- I sistemi necessari all'elaborazione del flusso di rendicontazione sono disponibili.
+- Il PSP dispone delle configurazioni e di una subscription_key valida per invocare fdr-microservice.
+- Esiste un FdR identificato da flow_name e associato al PSP configurato.
+
+### Flusso principale
+1. Il PSP identifica tramite flow_name il FdR al quale aggiungere i pagamenti.
+2. Il PSP predispone un payload contenente 3 pagamenti, con somma complessiva pari a 300, associato al FdR identificato da flow_name.
+3. Il PSP invia la richiesta `add_payments` con il payload a fdr-microservice.
+4. fdr-microservice associa i 3 pagamenti al FdR e restituisce lo stato HTTP 200.
+
+### Flussi alternativi (AF)
+- AF-01: Al passo 2, il PSP predispone un payload contenente 1 pagamento con somma complessiva pari a 3. Il flusso prosegue dal passo 3; fdr-microservice associa il pagamento al FdR e restituisce HTTP 200.
+- AF-02: Al passo 2, il PSP predispone un payload contenente 1000 pagamenti con somma complessiva pari a 29999. Il flusso prosegue dal passo 3; fdr-microservice associa i pagamenti al FdR e restituisce HTTP 200.
+
+### Eccezioni (EF)
+- EF-01: Al passo 2, il PSP predispone un payload contenente 1001 pagamenti e, al passo 3, invia la richiesta `add_payments`. fdr-microservice rifiuta la richiesta, restituisce HTTP 400 e non associa il lotto al FdR.
+- EF-02: Al passo 3, il PSP invia la richiesta `add_payments` utilizzando una subscription_key non valida. fdr-microservice rifiuta la richiesta, restituisce HTTP 401 e non associa i pagamenti al FdR.
+
+### Postcondizioni
+- In caso di successo, tutti i pagamenti contenuti nel lotto accettato sono associati al FdR identificato da flow_name.
+- In caso di errore HTTP 400 o HTTP 401, i pagamenti contenuti nella richiesta rifiutata non sono associati al FdR.
+
+### Acceptance Criteria
+- AC-01: Dato un FdR esistente, quando il PSP invia una richiesta `add_payments` contenente 3 pagamenti con somma complessiva pari a 300 e una subscription_key valida, fdr-microservice restituisce HTTP 200.
+- AC-02: Dopo la richiesta descritta in AC-01 conclusa con HTTP 200, i 3 pagamenti risultano associati al FdR identificato da flow_name.
+- AC-03: Dato un FdR esistente, quando il PSP invia una richiesta `add_payments` contenente 1 pagamento con somma complessiva pari a 3 e una subscription_key valida, fdr-microservice restituisce HTTP 200.
+- AC-04: Dopo la richiesta descritta in AC-03 conclusa con HTTP 200, il pagamento risulta associato al FdR identificato da flow_name.
+- AC-05: Dato un FdR esistente, quando il PSP invia una richiesta `add_payments` contenente 1000 pagamenti con somma complessiva pari a 29999 e una subscription_key valida, fdr-microservice restituisce HTTP 200.
+- AC-06: Dopo la richiesta descritta in AC-05 conclusa con HTTP 200, i 1000 pagamenti risultano associati al FdR identificato da flow_name.
+- AC-07: Dato un FdR esistente, quando il PSP invia una richiesta `add_payments` contenente 1001 pagamenti, fdr-microservice restituisce HTTP 400.
+- AC-08: Dopo una richiesta `add_payments` conclusa con HTTP 400 per la presenza di 1001 pagamenti, nessuno dei pagamenti della richiesta rifiutata risulta associato al FdR.
+- AC-09: Dato un FdR esistente, quando il PSP invia una richiesta `add_payments` utilizzando una subscription_key non valida, fdr-microservice restituisce HTTP 401.
+- AC-10: Dopo una richiesta `add_payments` conclusa con HTTP 401, nessuno dei pagamenti della richiesta rifiutata risulta associato al FdR.

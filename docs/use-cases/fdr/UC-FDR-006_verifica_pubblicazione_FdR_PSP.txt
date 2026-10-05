@@ -1,0 +1,39 @@
+## UC-FDR-006 - Verifica della pubblicazione di un flusso di rendicontazione da parte del PSP
+
+JTBD di riferimento : JTBD-004
+Attore principale : PSP
+Attori secondari : fdr-microservice
+
+### Precondizioni
+- I sistemi necessari all'elaborazione del flusso di rendicontazione sono disponibili.
+- Il PSP dispone delle configurazioni necessarie per invocare fdr-microservice.
+- Esiste un FdR identificato da flow_name e associato al PSP configurato.
+- Il FdR è stato pubblicato con successo.
+- La revisione del FdR è pari a 1.
+- Al FdR pubblicato sono associati 3 pagamenti.
+
+### Flusso principale
+1. Il PSP identifica il FdR pubblicato tramite flow_name.
+2. Il PSP invia a fdr-microservice la richiesta `psp_get_published_fdr` senza payload.
+3. fdr-microservice restituisce lo stato HTTP 200.
+4. Il PSP invia a fdr-microservice la richiesta `psp_get_published_payments` senza payload per il FdR.
+5. fdr-microservice restituisce lo stato HTTP 200 e una lista contenente 3 pagamenti.
+
+### Flussi alternativi (AF)
+- —
+
+### Eccezioni (EF)
+- EF-01: Dopo il passo 5, il PSP invia a fdr-microservice la richiesta `del_flow` relativa al FdR pubblicato, senza payload. fdr-microservice non consente la cancellazione e restituisce HTTP 404.
+
+### Postcondizioni
+- Il PSP ha ottenuto con HTTP 200 le informazioni del FdR pubblicato.
+- Il PSP ha ottenuto con HTTP 200 la lista dei pagamenti associati al FdR pubblicato.
+- La lista dei pagamenti restituita contiene 3 pagamenti.
+- In caso di richiesta `del_flow` sul FdR pubblicato, la cancellazione non è consentita e fdr-microservice restituisce HTTP 404.
+
+### Acceptance Criteria
+- AC-01: Dato un FdR pubblicato con revisione 1, quando il PSP invia la richiesta `psp_get_published_fdr` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-02: Dato un FdR pubblicato con revisione 1 al quale sono associati 3 pagamenti, quando il PSP invia la richiesta `psp_get_published_payments` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-03: Nella risposta alla richiesta `psp_get_published_payments` conclusa con HTTP 200 è restituita una lista contenente 3 pagamenti.
+- AC-04: Dato un FdR pubblicato, quando il PSP invia la richiesta `del_flow` senza payload, fdr-microservice restituisce HTTP 404.
+

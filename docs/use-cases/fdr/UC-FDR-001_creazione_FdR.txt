@@ -1,0 +1,59 @@
+## UC-FDR-001 - Creazione di un flusso di rendicontazione
+
+JTBD di riferimento : JTBD-001
+Attore principale : PSP
+Attori secondari : fdr-microservice
+
+### Precondizioni
+- I sistemi necessari all'elaborazione del flusso di rendicontazione sono disponibili.
+- Il PSP dispone delle configurazioni e delle credenziali necessarie per invocare fdr-microservice.
+- Il PSP dispone di un nome FdR univoco denominato flow_name e di una data FdR univoca denominata flow_date.
+- Il PSP dispone dei dati del mittente, del destinatario e della regolazione.
+- Il PSP conosce il numero totale e la somma complessiva dei pagamenti da dichiarare nel FdR.
+
+### Flusso principale
+1. Il PSP genera un nome FdR univoco denominato flow_name e una data FdR univoca denominata flow_date.
+2. Il PSP predispone la richiesta di creazione del FdR utilizzando il seguente payload:
+   ```json
+   {
+     "fdr": "$flow_name$",
+     "fdrDate": "$flow_date$",
+     "sender": {
+       "type": "LEGAL_PERSON",
+       "id": "SELBIT2B",
+       "pspId": "#psp#",
+       "pspName": "Bank",
+       "pspBrokerId": "#broker_psp#",
+       "channelId": "#channel#",
+       "password": "#channel_password#"
+     },
+     "receiver": {
+       "id": "APPBIT2B",
+       "organizationId": "#organization#",
+       "organizationName": "Comune di XYZ"
+     },
+     "regulation": "SEPA - Bonifico xzy",
+     "regulationDate": "$flow_date$",
+     "bicCodePouringBank": "UNCRITMMXXX",
+     "totPayments": $number_of_payments$,
+     "sumPayments": $payments_amount$
+   }
+   ```
+3. Il PSP invia la richiesta `create` con il payload a fdr-microservice.
+4. fdr-microservice crea il FdR e restituisce lo stato HTTP 201.
+
+### Flussi alternativi (AF)
+- —
+
+### Eccezioni (EF)
+- —
+
+### Postcondizioni
+- Il FdR identificato da flow_name è presente nel sistema.
+- Il FdR contiene i dati del mittente, del destinatario, della regolazione e i totali dichiarati nella richiesta di creazione.
+- Il FdR è disponibile per le successive operazioni previste dal suo ciclo di vita.
+
+### Acceptance Criteria
+- AC-01: Dati un flow_name univoco e un flow_date univoco, quando il PSP invia a fdr-microservice la richiesta `create` con il payload riportato nel flusso principale, fdr-microservice restituisce HTTP 201.
+- AC-02: Dopo una richiesta `create` conclusa con HTTP 201, il FdR identificato da flow_name risulta presente nel sistema.
+

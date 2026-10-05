@@ -1,0 +1,63 @@
+## UC-FDR-010 - Verifica della paginazione dei flussi di rendicontazione e dei pagamenti lato PSP
+
+JTBD di riferimento : JTBD-008
+Attore principale : PSP
+Attori secondari : fdr-microservice
+
+### Precondizioni
+- I sistemi necessari alla consultazione dei flussi di rendicontazione sono disponibili.
+- Il PSP dispone delle configurazioni necessarie per invocare fdr-microservice.
+- Esiste un FdR identificato da flow_name e associato al PSP configurato.
+- Al FdR sono associati 100 pagamenti con somma complessiva pari a 20.
+- Il FdR è stato pubblicato con successo con revisione pari a 1 per gli scenari di consultazione dei dati pubblicati.
+
+### Flusso principale
+1. Il PSP imposta nei query parameter flow_date come `createdGt`, il valore 1 come `page` e il valore 99 come `size`.
+2. Il PSP invia a fdr-microservice la richiesta `created_payments` senza payload.
+3. fdr-microservice restituisce HTTP 200 e la pagina 1 contenente 99 pagamenti.
+4. Il PSP imposta nei query parameter "ieri" come `createdGt`, il valore 1 come `page` e il valore 1 come `size`.
+5. Il PSP invia a fdr-microservice la richiesta `get_all_created` senza payload.
+6. fdr-microservice restituisce HTTP 200 e la pagina 1 contenente 1 FdR.
+7. Il PSP imposta nei query parameter "ieri" come `createdGt`, il valore 1 come `page` e il valore 1 come `size`, indicando la revisione 1 del FdR.
+8. Il PSP invia a fdr-microservice la richiesta `psp_get_published_payments` senza payload.
+9. fdr-microservice restituisce HTTP 200 e la pagina 1 contenente 1 pagamento.
+10. Il PSP imposta nei query parameter la configurazione del PSP come `pspId`, la configurazione dell'ente come `organizationId`, "ieri" come `publishedGt`, il valore 1 come `page` e il valore 1 come `size`, indicando la revisione 1 del FdR.
+11. Il PSP invia a fdr-microservice la richiesta `psp_get_all_published_fdr` senza payload.
+12. fdr-microservice restituisce HTTP 200 e la pagina 1 contenente 1 FdR.
+
+### Flussi alternativi (AF)
+- AF-01: Al passo 1, il PSP imposta flow_date come `createdGt`, il valore 2 come `page` e il valore 1 come `size`. Il PSP invia la richiesta `created_payments` senza payload; fdr-microservice restituisce HTTP 200 e la pagina 2 contenente 1 pagamento.
+- AF-02: Al passo 4, il PSP imposta "ieri" come `createdGt`, il valore 2 come `page` e il valore 1 come `size`. Il PSP invia la richiesta `get_all_created` senza payload; fdr-microservice restituisce HTTP 200 e la pagina 2 contenente 1 FdR.
+- AF-03: Al passo 7, il PSP imposta "ieri" come `createdGt`, il valore 2 come `page` e il valore 50 come `size`, indicando la revisione 1 del FdR. Il PSP invia la richiesta `psp_get_published_payments` senza payload; fdr-microservice restituisce HTTP 200 e la pagina 2 contenente 50 pagamenti.
+- AF-04: Al passo 10, il PSP imposta la configurazione del PSP come `pspId`, la configurazione dell'ente come `organizationId`, "ieri" come `publishedGt`, il valore 2 come `page` e il valore 2 come `size`, indicando la revisione 1 del FdR. Il PSP invia la richiesta `psp_get_all_published_fdr` senza payload; fdr-microservice restituisce HTTP 200 e la pagina 2 contenente 2 FdR.
+
+### Eccezioni (EF)
+- —
+
+### Postcondizioni
+- La richiesta della prima pagina dei pagamenti associati al FdR termina con HTTP 200 e restituisce la pagina 1 contenente 99 pagamenti.
+- La richiesta della seconda pagina dei pagamenti associati al FdR termina con HTTP 200 e restituisce la pagina 2 contenente 1 pagamento.
+- La richiesta della prima pagina dei FdR creati termina con HTTP 200 e restituisce la pagina 1 contenente 1 FdR.
+- La richiesta della seconda pagina dei FdR creati termina con HTTP 200 e restituisce la pagina 2 contenente 1 FdR.
+- La richiesta della pagina 1 dei pagamenti pubblicati termina con HTTP 200 e restituisce 1 pagamento.
+- La richiesta della pagina 2 dei pagamenti pubblicati termina con HTTP 200 e restituisce 50 pagamenti.
+- La richiesta della pagina 1 dei FdR pubblicati termina con HTTP 200 e restituisce 1 FdR.
+- La richiesta della pagina 2 dei FdR pubblicati termina con HTTP 200 e restituisce 2 FdR.
+
+### Acceptance Criteria
+- AC-01: Dati i query parameter `createdGt` valorizzato con flow_date, `page` pari a 1 e `size` pari a 99, quando il PSP invia la richiesta `created_payments` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-02: Nella risposta descritta in AC-01, il numero della pagina restituita è pari a 1 e la pagina contiene 99 pagamenti.
+- AC-03: Dati i query parameter `createdGt` valorizzato con flow_date, `page` pari a 2 e `size` pari a 1, quando il PSP invia la richiesta `created_payments` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-04: Nella risposta descritta in AC-03, il numero della pagina restituita è pari a 2 e la pagina contiene 1 pagamento.
+- AC-05: Dati i query parameter `createdGt` valorizzato con "ieri", `page` pari a 1 e `size` pari a 1, quando il PSP invia la richiesta `get_all_created` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-06: Nella risposta descritta in AC-05, il numero della pagina restituita è pari a 1 e la pagina contiene 1 FdR.
+- AC-07: Dati i query parameter `createdGt` valorizzato con "ieri", `page` pari a 2 e `size` pari a 1, quando il PSP invia la richiesta `get_all_created` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-08: Nella risposta descritta in AC-07, il numero della pagina restituita è pari a 2 e la pagina contiene 1 FdR.
+- AC-09: Dati un FdR con revisione 1 e i query parameter `createdGt` valorizzato con "ieri", `page` pari a 1 e `size` pari a 1, quando il PSP invia la richiesta `psp_get_published_payments` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-10: Nella risposta descritta in AC-09, il numero della pagina restituita è pari a 1 e la pagina contiene 1 pagamento.
+- AC-11: Dati un FdR con revisione 1 e i query parameter `createdGt` valorizzato con "ieri", `page` pari a 2 e `size` pari a 50, quando il PSP invia la richiesta `psp_get_published_payments` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-12: Nella risposta descritta in AC-11, il numero della pagina restituita è pari a 2 e la pagina contiene 50 pagamenti.
+- AC-13: Dati un FdR con revisione 1 e i query parameter `pspId` e `organizationId` valorizzati con le rispettive configurazioni, `publishedGt` valorizzato con "ieri", `page` pari a 1 e `size` pari a 1, quando il PSP invia la richiesta `psp_get_all_published_fdr` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-14: Nella risposta descritta in AC-13, il numero della pagina restituita è pari a 1 e la pagina contiene 1 FdR.
+- AC-15: Dati un FdR con revisione 1 e i query parameter `pspId` e `organizationId` valorizzati con le rispettive configurazioni, `publishedGt` valorizzato con "ieri", `page` pari a 2 e `size` pari a 2, quando il PSP invia la richiesta `psp_get_all_published_fdr` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-16: Nella risposta descritta in AC-15, il numero della pagina restituita è pari a 2 e la pagina contiene 2 FdR.
