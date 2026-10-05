@@ -34,6 +34,11 @@ Questa cartella gestisce il caricamento configurazioni test e la risoluzione dei
 
 - `TEST_CONFIG_FILE`: percorso del file di configurazione da caricare.
 - `AZURE_KEY_VAULT_URL`: URL del vault Azure (solo con resolver Azure).
+- `SECRETS_RESOLVER`: selezione in `src/conf/configuration.py`: `auto` (default),
+  `dict` (file locale, anche con URL KV impostato), oppure `azure` (richiede URL KV).
+  I job di test CI usano `dict`; sync e verifica mantengono `auto` con URL KV.
+- `TARGET_ENV`: seleziona la sezione `dev`/`uat` nel file `config/.secrets.yaml`.
+  Sono supportati YAML locale e bundle JSON NRT, con nomi dei secret JSON invariati.
 
 ## Esempio locale (dict resolver)
 
