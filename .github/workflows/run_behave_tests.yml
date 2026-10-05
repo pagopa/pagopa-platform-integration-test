@@ -24,7 +24,11 @@ on:
 
 jobs:
   WISP_integration_tests:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted-job, '${{ inputs.environment }}']
+    environment: ${{ inputs.environment }}
+    env:
+      TARGET_ENV: ${{ inputs.environment }}
+      SECRETS_RESOLVER: dict
     if: github.event.inputs.WISP == 'true' || !github.event.inputs.WISP
     outputs:
       wisp_success: ${{ steps.run_tests.outcome }}
@@ -45,14 +49,17 @@ jobs:
           pip install -r requirements.txt
           sudo apt-get install -y jq
       - name: Load secrets
-        run: echo "$SECRETS" >> ./config/.secrets.yaml
+        run: python .github/scripts/nrt-prepare-secrets.py src/integration/wisp
         env:
-          SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS }}
+          NRT_SECRETS_BUNDLE: ${{ secrets.NRT_SECRETS_BUNDLE }}
       - name: Run tests with Behave (WISP)
         id: run_tests
         continue-on-error: true
         run: |
           behave src/integration/wisp --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+      - name: Remove plaintext secrets
+        if: always()
+        run: rm -f config/.secrets.yaml
       - name: Load previous allure history
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
@@ -74,7 +81,11 @@ jobs:
           path: allure-report-wisp
 
   FdR_integration_tests:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted-job, '${{ inputs.environment }}']
+    environment: ${{ inputs.environment }}
+    env:
+      TARGET_ENV: ${{ inputs.environment }}
+      SECRETS_RESOLVER: dict
     if: github.event.inputs.FdR == 'true' || !github.event.inputs.FdR
     outputs:
       fdr_success: ${{ steps.run_tests.outcome }}
@@ -94,11 +105,18 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
           sudo apt-get install -y jq
+      - name: Validate and load environment secrets
+        env:
+          NRT_SECRETS_BUNDLE: ${{ secrets.NRT_SECRETS_BUNDLE }}
+        run: python .github/scripts/nrt-prepare-secrets.py src/integration/fdr
       - name: Run tests with Behave (FdR)
         id: run_tests
         continue-on-error: true
         run: |
           behave src/integration/fdr --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+      - name: Remove plaintext secrets
+        if: always()
+        run: rm -f config/.secrets.yaml
       - name: Load previous allure history
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:

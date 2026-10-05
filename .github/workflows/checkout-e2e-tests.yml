@@ -10,6 +10,10 @@ permissions:
 jobs:
   checkout_e2e_tests:
     runs-on: ubuntu-latest
+    environment: uat
+    env:
+      TARGET_ENV: uat
+      SECRETS_RESOLVER: dict
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
@@ -28,7 +32,6 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-          sudo apt-get install -y jq
 
       - name: Install Playwright
         run: |
@@ -36,9 +39,9 @@ jobs:
           python -m playwright install --with-deps chrome
 
       - name: Load secrets
-        run: echo "$SECRETS" >> ./config/.secrets.yaml
+        run: python .github/scripts/nrt-prepare-secrets.py src/e2e/checkout
         env:
-          SECRETS: ${{ secrets.CHECKOUT_TESTS_SECRETS }}
+          NRT_SECRETS_BUNDLE: ${{ secrets.NRT_SECRETS_BUNDLE }}
 
       - name: Run Checkout E2E tests
         id: run_tests
@@ -65,11 +68,17 @@ jobs:
           name: ai-prompt-checkout-e2e
           path: ai-analysis-input
 
+      # gh-pages holds every historical Allure report (tens of thousands of files):
+      # only the trend history folder is checked out, otherwise the step hangs.
       - name: Load previous allure history
+        if: always()
+        continue-on-error: true
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           ref: gh-pages
           path: gh-pages
+          fetch-depth: 1
+          sparse-checkout: checkout-e2e-tests/last-history
 
       - name: Prepare allure-results for report generation
         if: always()
@@ -88,7 +97,9 @@ jobs:
 
       - name: Install Allure CLI
         if: always()
-        run: npm install -g allure-commandline@2.27.0
+        run: |
+          npm install --prefix "$RUNNER_TEMP/allure" --no-save --no-package-lock allure-commandline@2.27.0
+          echo "$RUNNER_TEMP/allure/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Build Checkout E2E Allure report
         if: always()
@@ -122,6 +133,10 @@ jobs:
           name: allure-report-checkout
           path: allure-report-checkout-e2e
           if-no-files-found: warn
+
+      - name: Remove plaintext secrets
+        if: always()
+        run: rm -f config/.secrets.yaml
 
   ai-analysis:
     if: always()

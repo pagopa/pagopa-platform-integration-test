@@ -66,7 +66,7 @@ jobs:
     uses: ./.github/workflows/create_report_page.yml
     secrets: inherit
     with:
-      run_type: ${{ case(github.event_name == 'schedule',  'NIGHTLY', 'NO-PROMO') }}
+      run_type: ${{ github.event_name == 'schedule' && 'NIGHTLY' || 'NO-PROMO' }}
 
   save_test_data:
     if: always()
@@ -77,5 +77,5 @@ jobs:
     uses: ./.github/workflows/test-data-ingestion.yml
     secrets: inherit
     with:
-      env: DEV
+      env: UAT
       run_type: ${{ case(github.event_name == 'schedule',  'CRON', 'MANUAL') }}
