@@ -682,7 +682,7 @@ rimozione della cartella temporanea `tmp_fetched/` e pulizia dei run più vecchi
 Prerequisiti:
 
 - Variabili d'ambiente `TARGET_ENV` (valori: `dev`, `uat`) e `suite` impostata a `fdr`.
-- File `config/suites/fdr_config.json` presente con le subscription key per l'ambiente scelto.
+- File `config/suites/fdr_secrets_config.json` presente con i placeholder delle subscription key per l'ambiente scelto.
 - File dei secret locali `config/.secrets.yaml` compilato con i valori reali dei placeholder.
 
 PowerShell:
@@ -745,7 +745,7 @@ i report su GitHub Pages sotto `openapi-fdr-tests/`.
 
 Riferimenti: `.github/workflows/openApi_test.yml`, `.github/workflows/main-dispatch-tests.yml`,
 `scripts/fetch_github_files.py`, `scripts/schemathesis_runner.py`,
-`.github/scripts/openApi_test.py`, `config/suites/fdr_config.json`, `schemathesis.toml`.
+`.github/scripts/openApi_test.py`, `config/suites/fdr_secrets_config.json`, `schemathesis.toml`.
 
 ## Esecuzione in CI
 

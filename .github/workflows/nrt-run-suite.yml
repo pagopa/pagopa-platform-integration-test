@@ -37,6 +37,7 @@ jobs:
     environment: ${{ inputs.target_env }}
     timeout-minutes: 90
     env:
+      SECRETS_RESOLVER: dict
       SUITE_ID: ${{ inputs.suite_id }}
       SUITE_LABEL: ${{ inputs.suite_label }}
       TARGET_ENV: ${{ inputs.target_env }}
@@ -87,14 +88,7 @@ jobs:
         id: load_nrt_secrets
         env:
           NRT_SECRETS_BUNDLE: ${{ secrets.NRT_SECRETS_BUNDLE }}
-        run: |
-          if [ -z "$NRT_SECRETS_BUNDLE" ]; then
-            echo "NRT_SECRETS_BUNDLE is empty for environment $TARGET_ENV." >&2
-            echo "Run nrt-sync-secrets.yml to refresh this environment bundle." >&2
-            exit 1
-          fi
-          umask 077
-          printf '%s\n' "$NRT_SECRETS_BUNDLE" > config/.secrets.yaml
+        run: python .github/scripts/nrt-prepare-secrets.py "$BEHAVE_PATH"
 
       - name: Run Behave tests
         id: run_tests

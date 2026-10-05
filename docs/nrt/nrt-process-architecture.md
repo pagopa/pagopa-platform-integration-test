@@ -148,15 +148,35 @@ and a manual refresh trigger provide operational visibility and recovery.
 ### 6.2 Test-job consumption
 
 The suite job selects the matching GitHub Environment and receives its `NRT_SECRETS_BUNDLE`
-secret. It writes the JSON/YAML-compatible bundle to `config/.secrets.yaml` before starting
-Behave. The existing resolver in [`src/conf/configuration.py`](../../src/conf/configuration.py)
-selects the `dev` or `uat` section using `TARGET_ENV`; no test-code Key Vault access is
-required.
+secret. NRT, TAS, and legacy Behave test jobs set `SECRETS_RESOLVER=dict`, which overrides
+`AZURE_KEY_VAULT_URL` and prevents direct Key Vault access during test execution. TAS uses
+the requested environment instead of the previous fixed `integration-tests` Environment.
+The Environment's branch restrictions and approval policies apply to these jobs.
+
+Before Behave, `nrt-prepare-secrets.py` validates the single-environment JSON bundle,
+non-empty secret values, and the selected test path. It recursively checks the selected
+environment's YAML/JSON placeholders against both the sync manifests and the bundle,
+then writes `config/.secrets.yaml` with mode `0600`. Invalid or missing credentials stop
+the job before tests start; there is no fallback to the old GitHub secret or Key Vault.
+
+The files in `config/suites/` define the sync allowlist. The suite's environment YAML/JSON
+files reference the same secret names with a `$` prefix while retaining their application
+configuration keys. This intentional duplication is checked by preflight. The resolver in
+[`src/conf/configuration.py`](../../src/conf/configuration.py) selects the `dev` or `uat`
+section using `TARGET_ENV`, preserving JSON secret names exactly.
+
+Outside CI test jobs, `SECRETS_RESOLVER` defaults to `auto`: an Azure URL selects the Azure
+resolver, otherwise local YAML/JSON credentials are loaded. Sync and verification keep
+their existing Azure behavior. Confluence, ingestion, and non-Behave OpenAPI workflows
+retain their own credential contracts and are not migrated by this cutover.
 
 The plaintext file is created with restrictive permissions and removed after test and
 report generation, including on failure. Secret values must not be printed, included in
 step summaries, or placed in artifacts. GitHub Environment secrets have a 48 KB limit;
 the generated bundle is checked against that limit before publication.
+
+Local cutover regression tests use synthetic credentials only and can be run from the
+repository root with `python .github/scripts/nrt-test-secrets.py -v`.
 
 ### 6.3 Published bundle verification
 
