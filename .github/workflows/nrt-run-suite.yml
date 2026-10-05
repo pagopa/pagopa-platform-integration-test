@@ -21,9 +21,6 @@ on:
       report_artifact:
         required: true
         type: string
-      secret_set:
-        required: true
-        type: string
       needs_playwright:
         required: true
         type: boolean
@@ -37,6 +34,7 @@ permissions:
 jobs:
   run_suite:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.target_env }}
     timeout-minutes: 90
     env:
       SUITE_ID: ${{ inputs.suite_id }}
@@ -85,31 +83,18 @@ jobs:
           pip install playwright==1.55.0
           python -m playwright install --with-deps chrome
 
-      - name: Load integration secrets
-        if: inputs.secret_set == 'integration'
-        id: load_integration_secrets
+      - name: Materialize NRT environment secrets
+        id: load_nrt_secrets
         env:
-          SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS }}
+          NRT_SECRETS_BUNDLE: ${{ secrets.NRT_SECRETS_BUNDLE }}
         run: |
-          if [ -z "$SECRETS" ]; then
-            echo 'INTEGRATION_TESTS_SECRETS is empty.' >&2
+          if [ -z "$NRT_SECRETS_BUNDLE" ]; then
+            echo "NRT_SECRETS_BUNDLE is empty for environment $TARGET_ENV." >&2
+            echo "Run nrt-sync-secrets.yml to refresh this environment bundle." >&2
             exit 1
           fi
           umask 077
-          printf '%s\n' "$SECRETS" > config/.secrets.yaml
-
-      - name: Load checkout secrets
-        if: inputs.secret_set == 'checkout'
-        id: load_checkout_secrets
-        env:
-          SECRETS: ${{ secrets.CHECKOUT_TESTS_SECRETS }}
-        run: |
-          if [ -z "$SECRETS" ]; then
-            echo 'CHECKOUT_TESTS_SECRETS is empty.' >&2
-            exit 1
-          fi
-          umask 077
-          printf '%s\n' "$SECRETS" > config/.secrets.yaml
+          printf '%s\n' "$NRT_SECRETS_BUNDLE" > config/.secrets.yaml
 
       - name: Run Behave tests
         id: run_tests
@@ -214,8 +199,7 @@ jobs:
           JAVA_OUTCOME: ${{ steps.setup_java.outcome }}
           DEPENDENCIES_OUTCOME: ${{ steps.install_dependencies.outcome }}
           PLAYWRIGHT_OUTCOME: ${{ steps.install_playwright.outcome }}
-          INTEGRATION_SECRETS_OUTCOME: ${{ steps.load_integration_secrets.outcome }}
-          CHECKOUT_SECRETS_OUTCOME: ${{ steps.load_checkout_secrets.outcome }}
+          NRT_SECRETS_OUTCOME: ${{ steps.load_nrt_secrets.outcome }}
           AI_PROMPT_OUTCOME: ${{ steps.build_ai_prompt.outcome }}
           ALLURE_OUTCOME: ${{ steps.install_allure.outcome }}
           REPORT_OUTCOME: ${{ steps.build_report.outcome }}
@@ -228,8 +212,7 @@ jobs:
             "$JAVA_OUTCOME" \
             "$DEPENDENCIES_OUTCOME" \
             "$PLAYWRIGHT_OUTCOME" \
-            "$INTEGRATION_SECRETS_OUTCOME" \
-            "$CHECKOUT_SECRETS_OUTCOME" \
+            "$NRT_SECRETS_OUTCOME" \
             "$AI_PROMPT_OUTCOME" \
             "$ALLURE_OUTCOME" \
             "$REPORT_OUTCOME"; do
