@@ -126,9 +126,18 @@ function renderAgentBlock(scopeKey, bullets) {
   return `${preamble}\n${renderBulletList(bullets)}`;
 }
 
+function readFileIfPresent(file) {
+  try {
+    return fs.readFileSync(file, 'utf8');
+  } catch (error) {
+    if (error.code === 'ENOENT') return null;
+    throw error;
+  }
+}
+
 function syncMarkedFile(absPath, block, checkOnly) {
   assertSafeWritePath(absPath);
-  const existing = fs.existsSync(absPath) ? fs.readFileSync(absPath, 'utf8') : '';
+  const existing = readFileIfPresent(absPath) || '';
   const wrapped = `${BEGIN_MARKER}\n\n${block}\n\n${END_MARKER}`;
 
   let next;
@@ -153,8 +162,8 @@ function syncMarkedFile(absPath, block, checkOnly) {
 
 function removeMarkedBlock(absPath, checkOnly, unlinkWhenEmpty = false) {
   assertSafeWritePath(absPath);
-  if (!fs.existsSync(absPath)) return false;
-  const existing = fs.readFileSync(absPath, 'utf8');
+  const existing = readFileIfPresent(absPath);
+  if (existing === null) return false;
   const beginIdx = existing.indexOf(BEGIN_MARKER);
   const endIdx = existing.indexOf(END_MARKER);
   if (beginIdx === -1 || endIdx < beginIdx) return false;

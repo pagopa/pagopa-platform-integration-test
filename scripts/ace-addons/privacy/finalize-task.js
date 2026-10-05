@@ -26,6 +26,16 @@ function execute(command, args, input) {
   return result.stdout;
 }
 
+function readRegularJson(file, label) {
+  const descriptor = fs.openSync(file, 'r');
+  try {
+    if (!fs.fstatSync(descriptor).isFile()) throw new Error(`Not a regular ${label}: ${file}`);
+    return JSON.parse(fs.readFileSync(descriptor, 'utf8'));
+  } finally {
+    fs.closeSync(descriptor);
+  }
+}
+
 function setup() {
   const systemPython = process.env.PYTHON || (process.platform === 'win32' ? 'py' : 'python3');
   execute(systemPython, process.platform === 'win32' && !process.env.PYTHON
@@ -54,13 +64,9 @@ function taskTraces(taskId) {
 }
 
 function run(taskId) {
-  if (!fs.existsSync(PYTHON)) {
-    throw new Error('Privacy dependencies missing; run: node scripts/ace-addons/privacy/finalize-task.js --setup');
-  }
   const traces = taskTraces(taskId);
   const prepared = traces.map(({ agent, file }) => {
-    if (!fs.lstatSync(file).isFile()) throw new Error(`Not a regular trace file: ${file}`);
-    const original = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const original = readRegularJson(file, 'trace file');
     validateTraceDocument(original);
     if (original.task_id !== taskId || original.agent !== agent || original.counted_for_playbook_at) {
       throw new Error(`Unexpected or already counted trace: ${file}`);
@@ -96,7 +102,11 @@ function run(taskId) {
       fs.writeFileSync(temporary, content, { flag: 'wx' });
       fs.renameSync(temporary, file);
     } finally {
-      if (fs.existsSync(temporary)) fs.unlinkSync(temporary);
+      try {
+        fs.unlinkSync(temporary);
+      } catch (error) {
+        if (error.code !== 'ENOENT') throw error;
+      }
     }
   }
   execute(process.execPath, [path.join(REPO_ROOT, 'ace', 'scripts', 'finalize_task.js'), taskId]);

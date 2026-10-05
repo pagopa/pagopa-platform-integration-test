@@ -41,8 +41,26 @@ function fail(errors, message) {
 
 function normalizedSha256(file) {
   return crypto.createHash('sha256')
-    .update(fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n'), 'utf8')
+    .update(file.replace(/\r\n/g, '\n'), 'utf8')
     .digest('hex');
+}
+
+function readRegularFileIfPresent(file) {
+  let descriptor;
+  try {
+    descriptor = fs.openSync(file, 'r');
+  } catch (error) {
+    if (error.code === 'ENOENT') return null;
+    throw error;
+  }
+  try {
+    if (!fs.fstatSync(descriptor).isFile()) {
+      throw new Error(`Expected a regular file: ${file}`);
+    }
+    return fs.readFileSync(descriptor, 'utf8');
+  } finally {
+    fs.closeSync(descriptor);
+  }
 }
 
 function validateManifestInventory(errors, config) {
@@ -65,9 +83,16 @@ function validateManifestInventory(errors, config) {
   for (const [relativePath, expectedHash] of Object.entries(kitOwned)) {
     if (!config?.integration_mode && REQUIRED_MEDIATED_FILES.includes(relativePath)) continue;
     const absolutePath = path.join(REPO_ROOT, relativePath);
-    if (!fs.existsSync(absolutePath) || !fs.statSync(absolutePath).isFile()) {
+    let content;
+    try {
+      content = readRegularFileIfPresent(absolutePath);
+    } catch (error) {
+      fail(errors, `Cannot read manifest-declared runtime file ${relativePath}: ${error.message}`);
+      continue;
+    }
+    if (content === null) {
       fail(errors, `Missing manifest-declared runtime file: ${relativePath}`);
-    } else if (normalizedSha256(absolutePath) !== expectedHash) {
+    } else if (normalizedSha256(content) !== expectedHash) {
       fail(errors, `Manifest hash mismatch for runtime file: ${relativePath}`);
     }
   }
@@ -77,8 +102,13 @@ function findPlaceholders(root, relativePaths) {
   const matches = [];
   for (const relativePath of relativePaths) {
     const absolute = path.join(root, relativePath);
-    if (!fs.existsSync(absolute) || !fs.statSync(absolute).isFile()) continue;
-    const content = fs.readFileSync(absolute, 'utf8');
+    let content;
+    try {
+      content = readRegularFileIfPresent(absolute);
+    } catch {
+      continue;
+    }
+    if (content === null) continue;
     if (/__[A-Z0-9_]+__/.test(content)) matches.push(relativePath);
   }
   return matches;

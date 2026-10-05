@@ -93,15 +93,19 @@ function hashFile(file) {
 function readJson(root, relative) {
   try {
     const file = safePath(root, relative);
-    let stat;
+    let descriptor;
     try {
-      stat = fs.lstatSync(file);
+      descriptor = fs.openSync(file, 'r');
     } catch (error) {
       if (error.code === 'ENOENT') return { exists: false };
       throw error;
     }
-    if (!stat.isFile()) throw new Error(`${relative} is not a regular file`);
-    return { exists: true, value: JSON.parse(fs.readFileSync(file, 'utf8')) };
+    try {
+      if (!fs.fstatSync(descriptor).isFile()) throw new Error(`${relative} is not a regular file`);
+      return { exists: true, value: JSON.parse(fs.readFileSync(descriptor, 'utf8')) };
+    } finally {
+      fs.closeSync(descriptor);
+    }
   } catch (error) {
     return { exists: true, error: error.message };
   }
@@ -109,11 +113,9 @@ function readJson(root, relative) {
 
 function listFiles(root, relative) {
   const base = safePath(root, relative);
-  if (!fs.existsSync(base)) return [];
-  if (!fs.statSync(base).isDirectory()) return [safeRelative(relative)];
   const files = [];
-  const visit = (directory) => {
-    const entries = fs.readdirSync(directory, { withFileTypes: true })
+  const visit = (directory, initialEntries) => {
+    const entries = (initialEntries || fs.readdirSync(directory, { withFileTypes: true }))
       .sort((left, right) => left.name.localeCompare(right.name));
     for (const entry of entries) {
       const absolute = path.join(directory, entry.name);
@@ -127,7 +129,13 @@ function listFiles(root, relative) {
       }
     }
   };
-  visit(base);
+  try {
+    visit(base);
+  } catch (error) {
+    if (error.code === 'ENOENT') return [];
+    if (error.code === 'ENOTDIR') return [safeRelative(relative)];
+    throw error;
+  }
   return files;
 }
 

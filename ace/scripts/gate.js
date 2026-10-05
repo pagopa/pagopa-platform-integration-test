@@ -328,7 +328,7 @@ function main() {
 
     if (!d.final_content || typeof d.final_content !== 'string' || !d.final_content.trim()) {
       fail('final_content mancante o vuoto');
-    } else if (/^(?:## P-\d+\s+—|tags:|counters:|provenance:|<!--|-->)/m.test(d.final_content)) {
+    } else if (/^(?:## P-\d+\s+—|tags:|counters:|provenance:|<!--|-->|--!>)/m.test(d.final_content)) {
       fail('final_content contiene una riga riservata alla struttura del playbook.');
     } else {
       pass('final_content presente e privo di righe strutturali riservate');
