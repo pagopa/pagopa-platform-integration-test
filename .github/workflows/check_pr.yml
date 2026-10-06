@@ -246,10 +246,10 @@ jobs:
                 repo: context.repo.repo
             });
 
-            const suites = JSON.parse(process.env.SUITE_IDS)
+            const suites = JSON.parse(process.env.SUITE_IDS).map(suite => suite.toLowerCase())
             var suiteTag = false
             for (const label of labels.data) {
-              if (suites.includes(label.name)) {
+              if (suites.includes(label.name.toLowerCase())) {
 
                 if(suiteTag) {
                   github.rest.issues.createComment({
