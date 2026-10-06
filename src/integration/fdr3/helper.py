@@ -161,8 +161,16 @@ def _store_create_payload(context, payload_name: str):
     _ensure_vars_container(context)
     raw = getattr(context, "text", None)
     if not raw:
-        context.payloads[payload_name] = None
-        return
+        templates = getattr(context, "payload_templates", {})
+        if payload_name not in templates:
+            raise AssertionError(
+                f"Nessun template configurato in payloads.yaml con nome '{payload_name}'"
+            )
+        raw = templates[payload_name]
+        if not isinstance(raw, str) or not raw.strip():
+            raise AssertionError(
+                f"Il template '{payload_name}' in payloads.yaml deve essere una stringa non vuota"
+            )
     for key in ("tot_payments", "sum_payments", "totPayments", "sumPayments"):
         if (
             key not in context.vars
@@ -258,4 +266,3 @@ def _send_request(
         ),
     )
     context.response = response
-

@@ -13,7 +13,7 @@ import logging
 from types import SimpleNamespace
 
 from src.utility.rest import build_rest_client, build_api_key_auth_from_config
-from src.conf.configuration import load_configurations
+from src.conf.configuration import load_commondata, load_configurations
 
 
 LOGGER = logging.getLogger("fdr3")
@@ -81,6 +81,9 @@ def before_all(context):
 
     # Load configuration relative to this directory
     context.config = load_configurations(os.path.dirname(os.path.abspath(__file__)))
+    context.payload_templates = load_commondata(
+        "payloads.yaml", os.path.dirname(os.path.abspath(__file__))
+    )
 
     # Ensure actor containers exist
     _ensure_actor(context, "fdr")

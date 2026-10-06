@@ -13,6 +13,8 @@ scenari definiti in `feature/`.
   PSP e FDR.
 - `helper.py`: selezione client, gestione del contesto e sostituzione
   placeholder.
+- `payloads.yaml`: template dei payload condivisi, indicizzati con il nome
+  dichiarato nello step.
 - `utils_fdr.py`: mappa tra nome funzionale della richiesta, metodo HTTP e
   endpoint, oltre alla costruzione e validazione delle richieste.
 
@@ -66,6 +68,18 @@ Quando il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "None" c
 
 I payload di creazione usano `$tot_payments$` e `$sum_payments$`. Gli step
 che impostano questi valori devono precedere lo step del payload.
+
+Lo step `E un payload di creazione FdR create_payload`, senza blocco
+`""" ... """`, carica il template `TEST_DATA.create_payload` da
+`payloads.yaml`. I dieci payload originali delle nove feature sono identici
+a meno dell'indentazione: `create_1_payload` e `create_2_payload` sono alias
+YAML di `create_payload`, senza duplicare il contenuto.
+
+La configurazione viene caricata una volta dagli hook; i placeholder sono
+risolti quando viene eseguito lo step, con i valori dello scenario corrente.
+Un blocco inline continua ad avere precedenza sulla configurazione, per
+consentire payload specifici. Un nome non configurato senza blocco inline
+genera un errore esplicito.
 
 Per aggiungere una nuova richiesta, aggiungere direttamente la dicitura italiana
 e il relativo metodo/path in `DEFAULT_ENDPOINTS` in `utils_fdr.py`; non

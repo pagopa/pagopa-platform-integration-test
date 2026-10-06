@@ -11,31 +11,6 @@ Funzionalità: Rimozione di pagamenti da un FdR
     Dato un nome di flusso di rendicontazione univoco chiamato flow_name
     E una data di flusso di rendicontazione univoco chiamato flow_date
     E un payload di creazione FdR create_payload
-      """
-        {
-          "fdr": "$flow_name$",
-          "fdrDate": "$flow_date$",
-          "sender": {
-            "type": "LEGAL_PERSON",
-            "id": "SELBIT2B",
-            "pspId": "#psp#",
-            "pspName": "Bank",
-            "pspBrokerId": "#broker_psp#",
-            "channelId": "#channel#",
-            "password": "#channel_password#"
-          },
-          "receiver": {
-            "id": "APPBIT2B",
-            "organizationId": "#organization#",
-            "organizationName": "Comune di XYZ"
-          },
-          "regulation": "SEPA - Bonifico xzy",
-          "regulationDate": "$flow_date$",
-          "bicCodePouringBank": "UNCRITMMXXX",
-          "totPayments": $tot_payments$,
-          "sumPayments": $sum_payments$
-        }
-      """
     Quando il PSP invia la richiesta di "Creazione di una nuova struttura di flusso" con il payload "create_payload"
     Allora il PSP riceve il codice di stato HTTP 201
 

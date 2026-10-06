@@ -12,31 +12,6 @@ Funzionalità: Workflow di creazione e gestione delle revisioni di un flusso di 
     E che il PSP deve inviare 3 pagamenti al flusso
     E che la somma totale dei pagamenti da inviare è 300
     E un payload di creazione FdR create_1_payload
-      """
-        {
-          "fdr": "$flow_name$",
-          "fdrDate": "$flow_date$",
-          "sender": {
-            "type": "LEGAL_PERSON",
-            "id": "SELBIT2B",
-            "pspId": "#psp#",
-            "pspName": "Bank",
-            "pspBrokerId": "#broker_psp#",
-            "channelId": "#channel#",
-            "password": "#channel_password#"
-          },
-          "receiver": {
-            "id": "APPBIT2B",
-            "organizationId": "#organization#",
-            "organizationName": "Comune di XYZ"
-          },
-          "regulation": "SEPA - Bonifico xzy",
-          "regulationDate": "$flow_date$",
-          "bicCodePouringBank": "UNCRITMMXXX",
-          "totPayments": $tot_payments$,
-          "sumPayments": $sum_payments$
-        }
-      """
     Quando il PSP invia la richiesta di "Creazione di una nuova struttura di flusso" con il payload "create_1_payload"
     Allora il PSP riceve il codice di stato HTTP 201
 
@@ -66,31 +41,6 @@ Funzionalità: Workflow di creazione e gestione delle revisioni di un flusso di 
   Scenario: Creazione di una nuova versione (revisione 2) dello stesso FdR
     Dato una data di flusso di rendicontazione univoco chiamato flow_date
     E un payload di creazione FdR create_2_payload
-      """
-        {
-          "fdr": "$flow_name$",
-          "fdrDate": "$flow_date$",
-          "sender": {
-            "type": "LEGAL_PERSON",
-            "id": "SELBIT2B",
-            "pspId": "#psp#",
-            "pspName": "Bank",
-            "pspBrokerId": "#broker_psp#",
-            "channelId": "#channel#",
-            "password": "#channel_password#"
-          },
-          "receiver": {
-            "id": "APPBIT2B",
-            "organizationId": "#organization#",
-            "organizationName": "Comune di XYZ"
-          },
-          "regulation": "SEPA - Bonifico xzy",
-          "regulationDate": "$flow_date$",
-          "bicCodePouringBank": "UNCRITMMXXX",
-          "totPayments": $tot_payments$,
-          "sumPayments": $sum_payments$
-        }
-      """
     Quando il PSP invia la richiesta di "Creazione di una nuova struttura di flusso" con il payload "create_2_payload"
     Allora il PSP riceve il codice di stato HTTP 201
 

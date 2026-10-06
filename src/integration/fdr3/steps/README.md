@@ -31,10 +31,21 @@ partner usano il client FDR.
 
 ## Payload
 
-Un payload di creazione viene memorizzato con il nome dichiarato nello step:
+Un payload di creazione viene caricato da `../payloads.yaml` e memorizzato
+con il nome dichiarato nello step:
 
 ```gherkin
 E un payload di creazione FdR create_payload
+```
+
+Il nome deve corrispondere a una chiave sotto `TEST_DATA`. Gli alias
+`create_1_payload` e `create_2_payload` condividono il template
+`create_payload`. I placeholder vengono risolti a ogni esecuzione dello step.
+
+Per un payload specifico, un blocco inline ha precedenza sul template:
+
+```gherkin
+E un payload di creazione FdR custom_payload
   """
   { ... }
   """

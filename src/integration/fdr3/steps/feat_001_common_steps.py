@@ -87,9 +87,8 @@ def step_prior_scenario_executed(context, scenario_name: str):
         step.keyword
         + " "
         + step.name
-        + "\n\"\"\"\n"
-        + (step.text or "")
-        + "\n\"\"\"\n"
+        + "\n"
+        + ('"""\n' + step.text + '\n"""\n' if step.text is not None else "")
         for step in scenario.steps
     )
     LOGGER.info(
