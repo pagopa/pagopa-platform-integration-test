@@ -35,7 +35,7 @@ Funzionalità: Verifica paginazione per le API PSP
     E il PSP aggiunge $flow_date$ come createdGt nei parametri di query
     E il PSP aggiunge 1 come page nei parametri di query
     E il PSP aggiunge 99 come size nei parametri di query
-    Quando il PSP invia la richiesta di "Recupero pagamenti creati" con il payload "None"
+    Quando il PSP invia la richiesta di "recupero pagamenti creati" con il payload "None"
     Allora il PSP riceve il codice di stato HTTP 200
     E il PSP riceve pagina 1 con 99 elementi come risposta
 

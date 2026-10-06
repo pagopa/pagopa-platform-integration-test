@@ -39,60 +39,38 @@ def step_query_field_as_field_key(context, field, field_key):
 
 @given('la revisione del FdR è {rev:d}')
 def step_set_revision(context, rev: int):
+    _ensure_vars_container(context)
     context.expected_revision = rev
+    context.vars["revision"] = rev
 
 
-@then("l'organizzazione riceve pagina {page:d} con {entries:d} elementi come risposta di org_get_all_published_fdr")
-def step_assert_page_and_entries_fdr(context, page: int, entries: int):
+@then("{partner} riceve pagina {page:d} con {entries:d} elementi come risposta")
+def step_assert_page_and_entries(context, partner: str, page: int, entries: int):
     assert hasattr(context, "response") and context.response is not None, "Nessuna risposta disponibile"
     try:
         body = context.response.json()
-    except Exception:
-        raise AssertionError("Response non JSON")
+    except ValueError as exc:
+        raise AssertionError("Response non JSON") from exc
 
-    # try common pagination fields
     got_page = None
     if isinstance(body, dict):
-        got_page = body.get("page") or (body.get("pageable") and body.get("pageable").get("page")) or body.get("number")
-        items = body.get("items") or body.get("fdrs") or body.get("content") or body.get("data")
-    else:
-        # body is list
-        items = body
-    if items is None:
-        # try fallbacks
-        items = []
-    count = len(items) if isinstance(items, list) else 0
-    if got_page is not None:
-        try:
-            got_page = int(got_page)
-        except Exception:
-            pass
-    # If page info not present, assume page 1 when requesting page 1
-    if got_page is None:
-        got_page = context.query_params.get("page") if hasattr(context, "query_params") else None
-    assert got_page == page, f"Expected page {page} but got {got_page}"
-    assert count == entries, f"Expected {entries} entries but got {count}"
-
-
-@then("l'organizzazione riceve pagina {page:d} con {entries:d} elementi come risposta di org_get_payments")
-def step_assert_page_and_entries_payments(context, page: int, entries: int):
-    assert hasattr(context, "response") and context.response is not None, "Nessuna risposta disponibile"
-    try:
-        body = context.response.json()
-    except Exception:
-        raise AssertionError("Response non JSON")
-
-    items = None
-    if isinstance(body, dict):
-        items = body.get("payments") or body.get("items") or body.get("content") or body.get("data")
-        got_page = body.get("page") or (body.get("pageable") and body.get("pageable").get("page")) or body.get("number")
+        pageable = body.get("pageable") or {}
+        got_page = next(
+            (value for value in (body.get("page"), pageable.get("page"), body.get("number"))
+             if value is not None),
+            None,
+        )
+        items = next(
+            (body[key] for key in ("payments", "items", "fdrs", "content", "data")
+             if key in body and body[key] is not None),
+            None,
+        )
     else:
         items = body
-        got_page = None
-    if items is None:
-        items = []
-    count = len(items) if isinstance(items, list) else 0
     if got_page is None:
         got_page = context.query_params.get("page") if hasattr(context, "query_params") else None
+    assert got_page is not None, "Nessuna pagina disponibile nella risposta o nei parametri di query"
+    assert isinstance(items, list), "Nessuna lista di elementi disponibile nella risposta"
+    count = len(items)
     assert int(got_page) == page, f"Expected page {page} but got {got_page}"
     assert count == entries, f"Expected {entries} entries but got {count}"

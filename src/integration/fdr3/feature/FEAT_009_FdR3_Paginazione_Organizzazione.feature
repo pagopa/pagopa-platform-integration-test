@@ -38,7 +38,7 @@ Funzionalità: Verifica paginazione per le API organizzazione
     E l'organizzazione aggiunge 1 come size nei parametri di query
     Quando l'organizzazione invia la richiesta di "recupero di tutti i fdr pubblicati dall'organizzazione" con il payload "None"
     Allora l'organizzazione riceve il codice di stato HTTP 200
-    E l'organizzazione riceve pagina 1 con 1 elementi come risposta di org_get_all_published_fdr
+    E l'organizzazione riceve pagina 1 con 1 elementi come risposta
 
   @runnable
   @fdr3_009_05
@@ -50,7 +50,7 @@ Funzionalità: Verifica paginazione per le API organizzazione
     E l'organizzazione aggiunge 1 come size nei parametri di query
     Quando l'organizzazione invia la richiesta di "recupero di tutti i fdr pubblicati dall'organizzazione" con il payload "None"
     Allora l'organizzazione riceve il codice di stato HTTP 200
-    E l'organizzazione riceve pagina 2 con 1 elementi come risposta di org_get_all_published_fdr
+    E l'organizzazione riceve pagina 2 con 1 elementi come risposta
 
   @runnable
   @fdr3_009_06
@@ -62,7 +62,7 @@ Funzionalità: Verifica paginazione per le API organizzazione
     E la revisione del FdR è 1
     Quando l'organizzazione invia la richiesta di "recupero di tutti i pagamenti creati dall'organizzazione" con il payload "None"
     Allora l'organizzazione riceve il codice di stato HTTP 200
-    E l'organizzazione riceve pagina 1 con 99 elementi come risposta di org_get_payments
+    E l'organizzazione riceve pagina 1 con 99 elementi come risposta
 
   @runnable
   @fdr3_009_07
@@ -74,4 +74,4 @@ Funzionalità: Verifica paginazione per le API organizzazione
     E la revisione del FdR è 1
     Quando l'organizzazione invia la richiesta di "recupero di tutti i pagamenti creati dall'organizzazione" con il payload "None"
     Allora l'organizzazione riceve il codice di stato HTTP 200
-    E l'organizzazione riceve pagina 2 con 1 elementi come risposta di org_get_payments
+    E l'organizzazione riceve pagina 2 con 1 elementi come risposta

@@ -75,6 +75,15 @@ Gli step non generici sono mantenuti nei moduli della feature:
 - `feat_003_steps.py`: verifica della cancellazione del flusso;
 - `feat_004_steps.py`: cancellazione e conteggio pagamenti;
 - `feat_006_steps.py`: impostazione di dati non validi per la cancellazione FdR.
+- `feat_009_steps.py`: configurazione query, revisioni e asserzioni di
+  paginazione condivise dalle feature organizzazione (009) e PSP (010).
+
+La paginazione di flussi e pagamenti usa un unico step per tutti i partner:
+
+```gherkin
+E il PSP riceve pagina 1 con 99 elementi come risposta
+E l'organizzazione riceve pagina 1 con 1 elementi come risposta
+```
 
 La richiesta con subscription key non valida è gestita dallo step comune:
 
