@@ -3,6 +3,7 @@ wisp:
   test_type: integration
 openapi-fdr:
   parent_id: 3250356236
+  test_type: integration
 checkout:
   parent_id: 3235250264
   test_type: e2e
@@ -10,7 +11,7 @@ qa_hub_apis:
   latest_suite_version:
     url: https://api.dev.platform.pagopa.it/qa/central-hub/v1/api/v1/test-metrics/test-suites/latest/
     method: GET
-    api_key: $APIM_QA_HUB_KEY   
+    api_key: $APIM_QA_HUB_KEY
   save_test_suite:
     url: https://api.dev.platform.pagopa.it/qa/central-hub/v1/api/v1/test-metrics/test-suites
     method: POST
@@ -22,4 +23,6 @@ qa_hub_apis:
   save_test_executions:
     url: https://api.dev.platform.pagopa.it/qa/central-hub/v1/api/v1/test-metrics/test-executions
     method: POST
-    api_key: $APIM_QA_HUB_KEY
+    api_key: $APIM_QA_HUB_KEY  
+product_versions_apis:
+  wisp: https://api.dev.platform.pagopa.it/shared/statuspage/v1/info?product=wispconverterts

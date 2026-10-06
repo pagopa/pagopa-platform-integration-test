@@ -6,6 +6,10 @@ on:
 jobs:
   fdr_tests:
     runs-on: ubuntu-latest
+    environment: uat
+    env:
+      TARGET_ENV: uat
+      SECRETS_RESOLVER: dict
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
@@ -26,11 +30,20 @@ jobs:
           pip install -r requirements.txt
           sudo apt-get install -y jq
 
+      - name: Validate and load environment secrets
+        env:
+          NRT_SECRETS_BUNDLE: ${{ secrets.NRT_SECRETS_BUNDLE }}
+        run: python .github/scripts/nrt-prepare-secrets.py src/integration/fdr
+
       - name: Run FdR tests
         id: run_tests
         continue-on-error: true
         run: |
           behave src/integration/fdr --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+
+      - name: Remove plaintext secrets
+        if: always()
+        run: rm -f config/.secrets.yaml
 
       # gh-pages holds every historical Allure report (tens of thousands of files):
       # only the trend history folder is checked out, otherwise the step hangs.

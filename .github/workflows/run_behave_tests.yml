@@ -21,15 +21,14 @@ on:
         description: Run Flussi di Rendicontazione tests
         required: false
         default: true
-      FdR3:
-        type: boolean
-        description: Run FdR3 integration tests
-        required: false
-        default: true
 
 jobs:
   WISP_integration_tests:
     runs-on: [self-hosted-job, '${{ inputs.environment }}']
+    environment: ${{ inputs.environment }}
+    env:
+      TARGET_ENV: ${{ inputs.environment }}
+      SECRETS_RESOLVER: dict
     if: github.event.inputs.WISP == 'true' || !github.event.inputs.WISP
     outputs:
       wisp_success: ${{ steps.run_tests.outcome }}
@@ -50,15 +49,17 @@ jobs:
           pip install -r requirements.txt
           sudo apt-get install -y jq
       - name: Load secrets
-        run: echo "$SECRETS" >> ./config/.secrets.yaml
+        run: python .github/scripts/nrt-prepare-secrets.py src/integration/wisp
         env:
-          SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS }}
-          AZURE_KEY_VAULT_URL: ${{ secrets.AZURE_KEY_VAULT_UAT_URL }}
+          NRT_SECRETS_BUNDLE: ${{ secrets.NRT_SECRETS_BUNDLE }}
       - name: Run tests with Behave (WISP)
         id: run_tests
         continue-on-error: true
         run: |
           behave src/integration/wisp --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+      - name: Remove plaintext secrets
+        if: always()
+        run: rm -f config/.secrets.yaml
       - name: Load previous allure history
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
@@ -81,6 +82,10 @@ jobs:
 
   FdR_integration_tests:
     runs-on: [self-hosted-job, '${{ inputs.environment }}']
+    environment: ${{ inputs.environment }}
+    env:
+      TARGET_ENV: ${{ inputs.environment }}
+      SECRETS_RESOLVER: dict
     if: github.event.inputs.FdR == 'true' || !github.event.inputs.FdR
     outputs:
       fdr_success: ${{ steps.run_tests.outcome }}
@@ -100,11 +105,18 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
           sudo apt-get install -y jq
+      - name: Validate and load environment secrets
+        env:
+          NRT_SECRETS_BUNDLE: ${{ secrets.NRT_SECRETS_BUNDLE }}
+        run: python .github/scripts/nrt-prepare-secrets.py src/integration/fdr
       - name: Run tests with Behave (FdR)
         id: run_tests
         continue-on-error: true
         run: |
           behave src/integration/fdr --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
+      - name: Remove plaintext secrets
+        if: always()
+        run: rm -f config/.secrets.yaml
       - name: Load previous allure history
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
@@ -125,61 +137,8 @@ jobs:
           name: allure-report-fdr
           path: allure-report-fdr
 
-  FdR3_integration_tests:
-    runs-on: [self-hosted-job, '${{ inputs.environment }}']
-    if: github.event.inputs.FdR3 == 'true' || !github.event.inputs.FdR3
-    outputs:
-      fdr3_success: ${{ steps.run_tests.outcome }}
-    steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-      - name: Setup Python
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
-        with:
-          python-version: 3.x
-      - name: Set up JDK
-        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
-        with:
-          distribution: zulu
-          java-version: 17
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
-          sudo apt-get install -y jq
-      - name: Load secrets
-        run: echo "$SECRETS" >> ./config/.secrets.yaml
-        env:
-          SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS }}
-      - name: Run tests with Behave (FdR3)
-        id: run_tests
-        continue-on-error: true
-        env:
-          TARGET_ENV: ${{ inputs.environment }}
-          suite: fdr3
-        run: |
-          behave src/integration/fdr3 --tags=@runnable --format allure_behave.formatter:AllureFormatter -o allure-results --junit-directory=junit --junit --summary --show-timings -v
-      - name: Load previous allure history
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-        with:
-          ref: gh-pages
-          path: gh-pages
-      - name: Build FdR3 Allure report
-        uses: simple-elf/allure-report-action@385367cde61ac68c2568a117f7579f7f148dc459 # v1.15
-        with:
-          gh_pages: gh-pages
-          allure_results: allure-results
-          allure_report: allure-report-fdr3
-          allure_history: allure-history
-          subfolder: fdr3-tests
-          keep_reports: 30
-      - name: Upload FdR3 report artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: allure-report-fdr3
-          path: allure-report-fdr3
-
   deploy:
-    needs: [ WISP_integration_tests, FdR_integration_tests, FdR3_integration_tests ]
+    needs: [ WISP_integration_tests, FdR_integration_tests ]
     runs-on: ubuntu-latest
     if: always()
     steps:
@@ -206,12 +165,6 @@ jobs:
           name: allure-report-fdr
           path: allure-report-fdr
 
-      - name: Download FdR3 report artifact
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: allure-report-fdr3
-          path: allure-report-fdr3
-
       - name: Create timestamp
         id: vars
         run: echo "timestamp=$(date +'%Y-%m-%d-%Hh%M')" >> $GITHUB_ENV
@@ -225,11 +178,6 @@ jobs:
         run: |
           mkdir -p public/fdr-tests/${{ env.timestamp }}
           cp -r allure-report-fdr/. public/fdr-tests/${{ env.timestamp }}/
-
-      - name: Copy FdR3 report
-        run: |
-          mkdir -p public/fdr3-tests/${{ env.timestamp }}
-          cp -r allure-report-fdr3/. public/fdr3-tests/${{ env.timestamp }}/
 
       - name: Update WISP index
         run: |
@@ -250,16 +198,6 @@ jobs:
             echo "<li><a href=\"./$d/index.html\">$d</a></li>" >> public/fdr-tests/index.html
           done
           echo '</ul></body></html>' >> public/fdr-tests/index.html
-
-      - name: Update FdR3 index
-        run: |
-          mkdir -p public/fdr3-tests
-          echo '<html><body><h1>Storico FdR3</h1><ul>' > public/fdr3-tests/index.html
-          for dir in $(ls -dt public/fdr3-tests/*/ | grep -v '/index.html' | head -n 30); do
-            d=$(basename $dir)
-            echo "<li><a href=\"./$d/index.html\">$d</a></li>" >> public/fdr3-tests/index.html
-          done
-          echo '</ul></body></html>' >> public/fdr3-tests/index.html
 
       - name: Copy Landing Page
         run: |

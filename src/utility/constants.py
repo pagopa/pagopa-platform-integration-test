@@ -19,3 +19,5 @@ SUMMARY_FILE_PATH = "widgets/summary.json"
 # Relative path to the folders containing the result for each scenario within the processed reports directory.
 TEST_CASES_PATH = "data/test-cases"
 
+NRT_SUITES_FILE = GITHUB_ROOT / "nrt-suites.json"
+

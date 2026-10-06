@@ -19,6 +19,7 @@ alcune suite storiche usano Cucumber.js o Playwright.
 - [Servizio di test riusabile](#servizio-di-test-riusabile)
 - [Documentazione scenari](#documentazione-scenari)
 - [Contribuire](#contribuire)
+- [Release e versionamento](#release-e-versionamento)
 - [Troubleshooting](#troubleshooting)
 - [Tracciabilita delle fonti](#tracciabilita-delle-fonti)
 
@@ -681,7 +682,7 @@ rimozione della cartella temporanea `tmp_fetched/` e pulizia dei run più vecchi
 Prerequisiti:
 
 - Variabili d'ambiente `TARGET_ENV` (valori: `dev`, `uat`) e `suite` impostata a `fdr`.
-- File `config/suites/fdr_config.json` presente con le subscription key per l'ambiente scelto.
+- File `config/suites/fdr_secrets_config.json` presente con i placeholder delle subscription key per l'ambiente scelto.
 - File dei secret locali `config/.secrets.yaml` compilato con i valori reali dei placeholder.
 
 PowerShell:
@@ -744,7 +745,7 @@ i report su GitHub Pages sotto `openapi-fdr-tests/`.
 
 Riferimenti: `.github/workflows/openApi_test.yml`, `.github/workflows/main-dispatch-tests.yml`,
 `scripts/fetch_github_files.py`, `scripts/schemathesis_runner.py`,
-`.github/scripts/openApi_test.py`, `config/suites/fdr_config.json`, `schemathesis.toml`.
+`.github/scripts/openApi_test.py`, `config/suites/fdr_secrets_config.json`, `schemathesis.toml`.
 
 ## Esecuzione in CI
 
@@ -977,6 +978,64 @@ La PR deve descrivere cambiamenti, motivazione, test eseguiti e tipo di modifica
 di PR applica automaticamente label di dimensione in base alle righe modificate.
 
 Riferimenti: `.github/PULL_REQUEST_TEMPLATE.md`, `.github/workflows/check_pr.yml`, regole operative di progetto.
+
+## Release e versionamento
+
+A ogni push su `main`, incluso il merge di una PR, il workflow `Release` crea automaticamente
+un tag e una GitHub Release seguendo il [Semantic Versioning](https://semver.org/)
+(`vMAJOR.MINOR.PATCH`).
+
+Il workflow usa due action:
+
+- `mathieudutour/github-tag-action` calcola la nuova versione a partire dai messaggi di commit
+  ([Conventional Commits](https://www.conventionalcommits.org/)) e pubblica il tag;
+- `ncipollo/release-action` crea la GitHub Release con note generate automaticamente, raggruppate
+  secondo le categorie definite in `.github/release.yml`.
+
+Non servono file di versione nel repository: la versione corrente e sempre l'ultimo tag SemVer
+con prefisso `v`. I tag non SemVer esistenti (es. `WISP_v1.0`, `CHECKOUT_v1.0`) vengono ignorati.
+La base di partenza e `1.0.0` (`initial_version`).
+
+### Versioni delle suite di test
+
+Le versioni delle singole suite sono indipendenti dal tag di release del repository e sono
+registrate in `suite_versions.json`. Il loro aggiornamento e guidato dalle **label della PR**:
+assegnare una label di incremento (`major`, `minor` o `patch`) e una label della suite coinvolta(`wisp`, `checkout` o `fdr`). Usare `skip` quando non si vuole aggiornare la versione di una suite.
+
+Quando la PR viene mergiata, il workflow `Bump test suite version` legge le label. Se trova sia l'incremento sia la suite, esegue lo script che aumenta la versione di quella suite all'interno del file json; infine crea un commit e pubblica il file aggiornato su `main`.
+Con `skip`, o senza una delle due label necessarie, il file non viene aggiornato. Questo flusso e separato dal versionamento della release, che dipende invece dai messaggi di commit.
+
+### Regole di incremento
+
+| Commit | Incremento | Esempio |
+|---|---|---|
+| `fix:`, `perf:` | patch | `v1.2.3` -> `v1.2.4` |
+| `feat:` | minor | `v1.2.3` -> `v1.3.0` |
+| `feat!:`, `fix!:` o footer `BREAKING CHANGE:` | major | `v1.2.3` -> `v2.0.0` |
+| solo altri prefissi (`chore:`, `docs:`, `refactor:`, `test:`) o messaggi non convenzionali | patch (default) | `v1.2.3` -> `v1.2.4` |
+
+Per non generare alcuna release, inserire `[no-release]` o `[skip-release]` nel messaggio di commit.
+
+### Incremento unico per push
+
+L'action analizza **tutti** i commit arrivati su `main` dall'ultimo tag, ma applica **un solo
+incremento: quello di livello piu alto trovato**. Il numero di commit non conta, conta solo il
+tipo piu "forte".
+
+| Commit inclusi nel merge | Risultato |
+|---|---|
+| 10 `fix:` | `v1.2.3` -> `v1.2.4` |
+| 8 `fix:` + 2 `feat:` | `v1.2.3` -> `v1.3.0` |
+| 9 `feat:` + 1 `feat!:` | `v1.2.3` -> `v2.0.0` |
+
+Quindi una PR con molti commit `feat:`/`fix:` produce comunque una sola release. Con il merge commit (strategia attuale) i singoli commit della PR restano nella storia di `main` e vengono letti correttamente; il commit `Merge pull request #...` non e convenzionale e viene ignorato.
+In caso di squash merge, invece, il titolo della PR diventa l'unico commit analizzato e deve
+quindi rispettare il formato convenzionale (es. `feat(PQ-123): descrizione`).
+
+Attenzione: un solo `!` o `BREAKING CHANGE:` in un qualsiasi commit della PR porta a un
+incremento major.
+
+Riferimenti: `.github/workflows/release.yml`, `.github/release.yml`.
 
 ## Troubleshooting
 

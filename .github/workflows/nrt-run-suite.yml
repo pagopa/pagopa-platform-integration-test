@@ -1,0 +1,238 @@
+name: 🔁 NRT - Run Suite
+
+on:
+  workflow_call:
+    inputs:
+      suite_id:
+        required: true
+        type: string
+      suite_label:
+        required: true
+        type: string
+      behave_path:
+        required: true
+        type: string
+      tags_json:
+        required: true
+        type: string
+      allure_subfolder:
+        required: true
+        type: string
+      report_artifact:
+        required: true
+        type: string
+      needs_playwright:
+        required: true
+        type: boolean
+      target_env:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  run_suite:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.target_env }}
+    timeout-minutes: 90
+    env:
+      SECRETS_RESOLVER: dict
+      SUITE_ID: ${{ inputs.suite_id }}
+      SUITE_LABEL: ${{ inputs.suite_label }}
+      TARGET_ENV: ${{ inputs.target_env }}
+      BEHAVE_PATH: ${{ inputs.behave_path }}
+      TAGS_JSON: ${{ inputs.tags_json }}
+      SUBFOLDER: ${{ inputs.allure_subfolder }}-${{ inputs.target_env }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        id: checkout
+
+      - name: Setup Python
+        id: setup_python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: 3.x
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Setup Java
+        id: setup_java
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: zulu
+          java-version: 17
+
+      - name: Install dependencies
+        id: install_dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Cache Playwright browsers
+        if: inputs.needs_playwright
+        id: playwright_cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-1.55.0
+
+      - name: Install Playwright
+        if: inputs.needs_playwright
+        id: install_playwright
+        run: |
+          pip install playwright==1.55.0
+          python -m playwright install --with-deps chrome
+
+      - name: Materialize NRT environment secrets
+        id: load_nrt_secrets
+        env:
+          NRT_SECRETS_BUNDLE: ${{ secrets.NRT_SECRETS_BUNDLE }}
+        run: python .github/scripts/nrt-prepare-secrets.py "$BEHAVE_PATH"
+
+      - name: Run Behave tests
+        id: run_tests
+        continue-on-error: true
+        env:
+          HEADLESS: 'true'
+          suite: ${{ inputs.suite_id }}
+        shell: bash
+        run: |
+          mapfile -t tags < <(jq -r '.[]' <<< "$TAGS_JSON")
+          command=(behave "$BEHAVE_PATH")
+          for tag in "${tags[@]}"; do
+            command+=(--tags="$tag")
+          done
+          command+=(
+            --format allure_behave.formatter:AllureFormatter
+            -o allure-results
+            --junit-directory=junit
+            --junit
+            --summary
+            --show-timings
+            -v
+          )
+          "${command[@]}"
+
+      - name: Build suite AI prompt
+        if: always()
+        id: build_ai_prompt
+        env:
+          ALLURE_RESULTS_DIR: allure-results
+          JUNIT_RESULTS_DIR: junit
+          PROMPT_OUTPUT: ai-analysis-input/prompt.txt
+          SUITE_LABEL: ${{ inputs.suite_label }}
+        run: python3 .github/scripts/build_ai_prompt.py
+
+      - name: Name suite AI prompt
+        if: always()
+        run: cp ai-analysis-input/prompt.txt "ai-analysis-input/${SUITE_ID}.txt"
+
+      - name: Upload suite AI prompt
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: nrt-ai-prompt-${{ inputs.suite_id }}
+          path: ai-analysis-input/${{ inputs.suite_id }}.txt
+          if-no-files-found: warn
+
+      - name: Load previous Allure history
+        if: always()
+        continue-on-error: true
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: gh-pages
+          path: gh-pages
+          fetch-depth: 1
+          sparse-checkout: ${{ inputs.allure_subfolder }}-${{ inputs.target_env }}/last-history
+
+      - name: Prepare Allure results
+        if: always()
+        run: |
+          if [ -f allure-results/history ]; then rm allure-results/history; fi
+          mkdir -p allure-results/history
+          result_count=$(find allure-results -maxdepth 1 -name '*-result.json' | wc -l)
+          echo "Found $result_count Allure result file(s)."
+
+      - name: Install Allure CLI
+        if: always()
+        id: install_allure
+        run: |
+          npm install --prefix "$RUNNER_TEMP/allure" --no-save --no-package-lock allure-commandline@2.27.0
+          echo "$RUNNER_TEMP/allure/node_modules/.bin" >> "$GITHUB_PATH"
+
+      - name: Build Allure report
+        if: always()
+        id: build_report
+        continue-on-error: true
+        run: |
+          history_dir="gh-pages/${SUBFOLDER}/last-history"
+          if [ -d "$history_dir" ]; then
+            cp -r "$history_dir/." allure-results/history/
+          fi
+          allure generate allure-results --clean -o allure-report
+          mkdir -p "allure-history/${SUBFOLDER}/${{ github.run_number }}"
+          cp -r allure-report/. "allure-history/${SUBFOLDER}/${{ github.run_number }}/" || true
+          mkdir -p "allure-history/${SUBFOLDER}/last-history"
+          cp -r allure-report/history/. "allure-history/${SUBFOLDER}/last-history/" || true
+
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ inputs.report_artifact }}
+          path: allure-report
+          if-no-files-found: warn
+
+      - name: Write suite outcome
+        if: always()
+        env:
+          TEST_OUTCOME: ${{ steps.run_tests.outcome }}
+          CHECKOUT_OUTCOME: ${{ steps.checkout.outcome }}
+          PYTHON_OUTCOME: ${{ steps.setup_python.outcome }}
+          JAVA_OUTCOME: ${{ steps.setup_java.outcome }}
+          DEPENDENCIES_OUTCOME: ${{ steps.install_dependencies.outcome }}
+          PLAYWRIGHT_OUTCOME: ${{ steps.install_playwright.outcome }}
+          NRT_SECRETS_OUTCOME: ${{ steps.load_nrt_secrets.outcome }}
+          AI_PROMPT_OUTCOME: ${{ steps.build_ai_prompt.outcome }}
+          ALLURE_OUTCOME: ${{ steps.install_allure.outcome }}
+          REPORT_OUTCOME: ${{ steps.build_report.outcome }}
+          REPORT_ARTIFACT: ${{ inputs.report_artifact }}
+        run: |
+          job_outcome=success
+          for outcome in \
+            "$CHECKOUT_OUTCOME" \
+            "$PYTHON_OUTCOME" \
+            "$JAVA_OUTCOME" \
+            "$DEPENDENCIES_OUTCOME" \
+            "$PLAYWRIGHT_OUTCOME" \
+            "$NRT_SECRETS_OUTCOME" \
+            "$AI_PROMPT_OUTCOME" \
+            "$ALLURE_OUTCOME" \
+            "$REPORT_OUTCOME"; do
+            if [ "$outcome" = failure ] || [ "$outcome" = cancelled ]; then
+              job_outcome=failure
+            fi
+          done
+          mkdir -p nrt-outcome
+          jq -n \
+            --arg suite_id "$SUITE_ID" \
+            --arg suite_label "$SUITE_LABEL" \
+            --arg report_artifact "$REPORT_ARTIFACT" \
+            --arg target_env "$TARGET_ENV" \
+            --arg test_outcome "${TEST_OUTCOME:-skipped}" \
+            --arg job_outcome "$job_outcome" \
+            '{suite_id: $suite_id, suite_label: $suite_label, report_artifact: $report_artifact, target_env: $target_env, test_outcome: $test_outcome, job_outcome: $job_outcome}' \
+            > "nrt-outcome/${SUITE_ID}.json"
+
+      - name: Upload suite outcome
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: nrt-outcome-${{ inputs.suite_id }}
+          path: nrt-outcome/${{ inputs.suite_id }}.json
+          if-no-files-found: error
+
+      - name: Remove plaintext secrets
+        if: always()
+        run: rm -f config/.secrets.yaml

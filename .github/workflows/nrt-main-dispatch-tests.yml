@@ -1,0 +1,338 @@
+name: 🔁 NRT - Main Dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      suites:
+        description: Use all or comma-separated suite IDs from the registry
+        required: true
+        type: string
+        default: all
+      target_env:
+        description: Target environment
+        required: true
+        type: choice
+        default: uat
+        options:
+          - dev
+          - uat
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      target_env: ${{ steps.plan.outputs.target_env }}
+      suite_count: ${{ steps.plan.outputs.suite_count }}
+    env:
+      SUITE_SELECTION: ${{ github.event_name == 'workflow_dispatch' && inputs.suites || 'all' }}
+      TARGET_ENV: ${{ github.event_name == 'workflow_dispatch' && inputs.target_env || 'uat' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Build suite matrix
+        id: plan
+        shell: bash
+        run: |
+          if [ "$SUITE_SELECTION" != all ]; then
+            selected_ids=$(jq -cn --arg selected "$SUITE_SELECTION" \
+              '$selected | split(",") | map(gsub("^\\s+|\\s+$"; "")) | unique')
+            unknown_ids=$(jq -r --argjson selected "$selected_ids" \
+              '([.suites[].id] as $available | [$selected[] | select(. as $id | $available | index($id) == null)] | join(","))' \
+              .github/nrt-suites.json)
+            if [ -n "$unknown_ids" ]; then
+              echo "Unknown suite ID(s): $unknown_ids" >&2
+              exit 1
+            fi
+          fi
+
+          matrix=$(jq -ce \
+            --arg selected "$SUITE_SELECTION" \
+            --arg target_env "$TARGET_ENV" '
+              ($selected | if . == "all" then [] else split(",") | map(gsub("^\\s+|\\s+$"; "")) end) as $selected_ids
+              |
+              [.suites[] | select(
+                ($selected == "all" or (.id as $id | $selected_ids | index($id) != null))
+                and (.envs | index($target_env) != null)
+              )] as $selected_suites
+              | if ($selected_suites | length) == 0 then
+                  error("No suites are configured for the selected suite and environment")
+                else
+                  {include: $selected_suites}
+                end
+            ' .github/nrt-suites.json)
+          suite_count=$(jq '.include | length' <<< "$matrix")
+          printf 'matrix=%s\n' "$matrix" >> "$GITHUB_OUTPUT"
+          printf 'target_env=%s\n' "$TARGET_ENV" >> "$GITHUB_OUTPUT"
+          printf 'suite_count=%s\n' "$suite_count" >> "$GITHUB_OUTPUT"
+          echo "Selected $suite_count suite(s) for $TARGET_ENV."
+
+  run_suites:
+    name: NRT - ${{ matrix.label }} (${{ needs.prepare.outputs.target_env }})
+    needs: prepare
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    uses: ./.github/workflows/nrt-run-suite.yml
+    with:
+      suite_id: ${{ matrix.id }}
+      suite_label: ${{ matrix.label }}
+      behave_path: ${{ matrix.behave_path }}
+      tags_json: ${{ toJSON(matrix.tags) }}
+      allure_subfolder: ${{ matrix.allure_subfolder }}
+      report_artifact: ${{ matrix.report_artifact }}
+      needs_playwright: ${{ matrix.needs_playwright }}
+      target_env: ${{ needs.prepare.outputs.target_env }}
+    secrets: inherit
+
+  aggregate_ai_prompt:
+    name: NRT - Aggregate AI prompt
+    if: always() && needs.prepare.result == 'success'
+    needs: [prepare, run_suites]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download suite prompts
+        if: always()
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: nrt-ai-prompt-*
+          path: suite-prompts
+          merge-multiple: true
+
+      - name: Build aggregate prompt
+        shell: bash
+        run: |
+          mkdir -p ai-analysis-input
+          : > ai-analysis-input/prompt.txt
+          printf '%s\n\n' \
+            'You are a senior QA engineer. Analyze the following NRT suite failure reports together, identify shared root causes across suites, and provide a concise recommended action for each distinct failure pattern.' \
+            'The source sections may contain suite-specific analysis instructions and failure details.' \
+            >> ai-analysis-input/prompt.txt
+          prompt_count=0
+          while IFS= read -r -d '' prompt; do
+            prompt_count=$((prompt_count + 1))
+            printf '\n## Suite: %s\n\n' "$(basename "$prompt" .txt)" >> ai-analysis-input/prompt.txt
+            cat "$prompt" >> ai-analysis-input/prompt.txt
+            printf '\n' >> ai-analysis-input/prompt.txt
+          done < <(find suite-prompts -type f -name '*.txt' -print0 2>/dev/null | sort -z)
+          if [ "$prompt_count" -eq 0 ]; then
+            printf '%s\n' 'No suite prompts were produced.' > ai-analysis-input/prompt.txt
+          fi
+          echo "Aggregated $prompt_count suite prompt(s)."
+
+      - name: Upload aggregate prompt
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: nrt-ai-prompt-aggregate
+          path: ai-analysis-input
+          if-no-files-found: error
+
+  ai_analysis:
+    name: NRT - AI analysis
+    if: always() && needs.aggregate_ai_prompt.result == 'success'
+    needs: [aggregate_ai_prompt]
+    uses: ./.github/workflows/ai-report-analysis.yml
+    with:
+      prompt_artifact: nrt-ai-prompt-aggregate
+      analysis_artifact_name: nrt-ai-analysis
+      max_tokens: '16384'
+    secrets: inherit
+
+  final_status:
+    name: NRT - Final status
+    if: always()
+    needs: [prepare, run_suites, aggregate_ai_prompt, ai_analysis]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download suite outcomes
+        if: needs.prepare.result == 'success'
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: nrt-outcome-*
+          path: suite-outcomes
+          merge-multiple: true
+
+      - name: Summarize outcomes and propagate failures
+        env:
+          EXPECTED_SUITE_COUNT: ${{ needs.prepare.outputs.suite_count }}
+          PREPARE_RESULT: ${{ needs.prepare.result }}
+          SUITES_RESULT: ${{ needs.run_suites.result }}
+        shell: bash
+        run: |
+          outcome_files=()
+          while IFS= read -r -d '' outcome; do
+            outcome_files+=("$outcome")
+          done < <(find suite-outcomes -type f -name '*.json' -print0 2>/dev/null | sort -z)
+
+          echo "## NRT suite outcomes" >> "$GITHUB_STEP_SUMMARY"
+          failed=false
+          if [ "$PREPARE_RESULT" != success ] || [ "$SUITES_RESULT" != success ]; then
+            failed=true
+            echo "::error title=NRT orchestration::prepare=$PREPARE_RESULT, run_suites=$SUITES_RESULT"
+          fi
+          if [ "${#outcome_files[@]}" -ne "${EXPECTED_SUITE_COUNT:-0}" ]; then
+            message="Expected ${EXPECTED_SUITE_COUNT:-0} outcome file(s), found ${#outcome_files[@]}."
+            echo "$message" | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "::error title=NRT outcome artifacts::$message"
+            failed=true
+          fi
+
+          for outcome in "${outcome_files[@]}"; do
+            suite_id=$(jq -r '.suite_id' "$outcome")
+            test_outcome=$(jq -r '.test_outcome' "$outcome")
+            job_outcome=$(jq -r '.job_outcome' "$outcome")
+            message="Suite $suite_id: tests=$test_outcome, setup/report=$job_outcome"
+            echo "$message"
+            printf -- '- **%s**: tests `%s`, setup/report `%s`\n' \
+              "$suite_id" "$test_outcome" "$job_outcome" >> "$GITHUB_STEP_SUMMARY"
+            if [ "$test_outcome" != success ]; then
+              echo "::error title=NRT test failure::$suite_id test execution ended with $test_outcome"
+              failed=true
+            fi
+            if [ "$job_outcome" != success ]; then
+              echo "::error title=NRT suite infrastructure failure::$suite_id setup or reporting ended with $job_outcome"
+              failed=true
+            fi
+          done
+
+          if [ "$failed" = true ]; then
+            echo 'NRT failed; inspect the suite-specific errors above and the Behave/Allure logs.' >&2
+            exit 1
+          fi
+
+  notify_slack:
+    name: NRT - Slack notification
+    if: always()
+    needs: [prepare, run_suites, final_status]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Allure reports
+        if: needs.prepare.result == 'success'
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: allure-report-*
+          path: nrt-reports
+
+      - name: Download suite outcomes
+        if: needs.prepare.result == 'success'
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: nrt-outcome-*
+          path: nrt-outcomes
+          merge-multiple: true
+
+      - name: Send NRT results to Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_INTEGRATION_TEST_WEBHOOK_URL }}
+          TARGET_ENV: ${{ needs.prepare.outputs.target_env }}
+          FINAL_STATUS: ${{ needs.final_status.result }}
+          WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        shell: bash
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo 'SLACK_INTEGRATION_TEST_WEBHOOK_URL is not configured.' >&2
+            exit 1
+          fi
+
+          if [ "$FINAL_STATUS" = success ]; then
+            status_text='✅ Passed'
+          else
+            status_text='❌ Failed'
+          fi
+
+          blocks=$(jq -cn \
+            --arg env "${TARGET_ENV:-unknown}" \
+            --arg status "$status_text" \
+            --arg url "$WORKFLOW_URL" \
+            '[
+              {type:"header", text:{type:"plain_text", text:("🧪 NRT BETA TEST · " + ($env | ascii_upcase) + " · " + $status), emoji:true}},
+              {type:"context", elements:[{type:"mrkdwn", text:("<" + $url + "|Open workflow run>")}]},
+              {type:"divider"}
+            ]')
+
+          outcome_count=0
+          section_count=0
+          section_text=''
+          while IFS= read -r -d '' outcome; do
+            outcome_count=$((outcome_count + 1))
+            suite_id=$(jq -r '.suite_id' "$outcome")
+            suite_label=$(jq -r '.suite_label // .suite_id' "$outcome")
+            report_artifact=$(jq -r '.report_artifact // empty' "$outcome")
+            test_outcome=$(jq -r '.test_outcome' "$outcome")
+            job_outcome=$(jq -r '.job_outcome' "$outcome")
+            summary_file="nrt-reports/${report_artifact}/widgets/summary.json"
+
+            if [ -f "$summary_file" ]; then
+              passed=$(jq -r '(.statistic | if type == "array" then .[0] else . end).passed // 0' "$summary_file")
+              failed=$(jq -r '(.statistic | if type == "array" then .[0] else . end) | ((.failed // 0) + (.broken // 0))' "$summary_file")
+              skipped=$(jq -r '(.statistic | if type == "array" then .[0] else . end).skipped // 0' "$summary_file")
+              duration_ms=$(jq -r '(.time | if type == "array" then .[0] else . end).duration // 0' "$summary_file")
+              duration_seconds=$((duration_ms / 1000))
+              duration="$((duration_seconds % 60))s"
+              if [ "$duration_seconds" -ge 60 ]; then
+                duration="$((duration_seconds / 60))m $((duration_seconds % 60))s"
+              fi
+              statistics="✅ Passed: ${passed}"$'\n'"❌ Failed: ${failed}"$'\n'"⚡ Skipped: ${skipped}"$'\n'"⏱️ Duration: ${duration}"
+            else
+              statistics=$'✅ Passed: unavailable\n❌ Failed: unavailable\n⚡ Skipped: unavailable\n⏱️ Duration: unavailable'
+            fi
+
+            if [ "$test_outcome" = success ] && [ "$job_outcome" = success ]; then
+              suite_status='✅ Passed'
+            elif [ "$test_outcome" = failure ]; then
+              suite_status='❌ Tests failed'
+            else
+              suite_status='⚠️ Setup/report issue'
+            fi
+
+            suite_entry="*${suite_label}*"$'\n'"${suite_status} · Setup/report: ${job_outcome}"$'\n'"${statistics}"
+            if [ "$job_outcome" != success ] && [ "$test_outcome" = failure ]; then
+              suite_entry+=$'\n⚠️ Setup/report also failed'
+            fi
+            if [ -n "$section_text" ]; then
+              section_text+=$'\n\n'
+            fi
+            section_text+="$suite_entry"
+            section_count=$((section_count + 1))
+
+            if [ "$section_count" -eq 6 ]; then
+              blocks=$(jq -cn \
+                --argjson blocks "$blocks" \
+                --arg text "$section_text" \
+                '$blocks + [{type:"section", text:{type:"mrkdwn", text:$text}}]')
+              section_count=0
+              section_text=''
+            fi
+          done < <(find nrt-outcomes -type f -name '*.json' -print0 2>/dev/null | sort -z)
+
+          if [ "$section_count" -gt 0 ]; then
+            blocks=$(jq -cn \
+              --argjson blocks "$blocks" \
+              --arg text "$section_text" \
+              '$blocks + [{type:"section", text:{type:"mrkdwn", text:$text}}]')
+          fi
+
+          if [ "$outcome_count" -eq 0 ]; then
+            blocks=$(jq -cn \
+              --argjson blocks "$blocks" \
+              --arg status "No suite outcomes were available: prepare=${{ needs.prepare.result }}, suites=${{ needs.run_suites.result }}." \
+              '$blocks + [{type:"section", text:{type:"mrkdwn", text:$status}}]')
+          fi
+
+          payload=$(jq -cn \
+            --argjson blocks "$blocks" \
+            --arg text "NRT BETA TEST ${TARGET_ENV:-unknown}: $status_text" \
+            '{text:$text, blocks:$blocks}')
+          curl --silent --show-error --fail-with-body --max-time 20 \
+            -H 'Content-Type: application/json' \
+            --data "$payload" \
+            "$SLACK_WEBHOOK_URL"

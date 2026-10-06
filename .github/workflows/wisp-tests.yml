@@ -10,6 +10,10 @@ permissions:
 jobs:
   wisp_tests:
     runs-on: ubuntu-latest
+    environment: uat
+    env:
+      TARGET_ENV: uat
+      SECRETS_RESOLVER: dict
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
@@ -32,9 +36,9 @@ jobs:
 
       # No Key Vault on GitHub-hosted runners: secrets come from the repo secret.
       - name: Load secrets
-        run: echo "$SECRETS" >> ./config/.secrets.yaml
+        run: python .github/scripts/nrt-prepare-secrets.py src/integration/wisp
         env:
-          SECRETS: ${{ secrets.INTEGRATION_TESTS_SECRETS }}
+          NRT_SECRETS_BUNDLE: ${{ secrets.NRT_SECRETS_BUNDLE }}
 
       - name: Run WISP tests
         id: run_tests
@@ -116,6 +120,10 @@ jobs:
           path: allure-report-wisp
           if-no-files-found: warn
           
+      - name: Remove plaintext secrets
+        if: always()
+        run: rm -f config/.secrets.yaml
+
   ai-analysis:
     if: always()
     needs: wisp_tests
