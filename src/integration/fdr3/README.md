@@ -101,6 +101,14 @@ metodo HTTP e path:
 | Recupero FdR creato | GET | `/psps/#psp#/created/fdrs/$flow_name$/organizations/#organization#` |
 | Cancellazione pagamenti | PUT | `/psps/#psp#/fdrs/$flow_name$/payments/del` |
 | Recupero di tutti i FdR pubblicati dal PSP | GET | `/psps/#psp#/published` |
+| Recupero di tutti i FdR creati dal PSP | GET | `/psps/#psp#/created` |
+| Recupero pagamenti pubblicati dal PSP | GET | `/psps/#psp#/published/fdrs/$flow_name$/revisions/$revision$/organizations/#organization#/payments` |
+
+`FEAT_010_FdR3_Paginazione_PSP.feature` verifica la paginazione dei pagamenti
+e dei flussi creati e pubblicati dal PSP. Riutilizza gli step comuni e le
+asserzioni di paginazione di `feat_009_steps.py`, senza un modulo di step
+dedicato. I filtri dinamici nelle query usano `$flow_date$`; la revisione
+impostata nello step viene esposta anche come placeholder `$revision$`.
 
 I placeholder nel path e nei payload vengono risolti dal contesto Behave. Per
 la cancellazione pagamenti il body usa `indexList`, con gli indici da `1` a
