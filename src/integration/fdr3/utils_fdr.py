@@ -17,7 +17,7 @@ DEFAULT_ENDPOINTS = {
     "cancellazione flusso": ("DELETE", "/psps/#psp#/fdrs/$flow_name$"),
     "recupero fdr pubblicato": ("GET", "/psps/#psp#/published/fdrs/$flow_name$/revisions/$revision$/organizations/#organization#"),
     "recupero pagamenti creati": ("GET", "/psps/#psp#/created/fdrs/$flow_name$/organizations/#organization#/payments"),
-    "recupero di tutti i pagamenti creati dall'organizzazione": ("GET", "/psps/#psp#/created/fdrs/$flow_name$/organizations/#organization#/payments"),
+    "recupero di tutti i pagamenti creati dall'organizzazione": ("GET", "/organizations/#organization#/fdrs/$flow_name$/revisions/$revision$/psps/#psp#/payments"),
     "recupero fdr creato": ("GET", "/psps/#psp#/created/fdrs/$flow_name$/organizations/#organization#"),
     "cancellazione pagamenti": ("PUT", "/psps/#psp#/fdrs/$flow_name$/payments/del"),
     "recupero di tutti i fdr pubblicati dal psp": ("GET", "/psps/#psp#/published"),
