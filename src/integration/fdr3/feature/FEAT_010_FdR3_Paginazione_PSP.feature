@@ -1,5 +1,5 @@
 # language: it
-@fdr3_010_Check_pageable_psp
+@fdr3_010_Verifica_paginazione_PSP
 Funzionalità: Verifica paginazione per le API PSP
 
   Contesto:

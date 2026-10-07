@@ -1,5 +1,5 @@
 #language: it
-@fdr3_008_0
+@fdr3_008_Pubblicazione_KO
 Funzionalità: Verifica KO della pubblicazione FdR
   Flusso: creazione, inserimento pagamenti, pubblicazione negativa e verifiche sugli endpoint protetti
 

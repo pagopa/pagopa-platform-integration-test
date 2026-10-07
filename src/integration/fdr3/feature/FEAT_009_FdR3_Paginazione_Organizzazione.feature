@@ -1,5 +1,5 @@
 # language: it
-@fdr3_009_Check_pageable_org
+@fdr3_009_Verifica_Paginazione_Organizzazione
 Funzionalità: Verifica paginazione per le API organizzazione
 
   Contesto:
