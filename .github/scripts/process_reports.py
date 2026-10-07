@@ -204,6 +204,20 @@ def deploy_ai_analysis(
         print(f"[INFO][deploy_ai_analysis] wrote analysis page in {analysis_dir}")
 
 
+def clean_history(root_dir):
+    for dir in os.listdir(root_dir):
+        dir_date = re.search(r"\d{4}-\d{2}-\d{2}", str(dir))
+        now = datetime.now().date()
+        if dir_date:
+            dir_date = datetime.strptime(dir_date.group(), "%Y-%m-%d").date()
+            # remove folders older than 30 days
+            if dir_date < now - timedelta(days=30):
+                dir_path = os.path.join(root_dir, dir)
+                if os.path.isdir(dir_path):
+                    print(f"[INFO][clean_history] deleting {dir_path}")
+                    shutil.rmtree(dir_path)
+
+
 def main():
     allure_apps = ["wisp", "checkout"]
     artifact_dir = os.path.join("artifacts") # /artifacts
@@ -245,6 +259,10 @@ def main():
                 shutil.copytree(source_dir, destination_dir)
                 print(f"[INFO][main] copy everything from {source_dir} to {last_history_dir}")
                 shutil.copytree(source_dir, last_history_dir)
+
+                # remove test report folders older than 30 days
+                clean_history(root_dir)
+                
                 analysis_artifact_name = (
                     f"ai-analysis-{app}"
                 )
