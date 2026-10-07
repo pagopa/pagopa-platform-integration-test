@@ -1,9 +1,9 @@
-# language: it
+#language: it
 @fdr3_002_Crea_revisione
 Funzionalità: Workflow di creazione e gestione delle revisioni di un flusso di rendicontazione
 
   Contesto:
-    Dato i sistemi sono operativi
+    Dato che i sistemi sono operativi
 
   @fdr3_002_01
   Scenario: Creazione del flusso iniziale utilizzato per i test di revisione
@@ -20,7 +20,7 @@ Funzionalità: Workflow di creazione e gestione delle revisioni di un flusso di 
     Dato che il PSP deve inviare 3 pagamenti al flusso
     E che la somma totale dei pagamenti da inviare è 300
     E che lo scenario "Creazione del flusso iniziale utilizzato per i test di revisione" è stato eseguito con successo
-    Quando il PSP aggiunge 3 pagamenti la cui somme è 300 al flusso di rendicontazione flow_name come payments_payload
+    Quando il PSP aggiunge 3 pagamenti la cui somma è 300 al flusso di rendicontazione flow_name come payments_payload
     Quando il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "payments_payload"
     Allora il PSP riceve il codice di stato HTTP 200
 
@@ -57,7 +57,7 @@ Funzionalità: Workflow di creazione e gestione delle revisioni di un flusso di 
   @fdr3_002_07
   Scenario: Aggiunta di 2 pagamenti alla revisione 2
     Dato che lo scenario "Creazione della revisione 2 confermata" è stato eseguito con successo
-    Quando il PSP aggiunge 2 pagamenti la cui somme è 300 al flusso di rendicontazione flow_name come payments_payload
+    Quando il PSP aggiunge 2 pagamenti la cui somma è 300 al flusso di rendicontazione flow_name come payments_payload
     E il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "payments_payload"
     Allora il PSP riceve il codice di stato HTTP 200
 
@@ -89,7 +89,7 @@ Funzionalità: Workflow di creazione e gestione delle revisioni di un flusso di 
   @fdr3_002_11
   Scenario: Aggiunta di 2 pagamenti invece di 1 nella revisione 3
     Dato che lo scenario "Creazione della revisione 3" è stato eseguito con successo
-    Quando il PSP aggiunge 2 pagamenti la cui somme è 300 al flusso di rendicontazione flow_name come payments_payload
+    Quando il PSP aggiunge 2 pagamenti la cui somma è 300 al flusso di rendicontazione flow_name come payments_payload
     E il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "payments_payload"
     Allora il PSP riceve il codice di stato HTTP 200
 
@@ -99,3 +99,4 @@ Funzionalità: Workflow di creazione e gestione delle revisioni di un flusso di 
     Dato che lo scenario "Aggiunta di 2 pagamenti invece di 1 nella revisione 3" è stato eseguito con successo
     Quando il PSP invia la richiesta di "Pubblicazione" con il payload "None"
     Allora il PSP riceve il codice di stato HTTP 400
+

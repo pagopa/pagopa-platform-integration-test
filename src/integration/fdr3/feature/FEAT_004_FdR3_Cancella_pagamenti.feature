@@ -1,9 +1,9 @@
-# language: it
+#language: it
 @fdr3_004_Rimozione_pagamenti
 Funzionalità: Rimozione di pagamenti da un flusso di rendicontazione
 
   Contesto:
-    Dato i sistemi sono operativi
+    Dato che i sistemi sono operativi
 
   @fdr3_004_01
   Scenario: Creazione del flusso e inserimento iniziale di pagamenti
@@ -18,7 +18,7 @@ Funzionalità: Rimozione di pagamenti da un flusso di rendicontazione
     Dato che il PSP deve inviare 3 pagamenti al flusso
     E che la somma totale dei pagamenti da inviare è 300
     E che lo scenario "Creazione del flusso e inserimento iniziale di pagamenti" è stato eseguito con successo
-    Quando il PSP aggiunge 3 pagamenti la cui somme è 300 al flusso di rendicontazione flow_name come payments_payload
+    Quando il PSP aggiunge 3 pagamenti la cui somma è 300 al flusso di rendicontazione flow_name come payments_payload
     E il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "payments_payload"
     Allora il PSP riceve il codice di stato HTTP 200
 
@@ -49,3 +49,4 @@ Funzionalità: Rimozione di pagamenti da un flusso di rendicontazione
     Dato che lo scenario "Verifica pagamenti dopo cancellazione" è stato eseguito con successo
     Quando il PSP invia la richiesta di "Pubblicazione" con il payload "None"
     Allora il PSP riceve il codice di stato HTTP 400
+

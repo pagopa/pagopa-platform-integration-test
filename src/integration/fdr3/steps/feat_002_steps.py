@@ -1,4 +1,4 @@
-from behave import then
+﻿from behave import then
 
 from src.integration.fdr3.helper import _ensure_vars_container
 
@@ -9,12 +9,12 @@ def step_assert_revision(context, rev: int):
     try:
         body = resp.json()
     except Exception:
-        raise AssertionError("Response non JSON")
+        raise AssertionError("Risposta non in formato JSON")
     got = body.get("revision")
     _ensure_vars_container(context)
     if got is not None:
         context.vars["revision"] = got
-    assert got == rev, f"Expected revision {rev} but got {got}"
+    assert got == rev, f"Revisione attesa {rev} ma ottenuta {got}"
 
 
 @then('la risposta contiene totPayments = {tot:d}')
@@ -24,6 +24,7 @@ def step_assert_tot_payments(context, tot: int):
     try:
         body = resp.json()
     except Exception:
-        raise AssertionError("Response non JSON")
+        raise AssertionError("Risposta non in formato JSON")
     got = body.get("totPayments")
-    assert got == tot, f"Expected totPayments {tot} but got {got}"
+    assert got == tot, f"totPayments atteso {tot} ma ottenuto {got}"
+

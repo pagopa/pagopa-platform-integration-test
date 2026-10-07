@@ -1,0 +1,38 @@
+{
+    "fdr": {
+        "url": "https://uat.fdr.example.com",
+        "key_value": "$FDR_API_KEY",
+        "key_name": "Ocp-Apim-Subscription-Key",
+        "location": "header",
+        "timeout": 5000
+    },
+    "psp" : {
+        "url": "https://api.uat.platform.pagopa.it/apiconfig/auth/api/v1",
+        "key_value": "$PSP_API_KEY",
+        "key_name": "Ocp-Apim-Subscription-Key",
+        "location": "header",
+        "timeout": 5000
+    },
+    "blob" : {
+        "url": "https://pagopauweufdrsa.blob.core.windows.net/",
+        "container_name": "fdr3-flows"
+    },
+    "create_fdr": {
+        "sender": {
+            "psp_type": "LEGAL_PERSON",
+            "id": "99999000011",
+            "psp_id": "ABI50004",
+            "psp_name": "PSP DEMO",
+            "broker_id": "15376371009",
+            "channel_id": "99999000011_22",
+            "password": "PLACEHOLDER"
+        },
+        "receiver": {
+            "id": "APPBIT2B",
+            "organization_id":"15376371009",
+            "organization_name":"Comune di XYZ"
+        },
+        "bic_code_pouring_bank":"UNCRITMMXXX"
+    }
+
+}

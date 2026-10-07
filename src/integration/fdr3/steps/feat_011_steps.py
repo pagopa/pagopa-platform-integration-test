@@ -1,4 +1,4 @@
-from behave import then
+﻿from behave import then
 import logging
 from datetime import datetime
 
@@ -10,7 +10,7 @@ LOGGER = logging.getLogger('fdr3.steps')
 @then("l'organizzazione riceve il codice di stato HTTP {status:d}")
 def step_assert_status_for_org_get_all(context, status: int):
     assert hasattr(context, "response") and context.response is not None, "Nessuna risposta salvata in context.response"
-    assert context.response.status_code == status, f"Expected HTTP {status} but got {context.response.status_code}: {context.response.text}"
+    assert context.response.status_code == status, f"Codice di stato atteso {status} ma ottenuto {context.response.status_code}: {context.response.text}"
 
 
 @then("l'organizzazione riceve tutti i FdR con pspId uguale al valore di pspId nei parametri di query")
@@ -20,7 +20,7 @@ def step_assert_all_fdr_same_psp_queryparam(context):
     try:
         body = context.response.json()
     except Exception:
-        raise AssertionError("Response non JSON")
+        raise AssertionError("Risposta non in formato JSON")
 
     # find items list
     if isinstance(body, dict):
@@ -53,7 +53,7 @@ def step_assert_all_fdr_published_gt(context):
     try:
         body = context.response.json()
     except Exception:
-        raise AssertionError("Response non JSON")
+        raise AssertionError("Risposta non in formato JSON")
 
     if isinstance(body, dict):
         items = body.get("data") or body.get("fdrs") or body.get("items") or body.get("content")
@@ -104,3 +104,4 @@ def step_assert_all_fdr_published_gt(context):
 def step_assert_all_fdr_same_psp_short(context):
     """Short alias used by some features — delegates to the full query-param-aware check."""
     return step_assert_all_fdr_same_psp_queryparam(context)
+

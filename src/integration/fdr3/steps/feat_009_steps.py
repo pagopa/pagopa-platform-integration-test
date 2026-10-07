@@ -1,4 +1,4 @@
-from behave import given, then
+﻿from behave import given, then
 import logging
 
 from src.integration.fdr3.helper import _ensure_vars_container
@@ -45,12 +45,13 @@ def step_set_revision(context, rev: int):
 
 
 @then("{partner} riceve pagina {page:d} con {entries:d} elementi come risposta")
+@then("{partner} riceve pagina {page:d} con {entries:d} elemento come risposta")
 def step_assert_page_and_entries(context, partner: str, page: int, entries: int):
     assert hasattr(context, "response") and context.response is not None, "Nessuna risposta disponibile"
     try:
         body = context.response.json()
     except ValueError as exc:
-        raise AssertionError("Response non JSON") from exc
+        raise AssertionError("Risposta non in formato JSON") from exc
 
     got_page = None
     if isinstance(body, dict):
@@ -72,5 +73,6 @@ def step_assert_page_and_entries(context, partner: str, page: int, entries: int)
     assert got_page is not None, "Nessuna pagina disponibile nella risposta o nei parametri di query"
     assert isinstance(items, list), "Nessuna lista di elementi disponibile nella risposta"
     count = len(items)
-    assert int(got_page) == page, f"Expected page {page} but got {got_page}"
-    assert count == entries, f"Expected {entries} entries but got {count}"
+    assert int(got_page) == page, f"Pagina attesa {page} ma ottenuta {got_page}"
+    assert count == entries, f"Elementi attesi {entries} ma ottenuti {count}"
+

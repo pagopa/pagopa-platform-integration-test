@@ -1,11 +1,11 @@
-# language: it
+#language: it
 
 @fdr3_005_Verifica_KO_pagamenti
 Funzionalità: Verifica KO dei pagamenti
   Verifiche negative sui flussi: creazione, aggiunta pagamenti in eccesso e richiesta con subscription key non valida
 
   Contesto:
-    Dato i sistemi sono operativi
+    Dato che i sistemi sono operativi
 
   @fdr3_005_1
   Scenario: Creazione del FdR
@@ -29,6 +29,7 @@ Funzionalità: Verifica KO dei pagamenti
     Dato che il PSP deve inviare 3 pagamenti al flusso
     E che la somma totale dei pagamenti da inviare è 10
     E che lo scenario "Aggiunta di pagamenti in eccesso" è stato eseguito con successo
-    Quando il PSP aggiunge 3 pagamenti la cui somme è 10 al flusso di rendicontazione flow_name come payments_payload
+    Quando il PSP aggiunge 3 pagamenti la cui somma è 10 al flusso di rendicontazione flow_name come payments_payload
     E il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "None" con subscription_key non valida
     Allora il PSP riceve il codice di stato HTTP 401
+

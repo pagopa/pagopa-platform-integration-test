@@ -4,7 +4,7 @@ Funzionalità: Cancellazione di FdR creati
   Flusso: creazione, inserimento pagamenti, cancellazione e verifiche negative
 
   Contesto:
-    Dato i sistemi sono operativi
+    Dato che i sistemi sono operativi
 
   @fdr3_006_1
   Scenario: Creazione del FdR
@@ -42,3 +42,4 @@ Funzionalità: Cancellazione di FdR creati
     Dato che lo scenario "Cancellazione del FdR non trovato" è stato eseguito con successo
     Quando il PSP invia la richiesta di "Cancellazione flusso" con il payload "None" con subscription_key non valida
     Allora il PSP riceve il codice di stato HTTP 401
+

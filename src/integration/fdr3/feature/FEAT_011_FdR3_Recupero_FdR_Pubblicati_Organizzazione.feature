@@ -2,7 +2,7 @@
 @fdr3_011_Recupero_FdR_Pubblicati_Organizzazione
 Funzionalità: Recupero FdR pubblicati per organizzazione
   Contesto:
-    Dato i sistemi sono operativi
+    Dato che i sistemi sono operativi
 
   @runnable
   @fdr3_011_01
@@ -26,3 +26,4 @@ Funzionalità: Recupero FdR pubblicati per organizzazione
     Allora l'organizzazione riceve il codice di stato HTTP 200
     E l'organizzazione riceve tutti i FdR con pspId uguale al valore di pspId nei parametri di query
     E l'organizzazione riceve tutti i FdR con published > publishedGt
+

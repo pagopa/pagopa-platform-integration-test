@@ -4,7 +4,7 @@ Funzionalità: Rimozione di pagamenti da un FdR
   Flusso: creazione, inserimento pagamenti, rimozione e verifiche negative
 
   Contesto:
-    Dato i sistemi sono operativi
+    Dato che i sistemi sono operativi
 
   @fdr3_007_1
   Scenario: Creazione del FdR
@@ -34,3 +34,4 @@ Funzionalità: Rimozione di pagamenti da un FdR
     Dato che lo scenario "Cancellazione di un pagamento - bad request" è stato eseguito con successo
     Quando il PSP invia la richiesta di "Cancellazione pagamenti" con il payload "None" con subscription_key non valida
     Allora il PSP riceve il codice di stato HTTP 401
+

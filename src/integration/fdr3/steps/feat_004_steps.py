@@ -1,4 +1,4 @@
-from behave import when, then
+﻿from behave import when, then
 from src.integration.fdr3.helper import _ensure_vars_container
 
 @when('il PSP rimuove {n:d} pagamento dal flusso di rendicontazione {flow_var} come {payload}')
@@ -15,7 +15,8 @@ def step_assert_payments_count(context, count: int):
     try:
         body = context.response.json()
     except Exception:
-        raise AssertionError("Response non JSON")
+        raise AssertionError("Risposta non in formato JSON")
     payments = body.get("payments") or body.get("items") or body.get("data") or []
     assert isinstance(payments, list)
-    assert len(payments) == count, f"Expected {count} payments but got {len(payments)}"
+    assert len(payments) == count, f"Aspettati {count} pagamenti ma ottenuti {len(payments)}"
+

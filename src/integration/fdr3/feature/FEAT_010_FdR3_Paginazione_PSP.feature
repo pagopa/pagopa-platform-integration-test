@@ -1,9 +1,9 @@
-# language: it
+#language: it
 @fdr3_010_Verifica_paginazione_PSP
 Funzionalità: Verifica paginazione per le API PSP
 
   Contesto:
-    Dato i sistemi sono operativi
+    Dato che i sistemi sono operativi
 
   @fdr3_010_01
   Scenario: Creazione del flusso di rendicontazione per test paginazione PSP
@@ -18,7 +18,7 @@ Funzionalità: Verifica paginazione per le API PSP
     Dato che il PSP deve inviare 100 pagamenti al flusso
     E che la somma totale dei pagamenti da inviare è 20
     E che lo scenario "Creazione del flusso di rendicontazione per test paginazione PSP" è stato eseguito con successo
-    Quando il PSP aggiunge 100 pagamenti la cui somme è 20 al flusso di rendicontazione flow_name come payments_payload
+    Quando il PSP aggiunge 100 pagamenti la cui somma è 20 al flusso di rendicontazione flow_name come payments_payload
     E il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "payments_payload"
     Allora il PSP riceve il codice di stato HTTP 200
 
@@ -48,7 +48,7 @@ Funzionalità: Verifica paginazione per le API PSP
     E il PSP aggiunge 1 come size nei parametri di query
     Quando il PSP invia la richiesta di "Recupero pagamenti creati" con il payload "None"
     Allora il PSP riceve il codice di stato HTTP 200
-    E il PSP riceve pagina 2 con 1 elementi come risposta
+    E il PSP riceve pagina 2 con 1 elemento come risposta
 
   @runnable
   @fdr3_010_06
@@ -59,7 +59,7 @@ Funzionalità: Verifica paginazione per le API PSP
     E il PSP aggiunge 1 come size nei parametri di query
     Quando il PSP invia la richiesta di "Recupero di tutti i FdR creati dal PSP" con il payload "None"
     Allora il PSP riceve il codice di stato HTTP 200
-    E il PSP riceve pagina 1 con 1 elementi come risposta
+    E il PSP riceve pagina 1 con 1 elemento come risposta
 
   @runnable
   @fdr3_010_07
@@ -70,7 +70,7 @@ Funzionalità: Verifica paginazione per le API PSP
     E il PSP aggiunge 1 come size nei parametri di query
     Quando il PSP invia la richiesta di "Recupero di tutti i FdR creati dal PSP" con il payload "None"
     Allora il PSP riceve il codice di stato HTTP 200
-    E il PSP riceve pagina 2 con 1 elementi come risposta
+    E il PSP riceve pagina 2 con 1 elemento come risposta
 
   @runnable
   @fdr3_010_08
@@ -107,3 +107,4 @@ Funzionalità: Verifica paginazione per le API PSP
       | page_number | page_size |
       | 1           | 1         |
       | 2           | 2         |
+

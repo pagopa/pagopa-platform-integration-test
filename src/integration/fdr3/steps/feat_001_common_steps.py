@@ -1,4 +1,4 @@
-"""Shared Behave steps for FdR3 flows, payloads and assertions."""
+﻿"""Shared Behave steps for FdR3 flows, payloads and assertions."""
 
 import json
 import logging
@@ -25,6 +25,7 @@ LOGGER = logging.getLogger("fdr3")
 
 
 @given("i sistemi sono operativi")
+@given("che i sistemi sono operativi")
 def step_systems_up(context):
     context.response = None
 
@@ -153,7 +154,7 @@ def step_partner_add_query_param(context, partner: str, value: str, key: str):
 
 
 
-@when('il PSP aggiunge {number:d} pagamenti la cui somme è {amount} al flusso di rendicontazione {flow_name} come {payload}')
+@when('il PSP aggiunge {number:d} pagamenti la cui somma è {amount} al flusso di rendicontazione {flow_name} come {payload}')
 def step_build_payments_payload(context, number: int, amount: str, flow_name: str, payload: str):
     _ensure_vars_container(context)
     value = _build_payments_payload(number, float(amount))
@@ -187,7 +188,7 @@ def step_assert_status(context, partner: str, status: int):
     # partner parameter is accepted for reuse across different actors (es. 'il PSP', "l'organizzazione").
     # Implementation intentionally unchanged: it asserts the HTTP status of last response.
     assert hasattr(context, "response") and context.response is not None, "Nessuna risposta salvata in context.response"
-    assert context.response.status_code == status, f"Expected HTTP {status} but got {context.response.status_code}: {context.response.text}"
+    assert context.response.status_code == status, f"Codice di stato atteso {status} ma ottenuto {context.response.status_code}: {context.response.text}"
 
 
 @then('lo stato del flusso è "{state}"')
@@ -197,6 +198,7 @@ def step_assert_flow_state_alias(context, state: str):
     try:
         body = resp.json()
     except Exception:
-        raise AssertionError("Response non JSON")
+        raise AssertionError("Risposta non in formato JSON")
     got = body.get("status") or body.get("state") or body.get("statusCode")
-    assert got == state, f"Expected flow state '{state}' but got '{got}'"
+    assert got == state, f"Stato del flusso atteso '{state}' ma ottenuto '{got}'"
+
