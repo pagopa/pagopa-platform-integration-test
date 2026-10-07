@@ -21,6 +21,10 @@ on:
           required: false
           type: string
           default: tmp_processed_reports
+        origin:
+          required: true
+          type: string
+          default: NRT
 
 permissions:
     contents: read
@@ -58,4 +62,4 @@ jobs:
                   SECRETS: ${{ secrets.QA_HUB_API_KEYS }}
             - name: Populate test data in database
               run: |
-                  python3 .github/scripts/populate_tables.py --env "${{ inputs.env }}" --run-type "${{ inputs.run_type }}" --suite "${{ inputs.suite }}" --test_type "${{ inputs.test_type }}"
+                  python3 .github/scripts/populate_tables.py --env "${{ inputs.env }}" --run-type "${{ inputs.run_type }}" --suite "${{ inputs.suite }}" --test_type "${{ inputs.test_type }}" --origin "${{ inputs.origin }}" 

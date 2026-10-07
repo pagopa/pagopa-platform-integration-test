@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Any, Optional
 
 ENV_VALUES = ("DEV", "UAT", "PROD")
-TRIGGER_TYPE_VALUES = ("MANUAL", "CRON", "CI_PIPELINE")
+TRIGGER_TYPE_VALUES = ("MANUAL", "CRON", "CI_PIPELINE","TAS","QA_GATE")
 SCENARIO_STATUS_VALUES = ("PASSED", "FAILED", "BROKEN", "SKIPPED")
 
 
@@ -33,6 +33,7 @@ class Test_runs:
     env: Optional[str] = None
     trigger_type: Optional[str] = None
     test_version: Optional[str] = None
+    test_origin: Optional[str] = None
 
 
 @dataclass
