@@ -384,10 +384,11 @@ jobs:
     secrets: inherit
     with:
       env: ${{ inputs.environment }}
-      run_type: ${{ github.event_name == 'schedule' && 'CRON' || 'MANUAL' }}
+      run_type: TAS
       suite: ${{ inputs.test_suite }}
       test_type: ${{ inputs.test_type }}
       artifact_name: test-results
+      origin: TAS
 
      
 

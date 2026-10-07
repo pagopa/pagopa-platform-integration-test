@@ -79,3 +79,4 @@ jobs:
     with:
       env: UAT
       run_type: ${{ case(github.event_name == 'schedule',  'CRON', 'MANUAL') }}
+      origin: NRT
