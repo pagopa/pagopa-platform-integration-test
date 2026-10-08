@@ -34,6 +34,7 @@ jobs:
           pip install -r requirements.txt
           sudo apt-get install -y jq
 
+      # No Key Vault on GitHub-hosted runners: secrets come from the repo secret.
       - name: Load secrets
         run: python .github/scripts/nrt-prepare-secrets.py src/integration/wisp
         env:

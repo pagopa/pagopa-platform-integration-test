@@ -1,0 +1,27 @@
+TEST_DATA:
+  create_payload: &create_payload |
+    {
+      "fdr": "$flow_name$",
+      "fdrDate": "$flow_date$",
+      "sender": {
+        "type": "LEGAL_PERSON",
+        "id": "SELBIT2B",
+        "pspId": "#psp#",
+        "pspName": "Bank",
+        "pspBrokerId": "#broker_psp#",
+        "channelId": "#channel#",
+        "password": "#channel_password#"
+      },
+      "receiver": {
+        "id": "APPBIT2B",
+        "organizationId": "#organization#",
+        "organizationName": "Comune di XYZ"
+      },
+      "regulation": "SEPA - Bonifico xzy",
+      "regulationDate": "$flow_date$",
+      "bicCodePouringBank": "UNCRITMMXXX",
+      "totPayments": $tot_payments$,
+      "sumPayments": $sum_payments$
+    }
+  create_1_payload: *create_payload
+  create_2_payload: *create_payload
