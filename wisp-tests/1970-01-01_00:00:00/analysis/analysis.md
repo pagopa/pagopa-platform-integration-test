@@ -1,1 +1,0 @@
-The execution of the 'WISP' suite was fully completed with all tests executed and none unintentionally skipped.
