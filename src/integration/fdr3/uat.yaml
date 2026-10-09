@@ -1,0 +1,27 @@
+fdr:
+  url: https://api.uat.platform.pagopa.it/fdr-org/service/v1
+  key_value: $tas-fdr3-orgs-subscription-key
+  key_name: Ocp-Apim-Subscription-Key
+  location: header
+  timeout: 5000
+
+psp:
+  url: https://api.uat.platform.pagopa.it/fdr-psp/service/v1
+  key_value: $tas-fdr3-psp-subscription-key
+  key_name: Ocp-Apim-Subscription-Key
+  location: header
+  timeout: 5000
+
+blob:
+  url: https://pagopauweufdrsa.blob.core.windows.net/
+  container_name: fdr3-flows
+
+global_configuration:
+  psp: "88888888888"
+  channel: "88888888888_01"
+  channel_password: PLACEHOLDER
+  organization: "15376371009"
+  broker_org: "15376371009"
+  broker_psp: "88888888888"
+  station: "15376371009_03"
+  station_password: PLACEHOLDER

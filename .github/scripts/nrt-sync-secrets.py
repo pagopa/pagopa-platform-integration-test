@@ -1,4 +1,4 @@
-"""Sync WISP Key Vault secrets into an environment-scoped GitHub Actions secret."""
+"""Sync suite YAML Key Vault secrets into an environment-scoped GitHub Actions secret."""
 
 from __future__ import annotations
 
@@ -16,10 +16,10 @@ from nacl.public import PublicKey, SealedBox
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.conf.configuration import get_secrets_resolver
+from nrt_secret_configs import SUITE_ROOTS, config_placeholders, environment_configs
 
 
 GITHUB_PAT_SECRET_NAME = "pagopa-platform-domain-github-bot-cd-pat"
-CONFIG_DIR = Path("config/suites")
 MAX_GITHUB_SECRET_BYTES = 48 * 1024
 
 
@@ -48,37 +48,18 @@ def _key_vault_secret_name(placeholder_name: str) -> str:
 
 
 def _resolve_bundle(resolver, target_env: str, resolved_values: dict[str, str]) -> dict[str, str]:
-    config_files = sorted(CONFIG_DIR.glob("*_secrets_config.json"))
+    config_files = sorted(
+        config_path
+        for directory in SUITE_ROOTS
+        for config_path in environment_configs(directory, target_env)
+    )
     if not config_files:
-        raise RuntimeError(f"No suite JSON configs found in {CONFIG_DIR}")
+        raise RuntimeError(f"No suite YAML configs found for environment {target_env}")
 
     resolved_values = dict(resolved_values)
     bundle: dict[str, str] = {}
     for config_path in config_files:
-        configs = json.loads(config_path.read_text(encoding="utf-8"))
-        if not isinstance(configs, dict):
-            raise RuntimeError(f"Suite config {config_path.name} must contain an environment map")
-
-        environment_config = configs.get(target_env)
-        if environment_config is None:
-            continue
-        if not isinstance(environment_config, dict):
-            raise RuntimeError(
-                f"Environment {target_env} in {config_path.name} must contain a secret map"
-            )
-
-        for config_key, placeholder in environment_config.items():
-            if not isinstance(placeholder, str) or not placeholder.startswith("$"):
-                raise RuntimeError(
-                    f"Expected a secret placeholder for {config_path.name}:{config_key}"
-                )
-
-            placeholder_name = placeholder[1:]
-            if not placeholder_name:
-                raise RuntimeError(
-                    f"Empty secret placeholder for {config_path.name}:{config_key}"
-                )
-
+        for placeholder_name in sorted(config_placeholders(config_path)):
             value = resolved_values.get(placeholder_name)
             if value is None:
                 vault_secret_name = _key_vault_secret_name(placeholder_name)
@@ -87,12 +68,12 @@ def _resolve_bundle(resolver, target_env: str, resolved_values: dict[str, str]) 
                 except Exception as exc:
                     raise RuntimeError(
                         f"Failed to resolve {vault_secret_name} for "
-                        f"{config_path.name}:{config_key}"
+                        f"{config_path}"
                     ) from exc
                 if not value:
                     raise RuntimeError(
                         f"Key Vault secret {vault_secret_name} is empty or unavailable "
-                        f"({config_path.name}:{config_key})"
+                        f"({config_path})"
                     )
                 _mask_secret(value)
                 resolved_values[placeholder_name] = value

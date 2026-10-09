@@ -197,6 +197,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Extract suite IDs
+        id: suites
+        shell: bash
+        run: |
+          printf 'ids=%s\n' "$(jq -c '[.suites[].id]' .github/nrt-suites.json)" >> "$GITHUB_OUTPUT"
+
       - name: Verify PR Labels
         if: ${{ !contains(github.event.pull_request.labels.*.name, 'major') && !contains(github.event.pull_request.labels.*.name, 'minor') && !contains(github.event.pull_request.labels.*.name, 'patch') && !contains(github.event.pull_request.labels.*.name, 'skip') }}
         uses: actions/github-script@d556feaca394842dc55e4734bf3bb9f685482fa0 # v6.3.3
@@ -229,6 +235,8 @@ jobs:
       - name: Verify Suite Labels
         if: ${{ contains(github.event.pull_request.labels.*.name, 'major') || contains(github.event.pull_request.labels.*.name, 'minor') || contains(github.event.pull_request.labels.*.name, 'patch') }}
         uses: actions/github-script@d556feaca394842dc55e4734bf3bb9f685482fa0 # v6.3.3
+        env:
+          SUITE_IDS: ${{ steps.suites.outputs.ids }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -238,10 +246,10 @@ jobs:
                 repo: context.repo.repo
             });
 
-            const suites = ['wisp','checkout','fdr']
+            const suites = JSON.parse(process.env.SUITE_IDS).map(suite => suite.toLowerCase())
             var suiteTag = false
             for (const label of labels.data) {
-              if (suites.includes(label.name)) {
+              if (suites.includes(label.name.toLowerCase())) {
 
                 if(suiteTag) {
                   github.rest.issues.createComment({
