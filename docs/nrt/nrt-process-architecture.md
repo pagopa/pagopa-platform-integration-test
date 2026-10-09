@@ -128,8 +128,10 @@ it can also be dispatched manually for one or both environments. The runner uses
 managed identity to access `https://pagopa-<short-env>-itn-qa-kv.vault.azure.net/`, where
 `d` maps to `dev` and `u` maps to `uat`.
 
-The workflow scans every `*.json` file in `config/suites/` and merges the placeholders for
-the selected environment by placeholder name. Every placeholder must specify the actual
+The workflow recursively scans `<env>.yaml` and `<env>.yml` files under `src/integration/`,
+`src/e2e/`, and `src/api/` for the selected environment. Values starting with `$`, including
+those nested in mappings and lists, declare secret placeholders; other values are ignored.
+Placeholders are merged by name. Every placeholder must specify the actual
 Key Vault secret name; lookup normalizes it to lowercase only. No prefix is added and
 underscores are not converted to hyphens. Duplicate
 placeholders are resolved only once; invalid or unresolved values fail the sync before the
@@ -155,13 +157,13 @@ The Environment's branch restrictions and approval policies apply to these jobs.
 
 Before Behave, `nrt-prepare-secrets.py` validates the single-environment JSON bundle,
 non-empty secret values, and the selected test path. It recursively checks the selected
-environment's YAML/JSON placeholders against both the sync manifests and the bundle,
+environment's YAML/YML placeholders against the bundle,
 then writes `config/.secrets.yaml` with mode `0600`. Invalid or missing credentials stop
 the job before tests start; there is no fallback to the old GitHub secret or Key Vault.
 
-The files in `config/suites/` define the sync allowlist. The suite's environment YAML/JSON
-files reference the same secret names with a `$` prefix while retaining their application
-configuration keys. This intentional duplication is checked by preflight. The resolver in
+The suite's environment YAML/YML files are the source of truth for synchronization and
+preflight validation. They reference secret names with a `$` prefix while retaining their
+application configuration keys; no separate `config/suites/` manifest is required. The resolver in
 [`src/conf/configuration.py`](../../src/conf/configuration.py) selects the `dev` or `uat`
 section using `TARGET_ENV`, preserving JSON secret names exactly.
 
