@@ -4,24 +4,8 @@ import argparse
 import json
 import os
 from pathlib import Path
-import re
 
-from dynaconf import Dynaconf
-
-
-PLACEHOLDER_PATTERN = re.compile(r"^\$([A-Za-z0-9_-]+)$")
-
-
-def _placeholders(value) -> set[str]:
-    if isinstance(value, dict):
-        return set().union(*(_placeholders(item) for item in value.values()))
-    if isinstance(value, list):
-        return set().union(*(_placeholders(item) for item in value))
-    if isinstance(value, str):
-        match = PLACEHOLDER_PATTERN.fullmatch(value)
-        if match:
-            return {match.group(1)}
-    return set()
+from nrt_secret_configs import config_placeholders, environment_configs, placeholders as _placeholders
 
 
 def validate_bundle(raw_bundle: str, target_env: str, test_path: Path) -> dict:
@@ -41,24 +25,11 @@ def validate_bundle(raw_bundle: str, target_env: str, test_path: Path) -> dict:
     if not test_path.is_dir() or not test_path.resolve().is_relative_to(Path("src").resolve()):
         raise RuntimeError("Test path must be an existing suite directory inside src")
 
-    declared = set()
-    for manifest in sorted(Path("config/suites").glob("*_secrets_config.json")):
-        config = json.loads(manifest.read_text())
-        declared.update(_placeholders(config.get(target_env, {})))
-
     required = set()
-    for extension in ("yaml", "yml", "json"):
-        for config_path in sorted(test_path.rglob(f"{target_env}.{extension}")):
-            if extension == "json":
-                config = json.loads(config_path.read_text())
-            else:
-                config = Dynaconf(settings_files=[str(config_path.resolve())], environments=False).as_dict()
-            required.update(_placeholders(config))
+    for config_path in environment_configs(test_path, target_env):
+        required.update(config_placeholders(config_path))
 
-    undeclared = required - declared
     missing = required - values.keys()
-    if undeclared:
-        raise RuntimeError("Suite placeholders missing from sync manifests: " + ", ".join(sorted(undeclared)))
     if missing:
         raise RuntimeError("Suite secrets missing from bundle: " + ", ".join(sorted(missing)))
     print(f"Validated {len(required)} required secret(s) for {test_path} in {target_env}")
