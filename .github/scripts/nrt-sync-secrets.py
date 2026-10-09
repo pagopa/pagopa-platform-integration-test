@@ -213,6 +213,17 @@ def main() -> None:
             f"Published {len(bundle)} mapped secret(s) to GitHub Environment "
             f"{target_env} as {bundle_secret_name}; Key Vault: {key_vault_url}"
         )
+        published_keys = json.dumps(sorted(bundle), indent=2, ensure_ascii=True)
+        print(f"Published bundle keys ({target_env}):\n{published_keys}")
+        summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+        if summary_path:
+            with open(summary_path, "a", encoding="utf-8") as summary:
+                summary.write(
+                    f"## NRT secret sync - {target_env}\n\n"
+                    f"Published {len(bundle)} key(s) to `{bundle_secret_name}`. "
+                    "Secret values are not displayed.\n\n"
+                    f"```json\n{published_keys}\n```\n"
+                )
     finally:
         close_client = getattr(resolver, "close_client", None)
         if close_client:
