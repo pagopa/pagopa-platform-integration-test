@@ -1,0 +1,14 @@
+{
+  "reflector": {
+    "description": "Numero minimo di trace non ancora processate in ace/traces/ (non in traces/processed/) prima che l'orchestratore invochi il reflector automaticamente a fine sessione. Volutamente > 1: il reflector è pensato per lavorare su pattern tra task diversi, non su un singolo task.",
+    "threshold": -1
+  },
+  "curator": {
+    "description": "Numero minimo di proposte nel batch appena prodotto dal reflector prima che invochi il curator automaticamente. Basso di default: il reflector ha già filtrato/vagliato, non serve accumulare oltre.",
+    "threshold": 1
+  },
+  "warden": {
+    "description": "Numero minimo di decisioni nel batch appena prodotto dal curator prima che invochi il warden automaticamente. Basso di default per lo stesso motivo di 'curator' — il warden si ferma comunque a chiedere conferma umana prima di scrivere qualunque cosa, indipendentemente da questa soglia.",
+    "threshold": 1
+  }
+}

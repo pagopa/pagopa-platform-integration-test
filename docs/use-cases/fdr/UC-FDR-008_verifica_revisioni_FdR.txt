@@ -1,0 +1,62 @@
+## UC-FDR-008 - Verifica del ciclo di revisione di un flusso di rendicontazione
+
+JTBD di riferimento : JTBD-006
+Attore principale : PSP
+Attori secondari : fdr-microservice
+
+### Precondizioni
+- I sistemi necessari all'elaborazione del flusso di rendicontazione sono disponibili.
+- Il PSP dispone delle configurazioni necessarie per invocare fdr-microservice.
+- Esiste un FdR identificato da flow_name, associato al PSP configurato e pubblicato con 3 pagamenti aventi somma complessiva pari a 300.
+- La revisione pubblicata del FdR è pari a 1.
+- Il PSP dispone di una nuova flow_date univoca per la creazione di una revisione successiva dello stesso FdR.
+
+### Flusso principale
+1. Il PSP invia a fdr-microservice la richiesta `psp_get_published_fdr` senza payload per il FdR con revisione 1.
+2. fdr-microservice restituisce HTTP 200 e la revisione 1 nella risposta.
+3. Il PSP predispone una richiesta `create` per lo stesso FdR identificato da flow_name, utilizzando una nuova flow_date e dichiarando 2 pagamenti.
+4. Il PSP invia la richiesta `create` con il payload a fdr-microservice.
+5. fdr-microservice crea la nuova revisione del FdR e restituisce HTTP 201.
+6. Il PSP invia a fdr-microservice la richiesta `created_fdr` senza payload.
+7. fdr-microservice restituisce HTTP 200, revisione 2 e stato `CREATED`.
+8. Il PSP predispone un payload contenente 2 pagamenti con somma complessiva pari a 300 per il FdR identificato da flow_name.
+9. Il PSP invia la richiesta `add_payments` con il payload a fdr-microservice.
+10. fdr-microservice associa i 2 pagamenti al FdR e restituisce HTTP 200.
+11. Il PSP invia a fdr-microservice la richiesta `publish` senza payload.
+12. fdr-microservice pubblica la revisione 2 e restituisce HTTP 200.
+13. Il PSP invia a fdr-microservice la richiesta `psp_get_published_fdr` senza payload per il FdR con revisione 2.
+14. fdr-microservice restituisce HTTP 200, revisione 2 e `totPayments` pari a 2.
+15. Il PSP predispone una nuova richiesta `create` per lo stesso FdR identificato da flow_name, utilizzando una nuova flow_date e dichiarando 1 pagamento.
+16. Il PSP invia la richiesta `create` con il payload a fdr-microservice.
+17. fdr-microservice crea la nuova revisione del FdR e restituisce HTTP 201.
+18. Il PSP invia a fdr-microservice la richiesta `created_fdr` senza payload.
+19. fdr-microservice restituisce HTTP 200, revisione 3 e stato `CREATED`.
+
+### Flussi alternativi (AF)
+- —
+
+### Eccezioni (EF)
+- EF-01: Dopo il passo 19, il PSP aggiunge alla revisione 3 un payload contenente 2 pagamenti con somma complessiva pari a 300, anziché il singolo pagamento dichiarato. La richiesta `add_payments` restituisce HTTP 200. Quando il PSP invia la successiva richiesta `publish` senza payload, fdr-microservice restituisce HTTP 400.
+
+### Postcondizioni
+- La prima versione pubblicata del FdR è identificata dalla revisione 1.
+- La nuova versione del medesimo FdR, creata dopo la revisione 1, è identificata dalla revisione 2 e presenta stato `CREATED` prima della pubblicazione.
+- Dopo la pubblicazione della revisione 2, la risposta di `psp_get_published_fdr` riporta revisione 2 e `totPayments` pari a 2.
+- La nuova versione del medesimo FdR, creata dopo la revisione 2, è identificata dalla revisione 3 e presenta stato `CREATED`.
+- Nel caso descritto in EF-01, la richiesta di pubblicazione della revisione 3 restituisce HTTP 400.
+
+### Acceptance Criteria
+- AC-01: Dato un FdR pubblicato con revisione 1, quando il PSP invia la richiesta `psp_get_published_fdr` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-02: Nella risposta descritta in AC-01, il valore della revisione è pari a 1.
+- AC-03: Dato un FdR pubblicato con revisione 1, quando il PSP crea lo stesso FdR con una nuova flow_date e dichiarando 2 pagamenti, fdr-microservice restituisce HTTP 201.
+- AC-04: Dopo la creazione successiva alla revisione 1, quando il PSP invia la richiesta `created_fdr` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-05: Nella risposta descritta in AC-04, il valore della revisione è pari a 2 e lo stato è `CREATED`.
+- AC-06: Data la revisione 2 in stato `CREATED`, quando il PSP aggiunge 2 pagamenti con somma complessiva pari a 300, fdr-microservice restituisce HTTP 200.
+- AC-07: Dopo l'aggiunta dei 2 pagamenti alla revisione 2, quando il PSP invia la richiesta `publish` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-08: Dopo la pubblicazione della revisione 2, quando il PSP invia la richiesta `psp_get_published_fdr` senza payload per la revisione 2, fdr-microservice restituisce HTTP 200.
+- AC-09: Nella risposta descritta in AC-08, il valore della revisione è pari a 2 e `totPayments` è pari a 2.
+- AC-10: Dato un FdR pubblicato con revisione 2, quando il PSP crea lo stesso FdR con una nuova flow_date e dichiarando 1 pagamento, fdr-microservice restituisce HTTP 201.
+- AC-11: Dopo la creazione successiva alla revisione 2, quando il PSP invia la richiesta `created_fdr` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-12: Nella risposta descritta in AC-11, il valore della revisione è pari a 3 e lo stato è `CREATED`.
+- AC-13: Data la revisione 3 che dichiara 1 pagamento, quando il PSP invia una richiesta `add_payments` contenente 2 pagamenti con somma complessiva pari a 300, fdr-microservice restituisce HTTP 200.
+- AC-14: Dopo l'aggiunta di 2 pagamenti alla revisione 3 che dichiara 1 pagamento, quando il PSP invia la richiesta `publish` senza payload, fdr-microservice restituisce HTTP 400.

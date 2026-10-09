@@ -1,0 +1,34 @@
+## UC-FDR-007 - Consultazione dei flussi di rendicontazione pubblicati da parte di un ente
+
+JTBD di riferimento : JTBD-005
+Attore principale : Ente
+Attori secondari : fdr-microservice
+
+### Precondizioni
+- I sistemi necessari alla consultazione dei flussi di rendicontazione sono disponibili.
+- L'ente dispone delle configurazioni necessarie per invocare fdr-microservice.
+
+### Flusso principale
+1. L'ente invia a fdr-microservice la richiesta `org_get_all_published_fdr` senza payload.
+2. fdr-microservice restituisce lo stato HTTP 200 e tutti i flussi pubblicati.
+
+### Flussi alternativi (AF)
+- AF-01: Al passo 1, l'ente imposta la configurazione del PSP come `pspId` nei query parameter e invia la richiesta `org_get_all_published_fdr` senza payload. fdr-microservice restituisce HTTP 200 e tutti i FdR aventi lo stesso `pspId`.
+- AF-02: Al passo 1, l'ente imposta la configurazione del PSP come `pspId` e "ieri" come `publishedGt` nei query parameter, quindi invia la richiesta `org_get_all_published_fdr` senza payload. fdr-microservice restituisce HTTP 200 e tutti i FdR aventi `pspId` uguale al PSP configurato e data di pubblicazione successiva al giorno precedente.
+
+### Eccezioni (EF)
+- —
+
+### Postcondizioni
+- In caso di richiesta senza filtri, la risposta contiene tutti i FdR pubblicati.
+- In caso di filtro per `pspId`, la risposta contiene tutti i FdR aventi lo stesso `pspId`.
+- In caso di filtri per `pspId` e `publishedGt`, la risposta contiene tutti i FdR aventi `pspId` uguale al PSP configurato e data di pubblicazione successiva al giorno precedente.
+
+### Acceptance Criteria
+- AC-01: Quando l'ente invia la richiesta `org_get_all_published_fdr` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-02: Nella risposta alla richiesta senza filtri, sono restituiti tutti i FdR pubblicati. 
+- AC-03: Dato il query parameter `pspId` valorizzato con la configurazione del PSP, quando l'ente invia la richiesta `org_get_all_published_fdr` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-04: Nella risposta alla richiesta con il query parameter `pspId`, tutti i FdR restituiti hanno `pspId` uguale al valore indicato nel filtro.
+- AC-05: Dati il query parameter `pspId` valorizzato con la configurazione del PSP e il query parameter `publishedGt` valorizzato con il giorno precedente, quando l'ente invia la richiesta `org_get_all_published_fdr` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-06: Nella risposta alla richiesta con i query parameter `pspId` e `publishedGt`, tutti i FdR restituiti hanno `pspId` uguale al valore indicato nel filtro.
+- AC-07: Nella risposta alla richiesta con i query parameter `pspId` e `publishedGt`, tutti i FdR restituiti hanno una data di pubblicazione successiva al valore indicato in `publishedGt`.

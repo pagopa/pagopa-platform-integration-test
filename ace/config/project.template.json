@@ -1,0 +1,48 @@
+{
+  "_comment": "Copy to project.json during installation and replace every placeholder.",
+  "version": 1,
+  "integration_mode": "embedded",
+  "team_name": "__TEAM_NAME__",
+  "provisional_evaluator": "__TEAM_SLUG__-auto",
+  "orchestrator_agent": "__ORCHESTRATOR_AGENT__",
+  "participating_agents": [],
+  "agent_families": {},
+  "platforms": {
+    "copilot": {
+      "enabled": false,
+      "agents_dir": ".github/agents",
+      "global_instructions_file": ".github/copilot-instructions.md",
+      "agent_instructions_dir": ".github/instructions",
+      "runtime_prefix": "gh",
+      "canonical_to_runtime": {},
+      "orchestrator_entrypoints": {
+        "project": null,
+        "ace": null
+      },
+      "model": null,
+      "tools": {
+        "reflector": ["view", "read", "create", "write", "edit", "apply_patch", "rg", "grep", "glob", "powershell", "bash", "execute", "task", "list_agents", "read_agent", "agent"],
+        "curator": ["view", "read", "create", "write", "edit", "apply_patch", "rg", "grep", "glob", "powershell", "bash", "execute", "task", "list_agents", "read_agent", "agent"],
+        "warden": ["view", "read", "powershell", "bash", "execute", "ask_user", "vscode/askQuestions"]
+      }
+    },
+    "claude": {
+      "enabled": false,
+      "agents_dir": ".claude/agents",
+      "global_instructions_file": "CLAUDE.md",
+      "agent_instructions_dir": ".claude/instructions",
+      "runtime_prefix": "cl",
+      "canonical_to_runtime": {},
+      "orchestrator_entrypoints": {
+        "project": null,
+        "ace": null
+      },
+      "model": null,
+      "tools": {
+        "reflector": ["Read", "Write", "Edit", "Grep", "Glob", "Bash", "Agent"],
+        "curator": ["Read", "Write", "Edit", "Grep", "Glob", "Bash", "Agent"],
+        "warden": ["Read", "Bash", "AskUserQuestion"]
+      }
+    }
+  }
+}

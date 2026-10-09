@@ -106,12 +106,27 @@ Riferimenti: `requirements.txt`, `.github/workflows/wisp-tests.yml`,
 
 ## Installazione
 
+### Framework ACE (embedded)
+
+Questo repository include un runtime ACE embedded per la raccolta delle trace di task e per il workflow di reflection del team. Per installare/configurare il framework, fare riferimento al README interno di ACE:
+
+- [ace/README_EMBEDDED.md](./ace/README_EMBEDDED.md)
+- [ace/README_EMBEDDED_IT.md](./ace/README_EMBEDDED_IT.md)
+
+### Dipendenze Python del repository
+
 Da PowerShell o Bash, entrare nella root del repository e installare le dipendenze Python:
 
 ```bash
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
+
+### Privacy delle trace ACE con Presidio
+
+Il progetto include un addon project-owned per anonimizzare le trace ACE prima che vengano usate da contatori, threshold e reflector. La policy e il workflow sono documentati qui:
+
+- [scripts/ace-addons/privacy/README.md](./scripts/ace-addons/privacy/README.md)
 
 Per le suite Node.js opzionali:
 

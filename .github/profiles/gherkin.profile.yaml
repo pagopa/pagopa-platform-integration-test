@@ -1,0 +1,28 @@
+# Catalog metadata anchors (do not edit manually)
+source: pagopa-platform-mcp
+source_version: 1.0.0
+source_digest: sha256:d469e72d007f650cfd98717bd4af0b7ad46078a5845399b19f04c85b6e4526e4
+source_id: gherkin-profile
+
+# Project conventions for Gherkin feature files.
+language: it
+max_scenarios_per_file: 12
+indentation:
+  feature: 0
+  scenario: 2
+  steps: 4
+  examples: 4
+  table_rows: 6
+  comments: 2
+tags:
+  scenario_labels:
+    - "@smoke"
+    - "@regression"
+    - "@<suite-name>"
+    - "@positive"
+    - "@negative"
+  feature_format: "@feature_file_name_001"
+  scenario_format: "@feature_file_name_001_01"
+tracking_comment:
+  required: true
+  format: "#<10-digit-number>"

@@ -1,0 +1,37 @@
+{
+  "mode": "deterministic_and_restricted",
+  "languages": [
+    "en",
+    "it"
+  ],
+  "entities": [
+    "EMAIL_ADDRESS",
+    "PHONE_NUMBER",
+    "IP_ADDRESS",
+    "URL",
+    "CREDIT_CARD",
+    "IBAN_CODE",
+    "IT_FISCAL_CODE",
+    "IT_PIVA"
+  ],
+  "score_threshold": 0.9,
+  "entity_thresholds": {
+    "URL": 0.6,
+    "EMAIL_ADDRESS": 0.8,
+    "PHONE_NUMBER": 0.8,
+    "IP_ADDRESS": 0.8,
+    "CREDIT_CARD": 0.8,
+    "IBAN_CODE": 0.8,
+    "IT_FISCAL_CODE": 0.8,
+    "IT_PIVA": 0.8
+  },
+  "allow_person_ner": false,
+  "fields": [
+    "request_summary",
+    "notes",
+    "actions[].description",
+    "outcome.detail",
+    "friction[].description",
+    "corrects.reason"
+  ]
+}

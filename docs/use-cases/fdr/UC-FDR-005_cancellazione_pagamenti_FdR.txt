@@ -1,0 +1,46 @@
+## UC-FDR-005 - Cancellazione di pagamenti da un flusso di rendicontazione
+
+JTBD di riferimento : JTBD-003
+Attore principale : PSP
+Attori secondari : fdr-microservice
+
+### Precondizioni
+- I sistemi necessari all'elaborazione del flusso di rendicontazione sono disponibili.
+- Il PSP dispone delle configurazioni e di una subscription_key valida per invocare fdr-microservice.
+- Esiste un FdR identificato da flow_name e associato al PSP configurato.
+- Al FdR sono associati 3 pagamenti con somma complessiva pari a 300.
+
+### Flusso principale
+1. Il PSP identifica tramite flow_name il FdR dal quale cancellare il pagamento.
+2. Il PSP invia a fdr-microservice la richiesta `created_payments` senza payload.
+3. fdr-microservice restituisce lo stato HTTP 200 e 3 pagamenti associati al FdR.
+4. Il PSP predispone il payload per cancellare 1 pagamento dal FdR identificato da flow_name.
+5. Il PSP invia la richiesta `del_payments` con il payload a fdr-microservice.
+6. fdr-microservice cancella il pagamento dal FdR e restituisce lo stato HTTP 200.
+7. Il PSP invia nuovamente a fdr-microservice la richiesta `created_payments` senza payload.
+8. fdr-microservice restituisce lo stato HTTP 200 e 2 pagamenti associati al FdR.
+9. Il PSP invia a fdr-microservice la richiesta `publish` relativa al FdR, senza payload.
+10. fdr-microservice rifiuta la pubblicazione e restituisce lo stato HTTP 400.
+
+### Flussi alternativi (AF)
+- —
+
+### Eccezioni (EF)
+- EF-01: Al passo 5, il PSP imposta un PSP non valido e invia la richiesta `del_payments` senza payload. fdr-microservice restituisce HTTP 400.
+- EF-02: Al passo 5, il PSP invia la richiesta `del_payments` utilizzando una subscription_key non valida. fdr-microservice restituisce HTTP 401.
+
+### Postcondizioni
+- In caso di successo, al FdR identificato da flow_name risultano associati 2 pagamenti.
+- In caso di successo, la richiesta di pubblicazione successiva alla cancellazione del pagamento termina con HTTP 400.
+
+### Acceptance Criteria
+- AC-01: Dato un FdR al quale sono associati 3 pagamenti, quando il PSP invia la richiesta `created_payments` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-02: Nella risposta alla richiesta `created_payments` eseguita prima della cancellazione, sono restituiti 3 pagamenti.
+- AC-03: Dato un FdR al quale sono associati 3 pagamenti, quando il PSP invia la richiesta `del_payments` con il payload per cancellare 1 pagamento e con una subscription_key valida, fdr-microservice restituisce HTTP 200.
+- AC-04: Dopo una richiesta `del_payments` conclusa con HTTP 200, quando il PSP invia nuovamente la richiesta `created_payments` senza payload, fdr-microservice restituisce HTTP 200.
+- AC-05: Nella risposta alla richiesta `created_payments` eseguita dopo la cancellazione, sono restituiti 2 pagamenti.
+- AC-06: Dopo la cancellazione di 1 pagamento, quando il PSP invia la richiesta `publish` senza payload, fdr-microservice restituisce HTTP 400.
+- AC-07: Dato un PSP non valido, quando il PSP invia la richiesta `del_payments` senza payload, fdr-microservice restituisce HTTP 400.
+- AC-08: Data una subscription_key non valida, quando il PSP invia la richiesta `del_payments`, fdr-microservice restituisce HTTP 401.
+
+

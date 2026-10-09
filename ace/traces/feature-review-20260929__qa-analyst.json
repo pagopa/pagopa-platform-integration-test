@@ -1,0 +1,36 @@
+{
+  "task_id": "feature-review-20260929",
+  "agent": "qa-analyst",
+  "started_at": "2026-09-29T09:40:30Z",
+  "ended_at": "2026-09-29T09:44:32Z",
+  "request_summary": "Revisione in sola lettura di due feature Gherkin allegate, con risultati restituiti esclusivamente in chat.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Lette persona QA analyst, istruzioni ACE, linee guida Gherkin e profilo del repository.",
+      "tool": "view"
+    },
+    {
+      "description": "Revisionati in sola lettura i due file feature richiesti e confrontati con feature della stessa suite per le convenzioni.",
+      "tool": "view"
+    },
+    {
+      "description": "Restituite osservazioni separate per file con severità, riferimenti a riga, punti di forza e coerenza trasversale.",
+      "tool": "QA-analyst"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "verified",
+    "detail": "La consegna di revisione è stata verificata dall'orchestratore contro i contenuti effettivi dei file richiesti."
+  },
+  "notes": "Nessuna lezione ACE attiva o citata.",
+  "friction": [
+    {
+      "description": "Durante la ricognizione è stato eseguito un comando PowerShell in sola lettura non consentito dal guardrail dell'analista; nessun file è stato modificato e il comando non è stato ripetuto.",
+      "recovered": true
+    }
+  ],
+  "counted_for_playbook_at": "2026-09-29T09:46:00.346Z"
+}

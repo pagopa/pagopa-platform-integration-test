@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ace.local/schema/trace.schema.json",
+  "title": "ACE Task Trace",
+  "description": "Registrazione di un'esecuzione di task da parte di un agente del team, usata come input batch per il reflector. Una trace per task/agente.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "agent", "started_at", "playbook_bullets_seen", "playbook_bullets_cited", "actions", "outcome", "friction"],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "Identificatore univoco del task/sessione a cui questa trace si riferisce."
+    },
+    "agent": {
+      "type": "string",
+      "description": "Nome dell'agente che ha eseguito il task. Non un enum fisso in questo schema generico: la lista autorevole (orchestratore + subagenti) vive in config/project.json, letta a runtime da scripts/gate.js. Deve combaciare esattamente con uno dei nomi lì elencati."
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ended_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "request_summary": {
+      "type": "string",
+      "description": "Sintesi della richiesta utente/orchestratore che ha originato il task, per contesto in fase di reflection."
+    },
+    "playbook_bullets_seen": {
+      "type": "array",
+      "description": "Id dei bullet effettivamente presentati all'agente per questo task, dopo il filtro di sicurezza/quarantena. Devono essere un sottoinsieme di playbook_bullets_selected quando la trace è catturata dal runtime mediated.",
+      "items": { "type": "string" }
+    },
+    "playbook_bullets_selected": {
+      "type": "array",
+      "description": "Id selezionati deterministicamente dal manifest di delega. In modalità mediated, cited deve essere un sottoinsieme di seen e seen un sottoinsieme di selected.",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "playbook_bullets_cited": {
+      "type": "array",
+      "description": "Id dei bullet che l'agente ha esplicitamente citato/applicato durante il task. Devono essere un sottoinsieme di playbook_bullets_seen.",
+      "items": { "type": "string" }
+    },
+    "actions": {
+      "type": "array",
+      "description": "Sequenza sintetica delle azioni rilevanti compiute dall'agente durante il task (tool call significativi, decisioni), per dare al reflector visibilità su cosa è successo.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["description"],
+        "properties": {
+          "description": { "type": "string" },
+          "tool": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "description": "Esito del task, usato da scripts/update_counters.js (contabilità deterministica, non decisione del curator) per aggiornare i contatori used/helped/hurt dei bullet citati.",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["success", "partial", "failure"]
+        },
+        "evaluated_by": {
+          "type": "string",
+          "description": "Come è stato determinato l'esito, in ordine crescente di affidabilità — usato da scripts/update_counters.js per instradare l'incremento di helped/hurt nel bucket 'confirmed' o 'provisional' dei contatori del bullet (vedi bullet.schema.json, counters.helped_confirmed/helped_provisional/hurt_confirmed/hurt_provisional): '<team>-auto' (auto-generata dall'orchestratore subito dopo la risposta, senza reazione dell'utente — puro self-report, segnale debole → provisional); 'verified' (l'orchestratore ha verificato concretamente l'affermazione contro un fatto controllabile — es. il file esiste davvero con il contenuto atteso, una sequenza di passi è stata rispettata, un comando ha prodotto l'output atteso — senza intervento umano → confirmed: più forte di un self-report perché c'è un controllo reale e dichiarabile nelle 'actions' di questa trace, ma resta comunque un livello intermedio, non una conferma umana. Non autoassegnarsi 'verified' per un giudizio creduto o non controllato: se non c'è un controllo concreto e riportabile in 'actions', il valore corretto resta '<team>-auto', non 'verified' — altrimenti il livello perde significato); 'manual' (rivista/corretta da un umano a posteriori), 'user_feedback', 'gate_replay', 'reflector_llm' (tutti segnali forti basati su una conferma esterna reale → confirmed)."
+        },
+        "detail": {
+          "type": "string",
+          "description": "Spiegazione dell'esito, es. cosa è andato storto o cosa ha funzionato bene."
+        }
+      }
+    },
+    "corrects": {
+      "type": "object",
+      "description": "Presente solo su una trace di correzione: referenzia la trace originale (stessa coppia task_id+agent che forma il nome file <task_id>__<agent>.json in ace/traces/) il cui esito, valutato a un livello debole (es. '<team>-auto'), è stato nel frattempo confermato o smentito da un segnale reale arrivato in una sessione successiva sullo stesso ambito. Una trace di correzione è sempre un file nuovo e separato: non si riscrive mai in place la trace originale. scripts/update_counters.js applica counter_adjustments meccanicamente, senza dedurre nulla da solo.",
+      "additionalProperties": false,
+      "required": ["task_id", "agent", "reason", "counter_adjustments"],
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "description": "task_id della trace originale che questa trace corregge."
+        },
+        "agent": {
+          "type": "string",
+          "description": "agent della trace originale che questa trace corregge."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Cosa è arrivato dopo (correzione o conferma esplicita dell'utente) che ha motivato questa correzione, e perché."
+        },
+        "counter_adjustments": {
+          "type": "array",
+          "description": "Aggiustamenti espliciti da applicare ai contatori dei bullet citati nella trace originale, alla luce del nuovo segnale. Dichiarati esplicitamente da chi scrive la correzione: update_counters.js li applica così come sono, non li deduce. Array vuoto valido se la verifica retrospettiva conferma che l'auto-valutazione originale era corretta e non serve alcun aggiustamento.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["bullet_id", "field", "delta"],
+            "properties": {
+              "bullet_id": {
+                "type": "string",
+                "description": "Id del bullet (playbook_bullets_cited della trace originale) a cui si applica l'aggiustamento."
+              },
+              "field": {
+                "type": "string",
+                "enum": ["helped", "hurt", "helped_confirmed", "helped_provisional", "hurt_confirmed", "hurt_provisional"],
+                "description": "Contatore del bullet (vedi bullet.schema.json, counters) su cui applicare il delta."
+              },
+              "delta": {
+                "type": "integer",
+                "description": "Variazione da applicare, può essere negativa (es. rimuove un provisional attribuito per errore) o positiva (es. sposta un provisional a confirmed)."
+              }
+            }
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "string",
+      "description": "Osservazioni libere aggiuntive per il reflector, non strutturate."
+    },
+    "friction": {
+      "type": "array",
+      "description": "Intoppi operativi incontrati durante l'esecuzione (comando fallito, cwd/path errato, tool o dipendenza non disponibile, retry necessario), anche se il task e' comunque riuscito e l'intoppo e' stato risolto da solo nella stessa sessione. Array vuoto = verificato attivamente che non ce ne sono stati, non un default per omissione.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["description", "recovered"],
+        "properties": {
+          "description": { "type": "string" },
+          "recovered": { "type": "boolean", "description": "true se l'agente ha risolto da solo nella stessa sessione senza intervento umano." }
+        }
+      }
+    },
+    "counted_for_playbook_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Impostato da scripts/update_counters.js dopo aver applicato i delta di questa trace ai contatori used/helped/hurt dei bullet in playbook_bullets_seen/cited. Assente se non ancora processata. Evita il doppio conteggio in run successivi, indipendentemente da quando reflector sposta la trace in traces/processed/ (le due cose sono disaccoppiate: una riguarda i contatori, l'altra la deduplicazione delle proposte)."
+    }
+  }
+}
