@@ -146,6 +146,21 @@ jobs:
       max_tokens: '16384'
     secrets: inherit
 
+  save_test_data:
+    name: NRT - Save test data
+    if: always() && needs.prepare.result == 'success'
+    needs: [prepare, run_suites]
+    permissions:
+      contents: read
+      actions: read
+    uses: ./.github/workflows/test-data-ingestion.yml
+    secrets: inherit
+    with:
+      env: ${{ needs.prepare.outputs.target_env }}
+      run_type: ${{ case(github.event_name == 'schedule', 'CRON', 'MANUAL') }}
+      artifact_pattern: allure-report-*
+      origin: NRT
+
   final_status:
     name: NRT - Final status
     if: always()

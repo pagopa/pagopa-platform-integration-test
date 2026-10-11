@@ -1,4 +1,4 @@
-name: Test Data Ingestion on database
+name: 💾 Ingest test data into database
 
 on:
     workflow_call:
@@ -21,6 +21,11 @@ on:
           required: false
           type: string
           default: tmp_processed_reports
+        artifact_pattern:
+          description: Glob of per-suite report artifacts (e.g. allure-report-*); when set, it overrides artifact_name
+          required: false
+          type: string
+          default: ''
         origin:
           required: true
           type: string
@@ -40,11 +45,20 @@ jobs:
                     ref: ${{ github.ref }}
 
             - name: Download processed reports artifact
+              if: ${{ inputs.artifact_pattern == '' }}
               uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
               with:
                   name: ${{ inputs.artifact_name }}
                   path: artifacts
-            - run: ls -R artifacts
+
+            # Each matching artifact is extracted in artifacts/<artifact-name>/
+            - name: Download suite report artifacts
+              if: ${{ inputs.artifact_pattern != '' }}
+              uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+              with:
+                  pattern: ${{ inputs.artifact_pattern }}
+                  path: artifacts
+            - run: ls -R artifacts || true
 
             - name: Setup Python
               uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
