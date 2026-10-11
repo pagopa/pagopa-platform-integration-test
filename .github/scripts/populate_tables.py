@@ -33,15 +33,21 @@ def populate_test_run(test_run: Test_runs, summary_path: str, version: str):
     '''
     with open(summary_path, 'r', encoding="utf-8") as f:
         summary_data = json.load(f)
-        statistics = summary_data.get("statistic", {})
+        statistics = summary_data.get("statistic") or {}
+        if isinstance(statistics, list):
+            statistics = statistics[0] if statistics else {}
+        time_data = summary_data.get("time") or {}
+        if isinstance(time_data, list):
+            time_data = time_data[0] if time_data else {}
+        summary_data["time"] = time_data
         test_run.scenario_qty = statistics.get("total", 0)
         test_run.passed_scenario = statistics.get("passed", 0)
         test_run.failed_scenario = statistics.get("failed", 0)
         test_run.broken_scenario = statistics.get("broken", 0)
         test_run.skipped_scenario = statistics.get("skipped", 0)
-        test_run.timestamp_start = datetime.fromtimestamp(summary_data.get("time", {}).get('start', 0)/1000.0).isoformat()
-        test_run.timestamp_end = datetime.fromtimestamp(summary_data.get("time", {}).get('stop', 0)/1000.0).isoformat()
-        test_run.duration_ms = summary_data.get("time", {}).get('duration', 0)
+        test_run.timestamp_start = datetime.fromtimestamp((time_data.get('start') or 0)/1000.0).isoformat()
+        test_run.timestamp_end = datetime.fromtimestamp((time_data.get('stop') or 0)/1000.0).isoformat()
+        test_run.duration_ms = time_data.get('duration') or 0
         if version is not None:
             test_run.test_version = str(version)
       
@@ -87,6 +93,27 @@ def populate_test_suite(config: Dynaconf, test_suite: Test_suites = None) -> Tes
     # Owner team can be set based on some logic or configuration
     test_suite.owner_team = config.get(test_suite.test_object, {}).get("owner_team", None)
     return test_suite
+
+
+def find_nrt_suite(dir_name: str, suites: dict) -> dict | None:
+    '''
+    Resolve the NRT suite definition for an artifact directory.
+
+    Supports both the legacy processed reports layout (artifacts/<suite id>) and the
+    NRT per-suite artifacts layout (artifacts/<report_artifact>, e.g. allure-report-wisp).
+    '''
+    for suite in suites.get('suites', []):
+        if dir_name in (suite.get('report_artifact'), suite.get('id')):
+            return suite
+    return None
+
+
+def get_test_type_from_behave_path(behave_path: str | None) -> str | None:
+    # behave_path has the form src/<test_type>/<suite>, e.g. src/integration/wisp
+    if not behave_path:
+        return None
+    parts = Path(behave_path).parts
+    return parts[1] if len(parts) > 2 and parts[0] == 'src' else None
 
 
 def get_latest_saved_suite_version(test_object: str, config: Dynaconf) -> Test_suites:
@@ -225,11 +252,16 @@ def main():
             test_run.origin = str(args.origin).upper()
 
 
+            nrt_suite = find_nrt_suite(dir, suites)
+
             if args.suite:
                 test_suite.test_type = args.test_type
                 test_suite.test_object = args.suite
+            elif nrt_suite is not None:
+                test_suite.test_object = nrt_suite.get('id')
             else:
                 test_suite.test_object = str(dir)
+            print(f"[INFO][main] Processing artifact directory {dir} as test_object {test_suite.test_object}.")
 
 
             # get the actual product version
@@ -243,13 +275,16 @@ def main():
                 print(f"[INFO][main] No suite found for test_object {test_suite.test_object} or the latest version is outdated. Creating and saving a new suite version.")
                 test_suite.suite_version = current_product_version
                 test_suite = populate_test_suite( full_config, test_suite)
+                if not test_suite.test_type and nrt_suite is not None:
+                    test_suite.test_type = get_test_type_from_behave_path(nrt_suite.get('behave_path'))
                 latest_suite_version_obj = save_test_suite(test_suite, full_config)
                 print(f"[INFO][main] Saved new suite version for test_object {test_suite.test_object}.")
            
 
             # Populate the test run object based on the summary.json file 
             test_run.suite_id = latest_suite_version_obj.id
-            test_run = populate_test_run(test_run, os.path.join(run_dir, SUMMARY_FILE_PATH), [x.get('version') for x in suites.get('suites', []) if x.get('id') == test_suite.test_object.lower()][0])
+            test_version = (nrt_suite or find_nrt_suite(test_suite.test_object.lower(), suites) or {}).get('version')
+            test_run = populate_test_run(test_run, os.path.join(run_dir, SUMMARY_FILE_PATH), test_version)
             # Populating test executions based on the test cases JSON files
             if os.path.exists(os.path.join(run_dir, TEST_CASES_PATH)):
                 test_executions = populate_test_executions(os.path.join(run_dir, TEST_CASES_PATH), test_run.id)
