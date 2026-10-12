@@ -50,3 +50,23 @@ Each agent reads **only** the instruction files listed for its role. Instruction
 | `Marp-presentation-engineer` | [`.github/skills/marp-presentation/SKILL.md`](.github/skills/marp-presentation/SKILL.md) |
 
 > **Detailed instructions** live in `.github/instructions/`. Skills live in `.github/skills/<name>/SKILL.md`. Do not duplicate content here.
+
+The ACE-participating QA agents (`QA-orchestrator`, `QA-analyst`, `QA-engineer`, `QA-runner`, and `QA-closer`) additionally read only their respective generated `.github/instructions/ace-<canonical-id>.instructions.md` and any family instructions explicitly assigned to them in `ace/config/project.json`. This exception does not authorize reading another role's project instructions.
+
+## Project-owned ACE privacy addon
+
+After ACE captures all traces for a task, and **before** counters, thresholds,
+reflector, or committing trace files, run from the repository root:
+
+```powershell
+node scripts\ace-addons\privacy\finalize-task.js <task-id>
+```
+
+On first use, install local dependencies with
+`node scripts\ace-addons\privacy\finalize-task.js --setup` (requires Node.js
+18+, Python 3.10+ and internet for Presidio/spaCy models). Do not invoke
+`ace/scripts/finalize_task.js` directly for new captures: the project addon
+sanitizes in place and then invokes it. If the addon fails, stop and do not
+commit or consume the raw trace; repair the environment or trace and retry.
+The trace keeps ACE's canonical filename; only its sanitized contents may be
+committed. See [privacy addon instructions](scripts/ace-addons/privacy/README.md).

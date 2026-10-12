@@ -1,0 +1,33 @@
+{
+  "task_id": "2026-09-24-feat-004-readonly-review",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-09-24T08:35:35.357Z",
+  "ended_at": "2026-09-24T08:40:55.212Z",
+  "request_summary": "Revisione in chat, sola lettura, del feature file FEAT_004 Checkout autenticato con modello dal frontmatter.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Letto il frontmatter dell'analista e selezionato il modello Claude Sonnet 5 prima della delega.",
+      "tool": "view"
+    },
+    {
+      "description": "Ricevuta la review dell'analista, verificati i riferimenti contro il feature target e controllato che Git status, diff e checksum del file fossero invariati.",
+      "tool": "view, git, Get-FileHash"
+    }
+  ],
+  "outcome": {
+    "status": "partial",
+    "evaluated_by": "manual",
+    "detail": "La review read-only è stata completata e il feature è invariato, ma le trace ACE sono state inizialmente omesse e sono state raccolte manualmente a posteriori."
+  },
+  "notes": "Trace raccolta manualmente come fallback. Nessuna lezione P-NNN vista o citata.",
+  "friction": [
+    {
+      "description": "Il lifecycle ACE di raccolta trace è stato omesso al termine iniziale della review; recuperato con il processo manuale di fallback.",
+      "recovered": true
+    }
+  ],
+  "playbook_bullets_selected": [],
+  "counted_for_playbook_at": "2026-09-24T08:41:41.458Z"
+}

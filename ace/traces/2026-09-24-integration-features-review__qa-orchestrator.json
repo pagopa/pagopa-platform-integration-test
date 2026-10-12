@@ -1,0 +1,31 @@
+{
+  "task_id": "2026-09-24-integration-features-review",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-09-24T11:47:44+02:00",
+  "ended_at": "2026-09-24T11:54:00+02:00",
+  "request_summary": "Coordinate the read-only in-chat review of every feature file under src/integration.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Enumerated the 36 integration feature files, identified PowerShell, and captured their pre-review state.",
+      "tool": "glob/execute/runInTerminal"
+    },
+    {
+      "description": "Delegated the bounded read-only review to QA analyst using the Claude Sonnet 5 model declared in frontmatter.",
+      "tool": "agent"
+    },
+    {
+      "description": "Verified representative findings including the literal flow_name placeholder, mixed-language steps, malformed title, missing steps, scenario count, and confirmed all files had no review-time changes.",
+      "tool": "search/fileSearch/execute/runInTerminal"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "verified",
+    "detail": "Direct source inspection confirmed the principal findings and the requested feature files remained unchanged."
+  },
+  "notes": "No active ACE playbook bullets.",
+  "friction": [],
+  "counted_for_playbook_at": "2026-09-24T09:54:04.016Z"
+}

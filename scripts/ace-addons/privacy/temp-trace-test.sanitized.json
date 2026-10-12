@@ -1,0 +1,34 @@
+{
+  "task_id": "privacy-selftest-iban-cf",
+  "agent": "qa-analyst",
+  "started_at": "2026-10-05T10:40:00Z",
+  "ended_at": "2026-10-05T10:42:00Z",
+  "request_summary": "Test anonimizza IBAN <IBAN_CODE> e CF <IT_FISCAL_CODE>",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Contatta <EMAIL_ADDRESS> e usa IBAN <IBAN_CODE>",
+      "tool": "manual",
+      "timestamp": "2026-10-05T10:40:10Z"
+    },
+    {
+      "description": "Verifica il CF italiano <IT_FISCAL_CODE>",
+      "tool": "manual",
+      "timestamp": "2026-10-05T10:40:20Z"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "verified",
+    "detail": "Test di sanitizzazione con IBAN e CF."
+  },
+  "friction": [],
+  "notes": "IBAN: <IBAN_CODE>; CF: <IT_FISCAL_CODE>",
+  "corrects": {
+    "task_id": "privacy-selftest-iban-cf",
+    "agent": "qa-analyst",
+    "reason": "Verifica del detector con IBAN e CF",
+    "counter_adjustments": []
+  }
+}
