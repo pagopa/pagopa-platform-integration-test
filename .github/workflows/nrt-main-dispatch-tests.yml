@@ -168,6 +168,7 @@ jobs:
     secrets: inherit
     with:
       run_type: ${{ case(github.event_name == 'schedule', 'CRON', 'MANUAL') }}
+      artifact_pattern: allure-report-*
 
   final_status:
     name: NRT - Final status
