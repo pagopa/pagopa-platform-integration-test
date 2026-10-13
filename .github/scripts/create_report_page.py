@@ -14,7 +14,7 @@ from babel.dates import format_date
 # script runs from .github/scripts in CI environments.
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
-from src.utility.constants  import GITHUB_ROOT
+from src.utility.constants  import GITHUB_ROOT, NRT_SUITES_FILE
 from src.conf.configuration import load_configurations
 from src.utility.confluence_utils import create_confluence_auth, create_confluence_page, get_descendants, create_confluence_folder
 
@@ -68,29 +68,36 @@ def read_page_components():
   except Exception as e:
     raise RuntimeError(f"Failed to read page components from {PAGE_COMPONENTS_DIR}. Error: {str(e)}")
 
-def read_run_id(run_file):
-    try:
-        with open(run_file, 'r', encoding='utf-8') as f:
-            run_data = json.load(f)
-            run['uid'] = run_data.get('uid')
-    except Exception as e:
-        raise RuntimeError(f"Failed to read run ID from {run_file}. Error: {str(e)}")
+# GH Pages URL builder (deprecated)
+# def read_run_id(run_file):
+#     try:
+#         with open(run_file, 'r', encoding='utf-8') as f:
+#             run_data = json.load(f)
+#             run['uid'] = run_data.get('uid')
+#     except Exception as e:
+#         raise RuntimeError(f"Failed to read run ID from {run_file}. Error: {str(e)}")
 
 # use headerOnlyPage instead of actually calling the API to get the content of the page
-def read_stats(stats_file,suite_test_folder):
+def read_summary(stats_file):
   with open(stats_file,'r',encoding="utf-8") as f:
     last_history = json.load(f)
-    run['failed'] = last_history.get('failed', 0)
-    run['duration'] = last_history.get('duration', 0)
-    start = last_history.get('start', '')
-    if start:
-        run['start'] = start
-        run['time'] = start.split('_')[1]
-        time_formatted = datetime.strptime(run['time'], "%H:%M:%S")
-        run['time'] = (time_formatted + timedelta(hours=2)).strftime("%H:%M:%S")
-        run['date'] = start.split('_')[0]
-        run['allure_page'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}', start)
-    print(f"[INFO][read_stats] Last history: failed={run['failed']}, duration={run['duration']}, time={run['time']}")
+    statistic = last_history.get('statistic', {})
+    if isinstance(statistic, list):
+        statistic = statistic[0] if statistic else {}
+    time_data = last_history.get("time") or {}
+    if isinstance(time_data, list):
+        time_data = time_data[0] if time_data else {}
+    if statistic == {} or time_data == {}:
+        raise RuntimeError(f"Invalid statistics or time data in {stats_file}. Statistics: {statistic}, Time: {time_data}")
+    
+    run['failed'] = statistic.get('failed', 0)
+    run['duration'] = str(timedelta(milliseconds=time_data.get('duration', 0))).split('.')[0]
+    run['start'] = datetime.fromtimestamp(time_data.get('start',0) / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
+    run['time'] = (run['start'].split(' ')[1] + timedelta(hours=2)).strftime("%H:%M:%S")
+    run['date'] = run['start'].split(' ')[0]
+    # GH Pages URL building is currently disabled.
+    # run['allure_page'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}', start)
+    print(f"[INFO][read_summary] Last history: failed={run['failed']}, duration={run['duration']}, time={run['time']}")
 
 
 def extract_main_error_line(trace: str) -> str:
@@ -122,7 +129,8 @@ def read_runs(dir):
           run['broken'] += 1        
 
         run_stats = dict()
-        run_stats['uid'] = run['allure_page'] + f'/{run_obj.get("uid")}'
+        # run_stats['uid'] = run['allure_page'] + f'/{run_obj.get("uid")}'
+        run_stats['scenario_name'] = run_obj.get('name', MISSING_DATA)
         for stage in run_obj.get('testStage', {}).get('steps', []):
           if stage.get('status') == 'failed' or stage.get('status') == 'broken':
             run_stats['result'] = stage.get('statusMessage')
@@ -166,14 +174,6 @@ def build_page(folder_name, page_components, config):
   except Exception as e:
     raise RuntimeError(f"Failed to build page for {folder_name}. Error: {str(e)}")
   
-def build_gh_pages_url(suite_folder):
-  try:
-    url = GH_PAGES_URL.replace('{suite_folder}', suite_folder).replace('{run}',run["start"] + "-" + run['env']).replace('{run_id}', run['uid'])
-    print(f"[INFO][build_gh_pages_url] Built GH Pages URL: {url}")
-    return url
-  except Exception as e:
-    raise RuntimeError(f"Failed to build GH Pages URL for suite_folder={suite_folder}, run={run}. Error: {str(e)}")
-
 
 def read_config(key,config):
     try:
@@ -183,14 +183,14 @@ def read_config(key,config):
     except Exception as e:
         raise RuntimeError(f"Failed to read config from config.yaml. Error: {str(e)}")
 
-
-def build_gh_pages_url(suite_folder):
-  try:
-    url = GH_PAGES_URL.replace('{suite_folder}', suite_folder).replace('{run}',run["start"]).replace('{run_id}', run['uid'])
-    print(f"[INFO][build_gh_pages_url] Built GH Pages URL: {url}")
-    return url
-  except Exception as e:
-    raise RuntimeError(f"Failed to build GH Pages URL for suite_folder={suite_folder}, run={run}. Error: {str(e)}")
+# GH Pages URL builder (deprecated version commented out)
+# def build_gh_pages_url(suite_folder):
+#   try:
+#     url = GH_PAGES_URL.replace('{suite_folder}', suite_folder).replace('{run}',run["start"]).replace('{run_id}', run['uid'])
+#     print(f"[INFO][build_gh_pages_url] Built GH Pages URL: {url}")
+#     return url
+#   except Exception as e:
+#     raise RuntimeError(f"Failed to build GH Pages URL for suite_folder={suite_folder}, run={run}. Error: {str(e)}")
   
 def get_month_folder_id(descendants, suite_config, confluence_auth, suite):
     current_month = str(format_date(datetime.now(), "LLLL", locale="it_IT")).capitalize()
@@ -202,6 +202,19 @@ def get_month_folder_id(descendants, suite_config, confluence_auth, suite):
         month_folder = create_confluence_folder(suite_config, folder_name, confluence_auth)
         if month_folder:
             return month_folder['id']
+    return None
+
+
+def find_nrt_suite(dir_name: str, suites: dict) -> dict | None:
+    '''
+    Resolve the NRT suite definition for an artifact directory.
+
+    Supports both the legacy processed reports layout (artifacts/<suite id>) and the
+    NRT per-suite artifacts layout (artifacts/<report_artifact>, e.g. allure-report-wisp).
+    '''
+    for suite in suites.get('suites', []):
+        if dir_name in (suite.get('report_artifact'), suite.get('id')):
+            return suite
     return None
       
 
@@ -232,23 +245,22 @@ def main():
     if os.path.isdir(run_dir):
       global suite
 
-      if dir.startswith('openapi-fdr'):
-        suite = '-'.join(dir.split('-')[:-1]) 
-        run['env'] = dir.split('-')[-1].upper()
-      else:
-        suite = str(dir)
+
+      nrt_suite = find_nrt_suite(dir, NRT_SUITES_FILE)
+      if nrt_suite:
+          suite = nrt_suite.get('id')
 
       # build the suite test folder path based on the run directory name
       suite_test_folder = suite + "-tests"
      
-      if os.path.exists(os.path.join(run_dir, "stats.json")):
+      if os.path.exists(os.path.join(run_dir, "widgets/summary.json")):
         try:
-            # get run id from the run directory's data/suites.json file
-            read_run_id(os.path.join(run_dir, "data/suites.json"))
-            # read the last history data from stats.json
-            read_stats(os.path.join(run_dir, "stats.json"), suite_test_folder)
-            # build the GH Pages URL for the run
-            run['allure_page'] = build_gh_pages_url(suite_test_folder)
+            # GH Pages URL building is currently disabled.
+            # read_run_id(os.path.join(run_dir, "data/suites.json"))
+            # read the last history data from summary.json
+            read_summary(os.path.join(run_dir, "widgets/summary.json"))
+            # GH Pages URL building is currently disabled.
+            # run['allure_page'] = build_gh_pages_url(suite_test_folder)
             # read the failed runs from the run directory's data/test-cases folder
             read_runs(os.path.join(run_dir, "data/test-cases"))
             # read the page components 
