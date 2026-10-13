@@ -238,6 +238,9 @@ def main():
     print(f"[INFO][main] TARGET_ENV not set. Setting it to the default value: UAT.")
     os.environ['TARGET_ENV'] = 'UAT'
 
+  with open(NRT_SUITES_FILE, 'r') as f:
+    suites = json.load(f)
+
   # Read the last history data from stats.json
   full_config = load_configurations(GITHUB_ROOT)
   for dir in sorted(os.listdir(processed_dir)):
@@ -246,7 +249,7 @@ def main():
       global suite
 
 
-      nrt_suite = find_nrt_suite(dir, NRT_SUITES_FILE)
+      nrt_suite = find_nrt_suite(dir, suites)
       if nrt_suite:
           suite = nrt_suite.get('id')
 
