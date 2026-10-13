@@ -92,9 +92,9 @@ def read_summary(stats_file):
     
     run['failed'] = statistic.get('failed', 0)
     run['duration'] = str(timedelta(milliseconds=time_data.get('duration', 0))).split('.')[0]
-    run['start'] = datetime.fromtimestamp(time_data.get('start',0) / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
-    run['time'] = (run['start'].split(' ')[1] + timedelta(hours=2)).strftime("%H:%M:%S")
-    run['date'] = run['start'].split(' ')[0]
+    start = datetime.fromtimestamp(time_data.get('start',0) / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
+    run['time'] = start.split(' ')[1]
+    run['date'] = start.split(' ')[0]
     # GH Pages URL building is currently disabled.
     # run['allure_page'] = GH_PAGES_URL.replace('{suite_folder}', suite_test_folder).replace('{run}', start)
     print(f"[INFO][read_summary] Last history: failed={run['failed']}, duration={run['duration']}, time={run['time']}")
