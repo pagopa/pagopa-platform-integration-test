@@ -161,6 +161,15 @@ jobs:
       artifact_pattern: allure-report-*
       origin: NRT
 
+  create_confluence_report:
+    if: always() && needs.prepare.result == 'success'
+    needs: [prepare, run_suites]
+    uses: ./.github/workflows/create_report_page.yml
+    secrets: inherit
+    with:
+      run_type: ${{ case(github.event_name == 'schedule', 'CRON', 'MANUAL') }}
+      artifact_pattern: allure-report-*
+
   final_status:
     name: NRT - Final status
     if: always()

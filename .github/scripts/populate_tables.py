@@ -249,7 +249,7 @@ def main():
 
             test_run.env = str(args.env).upper()
             test_run.trigger_type = str(args.run_type).upper()
-            test_run.origin = str(args.origin).upper()
+            test_run.test_origin = str(args.origin).upper()
 
 
             nrt_suite = find_nrt_suite(dir, suites)
