@@ -4,6 +4,19 @@ Struttura concordata per redigere gli UC. È il contratto di ingresso della
 skill [uc-to-feature](../../.github/skills/uc-to-feature/SKILL.md).
 Il flusso automatico e manuale e descritto in [uc-workflow.md](uc-workflow.md).
 
+Le AF descrivono cambiamenti del percorso o dell'esito, non varianti dei dati.
+L'analista ricava i set di dati rilevanti dalla documentazione e dal materiale
+ammessi: piu set possono verificare lo stesso flusso con uno Scenario Outline,
+senza una AF che li elenchi.
+
+Per gli AC e consigliato, ma non obbligatorio, un riferimento verbale al flusso,
+per esempio `AC01 - {criterio} (FP)` o `AC03 - {criterio} (AF02)`.
+Sono ammesse le forme estese e abbreviate, senza distinzione maiuscole/minuscole
+o rigidita sugli spazi, descritte nelle
+[regole di riconoscimento](../../.github/skills/uc-to-feature/ac-flow-references.md).
+Il riferimento si applica alle varianti dati del flusso, salvo condizioni
+specifiche del criterio; non definisce da solo nuovi casi o valori.
+
 ```markdown
 ## UC-{PRODOTTO}-{NNN} - {Titolo breve}
 

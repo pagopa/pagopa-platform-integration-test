@@ -57,6 +57,9 @@ profile; granularity and UC mapping remain in
    which API operation, method, path and request structure are prescribed;
    required ordering, branches, starting states and observable outcomes.
    Separate these questions from input values and their required properties.
+   Resolve AC flow references using
+   [ac-flow-references.md](../uc-to-feature/ac-flow-references.md); retain
+   target flow and applicability conditions in the oracle evidence.
 2. Read the supplied sources with the tools defined by the shared policy.
    Extract only the relevant passages, with exact locators. Do not assume a
    source contains both functional instructions and test values.
@@ -67,6 +70,11 @@ profile; granularity and UC mapping remain in
    behaviour, but selectors, automation mechanics and Python belong to the
    implementation. Apply the UC skill's granularity decision test; neither a
    screenshot nor a list of fields forces one Gherkin step per field.
+   Identify relevant data-variation dimensions and constraints supported by
+   admitted material, even when no AF mentions them. Distinguish data sets
+   exercising the same flow/checks from actual changes of path or outcome.
+   Record the evidence and applicable ACs, not an invented AF or an arbitrary
+   number of cases.
 4. Ask the user for missing information or a source. For independently
    discovered information, get explicit approval before using it. When the UC
    and a source disagree, expose the conflict and ask which requirement
@@ -77,6 +85,8 @@ profile; granularity and UC mapping remain in
    [uc-test-data](../uc-test-data/SKILL.md), with their constraints,
    field meanings, combinations and scenario links. The same source may
    contribute to both skills, without reading it twice unnecessarily.
+   Register newly supported cases with stable SC-NNN ids under the UC skill's
+   inventory rule; data resolution will establish their concrete combinations.
 6. Persist the resolved evidence and all gaps in the intermediate report and
    return it to UC translation. Do not edit features, create a new functional
    specification or an invented UC. Missing functional behaviour, ordering or

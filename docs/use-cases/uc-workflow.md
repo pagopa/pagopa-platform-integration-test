@@ -94,6 +94,36 @@ combinazioni di dati, `Q-NNN` questioni. Non rinumerare o riciclare id eliminati
 Un caso poi raggruppato in un outline mantiene il proprio `SC-NNN`; il report
 finale lo associa a file, titolo scenario e riga di Examples.
 
+## Varianti dati e riferimenti AC ai flussi
+
+Le AF rappresentano variazioni del percorso o dell'esito, non set di dati.
+Le skill di supporto ricavano dimensioni, vincoli e combinazioni rilevanti
+dalla documentazione e dal materiale ammessi anche senza AF dedicate.
+Il numero di record di un catalogo non determina il numero di casi: niente
+prodotto cartesiano o varianti arbitrarie. Restano obbligatori ammissione,
+evidenza, idoneita e gestione separata della disponibilita.
+
+L'inventario iniziale puo essere esteso durante l'analisi del contesto con nuovi
+SC-NNN per casi supportati dello stesso flusso, senza modificare lo UC.
+Registrare motivazione, fonti, AC e F/O/D applicabili nel contesto; i dati
+riportano le combinazioni C-NNN per questi casi. Se la risoluzione dati scopre
+un caso aggiuntivo, ritorna al contesto per registrarlo e collegarlo prima di
+usarlo nelle combinazioni, senza avviare altri step in modalita manuale.
+Riutilizzare gli F/O/D esistenti quando il significato non cambia. La traduzione
+decide il raggruppamento finale: stesso comportamento e stesse verifiche
+possono diventare righe di un outline; verifiche differenti restano separate.
+Nuovi vincoli funzionali richiedono prima un aggiornamento del contesto,
+poi dei dati, con normale invalidazione a valle.
+
+E consigliato un riferimento verbale negli AC, per esempio `(FP)` o `(AF02)`,
+ma non e un nuovo campo obbligatorio. La skill uc-to-feature definisce le
+[forme riconosciute e la risoluzione](../../.github/skills/uc-to-feature/ac-flow-references.md):
+case insensitive, spazi flessibili, acronimi anche puntati e confronto con
+gli identificativi effettivi dello UC. Il riferimento include le varianti
+supportate del flusso salvo limitazioni espresse dall'AC; non estende le
+verifiche ad altri flussi. Riferimenti ambigui, duplicati o inesistenti
+rimangono questioni esplicite. Nessun riferimento non significa FP di default.
+
 ## Registro e proprieta degli output
 
 Il QA-analyst inizializza [00-run.template.md](workflow-templates/00-run.template.md)

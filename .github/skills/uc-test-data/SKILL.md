@@ -70,6 +70,14 @@ profile. Do not duplicate their language, indentation, tag or outline rules.
    Generate values only when the source prescribes generation and the user
    authorizes it; record the rule and synthetic/generated status. Never
    fabricate identifiers or claim generated data exists in the environment.
+   Derive relevant data sets for the context-supported flows and variation
+   dimensions from admitted material; they need not be named by an AF.
+   Record supported combinations as C-NNN with source/relationship evidence
+   for registered SC-NNN cases. Propose additional cases under the UC skill's
+   inventory rule, then return for a context update to register them and link
+   evidence/oracles/requirements before including them in combinations.
+   Preserve the context's AC applicability; do not invent checks from input
+   values. New dimensions or constraints also require a context update.
 3. For unresolved values, search repository documentation/data records as
    candidates under the shared policy. Show matching candidates and ask the
    human for explicit approval **before** marking them usable in the report.
@@ -86,7 +94,10 @@ profile. Do not duplicate their language, indentation, tag or outline rules.
    Preserve the constraints and rule-defined outcomes; do not change them to
    accommodate convenient data. Do not add variants, outlines or scenarios
    solely because the catalogue offers more data: such coverage decisions
-   remain with UC translation and the human.
+   remain with UC translation under the documented evidence and human
+   decisions. Neither catalogue size nor a Cartesian product establishes
+   relevant combinations; same-flow data sets can become outline rows
+   without creating UC AFs.
 6. Report availability separately: `documented, not checked in environment`,
    `confirmed by user` (with scope/date), or `unknown/to prepare`. Do not run
    tests, query test systems or mutate them. A consumable value may be stale

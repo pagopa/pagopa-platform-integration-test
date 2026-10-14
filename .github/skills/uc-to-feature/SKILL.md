@@ -120,7 +120,10 @@ Report these findings; do not fix them in the UC.
   return step or the end of the flow; otherwise it is an ambiguity. An AF must
   change the path (actions or system responses) or the outcome: an AF that
   changes only values, with the same steps and outcome, is a data variation.
-  Report it as misclassified; it does not block the feature (see step 0).
+  AFs do not specify data variants. Derive those from admitted documentation
+  and material through the support skills, even when the UC has no AF for
+  them. For a legacy AF containing only values, report misclassification
+  without blocking the feature; preserve its traceability as a data variant.
 - **Eccezioni (EF)**: anomalous situation and expected system behaviour. An EF
   without expected behaviour is a functional gap. An EF may name the step where
   it occurs (for example "Al passo 3, …"): the anomaly is introduced at that
@@ -140,6 +143,10 @@ Report these findings; do not fix them in the UC.
   properties are verified and where they are defined: a property without value
   or source (for example "un titolo specifico") is an ambiguity. When a source
   gives a time without saying whether it is exact or a limit, ask.
+  A verbal flow reference is recommended, not mandatory: for example
+  `AC01 - {criterion} (FP)` or `AC03 - {criterion} (AF02)`. Read
+  [ac-flow-references.md](ac-flow-references.md) for accepted aliases,
+  normalization, scope across data variants and ambiguity checks.
 
 ### Form
 
@@ -213,11 +220,11 @@ the mapping below.
 | Interaction steps not stated in the UC | No step | Do not add actions the UC does not state (confirmations, intermediate controls, navigation). If an outcome cannot be reached without them, take them from referenced or provided documentation or from the user; otherwise report a gap. |
 | Flusso principale — internal system checks | No dedicated step | Verification performed internally by the system is observed through its outcome, not described as a step. |
 | Flusso principale — system response | `Then` | Only observable outcomes. |
-| AF-NN | Distinct scenario, never an `Examples` row of the main flow | The main-flow steps up to the divergence, the AF prescription replacing the steps it names, then the remaining main-flow steps if the AF rejoins. Verify the AF-specific outcome and, after a rejoin, the final outcome; if the AF ends the flow, only its outcome. The AF scenario may be an outline only for value variations of the AF itself. An AF that changes only values is a data variation: report it and map it as a row of the main-flow outline (see the row on variations). |
+| AF-NN | Distinct scenario, never an `Examples` row of the main flow | The main-flow steps up to the divergence, the AF prescription replacing the steps it names, then the remaining main-flow steps if the AF rejoins. Verify the AF-specific outcome and, after a rejoin, the final outcome; if the AF ends the flow, only its outcome. The AF scenario may be an outline for data variants derived from admitted material, not specified as further AFs. A legacy AF that changes only values is a misclassified data variant: preserve its coverage reference and apply the row on variations, without inventing an alternative path. |
 | EF-NN | Negative scenario | The main flow up to the step where the anomaly occurs, with the anomaly in that step; `Then` verifies the stated reaction; the scenario ends there unless the EF states a return. Apply the profile label for negative scenarios. |
 | Postcondizioni | `Then` checks of final state | Verify them when observable through an interface named by the UC or by referenced or provided documentation. When observable only indirectly (for example through a displayed message), mark the coverage as partial. Otherwise report them as a verification requirement instead of inventing a check. |
-| AC-NN | Oracle of one or more scenarios | Every AC must be satisfied by at least one `Then` (with its `Given`/`When` context). Several ACs on the same outcome become several `Then`/`And` steps of the same scenario, not separate scenarios; one AC may require several scenarios. |
-| Cases that differ only in values | `Scenario Outline` + `Examples` | Main flow, AF, or EF cases with the same behaviour and the same verifications become one outline with one row per case, the main flow included when it qualifies. Cases with different behaviour, or with different or additional verifications, get separate outlines even if their steps look similar. Apply the instructions' rules on outlines. |
+| AC-NN | Oracle of one or more scenarios | Resolve verbal flow references under ac-flow-references.md. An AC scoped to a flow applies to its supported data variants unless the criterion restricts applicability; the reference alone defines no values or variants. Every AC must be satisfied by at least one `Then` (with its `Given`/`When` context). Several ACs on the same outcome become several `Then`/`And` steps of the same scenario, not separate scenarios; one AC may require several scenarios. |
+| Cases that differ only in values | `Scenario Outline` + `Examples` | Derive relevant data sets through the support skills from admitted documentation and material; no AF is required to specify them. Main flow, AF, or EF cases with the same behaviour and the same verifications become one outline with one row per supported case. Cases with different behaviour, or with different or additional verifications, get separate scenarios/outlines even if their steps look similar. A catalogue size or range alone does not determine the rows; do not invent a Cartesian product. Apply the instructions' rules on outlines. |
 | Values fixed by the UC (quantities, outcomes, status codes, enumerations) | Literal step parameters or `Examples` values | When the behaviour or an outcome depends on them, they are functional rules: keep them unchanged. A value on which nothing depends (changing it would change no outcome) is probably test data written in the UC: ask whether it is a rule or data, keep it unchanged meanwhile, and keep the feature a `bozza`. |
 | Expected values defined outside the UC (texts, times, codes) | `Then` parameters or `Examples` columns | Oracle values, not input data: take them only from referenced or provided documentation, never from the suite or the observed system. A technical code is verified only when the UC or the source states that it is part of the outcome. When missing, they are a functional gap. |
 | Values that the UC only qualifies (for example "a unique name", "a valid key", "an existing entity") | Data requirement | Do not invent a concrete value. State the characteristic in the step as the UC does and hand the requirement to uc-test-data. If unresolved, use that skill's placeholder contract. |
@@ -255,6 +262,18 @@ List the behaviours to cover. Each entry cites its sources (`Flusso principale`
 step numbers, `AF-NN`, `EF-NN`, postconditions, `AC-NN`). Each AC and each
 AF/EF must appear in at least one entry, or be listed as not coverable with the
 reason.
+
+The initial inventory is not a fixed count of data variants. When support
+reports establish additional relevant data sets for an existing flow, allocate
+new stable SC-NNN ids in the registry before using them in reports; do not
+create or edit UC AFs. Record the supporting evidence, applicable ACs and
+reason for each case. The support skills may register these supported cases
+during context analysis, but final grouping into scenarios/outlines belongs
+here. If data resolution discovers an additional case, return to context to
+register it and link the applicable evidence, oracles and requirements before
+using it in data combinations. Reuse existing F/O/D ids when their meaning is
+unchanged; new constraints or a different oracle need functional evidence.
+Apply normal revisions and downstream invalidation.
 
 ### 3. Design the scenarios
 
