@@ -93,17 +93,17 @@ jobs:
       ADX_CLUSTER_URI: ${{ vars.ADX_CLUSTER_URI }}
       ADX_DATABASE: ${{ vars.ADX_DATABASE }}
       ADX_INGEST_URI: ${{ vars.ADX_INGEST_URI }}
-      SYNC_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'yesterday' }}
+      SYNC_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || github.event_name == 'push' && 'snapshot' || 'yesterday' }}
       FROM_DATE: ${{ github.event_name == 'workflow_dispatch' && inputs.from_date || '' }}
       TO_DATE: ${{ github.event_name == 'workflow_dispatch' && inputs.to_date || '' }}
-      DRY_RUN: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          python-version: 3.x
+          python-version: '3.12'
 
       - name: Install sync dependencies
         run: >-
