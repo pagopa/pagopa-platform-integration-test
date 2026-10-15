@@ -56,6 +56,7 @@ the new process is adopted.
 | `.github/workflows/nrt-run-suite.yml` | Reusable workflow containing the common setup, secret materialization, test execution, Allure generation, and artifact publication for one suite. |
 | `.github/workflows/nrt-sync-secrets.yml` | Runs daily or manually on self-hosted runners; reads Key Vault values, builds and validates per-environment bundles, then updates the matching GitHub Environment secret using GitHub's LibSodium-encrypted REST API. |
 | `.github/workflows/test-data-ingestion.yml` | Reusable workflow that downloads report artifacts and runs `.github/scripts/populate_tables.py` to save suites, runs, and executions through the QA Hub APIs. NRT calls it with `artifact_pattern: allure-report-*`; the legacy dispatch keeps using the `tmp_processed_reports` artifact. |
+| `.github/workflows/qa-hub-adx-sync.yml` | Runs nightly or manually on self-hosted runners; copies the QA Hub PostgreSQL tables (`test_suites`, `test_runs`, `test_executions`) into the matching `QA_NRT_*` Azure Data Explorer tables per environment. See [QA Hub ADX sync](qa-hub-adx-sync.md). |
 | Existing report workflows | Consume NRT artifacts to publish reports and create the Confluence page. They are downstream consumers, not suite definitions. |
 
 The reusable workflow gives each suite an isolated job and runner. Shared job-level
@@ -310,5 +311,7 @@ failed when required tests fail.
 - [Current Checkout E2E workflow](../../.github/workflows/checkout-e2e-tests.yml)
 - [Test data ingestion workflow](../../.github/workflows/test-data-ingestion.yml)
 - [Test data ingestion script](../../.github/scripts/populate_tables.py)
+- [QA Hub ADX sync workflow](../../.github/workflows/qa-hub-adx-sync.yml)
+- [QA Hub ADX sync script](../../.github/scripts/qa_hub_adx_sync.py)
 - [Secret resolver](../../src/conf/configuration.py)
 - [Configuration utility guidance](../../src/utility/config/README.md)
