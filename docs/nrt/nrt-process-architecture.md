@@ -136,6 +136,16 @@ path changes: suite artifacts retain their environment suffix and run number,
 and `<allure_subfolder>-<env>/last-history` remains available to the reusable
 workflow. Previously published report folders are not migrated or removed.
 
+Before deployment, `nrt-publish-indexes.py` reuses `process_reports.py` to generate
+`stats.json` for published runs and rebuild each suite's `index.html`. It copies
+the latest run by Allure start time to `<allure_subfolder>/last-history/`, including
+its statistics and summary, without changing the environment-specific trend history.
+The root dashboard is rendered from the suite registry with the latest statistics
+and a UTC update timestamp; suites without reports are marked as unavailable.
+Invalid report data fails publication instead of publishing placeholder statistics.
+Local publisher regression tests can be run from the repository root with
+`python .github/scripts/nrt-test-publish-indexes.py -v` (requires Jinja2).
+
 ## 6. Secret synchronization and consumption
 
 ### 6.1 Synchronization flow

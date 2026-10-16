@@ -101,6 +101,9 @@ jobs:
       contents: write
       actions: read
     steps:
+      - name: Checkout report publishing sources
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
       - name: Checkout gh-pages
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -151,6 +154,17 @@ jobs:
           else
             echo "No Allure history artifacts were produced."
           fi
+
+      - name: Setup Python for report indexes
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: 3.x
+
+      - name: Install report index dependencies
+        run: pip install jinja2
+
+      - name: Update report indexes and statistics
+        run: python .github/scripts/nrt-publish-indexes.py
 
       - name: Deploy Allure reports to GitHub Pages
         uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
