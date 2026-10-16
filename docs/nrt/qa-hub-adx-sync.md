@@ -27,8 +27,8 @@ touching ADX.
 
 Only **dev** is currently enabled. UAT and prod are excluded from manual dispatch
 and the execution matrix until their tables and permissions are provisioned.
-The temporary branch push trigger runs a **real full snapshot on dev**, not a dry run.
-Remove that trigger before merging.
+Pushes and pull requests do not trigger synchronization. After merge into the default
+branch, the nightly schedule runs `yesterday` on dev; other modes remain manual.
 
 ## How it works
 
@@ -82,5 +82,6 @@ gh workflow run qa-hub-adx-sync.yml -f target_env=dev -f mode=range \
 python -m pytest -q .github/scripts/tests/test_qa_hub_adx_sync.py
 ```
 
-These tests mock Azure clients; actual runner identity, database grants, and ingestion
-must still be verified with a dev workflow run.
+These tests mock Azure clients. A real full snapshot on dev was reported successful
+on 2026-10-16, validating runner authentication and the snapshot publication path.
+The windowed delete-and-reload path still needs verification with a real dev run.
