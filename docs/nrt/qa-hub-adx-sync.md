@@ -17,7 +17,7 @@ run. Suites are always reloaded in full because they are small and have no times
 
 | Mode | Window | Trigger |
 |---|---|---|
-| `yesterday` | previous UTC day | default, nightly at 02:30 UTC on every environment |
+| `yesterday` | previous UTC day | default, nightly at 02:30 UTC on dev only |
 | `snapshot` | all rows, including runs without `timestamp_start` | manual |
 | `since` | from `from_date` to now | manual, needs `from_date` |
 | `range` | `from_date` to `to_date`, both inclusive | manual, needs `from_date` and `to_date` |
@@ -25,16 +25,23 @@ run. Suites are always reloaded in full because they are small and have no times
 `dry_run` exports from PostgreSQL and writes the row counts to the job summary without
 touching ADX.
 
+Only **dev** is currently enabled. UAT and prod are excluded from manual dispatch
+and the execution matrix until their tables and permissions are provisioned.
+The temporary branch push trigger runs a **real full snapshot on dev**, not a dry run.
+Remove that trigger before merging.
+
 ## How it works
 
 1. Reads `qa-centralhub-database-url` from `pagopa-<d|u|p>-itn-qa-kv` with the runner's
    managed identity.
 2. Exports the three tables in one read-only `REPEATABLE READ` transaction to gzip
    JSON-lines files.
-3. Ingests each file with queued ingestion into a `<TABLE>_STAGING` table, which the
-   script creates automatically, then waits until the staged row count matches.
+3. Checks that all six target and staging tables already exist, then ingests each
+   file with queued ingestion into its `<TABLE>_STAGING` table and waits until the
+   staged row count matches. The script does not create or alter table schemas.
 4. Publishes:
-   - `snapshot` mode and suites use `.replace extents`, an atomic swap.
+   - `snapshot` mode and suites use `.replace extents`, an atomic swap per table,
+     not a transaction across the three tables.
    - The windowed modes soft-delete the rows in the window from the target tables
      (`.delete ... records`), then `.move extents` from staging. Rerunning the same
      window is idempotent.
@@ -42,9 +49,18 @@ touching ADX.
 ## Prerequisites
 
 - **ADX permissions**: grant **Database Admin** on the ADX database to the managed identity
-  of each environment's self-hosted runner. Soft delete, extent operations, and ingestion
-  failure checks require this role.
-- **Target tables**: the `QA_NRT_*` tables must already exist (`.create-merge table ...`).
+  of the dedicated self-hosted runner. This grants access to the entire database,
+  not just the QA tables. Table Ingestor alone is insufficient for this sync.
+- **ADX authentication**: query and ingestion clients explicitly use
+  `ManagedIdentityCredential()` with the Container Apps Job's system-assigned identity.
+  They do not fall back to Azure CLI, OIDC deployment credentials, or client secrets.
+  Key Vault authentication continues using the existing repository resolver.
+- **Tables**: infrastructure must precreate the three target tables and their matching
+  staging tables, with identical columns, types, and order:
+  - `QA_NRT_TEST_SUITES_STAGING`
+  - `QA_NRT_TEST_RUNS_STAGING`
+  - `QA_NRT_TEST_EXECUTIONS_STAGING`
+  Missing tables cause an explicit failure before staging data is cleared.
 - **GitHub Environment variables** (`dev`, `uat`, `prod`):
   - `ADX_CLUSTER_URI`, e.g. `https://<cluster>.<region>.kusto.windows.net`.
   - `ADX_DATABASE`.
@@ -56,6 +72,15 @@ touching ADX.
 ## Manual run
 
 ```bash
-gh workflow run qa-hub-adx-sync.yml -f target_env=uat -f mode=range \
+gh workflow run qa-hub-adx-sync.yml -f target_env=dev -f mode=range \
   -f from_date=2026-09-01 -f to_date=2026-09-30
 ```
+
+## Local validation
+
+```bash
+python -m pytest -q .github/scripts/tests/test_qa_hub_adx_sync.py
+```
+
+These tests mock Azure clients; actual runner identity, database grants, and ingestion
+must still be verified with a dev workflow run.

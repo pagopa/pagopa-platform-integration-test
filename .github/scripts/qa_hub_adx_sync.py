@@ -279,12 +279,6 @@ def chunked(items: list[str], size: int) -> Iterator[list[str]]:
         yield items[index:index + size]
 
 
-def staging_create_command(spec: TableSpec) -> str:
-    """Return the idempotent command creating the ADX staging table of a spec."""
-    schema = ", ".join(f"{name}: {kusto_type}" for name, kusto_type in spec.columns)
-    return f".create-merge table {spec.staging_table} ({schema})"
-
-
 def _mask_secret(value: str) -> None:
     """Ask GitHub Actions to mask a secret value in the job logs."""
     if os.environ.get("GITHUB_ACTIONS") == "true" and value:
@@ -374,11 +368,11 @@ class AdxPublisher:
 
     def __init__(self, cluster_uri: str, database: str, ingest_uri: str | None = None, credential: Any = None):
         """Create query and queued-ingestion clients authenticated with Entra ID."""
-        from azure.identity import DefaultAzureCredential
+        from azure.identity import ManagedIdentityCredential
         from azure.kusto.data import KustoClient, KustoConnectionStringBuilder
         from azure.kusto.ingest import QueuedIngestClient
 
-        credential = credential or DefaultAzureCredential()
+        credential = credential if credential is not None else ManagedIdentityCredential()
         cluster_uri = cluster_uri.rstrip("/")
         if not ingest_uri:
             parts = urlsplit(cluster_uri)
@@ -409,13 +403,18 @@ class AdxPublisher:
         return [row[0] for row in self.client.execute_query(self.database, query).primary_results[0]]
 
     def ensure_tables(self) -> None:
-        """Fail if a target table is missing and create the staging tables when needed."""
+        """Require all target and staging tables to be provisioned by infrastructure."""
         existing = {row["TableName"] for row in self.mgmt(".show tables")}
-        missing = [spec.adx_table for spec in TABLES if spec.adx_table not in existing]
+        missing = [
+            name for spec in TABLES
+            for name in (spec.adx_table, spec.staging_table)
+            if name not in existing
+        ]
         if missing:
-            raise RuntimeError(f"Missing ADX target table(s): {', '.join(missing)}")
-        for spec in TABLES:
-            self.mgmt(staging_create_command(spec))
+            raise RuntimeError(
+                f"Missing ADX table(s): {', '.join(missing)}. "
+                "Provision target and staging tables through infrastructure before syncing."
+            )
 
     def stage(self, export: ExportResult, timeout_seconds: int) -> None:
         """Ingest the exported files into the staging table and wait until all rows are visible."""

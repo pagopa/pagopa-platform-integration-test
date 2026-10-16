@@ -1,7 +1,7 @@
 name: 📊 QA Hub - Sync PostgreSQL to ADX
 
 on:
-  # TEMPORARY: branch dry-run test, remove before merging.
+  # TEMPORARY: real dev snapshot on branch push, remove before merging.
   push:
     branches:
       - PQ-737-sync-test-data
@@ -13,15 +13,12 @@ on:
   workflow_dispatch:
     inputs:
       target_env:
-        description: Environment to synchronize
+        description: Environment to synchronize (only dev is provisioned)
         required: true
         type: choice
-        default: all
+        default: dev
         options:
-          - all
           - dev
-          - uat
-          - prod
       mode:
         description: "yesterday = previous UTC day, snapshot = full reload, since = from_date to now, range = from_date..to_date"
         required: true
@@ -57,20 +54,18 @@ jobs:
     outputs:
       matrix: ${{ steps.targets.outputs.matrix }}
     env:
-      TARGET_SELECTION: ${{ github.event_name == 'workflow_dispatch' && inputs.target_env || github.event_name == 'push' && 'dev' || 'all' }}
+      TARGET_SELECTION: ${{ github.event_name == 'workflow_dispatch' && inputs.target_env || 'dev' }}
     steps:
       - name: Select environments to synchronize
         id: targets
         shell: bash
         run: |
           matrix=$(jq -cn --arg selected "$TARGET_SELECTION" '
-            [
-              {target_env:"dev", short_env:"d"},
-              {target_env:"uat", short_env:"u"},
-              {target_env:"prod", short_env:"p"}
-            ]
-            | map(select($selected == "all" or .target_env == $selected))
-            | {include: .}
+            if $selected != "dev" then
+              error("Only dev is enabled: UAT and prod are not provisioned")
+            else
+              {include: [{target_env:"dev", short_env:"d"}]}
+            end
           ')
           printf 'matrix=%s\n' "$matrix" >> "$GITHUB_OUTPUT"
 
@@ -130,7 +125,7 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_INTEGRATION_TEST_WEBHOOK_URL }}
           WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          TARGET_SELECTION: ${{ github.event_name == 'workflow_dispatch' && inputs.target_env || 'all (scheduled)' }}
+          TARGET_SELECTION: ${{ github.event_name == 'workflow_dispatch' && inputs.target_env || 'dev (scheduled)' }}
           SYNC_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'yesterday' }}
         shell: bash
         run: |
