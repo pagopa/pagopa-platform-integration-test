@@ -34,6 +34,9 @@ locals {
     "NAMESPACE" : local.domain,
     "WORKLOAD_IDENTITY_ID": data.azurerm_user_assigned_identity.workload_identity_clientid.client_id,
     "AZURE_KEY_VAULT_URL": local.domain_key_vault.url,
+    "ADX_CLUSTER_URI" : local.adx_cluster.uri,
+    "ADX_DATABASE" : local.adx_cluster.database,
+    "ADX_INGEST_URI" : local.adx_cluster.ingest_uri,
   }
   repo_secrets = {
     "SONAR_TOKEN" : data.azurerm_key_vault_secret.key_vault_sonar.value,

@@ -1,0 +1,138 @@
+name: 📊 QA Hub - Sync PostgreSQL to ADX
+
+on:
+  schedule:
+    - cron: '30 2 * * *'
+  workflow_dispatch:
+    inputs:
+      target_env:
+        description: Environment to synchronize (only dev is provisioned)
+        required: true
+        type: choice
+        default: dev
+        options:
+          - dev
+      mode:
+        description: "yesterday = previous UTC day, snapshot = full reload, since = from_date to now, range = from_date..to_date"
+        required: true
+        type: choice
+        default: yesterday
+        options:
+          - yesterday
+          - snapshot
+          - since
+          - range
+      from_date:
+        description: First UTC day, YYYY-MM-DD (since/range modes)
+        required: false
+        type: string
+        default: ''
+      to_date:
+        description: Last UTC day, inclusive, YYYY-MM-DD (range mode)
+        required: false
+        type: string
+        default: ''
+      dry_run:
+        description: Export from PostgreSQL only, without writing to ADX
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.targets.outputs.matrix }}
+    env:
+      TARGET_SELECTION: ${{ github.event_name == 'workflow_dispatch' && inputs.target_env || 'dev' }}
+    steps:
+      - name: Select environments to synchronize
+        id: targets
+        shell: bash
+        run: |
+          matrix=$(jq -cn --arg selected "$TARGET_SELECTION" '
+            if $selected != "dev" then
+              error("Only dev is enabled: UAT and prod are not provisioned")
+            else
+              {include: [{target_env:"dev", short_env:"d"}]}
+            end
+          ')
+          printf 'matrix=%s\n' "$matrix" >> "$GITHUB_OUTPUT"
+
+  sync_adx:
+    name: Sync QA Hub to ADX - ${{ matrix.target_env }}
+    needs: prepare
+    runs-on: [self-hosted-job, "${{ matrix.target_env }}"]
+    environment: ${{ matrix.target_env }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    concurrency:
+      group: qa-hub-adx-sync-${{ matrix.target_env }}
+      cancel-in-progress: false
+    env:
+      AZURE_KEY_VAULT_URL: https://pagopa-${{ matrix.short_env }}-itn-qa-kv.vault.azure.net/
+      SECRETS_RESOLVER: azure
+      TARGET_ENV: ${{ matrix.target_env }}
+      ADX_CLUSTER_URI: ${{ vars.ADX_CLUSTER_URI }}
+      ADX_DATABASE: ${{ vars.ADX_DATABASE }}
+      ADX_INGEST_URI: ${{ vars.ADX_INGEST_URI }}
+      SYNC_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'yesterday' }}
+      FROM_DATE: ${{ github.event_name == 'workflow_dispatch' && inputs.from_date || '' }}
+      TO_DATE: ${{ github.event_name == 'workflow_dispatch' && inputs.to_date || '' }}
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+
+      - name: Install sync dependencies
+        run: >-
+          python -m pip install
+          azure-identity azure-keyvault-secrets azure-mgmt-apimanagement requests dynaconf
+          azure-kusto-data==6.0.4 azure-kusto-ingest==6.0.4 "psycopg[binary]==3.3.6"
+
+      - name: Synchronize PostgreSQL tables to ADX
+        shell: bash
+        run: |
+          args=(--mode "$SYNC_MODE" --from-date "$FROM_DATE" --to-date "$TO_DATE")
+          if [ "$DRY_RUN" = "true" ]; then
+            args+=(--dry-run)
+          fi
+          python .github/scripts/qa_hub_adx_sync.py "${args[@]}"
+
+  notify_failure:
+    name: Notify ADX sync failure
+    if: always() && needs.sync_adx.result == 'failure'
+    needs: [sync_adx]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send failure alert to Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_INTEGRATION_TEST_WEBHOOK_URL }}
+          WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          TARGET_SELECTION: ${{ github.event_name == 'workflow_dispatch' && inputs.target_env || 'dev (scheduled)' }}
+          SYNC_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'yesterday' }}
+        shell: bash
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo 'SLACK_INTEGRATION_TEST_WEBHOOK_URL is not configured.' >&2
+            exit 1
+          fi
+
+          payload=$(jq -cn \
+            --arg selection "$TARGET_SELECTION" \
+            --arg mode "$SYNC_MODE" \
+            --arg url "$WORKFLOW_URL" \
+            '{text:("⚠️ QA Hub ADX sync (" + $mode + ") failed for " + $selection + ". <" + $url + "|Open workflow run>.")}')
+          curl --silent --show-error --fail-with-body --max-time 20 \
+            -H 'Content-Type: application/json' \
+            --data "$payload" \
+            "$SLACK_WEBHOOK_URL"
