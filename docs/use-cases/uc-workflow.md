@@ -69,6 +69,7 @@ Vocabolari delle tabelle (non sinonimi):
 | Timing semantics | `maximum`, `minimum`, `exact`, `not-applicable`, `unknown` |
 | Coverage and reason | `covered`, `partial`, `uncovered`, seguito da una motivazione se non covered |
 | Feature outputs.Write result | `written`; file non scritti non compaiono in questa tabella |
+| Optional catalogue | `not-requested`, `not-saved`, `pending-confirmation`, oppure percorso realmente salvato con decisione |
 
 Nel registro aggiungere una riga `feature` per ogni `.feature` scritto:
 produttore `uc-to-feature`, percorso concordato, revisione locale incrementale
@@ -94,6 +95,28 @@ combinazioni di dati, `Q-NNN` questioni. Non rinumerare o riciclare id eliminati
 Un caso poi raggruppato in un outline mantiene il proprio `SC-NNN`; il report
 finale lo associa a file, titolo scenario e riga di Examples.
 
+### Requisiti, casi e valori
+
+Un D identifica un requisito dati con significato, ruolo e vincoli, non un
+singolo valore. Piu SC possono usare lo stesso D con valori diversi nelle
+rispettive C, senza creare un D per ogni riga. Due entita con ruoli distinti
+o valori che devono essere diversi nello stesso caso richiedono D distinti,
+definiti dal contesto con la relazione richiesta. Il report dati non assegna
+nuovi D: propone la necessita e ritorna al contesto.
+
+In Data resolution distinguere le risoluzioni per D e SC; se lo stesso SC
+ha piu C con valori differenti, esplicitare i C pertinenti nella cella
+`Value or TODO token`. Combinations associa ogni D al valore scelto:
+nessuna risoluzione sovrascrive un altro valore dello stesso requisito.
+Ogni valore selezionato deve corrispondere a una risoluzione con provenienza,
+ammissione e idoneita; non ereditare queste proprieta da un altro valore.
+
+`__TODO_D001__` identifica D-001, non e un valore concreto condiviso ne
+un'asserzione di uguaglianza fra istanze. Si puo ripetere per lo stesso
+requisito in casi diversi, mantenendo irrisolta ciascuna C interessata.
+Per requisiti distinti usare token distinti; mai rinumerare i D esistenti
+per differenziare semplici varianti di valore.
+
 ## Varianti dati e riferimenti AC ai flussi
 
 Le AF rappresentano variazioni del percorso o dell'esito, non set di dati.
@@ -111,7 +134,13 @@ un caso aggiuntivo, ritorna al contesto per registrarlo e collegarlo prima di
 usarlo nelle combinazioni, senza avviare altri step in modalita manuale.
 Riutilizzare gli F/O/D esistenti quando il significato non cambia. La traduzione
 decide il raggruppamento finale: stesso comportamento e stesse verifiche
-possono diventare righe di un outline; verifiche differenti restano separate.
+possono diventare righe di un outline; casi con insiemi di verifiche differenti
+restano separati. Piu AC compatibili per lo stesso caso, invece, si verificano
+nello stesso scenario con Then/And: il rapporto AC:flusso e AC:scenario puo
+essere molti-a-uno per FP, AF ed EF/casi negativi. Non creare uno scenario per
+AC, non conservare un solo AC per flusso e non considerare duplicati i
+riferimenti allo stesso flusso in criteri distinti. Coverage conserva una
+voce per ogni AC anche quando scenario e riga Examples coincidono.
 Nuovi vincoli funzionali richiedono prima un aggiornamento del contesto,
 poi dei dati, con normale invalidazione a valle.
 
@@ -133,12 +162,30 @@ inventario iniziale dei casi desunti dallo UC e **percorsi attesi** degli output
 
 La skill funzionale scrive solo `01-context.md`; quella dati solo
 `02-test-data.md` (oltre all'eventuale catalogo autorizzato); la traduzione scrive
-le feature concordate e `03-feature-report.md`. Tutte aggiornano la propria riga
-Artifacts e la History di `00-run.md` dopo una scrittura riuscita, indicando
-produttore, percorso, revisione e stato. Mai dichiarare prodotto un file se
-il tool non lo ha scritto. Se il salvataggio fallisce, riportare l'errore e
-fermarsi prima del passaggio successivo: testo in chat non e un artefatto
-persistito. Non scrivere skill, UC sorgenti, altre specifiche, Python o ACE.
+le feature concordate e `03-feature-report.md`. Il registro e condiviso con
+questi permessi, non con un generico diritto di riscrittura:
+
+| Sezione o operazione | Chi puo aggiornarla | Limite |
+| --- | --- | --- |
+| Agreed inputs e identita | Skill inizializzatrice; poi skill attiva con conferma umana | Registrare input concordati; un cambiamento sostanziale invalida gli output dipendenti |
+| Scenario inventory | uc-to-feature (iniziale); uc-scenario-context | Allocare SC stabili e motivati; uc-test-data propone nuovi casi senza registrarli autonomamente |
+| Questions | Tutte e tre le skill | Allocare Q globali e aggiornare solo decisioni pertinenti con riferimento umano; non cambiare decisioni altrui senza conferma |
+| Artifacts: produzione | Skill proprietaria dell'output | Aggiornare solo la propria riga dopo salvataggio riuscito; uc-to-feature gestisce anche le righe feature |
+| Artifacts: invalidazione | Skill che rileva modifica o errore | Marcare stale gli output dipendenti gia creati senza cambiare produttore, percorso o revisione degli output altrui |
+| History e metadati registro | Skill attiva | Appendere eventi reali e aggiornare revision, updated_at e status del registro |
+
+Ogni aggiornamento persistito del registro incrementa la sua revisione e
+mantiene History, inventario e decisioni precedenti. Allocare Q non basta
+a risolverla: la stessa decisione e il suo scopo devono essere coerenti nel
+registro e nel report proprietario. Quando la decisione cambia il contenuto
+di un altro report, invalidarlo e rinviare alla sua skill; non editarlo.
+
+Mai dichiarare prodotto un file se il tool non lo ha scritto. Se il salvataggio
+di un output o del registro fallisce, riportare l'errore e fermarsi prima del
+passaggio successivo; segnalare i file eventualmente gia scritti e non
+dichiarare completata la run. Alla ripresa riconciliare l'operazione incompleta
+con la skill proprietaria. Non scrivere skill, UC sorgenti, altre specifiche,
+Python o ACE durante l'esecuzione dell'analista.
 
 Il report dati e sempre obbligatorio, anche se contiene solo requisiti mancanti
 e TODO; non e il catalogo opzionale `docs/use-cases/test-data/<scope>/`.
@@ -218,6 +265,55 @@ le fonti/decisioni del report. Se un report e esterno o modificato manualmente,
 chiedere conferma e farlo validare dalla skill proprietaria, senza fingere che
 lo abbia prodotto essa.
 
+### Conferma di continuita alla ripresa
+
+Il contratto resta `uc-workflow/v1`: nessun nuovo campo, fingerprint, parser
+operativo o comando e richiesto all'analista. Revisioni e History da sole
+non rilevano modifiche di contenuto che conservano i metadati. La verifica
+di continuita e umana, non una certificazione automatica di integrita.
+
+Alla ripresa di una run esistente, anche tra comandi manuali o dopo
+un'interruzione, prima di riusare o sovrascrivere output chiedere conferma
+tramite lo strumento domande. Presentare un inventario esatto di input UC,
+fonti/passaggi usati, profilo/input concordati, report da consumare e feature
+gia registrate, con percorsi, revisioni e stati noti. Chiedere se i contenuti
+sono invariati rispetto a quelli registrati, non solo se i numeri coincidono;
+una risposta generica non copre file non elencati. I file mancanti o
+illeggibili restano errori, anche se l'umano li dichiara invariati.
+
+Registrare risposta, scopo, riferimento umano e timestamp in una Q di
+Questions e in History, usando le colonne esistenti. Se l'umano conferma
+la continuita, e i controlli strutturali passano, si possono riusare report
+correnti senza ripetere retrieval. Una conferma vale per i percorsi e le
+revisioni elencati nella ripresa corrente; una nuova ripresa o una modifica
+richiede un nuovo controllo. Non ripetere la domanda fra passaggi automatici
+consecutivi della stessa esecuzione senza interruzioni o modifiche esterne.
+
+Se viene dichiarata una modifica, marcarne l'artefatto e i dipendenti stale
+prima del riuso; la skill proprietaria valida/riproduce il contenuto e
+incrementa la revisione. Non adottare ciecamente producer_skill o revision
+di un file modificato: registrare la provenienza manuale in History.
+In assemble-only fermarsi e indicare la skill da rieseguire, senza retrieval.
+Se la continuita non e confermata o non e verificabile, registrare la
+questione aperta/declined, marcare stale gli output esistenti coinvolti e
+bloccare la ripresa; non presumere che siano correnti.
+
+Le feature ai percorsi concordati si possono leggere solo per verificare
+la corrispondenza con il report, le modifiche dichiarate e la destinazione
+di scrittura, mai come fonte di requisiti, step o convenzioni. Una feature
+modificata non diventa una fonte funzionale: fermarsi prima di sovrascriverla,
+chiarire con l'umano come preservare le modifiche e far riconciliare alla
+traduzione il report con UC e fonti ammesse. Non cancellare file o modifiche
+manuali automaticamente.
+
+La conferma di continuita non approva nuovi candidati e non rinnova la
+disponibilita dei dati nell'ambiente. I report v1 precedenti si possono
+riusare solo dopo questa conferma e i controlli correnti; enum non canonici
+o altre incompatibilita richiedono rivalidazione della skill proprietaria,
+non una conversione silenziosa del consumatore.
+
+### Invalidazione e stato della run
+
 Ogni report registra le revisioni dei propri input. Cambi di UC, contesto,
 vincoli o decisioni rendono `stale` gli output a valle nel registro; non si
 aggiorna soltanto il numero in `inputs`. La skill proprietaria deve rielaborare
@@ -225,6 +321,33 @@ il contenuto e incrementare la revisione. Rivalutare l'idoneita dei dati se
 cambiano i requisiti; non riutilizzare approvazioni oltre il loro scopo.
 Confermare che l'input UC e ancora la revisione registrata a ogni ripresa;
 se non verificabile, chiedere all'umano.
+
+| Contenuto cambiato | Output da invalidare nel registro |
+| --- | --- |
+| UC, ambiente o decisione funzionale | context, test-data, feature-report, feature |
+| 01-context.md | test-data, feature-report, feature |
+| Fonte o decisione solo dati | test-data, feature-report, feature |
+| 02-test-data.md | feature-report, feature |
+| Feature registrata modificata manualmente | feature interessata, feature-report |
+| 03-feature-report.md modificato manualmente | feature-report, feature |
+| History o sola conferma di continuita | Nessuno |
+
+La tabella include tutte le righe feature dipendenti, non solo i report.
+Un artefatto modificato manualmente e anch'esso stale; se e appena stato
+rielaborato dal proprietario, la sua nuova riga riporta lo stato effettivo.
+`not_created` resta tale; invalidare un output mai creato non lo rende
+esistente. Conservare le revisioni registrate degli output invalidati:
+solo il produttore le incrementa dopo una scrittura riuscita.
+Modifiche al profilo, agli input Gherkin o ai percorsi feature invalidano
+feature-report e feature; se cambiano anche il significato funzionale,
+invalidare pure contesto e dati.
+
+Quando si invalida un risultato esistente, la run passa a `in_progress`,
+non resta complete/draft sulla base del vecchio report. Una ripresa fermata
+per identita, accesso o continuita non confermata usa `blocked`, con la Q
+pertinente. La sola modifica amministrativa del registro non invalida
+report o feature: non usare la revisione o l'intero contenuto di 00-run.md
+come dipendenza a monte. Non creare cicli di auto-invalidazione.
 
 `01-context.md`: `ready` solo senza lacune funzionali bloccanti; `incomplete`
 per copertura parziale esplicita; `blocked` per conflitto/identita non risolti.
@@ -262,7 +385,19 @@ Prima di chiudere una run, verificare:
    null intenzionali non sono TODO. Tutti gli elementi UC sono in Coverage.
 6. Registro `complete` solo con report finale `ready`; `draft` con finale
    `incomplete`; `blocked` con finale `blocked`; altrimenti `in_progress`.
+   Il report deve essere corrente anche nel registro e i controlli di
+   continuita applicabili devono essere soddisfatti. Un report finale blocked
+   non riabilita le feature stale di una generazione precedente.
    Questo stato non autorizza sviluppo/esecuzione automatici.
+
+## Verifica del contratto
+
+I [casi di regressione](uc-workflow-validation.md) fissano risultati attesi
+per proprieta, identita, ripresa, granularita, enum e TODO. I test statici e
+sintattici degli asset sono eseguiti esternamente all'analista e non sono
+test della suite applicativa. La loro riuscita non dimostra che l'agente
+abbia completato una run reale; tale verifica richiede input umani e run
+confermati, e registra controlli effettivi nel report finale.
 
 ## Fonti e portabilita
 

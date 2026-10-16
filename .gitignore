@@ -161,7 +161,7 @@ config/.secrets.yaml*
 /.mvn/
 /.vs
 
-# Test Reports 
+# Test Reports
 /reports/
 /allure-results/
 /junit/
@@ -177,7 +177,12 @@ secrets.yaml
 
 #Temporary helper files and docs
 /tmp_fetched/
-/tests/
+/tests/*
+!/tests/unit/
+/tests/unit/*
+!/tests/unit/qa_workflow/
+/tests/unit/qa_workflow/*
+!/tests/unit/qa_workflow/test_uc_workflow_contract.py
 /.tmp*/
 /doc/videos
 /doc/videos/*

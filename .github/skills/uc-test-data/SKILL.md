@@ -20,7 +20,8 @@ Read its persona and scoped ACE instructions. No new agent is needed.
 
 Read [uc-workflow.md](../../../docs/use-cases/uc-workflow.md) first. Read the
 exact `00-run.md` and `01-context.md` registered for this run. Validate their
-identity, revisions and states before resolving data; do not silently use chat
+identity, revisions and states, and obtain the workflow's human continuity
+confirmation on resumption, before resolving data; do not silently use chat
 memory or a report from another run. If context is missing, stale or blocked,
 report the prerequisite. In manual mode ask the user to run uc-scenario-context;
 in automatic mode return the issue to uc-to-feature instead of recursively
@@ -34,8 +35,10 @@ exact context revision in `inputs`. If new requirements emerge, record a
 question and return for a context update; do not silently redefine constraints.
 Only resolve requirements supported by admitted functional evidence.
 
-After writing, update this output's row and append History in `00-run.md`;
-invalidate the feature report when inputs or resolutions change. Return the
+After writing, update this output's row and pertinent Q decisions, append
+History and update registry metadata under the workflow's ownership rules.
+Invalidate both the feature report and existing feature rows when inputs or
+resolutions change; do not edit their files, producers or revisions. Return the
 actual path, revision and status. This skill does not edit features or invoke
 translation: uc-to-feature consumes the report and applies values/comments.
 An explicit read-only request returns a proposal, not a completed stage.
@@ -54,7 +57,7 @@ It owns source admission, reading tools, human approval and provenance. Use
 [uc-scenario-context](../uc-scenario-context/SKILL.md) for missing
 field meanings, functional sequences, constraints or expected values; never
 solve those questions by adapting the scenario to the data found.
-For feature edits read
+For feature prescriptions read
 [gherkin.instructions.md](../../instructions/gherkin.instructions.md) and its
 profile. Do not duplicate their language, indentation, tag or outline rules.
 
@@ -78,6 +81,11 @@ profile. Do not duplicate their language, indentation, tag or outline rules.
    evidence/oracles/requirements before including them in combinations.
    Preserve the context's AC applicability; do not invent checks from input
    values. New dimensions or constraints also require a context update.
+   A D identifies the requirement, not each selected value. Keep distinct
+   resolutions per D/SC and identify applicable C ids in the value cell when
+   needed; Combinations selects the values. Each resolution retains its own
+   provenance, admission and fitness. Do not overwrite one value with another
+   or allocate a new D merely because a value varies.
 3. For unresolved values, search repository documentation/data records as
    candidates under the shared policy. Show matching candidates and ask the
    human for explicit approval **before** marking them usable in the report.
@@ -98,8 +106,9 @@ profile. Do not duplicate their language, indentation, tag or outline rules.
    decisions. Neither catalogue size nor a Cartesian product establishes
    relevant combinations; same-flow data sets can become outline rows
    without creating UC AFs.
-6. Report availability separately: `documented, not checked in environment`,
-   `confirmed by user` (with scope/date), or `unknown/to prepare`. Do not run
+6. Report availability separately using the exact workflow values:
+   `documented-not-checked`, `user-confirmed` (with scope/date), or
+   `unknown-to-prepare`. Do not run
    tests, query test systems or mutate them. A consumable value may be stale
    even when once confirmed. Annotation and `bozza` status remain when a
    required current state or combination is not established.
@@ -116,10 +125,14 @@ profile. Do not duplicate their language, indentation, tag or outline rules.
 Use this contract when input values are unavailable, declined, pending
 approval, or still unsuitable:
 
-- Assign each unresolved requirement a stable `D-NNN` id in the output.
+- Reuse each unresolved requirement's `D-NNN` id from context; never allocate
+  new D ids here. A missing or semantically different requirement returns to
+  context before resolution.
   In the feature use a conspicuous string token `__TODO_D001__`, corresponding
   to `D-001`; never a plausible fake value. Reuse it only for the same
-  requirement. Distinct values get distinct ids.
+  requirement, including across its unresolved cases/combinations. Repeating
+  the token does not assert equal concrete values. Distinct requirements get
+  distinct tokens; different selected values alone do not create new D ids.
 - A Gherkin outline parameter such as `<identifier>` is a variable, not an
   unresolved value. Keep it and put the TODO token in the appropriate
   `Examples` cell. For a constant value put the token in the step or step
@@ -192,7 +205,7 @@ substitute for the persisted report.
 - **Feature prescriptions**: proposed values, markers and per-scenario warnings;
   no feature edit. Report checks actually performed, not assumed.
 - **Persistence**: path actually saved and provenance retained, or explicitly
-  `not requested`, `not saved` or `pending confirmation`.
+  `not-requested`, `not-saved` or `pending-confirmation`.
 - **Readiness**: `bozza` when markers, unverified candidates or required states
   remain unresolved; source and approval alone are never proof of execution
   readiness. Return functional gaps to uc-scenario-context.

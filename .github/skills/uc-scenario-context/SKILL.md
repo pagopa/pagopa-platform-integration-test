@@ -29,9 +29,13 @@ unresolved. This intermediate evidence report is not a new authoritative
 specification. A chat-only or explicit read-only request can return a proposal,
 but cannot count as a completed persistent stage.
 
-Check identity, producer, revision and state as defined by the workflow.
-After writing, update only this output's registry row and append History;
-invalidate downstream reports when content changes. Do not invoke the next
+Check identity, producer, revision and state as defined by the workflow,
+including its human continuity confirmation when resuming an existing run.
+Use the registry ownership rules: update this output's row after writing,
+register supported SC cases and pertinent Q decisions, append History and
+update registry metadata. Invalidate downstream reports and feature rows
+when content changes; never rewrite another skill's report or revision.
+Do not invoke the next
 skill or modify features: manual execution stops here; automatic execution
 returns to uc-to-feature with the actual report path, revision and status.
 
@@ -87,6 +91,13 @@ profile; granularity and UC mapping remain in
    contribute to both skills, without reading it twice unnecessarily.
    Register newly supported cases with stable SC-NNN ids under the UC skill's
    inventory rule; data resolution will establish their concrete combinations.
+   Define D ids for requirements, not every concrete value. Reuse a D across
+   cases when meaning, role and constraints are unchanged; distinct roles or
+   values that must differ within one case need distinct requirements and
+   explicit relationships. Only context allocates new D ids.
+   For a required intermediate check without an AC/postcondition id, record
+   its actual FP/AF/EF element or admitted passage in `AC or postcondition`;
+   do not invent an AC to fit the template.
 6. Persist the resolved evidence and all gaps in the intermediate report and
    return it to UC translation. Do not edit features, create a new functional
    specification or an invented UC. Missing functional behaviour, ordering or

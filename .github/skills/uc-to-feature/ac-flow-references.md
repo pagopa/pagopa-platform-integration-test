@@ -43,7 +43,9 @@ when it clearly identifies the criterion's target flow.
    to that flow's supported data variants, unless the criterion explicitly
    limits them by condition or data properties. A reference does not define
    the number of variants, concrete data, new behaviours or missing oracles.
-   Distinct or additional checks may require separate scenarios/outlines.
+   Several compatible checks for the same case belong in one scenario.
+   Separate cases/scenarios/outlines only when their functional context,
+   behaviour or applicable verification sets differ.
 5. Several explicit targets apply only as stated by the criterion. Resolve
    all of them and record each association; ask if their relationship or
    expected outcomes are unclear. A reference mentioned for comparison or
@@ -56,6 +58,42 @@ when it clearly identifies the criterion's target flow.
    existing context Oracles/Functional evidence and final Coverage sections.
    Use their existing columns; unresolved references go to Questions and
    affected coverage remains incomplete. Do not impose new feature tags.
+
+## AC cardinality and grouping
+
+The AC-to-flow and AC-to-Gherkin-scenario relationships both allow **many to
+one**. Multiple distinct ACs may reference FP, the same AF, or the same EF
+and all be checked in one scenario, including a negative scenario. Repeated
+references to the same flow in different ACs are not duplicate flow definitions
+or an ambiguity.
+
+Collect all applicable ACs for the case; do not overwrite an earlier criterion
+when resolving another to the same flow, and do not create one scenario per AC.
+With the same starting conditions and actions, compatible checks become
+`Then`/`And` assertions in the same scenario. They can verify different
+properties of that case's observable outcome. Retain each criterion and its
+source/oracle separately in Coverage, allowing several rows to identify the
+same scenario and Examples row.
+
+The outline rule about different verification sets compares **different
+cases**, not individual ACs: if every row needs AC01 and AC02, both checks
+belong to their shared outline. If a different case requires a different or
+additional set of checks, use a separate scenario/outline as prescribed by the
+mapping rules. Conflicting criteria remain a functional question; do not split
+them merely to hide the contradiction. Do not propagate one EF's criteria to
+another EF without a requirement.
+
+Illustrative associations only, not approved UC-to-feature examples:
+
+| Criteria and target | Gherkin grouping |
+| --- | --- |
+| AC01 and AC02 both reference FP | One main-flow scenario/outline checking both |
+| AC03 and AC04 both reference AF02 | One AF02 scenario/outline checking both |
+| AC05 and AC06 both reference EF01 | One negative EF01 scenario/outline checking both |
+
+These associations assume compatible criteria for the same case, not a rule
+that every flow has exactly one scenario. One AC may also apply to several
+supported cases or flows when its meaning establishes that scope.
 
 ## Recognition examples
 
