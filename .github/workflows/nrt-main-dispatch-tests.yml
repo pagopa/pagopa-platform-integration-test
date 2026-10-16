@@ -116,10 +116,38 @@ jobs:
           merge-multiple: true
 
       - name: Add suite Allure histories to the published site
+        env:
+          SUITE_MATRIX: ${{ needs.prepare.outputs.matrix }}
+          TARGET_ENV: ${{ needs.prepare.outputs.target_env }}
+          RUN_NUMBER: ${{ github.run_number }}
         shell: bash
         run: |
           if [ -d nrt-allure-history ]; then
-            cp -r nrt-allure-history/. public/
+            mapfile -t subfolders < <(jq -r '.include[].allure_subfolder' <<< "$SUITE_MATRIX")
+            for subfolder in "${subfolders[@]}"; do
+              suite_history="nrt-allure-history/${subfolder}-${TARGET_ENV}"
+              report_dir="${suite_history}/${RUN_NUMBER}"
+              if [ ! -d "$report_dir" ]; then
+                echo "::warning::No Allure report was produced for ${subfolder} (${TARGET_ENV})."
+                continue
+              fi
+
+              timestamp=$(jq -er '
+                .time | if type == "array" then .[0] else . end
+                | .start | select(type == "number" and . > 0)
+                | . / 1000 | floor | strftime("%Y-%m-%d_%H:%M:%S")
+              ' "$report_dir/widgets/summary.json")
+              destination="public/${subfolder}/${timestamp}"
+              mkdir -p "$destination"
+              cp -r "$report_dir/." "$destination/"
+
+              # Keep the reusable workflow's environment-specific trend history.
+              if [ -d "${suite_history}/last-history" ]; then
+                history_destination="public/${subfolder}-${TARGET_ENV}/last-history"
+                mkdir -p "$history_destination"
+                cp -r "${suite_history}/last-history/." "$history_destination/"
+              fi
+            done
           else
             echo "No Allure history artifacts were produced."
           fi

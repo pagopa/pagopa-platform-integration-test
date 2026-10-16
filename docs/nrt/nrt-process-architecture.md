@@ -128,6 +128,14 @@ Allure history is isolated by environment, for example `wisp-tests-uat` and
 `wisp-tests-dev`, so runs against different environments do not overwrite each other's
 trend data.
 
+The publisher in `nrt-main-dispatch-tests.yml` copies each report to
+`<allure_subfolder>/YYYY-MM-DD_HH:MM:SS/`, for example
+`checkout-e2e-tests/2026-10-15_14:41:04/`. The timestamp is the test start time
+from Allure's `widgets/summary.json`, formatted in UTC. Only the published report
+path changes: suite artifacts retain their environment suffix and run number,
+and `<allure_subfolder>-<env>/last-history` remains available to the reusable
+workflow. Previously published report folders are not migrated or removed.
+
 ## 6. Secret synchronization and consumption
 
 ### 6.1 Synchronization flow
