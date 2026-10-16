@@ -24,6 +24,12 @@ locals {
   domain_key_vault = {
     url = "https://${local.prefix}-${var.env_short}-${local.location_short}-qa-kv.vault.azure.net/",
   }
+
+  adx_cluster = {
+    uri        = "https://pagopa${var.env_short}dataexplorer.westeurope.kusto.windows.net"
+    database   = "re",
+    ingest_uri = "https://ingest-pagopa${var.env_short}dataexplorer.westeurope.kusto.windows.net",
+  }
 }
 
 variable "env" {
