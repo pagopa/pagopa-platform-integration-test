@@ -4,98 +4,57 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard Test di Integrazione</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body { background-color: #f8f9fa; }
-    .hero { background-color: #007bff; padding: 4rem 0; color: white; text-align: center; }
-    .hero h1 { font-size: 3rem; }
-    .hero p { font-size: 1.5rem; }
-    .section { margin-top: 2rem; }
-    .card-link { text-decoration: none; color: inherit; }
-    .spinner-border { width: 2rem; height: 2rem; }
-    .stats { margin-top: 1rem; font-size: 1rem; }
-    .badge { margin: 0.25rem; }
-  </style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-
-  <div class="hero">
-    <h1>📈 Dashboard Test di Integrazione</h1>
+<body class="bg-light">
+  <header class="bg-primary text-white text-center p-5">
+    <h1>Dashboard Test di Integrazione</h1>
     <p>Monitoraggio automatizzato delle componenti della piattaforma pagoPA</p>
-  </div>
-
-  <div class="container section">
+  </header>
+  <main class="container py-5">
     <div class="row justify-content-center">
-
-      <div class="col-md-5 text-center mb-4">
-        <a href="./wisp-tests/index.html" class="btn btn-primary btn-lg card-link">
-          🔗 WISP Tests
-        </a>
-        <div class="stats" id="wisp-stats">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
+      
+      <section class="col-md-5 text-center mb-4">
+        
+        <a href="./wisp-tests/index.html" class="btn btn-primary btn-lg">WISP</a>
+        <div class="mt-3">
+          <span class="badge bg-success">Passed: 24</span>
+          <span class="badge bg-danger">Failed: 45</span>
+          <span class="badge bg-warning text-dark">Skipped: 0</span>
+          <span class="badge bg-info text-dark">Duration: 0:07:54</span>
         </div>
-      </div>
-
-      <!-- <div class="col-md-5 text-center mb-4">
-        <a href="./fdr-tests/index.html" class="btn btn-primary btn-lg card-link">
-          🔗 FdR Tests
-        </a>
-        <div class="stats" id="fdr-stats">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
+        <p class="text-muted mt-2">Ultima esecuzione: 2026-10-16_13:35:03 UTC</p>
+        
+      </section>
+      
+      <section class="col-md-5 text-center mb-4">
+        
+        <a href="./checkout-e2e-tests/index.html" class="btn btn-primary btn-lg">Checkout E2E</a>
+        <div class="mt-3">
+          <span class="badge bg-success">Passed: 48</span>
+          <span class="badge bg-danger">Failed: 1</span>
+          <span class="badge bg-warning text-dark">Skipped: 0</span>
+          <span class="badge bg-info text-dark">Duration: 0:06:38</span>
         </div>
-      </div> -->
-
-      <div class="col-md-5 text-center mb-4">
-        <a href="./checkout-e2e-tests/index.html" class="btn btn-primary btn-lg card-link">
-          🔗 Checkout E2E Tests
-        </a>
-        <div class="stats" id="checkout-e2e-stats">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
+        <p class="text-muted mt-2">Ultima esecuzione: 2026-10-16_13:35:28 UTC</p>
+        
+      </section>
+      
+      <section class="col-md-5 text-center mb-4">
+        
+        <a href="./fdr3-tests/index.html" class="btn btn-primary btn-lg">FDR-3</a>
+        <div class="mt-3">
+          <span class="badge bg-success">Passed: 25</span>
+          <span class="badge bg-danger">Failed: 0</span>
+          <span class="badge bg-warning text-dark">Skipped: 0</span>
+          <span class="badge bg-info text-dark">Duration: 0:00:11</span>
         </div>
-      </div>
-
+        <p class="text-muted mt-2">Ultima esecuzione: 2026-10-16_13:34:58 UTC</p>
+        
+      </section>
+      
     </div>
-  </div>
-
-  <script>
-    async function loadStats(app, elementId) {
-      try {
-        const statsResponse = await fetch(`./${app}-tests/last-history/stats.json`);
-        const summaryResponse = await fetch(`./${app}-tests/last-history/widgets/summary.json`);
-
-        if (statsResponse.ok && summaryResponse.ok) {
-          const statsData = await statsResponse.json();
-          const summaryData = await summaryResponse.json();
-
-          const durationSeconds = Math.floor(summaryData.time.duration / 1000);
-          const minutes = Math.floor(durationSeconds / 60);
-          const seconds = durationSeconds % 60;
-          const timeFormatted = `${minutes}m ${seconds}s`;
-
-          document.getElementById(elementId).innerHTML = `
-            <span class="badge bg-success">✅ Passed: ${statsData.passed}</span>
-            <span class="badge bg-danger">❌ Failed: ${statsData.failed}</span>
-            <span class="badge bg-warning text-dark">⚡ Skipped: ${statsData.skipped}</span>
-            <span class="badge bg-info text-dark">⏱️ Time: ${timeFormatted}</span>
-          `;
-        } else {
-          document.getElementById(elementId).innerHTML = '<span class="badge bg-secondary">📄 Stats not available</span>';
-        }
-      } catch (error) {
-        document.getElementById(elementId).innerHTML = '<span class="badge bg-secondary">⚠️ Error loading stats</span>';
-      }
-    }
-
-    loadStats('wisp', 'wisp-stats');
-    loadStats('fdr', 'fdr-stats');
-    loadStats('checkout-e2e', 'checkout-e2e-stats');
-  </script>
-
+  </main>
+  <footer class="text-center text-muted pb-4">Ultimo aggiornamento: 2026-10-16 13:50:15 UTC</footer>
 </body>
 </html>
