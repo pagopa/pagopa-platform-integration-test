@@ -92,6 +92,87 @@ jobs:
       target_env: ${{ needs.prepare.outputs.target_env }}
     secrets: inherit
 
+  publish_allure_reports:
+    name: NRT - Publish Allure reports
+    if: always() && needs.prepare.result == 'success'
+    needs: [prepare, run_suites]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Checkout report publishing sources
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Checkout gh-pages
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: gh-pages
+          path: public
+          fetch-depth: 0
+
+      - name: Download suite Allure histories
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: nrt-allure-history-*
+          path: nrt-allure-history
+          merge-multiple: true
+
+      - name: Add suite Allure histories to the published site
+        env:
+          SUITE_MATRIX: ${{ needs.prepare.outputs.matrix }}
+          TARGET_ENV: ${{ needs.prepare.outputs.target_env }}
+          RUN_NUMBER: ${{ github.run_number }}
+        shell: bash
+        run: |
+          if [ -d nrt-allure-history ]; then
+            mapfile -t subfolders < <(jq -r '.include[].allure_subfolder' <<< "$SUITE_MATRIX")
+            for subfolder in "${subfolders[@]}"; do
+              suite_history="nrt-allure-history/${subfolder}-${TARGET_ENV}"
+              report_dir="${suite_history}/${RUN_NUMBER}"
+              if [ ! -d "$report_dir" ]; then
+                echo "::warning::No Allure report was produced for ${subfolder} (${TARGET_ENV})."
+                continue
+              fi
+
+              timestamp=$(jq -er '
+                .time | if type == "array" then .[0] else . end
+                | .start | select(type == "number" and . > 0)
+                | . / 1000 | floor | strftime("%Y-%m-%d_%H:%M:%S")
+              ' "$report_dir/widgets/summary.json")
+              destination="public/${subfolder}/${timestamp}"
+              mkdir -p "$destination"
+              cp -r "$report_dir/." "$destination/"
+
+              # Keep the reusable workflow's environment-specific trend history.
+              if [ -d "${suite_history}/last-history" ]; then
+                history_destination="public/${subfolder}-${TARGET_ENV}/last-history"
+                mkdir -p "$history_destination"
+                cp -r "${suite_history}/last-history/." "$history_destination/"
+              fi
+            done
+          else
+            echo "No Allure history artifacts were produced."
+          fi
+
+      - name: Setup Python for report indexes
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: 3.x
+
+      - name: Install report index dependencies
+        run: pip install jinja2
+
+      - name: Update report indexes and statistics
+        run: python .github/scripts/nrt-publish-indexes.py
+
+      - name: Deploy Allure reports to GitHub Pages
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+
   aggregate_ai_prompt:
     name: NRT - Aggregate AI prompt
     if: always() && needs.prepare.result == 'success'
@@ -173,7 +254,7 @@ jobs:
   final_status:
     name: NRT - Final status
     if: always()
-    needs: [prepare, run_suites, aggregate_ai_prompt, ai_analysis]
+    needs: [prepare, run_suites, aggregate_ai_prompt, ai_analysis, publish_allure_reports]
     runs-on: ubuntu-latest
     steps:
       - name: Download suite outcomes
@@ -190,6 +271,7 @@ jobs:
           EXPECTED_SUITE_COUNT: ${{ needs.prepare.outputs.suite_count }}
           PREPARE_RESULT: ${{ needs.prepare.result }}
           SUITES_RESULT: ${{ needs.run_suites.result }}
+          PUBLISH_RESULT: ${{ needs.publish_allure_reports.result }}
         shell: bash
         run: |
           outcome_files=()
@@ -202,6 +284,11 @@ jobs:
           if [ "$PREPARE_RESULT" != success ] || [ "$SUITES_RESULT" != success ]; then
             failed=true
             echo "::error title=NRT orchestration::prepare=$PREPARE_RESULT, run_suites=$SUITES_RESULT"
+          fi
+          if [ "$PUBLISH_RESULT" != success ]; then
+            failed=true
+            echo "Allure report publication: $PUBLISH_RESULT" | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "::error title=NRT report publication::GitHub Pages deployment ended with $PUBLISH_RESULT"
           fi
           if [ "${#outcome_files[@]}" -ne "${EXPECTED_SUITE_COUNT:-0}" ]; then
             message="Expected ${EXPECTED_SUITE_COUNT:-0} outcome file(s), found ${#outcome_files[@]}."
