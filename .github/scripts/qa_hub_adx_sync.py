@@ -343,11 +343,57 @@ def export_table(connection: Any, spec: TableSpec, window: SyncWindow, output_di
     return result
 
 
+def log_database_connection_diagnostics(connection_url: str) -> None:
+    """Log endpoint comparisons without exposing values from a potentially malformed URL."""
+    from psycopg import ProgrammingError
+    from psycopg.conninfo import conninfo_to_dict
+
+    target_env = os.environ.get("TARGET_ENV", "").lower()
+    short_env = {"dev": "d", "uat": "u", "prod": "p"}.get(target_env)
+    expected_host = (
+        f"pagopa-{short_env}-itn-qa-flexible-postgresql.postgres.database.azure.com"
+        if short_env else None
+    )
+    expected_vault = f"https://pagopa-{short_env}-itn-qa-kv.vault.azure.net/"
+    LOGGER.info(
+        "[DEBUG-adx-pg] source: target_env=%s expected_host=%s key_vault_matches_expected=%s",
+        target_env if short_env else "<unknown>",
+        expected_host,
+        short_env is not None and os.environ.get("AZURE_KEY_VAULT_URL") == expected_vault,
+    )
+    parts = urlsplit(connection_url)
+    LOGGER.info(
+        "[DEBUG-adx-pg] URL structure: credentials_separator_present=%s fragment_present=%s "
+        "connection_parameter_overrides_present=%s",
+        "@" in parts.netloc,
+        bool(parts.fragment),
+        any(key in {"host", "hostaddr", "port", "dbname", "service"} for key, _ in parse_qsl(parts.query)),
+    )
+    try:
+        parameters = conninfo_to_dict(connection_url)
+    except ProgrammingError:
+        LOGGER.error("[DEBUG-adx-pg] libpq_parse=failed; connection URL rejected")
+        raise ValueError(
+            "Invalid PostgreSQL connection URL. Check its structure and percent-encode credentials."
+        ) from None
+    LOGGER.info(
+        "[DEBUG-adx-pg] libpq_parse=ok host_matches_expected=%s host_is_qachub=%s "
+        "port_is_5432=%s dbname_is_qachub=%s sslmode_is_require=%s",
+        expected_host is not None and parameters.get("host") == expected_host,
+        parameters.get("host") == "qachub",
+        parameters.get("port") == "5432",
+        parameters.get("dbname") == "qachub",
+        parameters.get("sslmode") == "require",
+    )
+
+
 def export_all(database_url: str, window: SyncWindow, output_dir: Path) -> dict[str, ExportResult]:
     """Export every table within a single read-only, repeatable-read transaction."""
     import psycopg
 
-    with psycopg.connect(to_libpq_url(database_url), application_name="qa-hub-adx-sync") as connection:
+    connection_url = to_libpq_url(database_url)
+    log_database_connection_diagnostics(connection_url)
+    with psycopg.connect(connection_url, application_name="qa-hub-adx-sync") as connection:
         connection.read_only = True
         connection.isolation_level = psycopg.IsolationLevel.REPEATABLE_READ
         with connection.transaction():

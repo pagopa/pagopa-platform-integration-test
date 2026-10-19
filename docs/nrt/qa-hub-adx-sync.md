@@ -75,6 +75,23 @@ gh workflow run qa-hub-adx-sync.yml -f target_env=dev -f mode=range \
   -f from_date=2026-09-01 -f to_date=2026-09-30
 ```
 
+## Temporary PostgreSQL connection diagnostics
+
+Before connecting, `[DEBUG-adx-pg]` logs compare the libpq-parsed endpoint with the
+expected PostgreSQL hostname for `TARGET_ENV`, port `5432`, database `qachub`, and
+SSL mode `require`. They also report whether the configured Key Vault URL matches
+the expected environment, and flag URL fragments and connection parameter overrides.
+No connection URL, username, password, or arbitrary parsed parameter values are logged:
+malformed URLs can cause password fragments to be interpreted as endpoint fields.
+
+For UAT, `host_matches_expected=True` refers to
+`pagopa-u-itn-qa-flexible-postgresql.postgres.database.azure.com`.
+`host_is_qachub=True` instead indicates that libpq interpreted `qachub` as the host.
+Check credential percent-encoding and the secret's URL structure in that case;
+an unescaped `/` in a password can produce this result. These traces diagnose the
+connection parameters; they do not prove DNS or network reachability.
+Remove the tagged diagnostics after the UAT issue is resolved.
+
 ## Local validation
 
 ```bash

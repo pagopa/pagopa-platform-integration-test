@@ -84,6 +84,58 @@ def test_to_libpq_url_rejects_other_schemes():
         sync.to_libpq_url("mysql://user:pwd@host/db")
 
 
+@pytest.mark.parametrize(
+    ("password", "expected_host_match", "expected_host_is_qachub"),
+    [
+        ("synthetic-password", True, False),
+        ("synthetic%2Fpassword", True, False),
+        ("synthetic/password", False, True),
+    ],
+)
+def test_connection_diagnostics_do_not_log_credentials(
+    password, expected_host_match, expected_host_is_qachub, monkeypatch, caplog
+):
+    """Compare parsed endpoints without exposing even malformed credentials."""
+    monkeypatch.setenv("TARGET_ENV", "uat")
+    host = "pagopa-u-itn-qa-flexible-postgresql.postgres.database.azure.com"
+    url = sync.to_libpq_url(f"postgresql+asyncpg://qachub:{password}@{host}:5432/qachub?ssl=require")
+    with caplog.at_level("INFO", logger=sync.LOGGER.name):
+        sync.log_database_connection_diagnostics(url)
+    assert f"host_matches_expected={expected_host_match}" in caplog.text
+    assert f"host_is_qachub={expected_host_is_qachub}" in caplog.text
+    assert password not in caplog.text
+    assert url not in caplog.text
+    assert "synthetic" not in caplog.text
+
+
+def test_connection_diagnostics_sanitize_parser_errors(monkeypatch, caplog):
+    """Invalid URL options cannot expose their secret-bearing parser error."""
+    monkeypatch.setenv("TARGET_ENV", "uat")
+    url = "postgresql://qachub:synthetic-password@host/qachub?synthetic-secret-option=private"
+    with caplog.at_level("INFO", logger=sync.LOGGER.name):
+        with pytest.raises(ValueError, match="Invalid PostgreSQL connection URL") as error:
+            sync.log_database_connection_diagnostics(url)
+    assert "synthetic" not in caplog.text + str(error.value)
+    assert "libpq_parse=failed" in caplog.text
+
+
+def test_export_logs_connection_diagnostics_before_connecting(monkeypatch, caplog, tmp_path):
+    """The real connection path emits diagnostics before a connection failure."""
+    monkeypatch.setenv("TARGET_ENV", "uat")
+    host = "pagopa-u-itn-qa-flexible-postgresql.postgres.database.azure.com"
+    with patch("psycopg.connect", side_effect=RuntimeError("connection probe")) as connect:
+        with caplog.at_level("INFO", logger=sync.LOGGER.name):
+            with pytest.raises(RuntimeError, match="connection probe"):
+                sync.export_all(
+                    f"postgresql+asyncpg://qachub:synthetic-password@{host}:5432/qachub?ssl=require",
+                    sync.SyncWindow(),
+                    tmp_path,
+                )
+    connect.assert_called_once()
+    assert "host_matches_expected=True" in caplog.text
+    assert "synthetic-password" not in caplog.text
+
+
 def test_runs_query_filters_on_timestamp_start():
     """Windowed runs export filters on timestamp_start with bound parameters."""
     window = sync.SyncWindow(_utc(2026, 10, 14), _utc(2026, 10, 15))
