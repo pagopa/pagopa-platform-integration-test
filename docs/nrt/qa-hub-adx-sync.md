@@ -75,6 +75,15 @@ gh workflow run qa-hub-adx-sync.yml -f target_env=dev -f mode=range \
   -f from_date=2026-09-01 -f to_date=2026-09-30
 ```
 
+## PostgreSQL URL compatibility
+
+The sync accepts raw `/` characters in the password of `qa-centralhub-database-url`.
+Before URL parsing, it percent-encodes the password in memory and preserves existing
+percent escapes, so both raw slashes and already encoded `%2F` values work without
+changing the Key Vault secret or the database password. The driver suffix is removed
+and `ssl=require` is converted to `sslmode=require` as before.
+Other URL delimiters such as `?` and `#` must still be percent-encoded in credentials.
+
 ## Temporary PostgreSQL connection diagnostics
 
 Before connecting, `[DEBUG-adx-pg]` logs compare the libpq-parsed endpoint with the
@@ -87,9 +96,9 @@ malformed URLs can cause password fragments to be interpreted as endpoint fields
 For UAT, `host_matches_expected=True` refers to
 `pagopa-u-itn-qa-flexible-postgresql.postgres.database.azure.com`.
 `host_is_qachub=True` instead indicates that libpq interpreted `qachub` as the host.
-Check credential percent-encoding and the secret's URL structure in that case;
-an unescaped `/` in a password can produce this result. These traces diagnose the
-connection parameters; they do not prove DNS or network reachability.
+Check the URL structure in that case. Raw password slashes are now normalized by
+the script before these diagnostics run. These traces diagnose the connection
+parameters; they do not prove DNS or network reachability.
 Remove the tagged diagnostics after the UAT issue is resolved.
 
 ## Local validation

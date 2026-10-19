@@ -28,7 +28,7 @@ from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 from pathlib import Path
 from typing import Any, Iterable, Iterator
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
@@ -193,11 +193,19 @@ def compute_window(mode: str, from_date: date | None, to_date: date | None, toda
 
 
 def to_libpq_url(database_url: str) -> str:
-    """Convert a SQLAlchemy/asyncpg URL into a libpq URL usable by psycopg."""
-    parts = urlsplit(database_url.strip())
-    scheme = parts.scheme.split("+", 1)[0]
-    if scheme not in ("postgresql", "postgres"):
+    """Normalize the driver, password escaping, and SSL option for libpq."""
+    raw_scheme, separator, remainder = database_url.strip().partition("://")
+    if not separator or raw_scheme.lower().split("+", 1)[0] not in ("postgresql", "postgres"):
         raise ValueError("The database URL must use the postgresql scheme")
+    # Locate userinfo before urlsplit treats an unescaped password slash as a path.
+    endpoint = remainder.partition("?")[0].partition("#")[0]
+    suffix = remainder[len(endpoint):]
+    userinfo, at_sign, host_and_path = endpoint.rpartition("@")
+    if at_sign:
+        username, colon, password = userinfo.partition(":")
+        if colon:
+            remainder = f"{username}:{quote(password, safe='%')}@{host_and_path}{suffix}"
+    parts = urlsplit(f"postgresql://{remainder}")
     query = []
     for key, value in parse_qsl(parts.query, keep_blank_values=True):
         query.append(("sslmode", value) if key == "ssl" else (key, value))

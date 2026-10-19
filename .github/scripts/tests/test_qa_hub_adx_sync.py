@@ -85,11 +85,53 @@ def test_to_libpq_url_rejects_other_schemes():
 
 
 @pytest.mark.parametrize(
+    ("password", "expected_password"),
+    [
+        ("synthetic/password/two", "synthetic/password/two"),
+        ("synthetic%2Fpassword%2Ftwo", "synthetic/password/two"),
+        ("synthetic%2Fpassword/two", "synthetic/password/two"),
+        ("synthetic@password/two", "synthetic@password/two"),
+        ("synthetic:password/two", "synthetic:password/two"),
+        ("synthetic-password", "synthetic-password"),
+    ],
+)
+def test_to_libpq_url_preserves_endpoint_and_password(password, expected_password):
+    """Raw password slashes are encoded without double-encoding existing escapes."""
+    from psycopg.conninfo import conninfo_to_dict
+
+    host = "pagopa-u-itn-qa-flexible-postgresql.postgres.database.azure.com"
+    converted = sync.to_libpq_url(
+        f"postgresql+asyncpg://qachub:{password}@{host}:5432/qachub?ssl=require"
+    )
+    parameters = conninfo_to_dict(converted)
+    assert parameters == {
+        "user": "qachub",
+        "password": expected_password,
+        "host": host,
+        "port": "5432",
+        "dbname": "qachub",
+        "sslmode": "require",
+    }
+    assert sync.to_libpq_url(converted) == converted
+
+
+def test_to_libpq_url_does_not_treat_query_at_sign_as_credentials():
+    """An at sign in a query value does not change the authority."""
+    from psycopg.conninfo import conninfo_to_dict
+
+    url = "postgresql://host:5432/qachub?application_name=sync@example&ssl=require"
+    parameters = conninfo_to_dict(sync.to_libpq_url(url))
+    assert parameters["host"] == "host"
+    assert parameters["application_name"] == "sync@example"
+    assert "password" not in parameters
+
+
+@pytest.mark.parametrize(
     ("password", "expected_host_match", "expected_host_is_qachub"),
     [
         ("synthetic-password", True, False),
         ("synthetic%2Fpassword", True, False),
-        ("synthetic/password", False, True),
+        ("synthetic/password", True, False),
     ],
 )
 def test_connection_diagnostics_do_not_log_credentials(
@@ -119,21 +161,27 @@ def test_connection_diagnostics_sanitize_parser_errors(monkeypatch, caplog):
     assert "libpq_parse=failed" in caplog.text
 
 
-def test_export_logs_connection_diagnostics_before_connecting(monkeypatch, caplog, tmp_path):
+@pytest.mark.parametrize("password", ["synthetic-password", "synthetic/password/two"])
+def test_export_logs_connection_diagnostics_before_connecting(password, monkeypatch, caplog, tmp_path):
     """The real connection path emits diagnostics before a connection failure."""
+    from psycopg.conninfo import conninfo_to_dict
+
     monkeypatch.setenv("TARGET_ENV", "uat")
     host = "pagopa-u-itn-qa-flexible-postgresql.postgres.database.azure.com"
     with patch("psycopg.connect", side_effect=RuntimeError("connection probe")) as connect:
         with caplog.at_level("INFO", logger=sync.LOGGER.name):
             with pytest.raises(RuntimeError, match="connection probe"):
                 sync.export_all(
-                    f"postgresql+asyncpg://qachub:synthetic-password@{host}:5432/qachub?ssl=require",
+                    f"postgresql+asyncpg://qachub:{password}@{host}:5432/qachub?ssl=require",
                     sync.SyncWindow(),
                     tmp_path,
                 )
     connect.assert_called_once()
+    parameters = conninfo_to_dict(connect.call_args.args[0])
+    assert parameters["host"] == host
+    assert parameters["password"] == password
     assert "host_matches_expected=True" in caplog.text
-    assert "synthetic-password" not in caplog.text
+    assert password not in caplog.text
 
 
 def test_runs_query_filters_on_timestamp_start():
