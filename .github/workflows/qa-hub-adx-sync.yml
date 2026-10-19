@@ -6,12 +6,13 @@ on:
   workflow_dispatch:
     inputs:
       target_env:
-        description: Environment to synchronize (only dev is provisioned)
+        description: Environment to synchronize
         required: true
         type: choice
         default: dev
         options:
           - dev
+          - uat
       mode:
         description: "yesterday = previous UTC day, snapshot = full reload, since = from_date to now, range = from_date..to_date"
         required: true
@@ -47,17 +48,21 @@ jobs:
     outputs:
       matrix: ${{ steps.targets.outputs.matrix }}
     env:
-      TARGET_SELECTION: ${{ github.event_name == 'workflow_dispatch' && inputs.target_env || 'dev' }}
+      TARGET_SELECTION: ${{ github.event_name == 'schedule' && 'all' || inputs.target_env || 'dev' }}
     steps:
       - name: Select environments to synchronize
         id: targets
         shell: bash
         run: |
           matrix=$(jq -cn --arg selected "$TARGET_SELECTION" '
-            if $selected != "dev" then
-              error("Only dev is enabled: UAT and prod are not provisioned")
-            else
+            if $selected == "all" then
+              {include: [{target_env:"dev", short_env:"d"}, {target_env:"uat", short_env:"u"}]}
+            elif $selected == "dev" then
               {include: [{target_env:"dev", short_env:"d"}]}
+            elif $selected == "uat" then
+              {include: [{target_env:"uat", short_env:"u"}]}
+            else
+              error("Only dev and uat are enabled; prod is not provisioned")
             end
           ')
           printf 'matrix=%s\n' "$matrix" >> "$GITHUB_OUTPUT"
@@ -118,7 +123,7 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_INTEGRATION_TEST_WEBHOOK_URL }}
           WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          TARGET_SELECTION: ${{ github.event_name == 'workflow_dispatch' && inputs.target_env || 'dev (scheduled)' }}
+          TARGET_SELECTION: ${{ github.event_name == 'workflow_dispatch' && inputs.target_env || 'dev and uat (scheduled)' }}
           SYNC_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'yesterday' }}
         shell: bash
         run: |

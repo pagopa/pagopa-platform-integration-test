@@ -17,7 +17,7 @@ run. Suites are always reloaded in full because they are small and have no times
 
 | Mode | Window | Trigger |
 |---|---|---|
-| `yesterday` | previous UTC day | default, nightly at 02:30 UTC on dev only |
+| `yesterday` | previous UTC day | default, nightly at 02:30 UTC on dev and UAT; manual on dev or UAT |
 | `snapshot` | all rows, including runs without `timestamp_start` | manual |
 | `since` | from `from_date` to now | manual, needs `from_date` |
 | `range` | `from_date` to `to_date`, both inclusive | manual, needs `from_date` and `to_date` |
@@ -25,10 +25,9 @@ run. Suites are always reloaded in full because they are small and have no times
 `dry_run` exports from PostgreSQL and writes the row counts to the job summary without
 touching ADX.
 
-Only **dev** is currently enabled. UAT and prod are excluded from manual dispatch
-and the execution matrix until their tables and permissions are provisioned.
-Pushes and pull requests do not trigger synchronization. After merge into the default
-branch, the nightly schedule runs `yesterday` on dev; other modes remain manual.
+Manual dispatch supports **dev** and **UAT**. The nightly schedule runs `yesterday`
+on both environments; other modes are manual only. Prod is not enabled. Pushes and
+pull requests do not trigger synchronization.
 
 ## How it works
 
@@ -56,12 +55,12 @@ branch, the nightly schedule runs `yesterday` on dev; other modes remain manual.
   They do not fall back to Azure CLI, OIDC deployment credentials, or client secrets.
   Key Vault authentication continues using the existing repository resolver.
 - **Tables**: infrastructure must precreate the three target tables and their matching
-  staging tables, with identical columns, types, and order:
+  staging tables in each enabled environment, with identical columns, types, and order:
   - `QA_NRT_TEST_SUITES_STAGING`
   - `QA_NRT_TEST_RUNS_STAGING`
   - `QA_NRT_TEST_EXECUTIONS_STAGING`
   Missing tables cause an explicit failure before staging data is cleared.
-- **GitHub Environment variables** (`dev`, `uat`, `prod`):
+- **GitHub Environment variables** (`dev`, `uat`):
   - `ADX_CLUSTER_URI`, e.g. `https://<cluster>.<region>.kusto.windows.net`.
   - `ADX_DATABASE`.
   - `ADX_INGEST_URI` is optional and defaults to `https://ingest-<cluster host>`.
