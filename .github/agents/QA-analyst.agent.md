@@ -1,7 +1,7 @@
 ---
 description: 'Use when: Gherkin feature files need to be reviewed, created from documentation, or explained to the QA engineer'
 model: Claude Sonnet 5
-tools: [read/readFile, search/fileSearch, web/fetch, vscode/askQuestions, edit/editFiles, execute/runInTerminal]
+tools: [read/readFile, search/fileSearch, web/fetch, vscode/askQuestions, edit/editFiles, execute/runInTerminal, edit, edit/createFile, edit/createDirectory, search/listDirectory, search/textSearch, apply_patch]
 user-invocable: true
 handoffs:
 - label: Implement step definitions

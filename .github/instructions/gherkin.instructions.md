@@ -19,10 +19,13 @@ Read [`.github/profiles/gherkin.profile.yaml`](../../.github/profiles/gherkin.pr
 - Use the profile language with `behave --lang-help <language>` when a keyword dictionary is needed.
 - Apply the profile maximum number of scenarios per file; split files by semantic grouping when needed.
 - Use consistent formatting and indentation.
-- Use third-person singular present tense for steps (e.g. "l'utente effettua il login", not "io effettuo il login").
+- Use third-person singular present tense for steps (e.g. "l'utente effettua il login", not "io effettuo il login", nor "come utente voglio").
 - Search the codebase for existing feature files to match style and language; ask the user which to follow as a blueprint.
 - `Examples` should never have columns with only one value; if a column has only one value, it should be moved to the scenario outline as a *parameter*.
 - Empty cells in `Examples` tables (i.e. `| |`) represent a `null` (`None`) value for that parameter.
+- The SUITE and FEATURE groups in the file name regex are to be filled with Capitalized_Snake_Case strings.
+- The SUITE group in the file name regex is to be inferred from the suite you're working on, ask if in doubt.
+- The FEATURE group in the file name regex is to be inferred from the feature you're working on in the scenario, in synthetic form, ask if in doubt.
 
 
 ## Feature file style & indentation
@@ -41,3 +44,22 @@ Read [`.github/profiles/gherkin.profile.yaml`](../../.github/profiles/gherkin.pr
 - Do not remove existing tags.
 - Place tags immediately above the `Scenario`, one per line, using the profile indentation.
 - Apply feature and scenario tag formats from the profile.
+
+## Learnings
+
+### Alternating actions and intermediate assertions
+
+Alternating `When` / `Then` blocks within one scenario is valid and appropriate when a specified observable result must be verified before the next action (for example, an error appears during typing and remains visible after clicking Continue).
+Keep that intermediate assertion before the next action: moving all assertions to the end would no longer express the required observation before that action.
+Review repeated action/assertion blocks when they concatenate independently meaningful behaviours or an entire application journey: split them into separate scenarios when they have distinct goals or independently verifiable outcomes, keeping each scenario self-contained without dependencies on another scenario's execution.
+Do not split mechanically at every `Then`, impose a single `When` / `Then` block, or treat scenario length alone as a defect; keep the sequence together when its order and intermediate observations are necessary to verify one cohesive behaviour supported by the requirements.
+
+Example of a justified intermediate assertion (step text follows the profile language):
+
+```gherkin
+    Quando l'utente digita un indirizzo email non valido
+    Allora il sistema mostra un messaggio di errore durante la digitazione
+    Quando l'utente clicca sul pulsante "Continua"
+    Allora il messaggio di errore rimane visibile
+    E l'utente rimane nella pagina di inserimento email
+```
