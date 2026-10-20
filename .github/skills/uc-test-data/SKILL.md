@@ -69,7 +69,8 @@ profile. Do not duplicate their language, indentation, tag or outline rules.
    well-formed but belong to the wrong entity, actor, configuration or state.
    If constraints are missing, hand that question to functional analysis.
 2. Read supplied sources; map documented concrete values, ranges or generation
-   rules to the requirements. A range is not a particular available entity.
+   rules to the requirements. Apply the resolution completeness gate below
+   before declaring a value missing. A range is not a particular available entity.
    Generate values only when the source prescribes generation and the user
    authorizes it; record the rule and synthetic/generated status. Never
    fabricate identifiers or claim generated data exists in the environment.
@@ -87,7 +88,9 @@ profile. Do not duplicate their language, indentation, tag or outline rules.
    provenance, admission and fitness. Do not overwrite one value with another
    or allocate a new D merely because a value varies.
 3. For unresolved values, search repository documentation/data records as
-   candidates under the shared policy. Show matching candidates and ask the
+   candidates under the shared policy, starting with the documented test-data
+   directory when accessible. Do not skip this search just because generating
+   new values is possible or authorized. Show matching candidates and ask the
    human for explicit approval **before** marking them usable in the report.
    Records approved in an older task still require approval for this task
    unless explicitly supplied now.
@@ -119,6 +122,63 @@ profile. Do not duplicate their language, indentation, tag or outline rules.
 8. Return the report to UC translation. Prescribe data substitutions and
    unresolved-data comments, but do not apply them to feature files here.
    Changed behaviour or constraints require a functional report update.
+
+## Resolution completeness gate
+
+Before reporting a requirement as missing or assigning a TODO, complete these
+checks within the authorized source scope. This is a retrieval checklist, not
+a new report schema or permission to inspect executable suites.
+
+1. **Look for the complete set, not only the main table.** Map every existing
+   D requirement to the relevant source sections. Read table explanations,
+   notes, complementary-data tables and combination tables that may supply
+   related fields; continue bounded reads when truncation hides them. Search
+   by field meaning and documented aliases, not only literal field names.
+   Combine values across sections only when their scope and relationships
+   support the combination. Do not assume that all required fields share one
+   table, or that the number of columns defines the number of requirements.
+2. **Search before concluding absence.** For requirements still unresolved
+   after supplied sources, discover relevant Markdown records under the
+   authorized repository documentation, following the shared source policy.
+   Record the files/sections inspected and any access limitation in the
+   existing Sources and Data resolution sections. Distinguish no matching
+   value found, unreadable source, candidate awaiting approval, unsuitable
+   value and unresolved live state. An unperformed or failed search is not
+   evidence that data does not exist.
+3. **Keep admission and permission decisions exact.** A supplied document
+   remains `provided`; permission to generate new values is a separate
+   decision, not a reason to reject the entire document or its existing
+   values. Observe the shared policy's synthetic-data permission requirement
+   where applicable, asking only for the unresolved permission. A missing
+   answer, unavailable question tool or agent instruction not to invent data
+   is not a human refusal: keep the pertinent question `open` or
+   `pending-approval`. Use `declined` or `rejected` only with an explicit
+   human decision and its scope/reference; never attribute a parent agent's
+   assumption to the user.
+4. **Read environment scope before rejecting a candidate.** Record an
+   explicit statement that values apply to multiple environments, and use
+   it when assessing applicability; do not demand different values merely
+   because the target environment differs. Do not extend that statement to
+   other environments, current entity states, enabled methods or successful
+   transactions. Documented applicability, fitness and live availability
+   remain separate.
+5. **Reconcile before handoff.** Account for every D/SC/C resolution and any
+   cross-field relationship. A concrete documented value with uncertain
+   availability is not a missing value; record the unresolved state and
+   apply the existing fitness/availability and warning rules instead of
+   claiming the source lacks the field. Confirm that each reported refusal
+   has human evidence and that every TODO has a precise unresolved reason.
+   If the search reveals a new required field, return to context for its D id
+   rather than silently adding or dropping it.
+
+Example (retrieval only, not an approved UC or test-data set): the functional
+context requires card number, expiry, security code and holder name. A
+catalogue lists the first three in its card table and a synthetic holder in
+a complementary table. Read both, check whether the holder applies to that
+card, and resolve all four requirements with their respective locators and
+applicable permissions. Do not report the holder as absent because it is
+outside the first table, and do not treat an unverified gateway association
+as absence of the documented input values.
 
 ## Placeholder contract
 

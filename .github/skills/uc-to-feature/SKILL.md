@@ -218,6 +218,40 @@ its validation scenario and grouped in a completion scenario. Add intermediate
 assertions only when required by the specified behaviour, consistently with
 the mapping below.
 
+Before writing steps, apply the keyword-semantics and scenario-boundary
+rules in the Gherkin instructions.
+
+For each proposed scenario:
+
+1. Identify the behaviour to demonstrate and its supporting UC elements
+   and admitted evidence. Identify the operation under test, its specified
+   cardinality and scope. Do not turn a single operation into a sequence
+   of repeated operations merely to concentrate coverage in one scenario.
+   Verifying a complete sequence requires evidence that continuity of that
+   sequence belongs to the requirement.
+2. Separate initial conditions, actor actions or functional triggers,
+   and observable expected results.
+3. Determine whether the route to an initial state contributes to the
+   requirement. Do not replace a UC action or relevant interaction history
+   with a Given, Background or an Examples cell.
+4. Select the appropriate structure: independent explicit path,
+   independently prepared state, or cohesive sequence with intermediate
+   observations. Only then consider an outline for equivalent data variants.
+5. Check whether a proposed grouping merely hides different paths behind
+   generic wording such as "the user accesses the page" or
+   "the required data has been completed". Recover the documented actions
+   when needed; ask or report a functional gap when they are unknown.
+6. Record the structural choice and its evidence in the existing Mapping
+   rationale. When setup replaces a preceding journey, explain why that
+   journey is outside the behaviour being verified and why the proposed
+   initial state preserves the relevant conditions.
+
+Do not infer setup equivalence from the page URL or visible state alone:
+history, session, actor identity, entity lifecycle or previous attempts
+may be relevant, depending on the requirement.
+Do not invent such dependencies when the sources do not establish them;
+clarify material uncertainty instead.
+
 | UC element | Gherkin concept | Interpretation rule |
 |---|---|---|
 | `UC-…` id and title | `Feature` title and traceability | The title describes the capability; the id is traced as described in step 4. |
@@ -298,6 +332,16 @@ Do not independently retrieve missing detail while assembling. Setup is preparat
 of the UC: it belongs to the `Given` of the scenario that needs it, and no
 scenario depends on the execution of another.
 
+Compatible checks of the same operation's outcome may belong to the same
+scenario without expanding its behavioural scope.
+Adding data checks does not by itself justify a longer operational sequence
+or additional scenarios.
+When verifying preservation or modification of values, make the comparison
+reference and source-defined expected properties explicit; do not assume
+that every value remains unchanged.
+For example, checking both the destination and the retained field values
+after one return does not imply testing a chain of successive returns.
+
 Use the current `02-test-data.md` from
 [uc-test-data](../uc-test-data/SKILL.md) for input values, combinations,
 admission, fitness, availability and warnings. It may cite a different source
@@ -312,6 +356,27 @@ its contract for valid tables and resolved parameters. Syntactically valid
 Gherkin is not evidence of executable steps, valid input types or available
 environment states. Do not use input placeholders to invent missing functional
 behaviour or oracle values; report those coverage gaps separately.
+
+Before persisting the feature, perform a semantic structure check:
+
+- Every mapped UC action remains an action, unless its treatment as
+  independent preparation is explicitly justified in Mapping.
+- Given and Background contain genuine prerequisites, not operational
+  scripts rewritten as initial states.
+- When steps do not conceal assertions, and Then steps do not conceal
+  new business actions.
+- And/But retain the role of their preceding keyword block.
+- Intermediate assertions preserve the required observation order.
+- The operation's specified cardinality and scope are preserved; additional
+  outcome checks do not silently introduce a broader operational sequence.
+- Outline rows share the same functional action structure and applicable
+  checks; no row-specific script or implicit skip is hidden in a value.
+- Every scenario can establish its prerequisites independently.
+
+When a check fails, revise the scenario boundaries or recover the explicit
+steps. Do not repair the appearance by changing only the keyword or verb
+tense. Record actual checks and unresolved issues in the existing final
+report sections; no new report schema fields are required.
 
 ### 4. Preserve traceability
 
