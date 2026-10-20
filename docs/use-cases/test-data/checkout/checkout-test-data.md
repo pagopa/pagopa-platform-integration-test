@@ -7,6 +7,8 @@ prestatore di servizi di pagamento (PSP), la gestione degli errori, la
 validazione dei campi e la navigazione nel Checkout.
 
 Utilizzare questi dati esclusivamente in ambienti di test, mai in produzione.
+Tutti i dati di questo documento valgono indifferentemente per gli ambienti
+**dev** e **uat**: non occorrono valori diversi in base all'ambiente.
 La disponibilita di carte, PSP, metodi e comportamenti simulati dipende dalla
 configurazione dell'ambiente. Le associazioni PSP/carta e i dati negativi
 indicati come **da verificare** sono candidati di prova, non garanzie di esito.
@@ -57,20 +59,24 @@ l'avviso scelto non sia gia stato pagato.
 ## Carte di test
 
 Il **PAN** e il numero della carta; la **scadenza** e espressa come mese/anno
-(`MM/AA`); il **CVV** e il codice di sicurezza.
+(`MM/AA`); il **CVV** e il codice di sicurezza; l'**intestatario carta**
+corrisponde al campo "Intestata a". I dati per compilare ciascuna carta
+comprendono tutti e quattro i campi, riportati insieme nella tabella.
 
-| Circuito | PAN | Scadenza | CVV | Possibile utilizzo |
-| --- | --- | --- | --- | --- |
-| Mastercard | `5255000260000014` | `12/30` | `123` | Inserimento dati carta e prove di pagamento NPG con un PSP compatibile, tra cui Postepay e Worldline. |
-| Visa | `4242424242424242` | `12/30` | `123` | Inserimento dati carta e prove di pagamento NPG con Worldpay o Worldline, secondo la configurazione disponibile. |
+| Circuito | PAN | Scadenza | CVV | Intestatario carta | Possibile utilizzo |
+| --- | --- | --- | --- | --- | --- |
+| Mastercard | `5255000260000014` | `12/30` | `123` | `Test test` | Inserimento dati carta e prove di pagamento NPG con un PSP compatibile, tra cui Postepay e Worldline. |
+| Visa | `4242424242424242` | `12/30` | `123` | `Test test` | Inserimento dati carta e prove di pagamento NPG con Worldpay o Worldline, secondo la configurazione disponibile. |
 
 Inserire i PAN senza spazi. La scadenza deve essere ancora futura al momento
 della prova. La compatibilita di una carta non conferma automaticamente
 disponibilita del PSP o buon esito dell'autorizzazione.
+L'intestatario `Test test` e un nome sintetico per compilare il campo senza
+usare dati personali; resta da verificarne l'accettazione con il gateway
+utilizzato.
 
 | Dato complementare | Valore | Significato e utilizzo | Condizione |
 | --- | --- | --- | --- |
-| Intestatario carta | `Test test` | Nome sintetico per compilare il campo intestatario senza usare dati personali. | Da verificare con il gateway utilizzato. |
 | Email | `ecommerce-test-mailgroup@pagopa.it` | Candidato per inserimento e conferma email e ricezione delle notifiche di pagamento. | Verificare autorizzazione all'uso e accesso alla casella se si controlla la ricezione. |
 | Email | `mail@pagopa.it` | Candidato per compilazione e conferma dei campi email. | Non presumere che la casella sia disponibile o che le notifiche siano consultabili. |
 
@@ -96,11 +102,11 @@ Queste combinazioni permettono di preparare prove complete, anche con utente
 autenticato. **Le associazioni complete sono da verificare nell'ambiente.**
 Completare il prefisso con 13 cifre e usare un avviso non gia pagato.
 
-| PSP | Prefisso avviso | CF ente | PAN | Scadenza | CVV | ID PSP |
-| --- | --- | --- | --- | --- | --- | --- |
-| `Postepay` | `30200` | `77777777777` | `5255000260000014` | `12/30` | `123` | `PPAYITR1XXX` |
-| Worldline | `30201` | `77777777777` | `5255000260000014` | `12/30` | `123` | `BNLIITRR` |
-| `Worldpay` | `30201` | `77777777777` | `4242424242424242` | `12/30` | `123` | `WOLLNLB1` |
+| PSP | Prefisso avviso | CF ente | PAN | Scadenza | CVV | Intestatario carta | ID PSP |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `Postepay` | `30200` | `77777777777` | `5255000260000014` | `12/30` | `123` | `Test test` | `PPAYITR1XXX` |
+| Worldline | `30201` | `77777777777` | `5255000260000014` | `12/30` | `123` | `Test test` | `BNLIITRR` |
+| `Worldpay` | `30201` | `77777777777` | `4242424242424242` | `12/30` | `123` | `Test test` | `WOLLNLB1` |
 
 ## Avvisi per prove di errore
 
