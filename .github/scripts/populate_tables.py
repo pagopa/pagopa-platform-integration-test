@@ -68,7 +68,9 @@ def populate_test_run(test_run: Test_runs, summary_path: str, version: str, test
         test_run.total_failures = calculate_total_failures(test_run)
         if test_run.total_failures == 0:
             test_run.revision_result = "GO"
-            
+            test_run.revisioned = True
+            test_run.revision_date = datetime.now()
+
     return test_run
 
 def populate_test_executions(test_cases_dir: str, allure_url:str) -> list[Test_executions]:
