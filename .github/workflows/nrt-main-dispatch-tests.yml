@@ -130,6 +130,7 @@ jobs:
             for subfolder in "${subfolders[@]}"; do
               suite_history="nrt-allure-history/${subfolder}-${TARGET_ENV}"
               report_dir="${suite_history}/${RUN_NUMBER}"
+
               if [ ! -d "$report_dir" ]; then
                 echo "::warning::No Allure report was produced for ${subfolder} (${TARGET_ENV})."
                 continue
@@ -143,13 +144,6 @@ jobs:
               destination="public/${subfolder}/${timestamp}"
               mkdir -p "$destination"
               cp -r "$report_dir/." "$destination/"
-
-              # Keep the reusable workflow's environment-specific trend history.
-              if [ -d "${suite_history}/last-history" ]; then
-                history_destination="public/${subfolder}-${TARGET_ENV}/last-history"
-                mkdir -p "$history_destination"
-                cp -r "${suite_history}/last-history/." "$history_destination/"
-              fi
             done
           else
             echo "No Allure history artifacts were produced."

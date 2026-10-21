@@ -144,7 +144,7 @@ jobs:
           ref: gh-pages
           path: gh-pages
           fetch-depth: 1
-          sparse-checkout: ${{ inputs.allure_subfolder }}-${{ inputs.target_env }}/last-history
+          sparse-checkout: ${{ inputs.allure_subfolder }}/last-history/history
 
       - name: Prepare Allure results
         if: always()
@@ -166,7 +166,7 @@ jobs:
         id: build_report
         continue-on-error: true
         run: |
-          history_dir="gh-pages/${SUBFOLDER}/last-history"
+          history_dir="gh-pages/${{ inputs.allure_subfolder }}/last-history/history"
           if [ -d "$history_dir" ]; then
             cp -r "$history_dir/." allure-results/history/
           fi
