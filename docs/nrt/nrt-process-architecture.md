@@ -37,7 +37,7 @@ flowchart TD
     PREP --> SL
     MAT --> SL
     DEP --> CON[Confluence report]
-    DEP --> DATA[Test data ingestion]
+    RA --> DATA[Test data ingestion<br/>allure-report-* artifacts]
 ```
 
 The scheduled secret synchronization is independent of an NRT run. A failed refresh does
@@ -51,11 +51,13 @@ the new process is adopted.
 
 | Component | Responsibility |
 |---|---|
-| `.github/workflows/nrt-main-dispatch-tests.yml` | Manual NRT entry point; accepts suite selection and target environment; prepares the selected suite matrix; coordinates suite execution, final status, and Slack notification. Scheduling remains disabled until the legacy schedule is retired. |
+| `.github/workflows/nrt-main-dispatch-tests.yml` | NRT entry point, scheduled daily at 06:17 UTC (`cron: '17 6 * * *'`, all suites on `uat`) and manually dispatchable; accepts suite selection and target environment; prepares the selected suite matrix; coordinates suite execution, test data ingestion, final status, and Slack notification. |
 | `.github/nrt-suites.json` | Declarative catalog of suite IDs, labels, Behave paths/tags, environment support, setup requirements, and dependency metadata. |
 | `.github/workflows/nrt-run-suite.yml` | Reusable workflow containing the common setup, secret materialization, test execution, Allure generation, and artifact publication for one suite. |
 | `.github/workflows/nrt-sync-secrets.yml` | Runs daily or manually on self-hosted runners; reads Key Vault values, builds and validates per-environment bundles, then updates the matching GitHub Environment secret using GitHub's LibSodium-encrypted REST API. |
-| Existing report workflows | Consume NRT artifacts to publish reports, create the Confluence page, and ingest test data. They are downstream consumers, not suite definitions. |
+| `.github/workflows/test-data-ingestion.yml` | Reusable workflow that downloads report artifacts and runs `.github/scripts/populate_tables.py` to save suites, runs, and executions through the QA Hub APIs. NRT calls it with `artifact_pattern: allure-report-*`; the legacy dispatch keeps using the `tmp_processed_reports` artifact. |
+| `.github/workflows/qa-hub-adx-sync.yml` | Runs nightly at 02:30 UTC in `yesterday` mode on dev and UAT, or manually on dev and UAT self-hosted runners; copies the QA Hub PostgreSQL tables (`test_suites`, `test_runs`, `test_executions`) into the matching `QA_NRT_*` Azure Data Explorer tables. See [QA Hub ADX sync](qa-hub-adx-sync.md). |
+| Existing report workflows | Consume NRT artifacts to publish reports and create the Confluence page. They are downstream consumers, not suite definitions. |
 
 The reusable workflow gives each suite an isolated job and runner. Shared job-level
 permissions and dependencies remain explicit in the reusable workflow; suite-specific
@@ -75,19 +77,27 @@ include at least:
   "behave_path": "src/integration/wisp",
   "tags": ["@runnable"],
   "allure_subfolder": "wisp-tests",
+  "report_artifact": "allure-report-wisp",
   "needs_playwright": false,
   "envs": ["dev", "uat"],
   "depends_on": [],
   "on_dependency_failure": "skip",
   "provides": [],
   "consumes": [],
-  "resource_group": null
+  "resource_group": null,
+  "version": "1.0.0"
 }
 ```
 
-`id`, `label`, `behave_path`, `tags`, `allure_subfolder`, `needs_playwright`, and `envs`
-define suite execution. The remaining fields establish an extensible dependency contract;
-independent suites use the defaults shown above.
+`id`, `label`, `behave_path`, `tags`, `allure_subfolder`, `report_artifact`,
+`needs_playwright`, and `envs` define suite execution. `depends_on`,
+`on_dependency_failure`, `provides`, `consumes`, and `resource_group` establish an
+extensible dependency contract; independent suites use the defaults shown above.
+
+Test data ingestion also reads the registry: it maps each `report_artifact` back to the
+suite `id` (stored as the QA Hub `test_object`) and records `version` as the run's test
+version. When `test_type` is not configured in `.github/<env>.yaml`, it is derived from
+the second segment of `behave_path` (for example `integration` or `e2e`).
 
 ### 4.2 Matrix fan-out
 
@@ -118,6 +128,24 @@ bundle.
 Allure history is isolated by environment, for example `wisp-tests-uat` and
 `wisp-tests-dev`, so runs against different environments do not overwrite each other's
 trend data.
+
+The publisher in `nrt-main-dispatch-tests.yml` copies each report to
+`<allure_subfolder>/YYYY-MM-DD_HH:MM:SS/`, for example
+`checkout-e2e-tests/2026-10-15_14:41:04/`. The timestamp is the test start time
+from Allure's `widgets/summary.json`, formatted in UTC. Only the published report
+path changes: suite artifacts retain their environment suffix and run number,
+and `<allure_subfolder>-<env>/last-history` remains available to the reusable
+workflow. Previously published report folders are not migrated or removed.
+
+Before deployment, `nrt-publish-indexes.py` reuses `process_reports.py` to generate
+`stats.json` for published runs and rebuild each suite's `index.html`. It copies
+the latest run by Allure start time to `<allure_subfolder>/last-history/`, including
+its statistics and summary, without changing the environment-specific trend history.
+The root dashboard is rendered from the suite registry with the latest statistics
+and a UTC update timestamp; suites without reports are marked as unavailable.
+Invalid report data fails publication instead of publishing placeholder statistics.
+Local publisher regression tests can be run from the repository root with
+`python .github/scripts/nrt-test-publish-indexes.py -v` (requires Jinja2).
 
 ## 6. Secret synchronization and consumption
 
@@ -265,6 +293,13 @@ cannot be confused with the established production notification. It combines eac
 link to the workflow run. It uses the existing `SLACK_INTEGRATION_TEST_WEBHOOK_URL` secret
 and does not depend on the legacy report-deployment workflow.
 
+The NRT `save_test_data` job calls `test-data-ingestion.yml` after suite execution,
+whenever the prepare job succeeded. It does not depend on report deployment: it downloads
+every `allure-report-*` artifact of the current run into `artifacts/<report_artifact>/` and
+ingests each suite from its `widgets/summary.json` and `data/test-cases/*.json`. The run is
+saved with the selected `target_env`, trigger type `CRON` for scheduled runs or `MANUAL`
+otherwise, and origin `NRT`.
+
 Report publication, Confluence reporting, and test-data ingestion run with an
 always-evaluate condition so test failures do not prevent diagnostic artifacts from being
 published. A final status job evaluates required suite outcomes and reports the NRT run as
@@ -292,5 +327,9 @@ failed when required tests fail.
 - [Current dispatch workflow](../../.github/workflows/main-dispatch-tests.yml)
 - [Current WISP workflow](../../.github/workflows/wisp-tests.yml)
 - [Current Checkout E2E workflow](../../.github/workflows/checkout-e2e-tests.yml)
+- [Test data ingestion workflow](../../.github/workflows/test-data-ingestion.yml)
+- [Test data ingestion script](../../.github/scripts/populate_tables.py)
+- [QA Hub ADX sync workflow](../../.github/workflows/qa-hub-adx-sync.yml)
+- [QA Hub ADX sync script](../../.github/scripts/qa_hub_adx_sync.py)
 - [Secret resolver](../../src/conf/configuration.py)
 - [Configuration utility guidance](../../src/utility/config/README.md)

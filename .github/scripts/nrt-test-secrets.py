@@ -1,6 +1,7 @@
 """Run local secret cutover regression tests with synthetic credentials."""
 
 import importlib.util
+from io import StringIO
 import json
 import os
 from pathlib import Path
@@ -124,6 +125,47 @@ class NrtSecretsTests(unittest.TestCase):
     def test_empty_placeholder_is_rejected(self):
         with self.assertRaisesRegex(RuntimeError, "Empty secret placeholder"):
             PREPARE._placeholders({"token": "$"})
+
+    def test_published_keys_are_traced_without_values_only_after_success(self):
+        bundle = {"z-key": "synthetic-secret-z", "a-key": "synthetic-secret-a"}
+        for publication_fails in (False, True):
+            with self.subTest(publication_fails=publication_fails), tempfile.TemporaryDirectory() as directory:
+                summary_path = Path(directory) / "summary.md"
+                output = StringIO()
+                resolver = Mock()
+                resolver.resolve.return_value = "synthetic-github-token"
+                with (
+                    patch.object(SYNC, "get_secrets_resolver", return_value=resolver),
+                    patch.object(SYNC, "_resolve_bundle", return_value=bundle),
+                    patch.object(SYNC, "_publish_environment_secret", side_effect=RuntimeError("Publication failed") if publication_fails else None),
+                    patch.object(sys, "argv", ["nrt-sync-secrets.py"]),
+                    patch.object(sys, "stdout", output),
+                    patch.dict(os.environ, {
+                        "TARGET_ENV": "uat",
+                        "AZURE_KEY_VAULT_URL": "https://unused.vault.azure.net/",
+                        "NRT_GITHUB_REPOSITORY": "example/repository",
+                        "NRT_GITHUB_API_URL": "https://api.github.com",
+                        "NRT_BUNDLE_SECRET_NAME": "NRT_SECRETS_BUNDLE",
+                        "GITHUB_STEP_SUMMARY": str(summary_path),
+                    }, clear=True),
+                ):
+                    if publication_fails:
+                        with self.assertRaisesRegex(RuntimeError, "Publication failed"):
+                            SYNC.main()
+                    else:
+                        SYNC.main()
+                if publication_fails:
+                    self.assertNotIn("Published bundle keys", output.getvalue())
+                    self.assertFalse(summary_path.exists())
+                else:
+                    summary = summary_path.read_text()
+                    self.assertIn("NRT secret sync - uat", summary)
+                    self.assertIn("NRT_SECRETS_BUNDLE", summary)
+                    for text in (output.getvalue(), summary):
+                        self.assertIn(json.dumps(sorted(bundle), indent=2), text)
+                        for value in (*bundle.values(), "synthetic-github-token"):
+                            self.assertNotIn(value, text)
+                resolver.close_client.assert_called_once()
 
     def test_dict_mode_overrides_key_vault_and_preserves_keys(self):
         with tempfile.TemporaryDirectory() as directory:
