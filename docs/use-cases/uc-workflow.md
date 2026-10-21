@@ -363,7 +363,20 @@ un report finale `blocked`, senza registrare feature inesistenti. Non consuma
 report `blocked`, `stale` o `not_created`.
 
 La feature applica le instructions Gherkin; non eredita le tabelle Markdown.
-Placeholder e commenti seguono la skill dati. Il report finale verifica anche
+Placeholder e commenti seguono la skill dati: solo i placeholder irrisolti
+richiedono commenti sui dati nella feature. Provenienza, approvazione,
+idoneita e disponibilita restano nei report, anche quando non esistono TODO.
+Nella tabella Scenario warnings del report dati, Required comment contiene
+`not-applicable` quando non occorre un commento; l'incertezza resta nelle
+colonne esistenti e in Data resolution/Readiness, senza cambiare lo schema.
+L'ambiente resta nei metadati e nell'applicabilita delle fonti; hostname e
+base URL di deployment sono risolti dalla configurazione della run, non
+fissati negli step, salvo requisito funzionale esplicito. I Given richiedono
+evidenza di preparazione o osservazione indipendente dall'operazione testata:
+un vincolo di idoneita del dato non basta a garantirne lo stato iniziale.
+La mancanza di tale evidenza e distinta da una lacuna nella regola funzionale;
+una precondizione UC non attuabile non viene eliminata, ma resta aperta.
+Il report finale verifica anche
 coerenza dei riferimenti, combinazioni, oracle e tutti gli SC/AC/AF/EF coperti
 o esclusi con ragione. La sintassi controllata non implica disponibilita
 dell'ambiente, step Python implementati o test eseguiti. L'analista non esegue
@@ -381,8 +394,11 @@ Prima di chiudere una run, verificare:
 4. Ogni valore applicato proviene da una riga del report dati ammessa e idonea,
    oppure esplicitamente autorizzata come non verificata con warning. Tutte
    le combinazioni rispettano i vincoli, senza prodotto cartesiano inventato.
-5. Tutti i TODO e le incertezze hanno warning per ogni scenario interessato;
-   null intenzionali non sono TODO. Tutti gli elementi UC sono in Coverage.
+5. Tutti i TODO e le incertezze hanno warning nei report per ogni scenario
+   interessato; solo i TODO richiedono commenti nelle feature. La risoluzione
+   dell'ultimo TODO rimuove il relativo commento, non le incertezze residue
+   nei report. Null intenzionali non sono TODO. Tutti gli elementi UC sono
+   in Coverage.
 6. Registro `complete` solo con report finale `ready`; `draft` con finale
    `incomplete`; `blocked` con finale `blocked`; altrimenti `in_progress`.
    Il report deve essere corrente anche nel registro e i controlli di

@@ -64,6 +64,11 @@ profile; granularity and UC mapping remain in
    Resolve AC flow references using
    [ac-flow-references.md](../uc-to-feature/ac-flow-references.md); retain
    target flow and applicability conditions in the oracle evidence.
+   Distinguish deployment locators from functional requirements: keep source
+   URLs and environment applicability in Sources, but propose environment-
+   independent page/domain wording for steps under the Gherkin instructions.
+   An example UAT hostname is not evidence that the behaviour requires UAT.
+   Preserve a literal locator only when the requirement tests that locator.
 2. Read the supplied sources with the tools defined by the shared policy.
    Extract only the relevant passages, with exact locators. Do not assume a
    source contains both functional instructions and test values.
@@ -79,6 +84,16 @@ profile; granularity and UC mapping remain in
    exercising the same flow/checks from actual changes of path or outcome.
    Record the evidence and applicable ACs, not an invented AF or an arbitrary
    number of cases.
+   For each proposed initial-state step, record in Functional evidence and
+   Mapping the admitted evidence for a way to verify or establish the state
+   before the operation under test. Do not prescribe Python or search suite
+   code to supply that evidence. If a property is known only through the
+   tested operation, retain it as a data-fitness requirement or a supported
+   observable outcome, not as an independently guaranteed Given.
+   Distinguish a missing setup/observation capability from an undefined
+   functional rule. Preserve an explicit UC precondition as an unresolved
+   requirement when its preparation is unknown; do not silently drop it or
+   label the functional document defective for that reason alone.
 4. Ask the user for missing information or a source. For independently
    discovered information, get explicit approval before using it. When the UC
    and a source disagree, expose the conflict and ask which requirement

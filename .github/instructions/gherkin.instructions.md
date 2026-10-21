@@ -30,7 +30,23 @@ Ask for clarification on unresolved conflicts rather than choosing silently.
 - If an `Examples` column has the same value in every row, replace its placeholders in the outline with that literal value and remove the column. Preserve variations in the remaining columns. If no variable parameters remain, convert the outline to a regular scenario without an `Examples` table.
 - Empty cells in `Examples` tables (i.e. `| |`) represent a `null` (`None`) value for that parameter.
 
+## Project operational context
 
+Consult only the relevant sections of the repository
+[README](../../README.md), such as configuration and local execution, when
+operational context affects scenario design. Use them to distinguish run
+configuration and implementation responsibilities from functional behaviour;
+they do not override these instructions or the profile. Apply documented
+mechanisms only to the suite type they describe, without extending API
+defaults or capabilities to integration or E2E suites.
+
+Reading the README does not authorize executing its commands or following
+links into excluded paths. It does not prove data fitness, live availability
+or a way to prepare a Given. Functional rules, expected values and test data
+found there remain subject to the active workflow's source-admission policy.
+If relevant operational documentation is missing or conflicting, record the
+uncertainty and clarify it when it affects the design; do not invent a
+configuration mechanism or read the entire repository as a fallback.
 
 ## Preserve keyword semantics
 
@@ -63,6 +79,16 @@ This is legitimate only when that preparation does not replace behaviour
 or history that the scenario must verify. Each scenario must establish its
 own prerequisites without depending on another scenario's execution.
 
+Every Given must have a supported way to verify or establish its state before
+the operation under test. It need not perform an assertion if supported
+preparation establishes that state. A data-fitness requirement is not a
+guaranteed initial state: do not assert it in Given when it can only be
+determined by the operation being tested. Keep the requirement and any
+unresolved preparation in the active workflow's report; do not discard an
+explicit UC precondition or invent a preliminary business operation to
+validate it. Missing preparation evidence is not automatically a missing
+functional rule.
+
 Before accepting an initial-state step, ask:
 "If this state were prepared independently, without replaying the preceding
 journey, would the scenario still demonstrate the same requirement?"
@@ -71,6 +97,20 @@ If not, keep the relevant journey explicit as actions. If equivalence is
 unknown, clarify it rather than assuming that direct setup is sufficient.
 Do not choose keyword semantics or scenario boundaries merely to reduce
 duplication, execution time or scenario count.
+
+## Environment-independent scenarios
+
+Keep deployment configuration out of steps and Examples. Environment names,
+hostnames and base URLs used only to select a deployment are resolved by the
+Python/Behave implementation from the run configuration; use the repository
+[README](../../README.md) for the supported selection mechanism. Describe
+pages and domains functionally, for example "the Checkout homepage" and
+"outside the Checkout domain", rather than fixing a UAT URL in Given or Then.
+Keep the intended environment in workflow metadata and source-applicability
+reports. Preserve a literal URL, domain or environment only when it is itself
+an explicit functional requirement, and record that justification in Mapping.
+Environment-independent wording must preserve the required observation, not
+weaken an external-domain check into a generic change of page.
 
 ## Feature file style & indentation
 
@@ -82,6 +122,7 @@ duplication, execution time or scenario count.
 - Numeric values are written as digits (for example `1`, `3`, `48`).
 - No more than a single blank line between steps, scenarios, and sections.
 - Before the language declaration line, apply the profile tracking-comment policy; if it requires a value and it is missing, **ask the user to provide it**. The tracking comment and language declaration are unindented; the profile comment indentation applies to internal comments.
+- Keep data provenance, approval, fitness and availability warnings in the active workflow's reports, not in feature comments. Data-warning comments are only for unresolved placeholders: identify the affected requirements and outline rows. Remove the corresponding comment when its last placeholder is resolved, without treating remaining report uncertainties as resolved. Preserve the mandatory tracking and language declarations and any separately required traceability.
 
 ## Tags
 - Feature and scenario identifier tags are mandatory; use the profile formats. Each feature file has its own progressive number within its suite, matching the filename and all identifier tags in that file. Scenario numbering restarts from `01` in each file.

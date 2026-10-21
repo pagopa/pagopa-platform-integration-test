@@ -68,6 +68,11 @@ profile. Do not duplicate their language, indentation, tag or outline rules.
    Check relationships as well as individual formats: an identifier may be
    well-formed but belong to the wrong entity, actor, configuration or state.
    If constraints are missing, hand that question to functional analysis.
+   Keep data-fitness requirements distinct from guaranteed initial states.
+   A requirement such as an unpaid, usable notice remains in Data resolution
+   when no supported independent preparation or observation is documented;
+   do not prescribe a Given that assumes it or a preliminary payment to
+   establish it. Return any required context clarification to its owner.
 2. Read supplied sources; map documented concrete values, ranges or generation
    rules to the requirements. Apply the resolution completeness gate below
    before declaring a value missing. A range is not a particular available entity.
@@ -100,8 +105,10 @@ profile. Do not duplicate their language, indentation, tag or outline rules.
    Do not loop on the same question or invent another candidate.
 5. Apply only admitted values whose fitness is established. If fitness is
    unresolved, use a placeholder unless the human explicitly chooses to
-   include the candidate as unverified; retain its status and annotate the
-   scenario. Approval to try an unverified value is not a fitness finding.
+   include the candidate as unverified; retain its status and record the
+   affected scenarios in the report. Approval to try an unverified value is
+   not a fitness finding. Concrete unverified values do not by themselves
+   require feature comments.
    Preserve the constraints and rule-defined outcomes; do not change them to
    accommodate convenient data. Do not add variants, outlines or scenarios
    solely because the catalogue offers more data: such coverage decisions
@@ -113,14 +120,16 @@ profile. Do not duplicate their language, indentation, tag or outline rules.
    `documented-not-checked`, `user-confirmed` (with scope/date), or
    `unknown-to-prepare`. Do not run
    tests, query test systems or mutate them. A consumable value may be stale
-   even when once confirmed. Annotation and `bozza` status remain when a
-   required current state or combination is not established.
+   even when once confirmed. Report warnings and `bozza` status remain when
+   a required current state or combination is not established; this does not
+   imply a feature comment without an unresolved placeholder.
 7. Persist the mandatory intermediate report, including unavailable values,
    decisions and scenario warnings. Separately, if requested, persist useful
    admissible data under the optional catalogue contract below. Do not create
    a catalogue merely to report missing data, or overwrite an existing record.
 8. Return the report to UC translation. Prescribe data substitutions and
-   unresolved-data comments, but do not apply them to feature files here.
+   comments for unresolved placeholders, but do not apply them to feature
+   files here. Other uncertainties stay in the report.
    Changed behaviour or constraints require a functional report update.
 
 ## Resolution completeness gate
@@ -200,16 +209,22 @@ approval, or still unsuitable:
   if there is only one case and no meaningful variation, use a plain scenario.
 - Do not use an empty cell for missing data: it means null under the project
   conventions. An intentional null from the requirements is not a TODO.
-- Before the tags of **every affected Scenario or Scenario Outline**, add a
+- Before the tags of **every Scenario or Scenario Outline with an unresolved
+  placeholder**, add a
   comment using profile indentation that identifies the unresolved ids and
   says the scenario is not ready to execute. List the relevant rows when only
   some outline rows are affected. A TODO in Background affects every scenario
   using it, so each needs the comment.
-- A comment is also required for concrete candidates intentionally included
-  as unverified or for an unresolved required state. State the reason instead
-  of silently treating approval as verification.
-- Reconcile annotations after filling values: remove only resolved ids/row
-  references; retain other warnings. Preserve unrelated comments and tags.
+- Concrete candidates intentionally included as unverified and unresolved
+  required states belong in Data resolution, Scenario warnings and Readiness,
+  not in feature comments. In the fixed Scenario warnings table, use
+  `not-applicable` in Required comment when no placeholder comment is needed;
+  put the uncertainty in Affected combinations or all and Data resolution.
+  Do not change report columns or omit the warning.
+- Reconcile annotations after filling values: remove resolved ids/row
+  references and remove the data-warning comment when its last placeholder
+  is resolved. Retain all unresolved report warnings and `bozza` reasons.
+  Preserve unrelated comments, mandatory declarations and tags.
 - Feature content must be syntactically valid Gherkin: matching outline
   parameters and columns, well-formed tables/doc strings, and profile rules.
   TODO tokens do not imply valid input types or executable steps; they are
@@ -262,8 +277,9 @@ substitute for the persisted report.
   required properties/relationships, value or placeholder, source locator,
   admission, fitness, availability evidence and unresolved reason.
 - **Decisions**: candidates accepted/rejected/pending, with scope and date.
-- **Feature prescriptions**: proposed values, markers and per-scenario warnings;
-  no feature edit. Report checks actually performed, not assumed.
+- **Feature prescriptions**: proposed values, markers and per-scenario report
+  warnings; feature comments only for unresolved placeholders. No feature
+  edit. Report checks actually performed, not assumed.
 - **Persistence**: path actually saved and provenance retained, or explicitly
   `not-requested`, `not-saved` or `pending-confirmation`.
 - **Readiness**: `bozza` when markers, unverified candidates or required states

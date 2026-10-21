@@ -271,10 +271,75 @@ def test_acceptance_matrix_covers_all_contract_cases_without_claiming_runs() -> 
         '| Caso | Preparazione astratta | Risultato atteso '
         '| Evidenza da controllare nella prova agente |',
     )
-    assert [row[0] for row in rows] == [f"V-{number:02d}" for number in range(1, 27)]
+    assert [row[0] for row in rows] == [f"V-{number:02d}" for number in range(1, 37)]
     assert all(all(cell for cell in row) for row in rows)
     assert "non un motore sostitutivo che simula l'agente" in text
     assert 'non risultati osservati' in text
+
+
+def test_data_comments_are_limited_to_unresolved_placeholders() -> None:
+    """Keep concrete-data uncertainties in reports without feature noise."""
+    data = _read(SKILLS / 'uc-test-data' / 'SKILL.md')
+    instructions = _read(ROOT / '.github' / 'instructions' / 'gherkin.instructions.md')
+    workflow = _read(DOCS / 'uc-workflow.md')
+    template = _read(DOCS / 'workflow-templates' / '02-test-data.template.md')
+    assert 'every Scenario or Scenario Outline with an unresolved\n  placeholder' in data
+    assert 'not in feature comments' in data
+    assert 'remove the data-warning comment when its last placeholder' in data
+    assert 'Retain all unresolved report warnings and `bozza` reasons' in data
+    assert 'A comment is also required for concrete candidates' not in data
+    assert 'Data-warning comments are only for unresolved placeholders' in instructions
+    assert 'solo i TODO richiedono commenti nelle feature' in workflow
+    assert '`not-applicable`' in data and '`not-applicable`' in template
+
+
+def test_deployment_locators_do_not_become_functional_step_parameters() -> None:
+    """Preserve run configuration and explicit functional-locator exceptions."""
+    instructions = _read(ROOT / '.github' / 'instructions' / 'gherkin.instructions.md')
+    context = _read(SKILLS / 'uc-scenario-context' / 'SKILL.md')
+    translation = _read(SKILLS / 'uc-to-feature' / 'SKILL.md')
+    assert 'Keep deployment configuration out of steps and Examples' in instructions
+    assert 'Python/Behave implementation from the run configuration' in instructions
+    assert 'an explicit functional requirement' in instructions
+    assert 'not\nweaken an external-domain check' in instructions
+    assert 'Distinguish deployment locators from functional requirements' in context
+    assert 'Deployment locators from source documents stay in reports' in translation
+
+
+def test_readme_consultation_is_scoped_operational_context() -> None:
+    """Bound README use without granting execution or functional admission."""
+    instructions = _read(ROOT / '.github' / 'instructions' / 'gherkin.instructions.md')
+    translation = _read(SKILLS / 'uc-to-feature' / 'SKILL.md')
+    assert '## Project operational context' in instructions
+    assert '[README](../../README.md)' in instructions
+    assert 'Consult only the relevant sections' in instructions
+    assert 'only to the suite type they describe' in instructions
+    assert 'does not authorize executing its commands' in instructions
+    assert 'links into excluded paths' in instructions
+    assert "active workflow's source-admission policy" in instructions
+    assert '[README](../../../README.md)' in translation
+    assert 'not the whole document by default' in translation
+    assert 'report Mapping/Checks sections, separately from functional evidence' in translation
+    assert "do not generalize another suite's defaults" in translation
+    assert 'record an open\noperational question' in translation
+    assert 'test values from the README still require admission' in translation
+
+
+def test_given_requires_supported_state_not_assumed_data_fitness() -> None:
+    """Separate supported setup, unknown preparation and functional rules."""
+    instructions = _read(ROOT / '.github' / 'instructions' / 'gherkin.instructions.md')
+    context = _read(SKILLS / 'uc-scenario-context' / 'SKILL.md')
+    translation = _read(SKILLS / 'uc-to-feature' / 'SKILL.md')
+    data = _read(SKILLS / 'uc-test-data' / 'SKILL.md')
+    assert 'Every Given must have a supported way to verify or establish its state' in instructions
+    assert 'It need not perform an assertion' in instructions
+    assert 'invent a preliminary business operation' in instructions
+    assert 'Missing preparation evidence is not automatically' in instructions
+    assert 'Distinguish a missing setup/observation capability' in context
+    assert 'Preserve an explicit UC precondition as an unresolved' in context
+    assert 'A data-fitness constraint alone does not supply that' in translation
+    assert 'Keep data-fitness requirements distinct from guaranteed initial states' in data
+    assert 'a preliminary payment' in data
 
 
 @pytest.mark.parametrize('label', ['FP', 'AF', 'EF'])

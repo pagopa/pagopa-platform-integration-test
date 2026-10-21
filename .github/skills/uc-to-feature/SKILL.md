@@ -86,6 +86,21 @@ Gherkin style, structure, language, indentation, tags, `Background`,
 profile it references. Read them first and apply them; this skill does not
 restate or override them.
 
+Before interpretive mapping, consult the relevant sections of the project
+[README](../../../README.md) under the instructions' operational-context rule.
+Identify the suite type and read only the applicable configuration and
+execution guidance, not the whole document by default. Record the consulted
+sections, applicability and operational constraints in the existing final
+report Mapping/Checks sections, separately from functional evidence.
+Provide those scoped constraints to support stages when needed rather than
+requiring each stage to repeat the same complete read.
+Do not infer setup capabilities, data availability or product behaviour from
+the mere use of Python/Behave, and do not generalize another suite's defaults.
+If missing or conflicting guidance affects the design, record an open
+operational question and request clarification. This consultation neither
+permits command execution nor expands source access; functional findings or
+test values from the README still require admission under the source policy.
+
 The UC may target a new or an existing suite, but existing feature files, step
 definitions, and other executable suite content are never a source: not for
 step wording, interaction steps, data placeholders, expected values, or
@@ -244,7 +259,12 @@ For each proposed scenario:
 6. Record the structural choice and its evidence in the existing Mapping
    rationale. When setup replaces a preceding journey, explain why that
    journey is outside the behaviour being verified and why the proposed
-   initial state preserves the relevant conditions.
+   initial state preserves the relevant conditions. For each Given, use the
+   context report's evidence for a way to verify or establish the state before
+   the tested operation. A data-fitness constraint alone does not supply that
+   evidence; keep an unsupported state requirement in the report and request
+   context clarification rather than inventing preparation or silently
+   dropping an explicit UC precondition.
 
 Do not infer setup equivalence from the page URL or visible state alone:
 history, session, actor identity, entity lifecycle or previous attempts
@@ -258,7 +278,7 @@ clarify material uncertainty instead.
 | `JTBD di riferimento` | Traceability only | It is a reference, not a goal statement: do not derive a narrative ("in order to…") from it. Add a `Feature` description only with content stated in the UC. |
 | Attore principale | Subject of actor steps | Use the role named by the UC, in the grammatical form required by the instructions. |
 | Attori secondari | Subject of system responses | Typically the subject of `Then` steps. A secondary actor is never an extra test precondition by itself. |
-| Precondizioni | `Given` (or `Background` when shared by every scenario of the file) | Classify each one: system/environment availability, state of a business entity, or actor configuration/authorization. Entity states and configurations also become data requirements. Preconditions set the starting state of the scenario that needs it: they do not become scenarios with their own `When`/`Then`, nor dependencies on the execution of other scenarios. A configuration precondition that determines expected values (for example the language of displayed texts) is linked to the oracles that depend on it. A precondition does not define the behaviour when it is not satisfied: derive no negative scenario from it unless an AF, EF, or AC defines that behaviour. |
+| Precondizioni | `Given` (or `Background` when shared by every scenario of the file), subject to supported preparation or observation | Classify each one: system/environment availability, state of a business entity, or actor configuration/authorization. Entity states and configurations also become data requirements, not automatically guaranteed Given statements. Apply the instructions' initial-state rule using context evidence; unresolved preparation stays an explicit requirement in the report. Preconditions do not become scenarios with their own `When`/`Then`, nor dependencies on the execution of other scenarios. A configuration precondition that determines expected values (for example the language of displayed texts) is linked to the oracles that depend on it. A precondition does not define the behaviour when it is not satisfied: derive no negative scenario from it unless an AF, EF, or AC defines that behaviour. |
 | Flusso principale — actor actions | `When` / `And` | All actions of the actor in the main flow, data entry included, up to the action that produces the verified outcome. `Given` is reserved for the state before the flow. Add an intermediate `Then` when the scenario's specified behaviour requires verifying an observable intermediate response, supported by the UC or admitted documentation, including ACs and postconditions. Cite the evidence; implementation convenience or an internal check alone never justifies it. |
 | Interaction steps not stated in the UC | No step | Do not add actions the UC does not state (confirmations, intermediate controls, navigation). If an outcome cannot be reached without them, take them from referenced or provided documentation or from the user; otherwise report a gap. |
 | Flusso principale — internal system checks | No dedicated step | Verification performed internally by the system is observed through its outcome, not described as a step. |
@@ -270,7 +290,7 @@ clarify material uncertainty instead.
 | Cases that differ only in values | `Scenario Outline` + `Examples` | Derive relevant data sets through the support skills from admitted documentation and material; no AF is required to specify them. Main flow, AF, or EF cases with the same behaviour and the same verifications become one outline with one row per supported case. Cases with different behaviour, or with different or additional verifications, get separate scenarios/outlines even if their steps look similar. A catalogue size or range alone does not determine the rows; do not invent a Cartesian product. Apply the instructions' rules on outlines. |
 | Values fixed by the UC (quantities, outcomes, status codes, enumerations) | Literal step parameters or `Examples` values | When the behaviour or an outcome depends on them, they are functional rules: keep them unchanged. A value on which nothing depends (changing it would change no outcome) is probably test data written in the UC: ask whether it is a rule or data, keep it unchanged meanwhile, and keep the feature a `bozza`. |
 | Expected values defined outside the UC (texts, times, codes) | `Then` parameters or `Examples` columns | Oracle values, not input data: take them only from referenced or provided documentation, never from the suite or the observed system. A technical code is verified only when the UC or the source states that it is part of the outcome. When missing, they are a functional gap. |
-| Values that the UC only qualifies (for example "a unique name", "a valid key", "an existing entity") | Data requirement | Do not invent a concrete value. State the characteristic in the step as the UC does and hand the requirement to uc-test-data. If unresolved, use that skill's placeholder contract. |
+| Values that the UC only qualifies (for example "a unique name", "a valid key", "an existing entity") | Data requirement | Do not invent a concrete value. Hand the characteristic and its constraints to uc-test-data; do not turn a data-fitness requirement into a guaranteed Given without context evidence for independent preparation or observation. If the value is unresolved, use that skill's placeholder contract; missing preparation or functional evidence is reported separately, not concealed by a data placeholder. |
 | Technical details in the UC (payloads, operation names, field names) | Step argument (doc string / data table) only when needed to state the behaviour | Keep them verbatim if they define the expected behaviour; otherwise leave them to the implementation and mention them for `QA-engineer`. |
 
 ### 1. Validate the input
@@ -328,9 +348,10 @@ names it; keep the fixed column and do not fabricate a criterion id.
 Group behaviours into scenarios under the mapping of step 0 and the
 conventions: shared preconditions, outlines, tags, file splitting. Write the
 steps from the UC and admitted details in `01-context.md` under the instructions.
-Do not independently retrieve missing detail while assembling. Setup is preparation, not a behaviour
-of the UC: it belongs to the `Given` of the scenario that needs it, and no
-scenario depends on the execution of another.
+Do not independently retrieve missing detail while assembling. Setup is
+preparation, not a behaviour of the UC: use Given only when the context
+supports a way to establish or verify its state under the instructions.
+No scenario depends on the execution of another.
 
 Compatible checks of the same operation's outcome may belong to the same
 scenario without expanding its behavioural scope.
@@ -362,7 +383,8 @@ Before persisting the feature, perform a semantic structure check:
 - Every mapped UC action remains an action, unless its treatment as
   independent preparation is explicitly justified in Mapping.
 - Given and Background contain genuine prerequisites, not operational
-  scripts rewritten as initial states.
+  scripts rewritten as initial states; each state has context evidence for
+  independent preparation or observation, not just a data-fitness constraint.
 - When steps do not conceal assertions, and Then steps do not conceal
   new business actions.
 - And/But retain the role of their preceding keyword block.
@@ -372,6 +394,13 @@ Before persisting the feature, perform a semantic structure check:
 - Outline rows share the same functional action structure and applicable
   checks; no row-specific script or implicit skip is hidden in a value.
 - Every scenario can establish its prerequisites independently.
+- Deployment locators from source documents stay in reports, not in steps
+  or Examples. Apply the instructions' environment-independent wording;
+  record in Mapping any literal locator that is itself a functional
+  requirement. Do not weaken the required observation when removing a host.
+- Feature data-warning comments identify only unresolved placeholders and
+  their affected rows. Other provenance and availability warnings remain in
+  the reports and continue to affect Readiness.
 
 When a check fails, revise the scenario boundaries or recover the explicit
 steps. Do not repair the appearance by changing only the keyword or verb

@@ -38,6 +38,11 @@ inputs:
 | Scenario id | Affected combinations or all | Data ids | Required comment |
 | --- | --- | --- | --- |
 
+Registrare qui anche le incertezze senza placeholder, mantenendo i dettagli
+in Data resolution e Readiness. In Required comment usare `not-applicable`
+quando non occorre un commento nella feature; solo i placeholder irrisolti
+richiedono commenti con id e righe interessate.
+
 ## Optional catalogue
 {not-requested, not-saved, pending-confirmation, or actual saved path and decision}
 

@@ -62,8 +62,18 @@ documentale, non un motore sostitutivo che simula l'agente.
 | V-22 | assemble-only con prerequisiti mancanti, stale, blocked o continuita non confermata | Stop con passaggio necessario; nessuna skill di retrieval eseguita | Questions, report finale quando persistibile e assenza di feature inventate |
 | V-23 | TODO in alcune righe outline o nel Background | Warning prima dei tag per ogni scenario interessato; righe interessate identificate; nessun vuoto usato per il dato mancante | Feature, Scenario warnings e Data and oracles |
 | V-24 | Nessun dato richiesto, oppure nessuno scenario funzionalmente supportato | Nel primo caso report dati obbligatorio senza righe fittizie; nel secondo finale blocked senza feature vuota | Report effettivi, Coverage e Feature outputs |
-| V-25 | Conferma di continuita su report con disponibilita dati non stabilita | Nessuna nuova ammissione o availability dedotta; warning e bozza conservati | Admission, Availability evidence e Readiness |
+| V-25 | Conferma di continuita su report con disponibilita dati non stabilita | Nessuna nuova ammissione o availability dedotta; warning nei report e bozza conservati, senza commenti nella feature in assenza di TODO | Admission, Availability evidence e Readiness |
 | V-26 | Salvataggio di feature/report riuscito ma registro fallito | Errore esplicito, stop e riconciliazione del proprietario; nessuna run complete presunta | File effettivi, errore e History riconciliata |
+| V-27 | Dato concreto ammesso come non verificato, senza placeholder | Nessun commento sui dati nella feature; incertezza e bozza nei report, Required comment=not-applicable | Feature, Data resolution, Scenario warnings e Readiness |
+| V-28 | Risolto l'ultimo placeholder di uno scenario, resta disponibilita non verificata | Rimosso il commento relativo al TODO; conservati warning nei report e stato bozza, tracking e dichiarazione lingua intatti | Feature e Readiness |
+| V-29 | Una fonte usa un hostname UAT solo come esempio di deployment | Step ed Examples indipendenti dall'ambiente; configurazione Python/Behave dalla run; controllo di uscita dal dominio invariato | Mapping, metadati e feature |
+| V-30 | Un requisito verifica esplicitamente un dominio o URL letterale | Valore letterale conservato con motivazione funzionale, non rimosso come configurazione | Evidenza, Mapping e oracle |
+| V-31 | Idoneita di un dato nota solo attraverso l'operazione sotto test | Nessun Given che la garantisce e nessuna operazione anticipata; vincolo nei requisiti dati, esito osservabile solo se documentato | Contesto, Mapping e Data resolution |
+| V-32 | Stato iniziale stabilibile mediante preparazione indipendente supportata | Given ammesso con evidenza del meccanismo, senza dipendenza da altri scenari; non serve un'asserzione separata per ogni Given | Functional evidence e Mapping |
+| V-33 | UC contiene una precondizione ma non e documentato come prepararla | Requisito conservato aperto, nessun setup inventato; lacuna di preparazione distinta da regola funzionale mancante | Questions, Mapping e Readiness |
+| V-34 | README documenta configurazioni diverse per tipi di suite | Consultazione selettiva delle sezioni applicabili; vincoli operativi nel report, nessuna estensione automatica di default o capacita ad altre suite | Mapping e Checks con sezioni consultate e ambito |
+| V-35 | README contiene comandi o link verso percorsi esclusi | Nessun comando eseguito e nessun percorso escluso letto; documentazione insufficiente segnalata se incide sul disegno, senza esplorazione indiscriminata | Operazioni effettive, Mapping e Questions |
+| V-36 | README contiene un possibile dato di test o esito funzionale | Trovato distinto dal contesto operativo e soggetto alla policy fonti; nessuna disponibilita o capacita di setup dedotta dal framework | Sources, decisioni di ammissione e Mapping |
 
 ## Stato delle prove
 
