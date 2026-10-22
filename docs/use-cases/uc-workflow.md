@@ -26,6 +26,24 @@ con l'umano task id, UC id, input UC, revisione UC, ambiente, percorsi feature e
 
 `docs/use-cases/workflow-runs/<task-id>/<uc-id>/<run-id>/`
 
+### Identita distinte (ADR-07)
+
+Qui `task_id` e il nome storico del campo che identifica la lavorazione UC:
+resta stabile quando si riprende la stessa run. Non e il codice Jira
+`PQ-<cifre>` assegnato all'umano, ne l'ACE `task_id` della particolare richiesta
+in chat. Piu richieste ACE, con identificativi distinti, possono contribuire
+alla stessa lavorazione UC e allo stesso ticket Jira.
+
+Riutilizzare l'identita UC confermata alla ripresa; non rinominare directory o
+riscrivere il frontmatter dei report per adeguarli al nuovo identificativo ACE.
+Nella restituzione all'orchestratore distinguere Jira (se noto), identita UC
+(`task_id`, `uc_id`, `run_id`) e ACE request ID ricevuto per la richiesta corrente.
+Se serve un collegamento persistente, usare History con un evento amministrativo
+reale, senza nuovi campi o invalidazioni dei contenuti.
+`uc-workflow/v1`, template e report storici mantengono i campi e i valori esistenti.
+
+### Vincoli dei percorsi
+
 - `run-id`: `YYYYMMDD-NN`, data reale e progressivo libero a due cifre.
 - `task-id` e `uc-id`: identificativi concordati, solo lettere, cifre e trattini.
   Vietati segmenti `..`, separatori, percorsi assoluti e nomi derivati dai dati.

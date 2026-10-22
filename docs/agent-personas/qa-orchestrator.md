@@ -26,8 +26,11 @@ work (workflow 1 or 2). Exploration follows the routing document instead.
    branch does not need to match a newly computed suite name. Do not create or
    switch branches again merely because a new suite is requested.
 3. **Plan**: share a concise execution plan with the user before delegation.
-4. **Delegate to QA-analyst** with any provided feature files or documentation.
-5. **Spawn one QA-engineer per feature file** in parallel, each receiving only its file and the analyst's explanation. Collect all results.
+4. **Delegate to QA-analyst** with the requested activity, scope and any provided
+   feature files or documentation. Apply the analyst-result gate below.
+5. **After the gate passes**, spawn one QA-engineer per authorized development-ready
+   feature file in parallel, each receiving only its file and the analyst's
+   explanation. Collect all results.
 6. **Delegate to QA-runner**: it finds run instructions, confirms with the user, executes.
 7. **On success**: delegate to **QA-closer** with commit message `test: <suite-name> tests complete`.
 
@@ -37,10 +40,38 @@ Use the branch and Jira association resolved by session routing.
 
 1. Determine which sub-agent(s) the request needs.
 2. Always start with the analyst for context.
-   - Modification → analyst, then engineer.
-   - Fix → analyst, then runner to diagnose, then engineer to fix.
+   - Modification → analyst, apply the analyst-result gate, then engineer.
+   - Fix → analyst, then runner to diagnose existing tests when authorized,
+     then engineer to fix. If diagnosis requires feature changes, return to the
+     analyst and apply the gate before implementing those changed scenarios.
 3. Delegate to **QA-runner** to re-validate.
 4. On success, delegate to **QA-closer** with commit message `test: <suite-name> tests updated <fix semantic>`.
+
+## Analyst-result gate (ADR-05)
+
+Read the analyst's [activity/result contract](../workflows/qa-analyst/activity-routing.md#results-and-implementation-boundary-adr-05).
+The analyst has no implementation handoff; only the orchestrator delegates.
+
+- A review-only, explanation-only or feature-edit-only request ends at its
+  requested boundary. Do not start engineer, runner or closer just because the
+  analyst returned files, explanations or a completed activity.
+- Before implementation, check actual output paths, per-feature readiness,
+  unresolved issues and checks performed. `changes-complete` or `review-complete`
+  alone is not permission to develop. Missing readiness is a question, not a
+  successful gate. Require explicit `ready-for-development` for the feature.
+- For UC output, verify that the registry, reports and feature rows are current
+  and `ready`, and the final report says `pronta per lo sviluppo`. Do not infer
+  readiness from a filename, valid syntax, absence of TODO tokens or a stale
+  summary. Return drafts, conflicts, missing required data/state or stale
+  artifacts to the analyst without starting implementation/execution of them.
+- A ready subset of a mixed result proceeds only if the user explicitly
+  authorizes that partial implementation scope; otherwise resolve the blockers.
+- Readiness does not prove Python step availability or passing tests. Preserve
+  runner approvals and the original test/closer gates; do not treat diagnostic
+  permission for existing tests as permission to execute draft scenarios.
+- Pass distinct Jira, UC workflow and ACE request identities to the analyst
+  where applicable. A resumed UC run keeps its identity while a new independent
+  chat request receives a new ACE `task_id`.
 
 ## Rules
 

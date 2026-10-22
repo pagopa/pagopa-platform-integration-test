@@ -123,9 +123,14 @@ def test_all_local_contract_links_and_tables() -> None:
     paths.extend([
         DOCS / 'uc-workflow.md', DOCS / 'uc-workflow-validation.md',
         ROOT / 'docs' / 'agent-personas' / 'qa-analyst.md',
+        ROOT / 'docs' / 'agent-personas' / 'qa-orchestrator.md',
         ROOT / '.github' / 'agents' / 'QA-analyst.agent.md',
+        ROOT / '.github' / 'agents' / 'QA-orchestrator.agent.md',
+        SKILLS / 'review-feature-files' / 'SKILL.md',
         ROOT / '.github' / 'instructions' / 'gherkin.instructions.md',
     ])
+    paths.extend((ROOT / 'docs' / 'workflows' / 'qa-analyst').glob('*.md'))
+    paths.extend((ROOT / 'docs' / 'adr').glob('ADR-0[2-7]-*.md'))
     for path in paths:
         text = _read(path)
         for target in re.findall(r'\[[^\]]+\]\(([^)]+)\)', text):
@@ -340,6 +345,122 @@ def test_given_requires_supported_state_not_assumed_data_fitness() -> None:
     assert 'A data-fitness constraint alone does not supply that' in translation
     assert 'Keep data-fitness requirements distinct from guaranteed initial states' in data
     assert 'a preliminary payment' in data
+
+
+def test_analyst_activity_routing_separates_review_edit_and_creation() -> None:
+    """Keep activity selection independent of input format and branch routing."""
+    routing = _read(ROOT / 'docs' / 'workflows' / 'qa-analyst' / 'activity-routing.md')
+    rows = _table_rows(routing, '| Activity | Procedure | Allowed output |')
+    assert [row[0] for row in rows] == [
+        'Review', 'Edit or correct', 'Create from a team-template UC',
+        'Create from other documentation or an explicitly supplied migration suite',
+    ]
+    assert 'Supplied feature files alone do\nnot authorize editing' in routing
+    assert 'without a second generic permission question' in routing
+    persona = _read(ROOT / 'docs' / 'agent-personas' / 'qa-analyst.md')
+    assert 'directly from the user or from the orchestrator' in persona
+    assert '../workflows/qa-analyst/activity-routing.md' in persona
+    assert '../workflows/qa-analyst/feature-editing.md' in persona
+    assert 'ask the user before updating or reworking' not in persona
+
+
+def test_feature_editing_preserves_scope_and_uc_reconciliation() -> None:
+    """Require evidence, scoped writes and honest partial UC reconciliation."""
+    editing = _read(ROOT / 'docs' / 'workflows' / 'qa-analyst' / 'feature-editing.md')
+    for clause in (
+        'Preserve\n  pre-existing changes',
+        '**Syntax/style:** preserve functional meaning',
+        '**Functional:**',
+        'require admitted evidence',
+        'through `uc-to-feature`',
+        'Unchanged context/data need not be retrieved again',
+        'mark the feature and final report\n  `stale`',
+        'move the run to `in_progress`',
+        'If the registry cannot be updated, report the actual failure',
+        'Show old/new step wording or parameter changes',
+        'not parser commands',
+    ):
+        assert clause in editing
+
+
+def test_generic_documentation_uses_evidence_without_fabricating_uc() -> None:
+    """Bound migration evidence while preserving the strict UC source rule."""
+    routing = _read(ROOT / 'docs' / 'workflows' / 'qa-analyst' / 'activity-routing.md')
+    policy = _read(SKILLS / 'uc-scenario-context' / 'source-policy.md')
+    assert '## Common evidence rules (ADR-04)' in routing
+    assert 'No feature creation or modification' in routing
+    assert 'no invented UC or mandatory UC registry' in routing
+    assert 'never input-data placeholders' in routing
+    assert 'questions, not proven defects' in routing
+    assert 'In the UC workflow, do not use feature files' in policy
+    assert 'For non-UC migration only, explicitly supplied executable suites' in policy
+    assert 'never applies to UC translation' in policy
+    assert 'not as proof of requirements' in policy
+
+
+def test_review_allows_only_requested_reports_without_self_delegation() -> None:
+    """Preserve feature immutability, direct invocation and ACE writer ownership."""
+    review = _read(SKILLS / 'review-feature-files' / 'SKILL.md')
+    routing = _read(ROOT / 'docs' / 'workflows' / 'qa-analyst' / 'activity-routing.md')
+    assert 'never delegate to yourself' in review
+    assert 'including a corrected copy at another path' in review
+    assert 'Only an explicitly requested Markdown' in review
+    assert 'A chat-only request writes no report' in review
+    assert 'review report' in routing
+    assert 'No generic permission to create other file types' in review
+    assert 'never trace files' in routing
+    assert 'The orchestrator owns ACE capture, privacy' in routing
+    assert 'requested Markdown review or' in _read(
+        ROOT / 'docs' / 'agent-personas' / 'qa-analyst.md'
+    )
+
+
+def test_implementation_delegation_requires_orchestrator_readiness_gate() -> None:
+    """Remove analyst handoffs and prevent activity completion from opening gates."""
+    wrapper = _read(ROOT / '.github' / 'agents' / 'QA-analyst.agent.md')
+    metadata = wrapper.split('---', 2)[1]
+    assert 'handoffs:' not in metadata
+    assert 'Never delegate to yourself or start implementation agents' in wrapper
+    routing = _read(ROOT / 'docs' / 'workflows' / 'qa-analyst' / 'activity-routing.md')
+    rows = _table_rows(routing, '| Result | Meaning |')
+    assert [row[0] for row in rows] == [
+        '`review-complete`', '`changes-complete`', '`draft`',
+        '`ready-for-development`', '`blocked`',
+    ]
+    assert 'never introduce these activity labels as new UC schema enums' in routing
+    orchestrator = _read(ROOT / 'docs' / 'agent-personas' / 'qa-orchestrator.md')
+    assert '## Analyst-result gate (ADR-05)' in orchestrator
+    assert 'Require explicit `ready-for-development`' in orchestrator
+    assert 'the user explicitly\n  authorizes that partial implementation scope' in orchestrator
+    assert 'the final report says `pronta per lo sviluppo`' in orchestrator
+    assert 'requested boundary' in orchestrator
+    assert 'diagnostic\n  permission for existing tests' in orchestrator
+
+
+def test_uc_identity_survives_new_ace_requests_without_schema_migration() -> None:
+    """Keep stable UC report identity separate from Jira and per-request traces."""
+    workflow = _read(DOCS / 'uc-workflow.md')
+    for clause in (
+        '### Identita distinte (ADR-07)',
+        'resta stabile quando si riprende la stessa run',
+        "ne l'ACE `task_id` della particolare richiesta",
+        'non rinominare directory',
+        'senza nuovi campi o invalidazioni',
+        'template e report storici mantengono i campi e i valori esistenti',
+    ):
+        assert clause in workflow
+
+
+@pytest.mark.parametrize('number', range(2, 8))
+def test_analyst_decisions_are_recorded_as_accepted(number: int) -> None:
+    """Keep each agreed ADR discoverable with a link to its operational owner."""
+    matches = list((ROOT / 'docs' / 'adr').glob(f"ADR-{number:02d}-*.md"))
+    assert len(matches) == 1
+    text = _read(matches[0])
+    assert '- Status: Accepted' in text
+    assert '## Decision' in text
+    assert '## Consequences' in text
+    assert re.search(r'\[[^\]]+\]\(\.\./', text)
 
 
 @pytest.mark.parametrize('label', ['FP', 'AF', 'EF'])

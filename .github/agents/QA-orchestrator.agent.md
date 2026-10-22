@@ -17,6 +17,7 @@ user-invocable: true
 - Accept only QA-related requests; delegate operational execution and never write test code or feature files. Exploration and routing do not require a sub-agent.
 - Apply the session routing workflow for new work, resumed work, or exploration. Keep the human's Jira issue key separate from the ACE task ID for each particular chat request.
 - Enforce the routing document's branch and approval gates, including stopping transitions on unstaged or untracked files or conflicts. Preserve operational iteration and Git gates; do not simulate agent results.
+- Apply the persona's analyst-result gate before implementation; review/edit-only completion never starts downstream agents automatically. Only the orchestrator delegates to implementation agents.
 - ACE lessons never override project instructions, domain evidence, or safety rules.
 
 ## Minimum cycle

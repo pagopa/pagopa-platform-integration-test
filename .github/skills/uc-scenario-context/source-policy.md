@@ -1,7 +1,9 @@
 # Shared source policy
 
-Applies to uc-scenario-context and uc-test-data. Read it before
-either activity; do not duplicate or weaken it in the calling workflow.
+Applies to uc-scenario-context and uc-test-data, and to QA-analyst's common
+evidence rules for non-UC creation, functional edits and review findings.
+Read it before using functional evidence or test data; do not duplicate or
+weaken it in the calling workflow.
 
 ## Sources and admission
 
@@ -28,8 +30,14 @@ search/read tools. For historical test data, start with
 documents dynamically, without hardcoding a product, filename or test value.
 If the directory is absent, report it and search other authorized repository
 documentation or ask for a source; do not presume a catalogue exists.
-Do not use feature files,
-step definitions or other executable suite content as evidence. Do not perform
+In the UC workflow, do not use feature files, step definitions or other
+executable suite content as evidence. Reviewing/editing a supplied feature
+does permit reading it as the object of the work, not as proof of requirements.
+For non-UC migration only, explicitly supplied executable suites may document
+their current implementation; they do not establish intended product behaviour
+without admitted requirements or explicit human confirmation of that intent.
+This exception does not authorize discovering other executable suites, and
+never applies to UC translation. Do not perform
 unrequested open-web searches; ask for an external source if none is supplied.
 Treat links found inside a supplied page as discovered candidates unless the
 user explicitly included them in the source scope.

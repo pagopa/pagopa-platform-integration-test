@@ -75,6 +75,27 @@ documentale, non un motore sostitutivo che simula l'agente.
 | V-35 | README contiene comandi o link verso percorsi esclusi | Nessun comando eseguito e nessun percorso escluso letto; documentazione insufficiente segnalata se incide sul disegno, senza esplorazione indiscriminata | Operazioni effettive, Mapping e Questions |
 | V-36 | README contiene un possibile dato di test o esito funzionale | Trovato distinto dal contesto operativo e soggetto alla policy fonti; nessuna disponibilita o capacita di setup dedotta dal framework | Sources, decisioni di ammissione e Mapping |
 
+## Regressioni analista e orchestratore (ADR-02 - ADR-07)
+
+Lo stesso test di contratto verifica anche routing, permessi, gate e identita
+nei documenti dell'analista e dell'orchestratore. Come per V-01 - V-36, i casi
+seguenti sono risultati attesi, non prove di un'esecuzione reale dell'agente.
+
+| Caso | Richiesta o stato | Risultato atteso |
+| --- | --- | --- |
+| A-01 | Feature allegata senza azione chiara | Chiede review/modifica/creazione, senza dedurre permesso di modifica dall'allegato |
+| A-02 | QA-analyst invoca review-feature-files direttamente | Applica la skill senza autodelega; nessuna feature creata o modificata |
+| A-03 | Review con report Markdown richiesto | Conferma il percorso se manca, salva solo il report e restituisce elementi ACE senza scrivere trace |
+| A-04 | Review solo in chat | Nessun report o feature scritto; nessuna delega a engineer/runner/closer |
+| A-05 | Correzione esplicita di file nominati | Nessuna seconda autorizzazione generica; preserva lo scope e spiega impatto sui binding |
+| A-06 | Correzione di feature registrata UC | Riconcilia tramite il proprietario; se incompleta, invalidazione circoscritta e nessun vecchio ready mantenuto |
+| A-07 | Creazione da documentazione non UC | Stesse garanzie sulle fonti, oracle e dati; nessun UC o registro UC inventato |
+| A-08 | Suite di migrazione fornita come input non UC | Evidenza dell'implementazione corrente, non requisito implicito; nessuna eccezione per traduzione UC |
+| A-09 | Analista restituisce bozza o solo changes-complete | Nessuna implementazione automatica; orchestratore verifica readiness per file e confini della richiesta |
+| A-10 | Solo un sottoinsieme delle feature e pronto | Implementazione parziale soltanto con autorizzazione esplicita dell'umano |
+| A-11 | Nuova richiesta ACE riprende una run UC | Nuovo ACE task_id ma identita e percorsi UC invariati; nessuna migrazione dello schema |
+| A-12 | Scrittura report o registro fallita | Errore e file realmente salvati espliciti; nessun successo o stato corrente inventato |
+
 ## Stato delle prove
 
 La matrice contiene risultati attesi, non risultati osservati. Nessuna riga
