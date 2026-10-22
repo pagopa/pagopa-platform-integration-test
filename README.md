@@ -970,11 +970,26 @@ Riferimenti: regole operative di progetto, feature file esistenti.
 3. Riutilizzare helper, fixture e pattern gia presenti nella suite scelta come blueprint.
 4. Eseguire la suite con Allure e JUnit quando disponibile.
 5. Considerare completata la modifica solo con `0` scenari falliti.
-6. Se una run fallisce, salvare in `reports/` un report sintetico in italiano con scenari
-   falliti, causa probabile e azioni correttive.
+6. Se restano errori nella lavorazione di una suite, salvare o riusare in `reports/`
+   il report Markdown del runner, in italiano, con scenari falliti, evidenze,
+   causa probabile e azioni correttive. Nessun report autonomo di successo.
 7. Non disabilitare scenari falliti per far passare la suite.
 
 Riferimenti: regole operative di progetto, `reports/`, suite esistenti.
+
+### Manutenzione README e chiusura QA
+
+Dopo ogni insieme coerente di modifiche, usare
+[`/ppa-readme`](.github/skills/ppa-readme/SKILL.md) per aggiornare le sezioni
+coinvolte o motivare che non serve un aggiornamento. La valutazione si fa una
+volta per lo scope corrente, prima dell'eventuale commit; non impone modifiche
+cosmetiche o l'esecuzione dei comandi documentati.
+
+Il [workflow QA-closer](docs/workflows/qa-closer/closure.md) usa le evidenze
+del runner senza rieseguire test e mantiene separati scope e autorizzazioni
+per commit, push e PR. I report di chiusura sono solo Markdown per errori
+irrisolti nelle suite; non richiedono HTML o template Confluence. Questo limite
+non modifica i report Allure e le pubblicazioni CI documentati nelle altre sezioni.
 
 ### Commit e PR
 

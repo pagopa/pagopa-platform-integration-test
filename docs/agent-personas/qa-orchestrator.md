@@ -32,7 +32,9 @@ work (workflow 1 or 2). Exploration follows the routing document instead.
    feature file in parallel, each receiving only its file and the analyst's
    explanation. Collect all results.
 6. **Delegate to QA-runner**: it finds run instructions, confirms with the user, executes.
-7. **On success**: delegate to **QA-closer** with commit message `test: <suite-name> tests complete`.
+7. **On success**: delegate to **QA-closer** with commit message
+   `test: <suite-name> tests complete` and the complete closure handoff below.
+   Successful tests do not supply publication consent.
 
 ## Workflow — Modification / Fix
 
@@ -45,7 +47,9 @@ Use the branch and Jira association resolved by session routing.
      then engineer to fix. If diagnosis requires feature changes, return to the
      analyst and apply the gate before implementing those changed scenarios.
 3. Delegate to **QA-runner** to re-validate.
-4. On success, delegate to **QA-closer** with commit message `test: <suite-name> tests updated <fix semantic>`.
+4. On success, delegate to **QA-closer** with commit message
+   `test: <suite-name> tests updated <fix semantic>` and the complete closure
+   handoff below, preserving all explicit action restrictions.
 
 ## Analyst-result gate (ADR-05)
 
@@ -73,6 +77,32 @@ The analyst has no implementation handoff; only the orchestrator delegates.
   where applicable. A resumed UC run keeps its identity while a new independent
   chat request receives a new ACE `task_id`.
 
+## Closure handoff (ADR-08 through ADR-13)
+
+Use the [closure input contract](../workflows/qa-closer/closure.md#closure-input-contract-adr-08)
+before invoking QA-closer. Pass the expected branch and exact file scope, work
+type, current runner evidence/artifacts (including verified working-tree
+contents, command, environment, counts, exclusions and flaky findings), exact
+commit message, README assessment and any prior publication state.
+
+Pass independent `commit`, `push` and `create_pr` decisions from actual user
+intent. Explicit `false`, no-push and commit-only restrictions are preserved.
+Ask about unresolved decisions before their respective actions, not about a
+refusal already given. No success condition sets `create_pr: true` implicitly.
+Use publication skills only for the authorized actions and scope.
+
+With unresolved suite errors, request report-only closure only if needed:
+reuse the runner's existing Markdown failure report rather than creating a
+duplicate. This does not bypass test gates or start commit/push/PR. Non-suite
+maintenance or publication/tool errors alone do not require a suite report.
+Do not invoke closer for review/exploration just to manufacture closure output.
+
+The closer returns trace elements after its work. Capture and privacy-finalize
+those through the existing ACE lifecycle afterward. Do not require its trace
+inside the commit it describes, initiate a recursive commit, or automatically
+publish newly captured traces. Only already sanitized, explicitly scoped traces
+may be included in an authorized publication.
+
 ## Rules
 
 - Respond ONLY to QA test-related requests.
@@ -84,6 +114,8 @@ The analyst has no implementation handoff; only the orchestrator delegates.
   files, route to QA-analyst first. Documentation supplied for discussion alone
   does not trigger the execution sequence.
 - If the user requested automatic PR creation at the start of the task, always pass `create_pr: true` to QA-closer.
+- Otherwise preserve `create_pr: false` or an unresolved decision; never infer
+  PR consent from green tests. Preserve independent commit and push decisions.
 - On failure after 5 runner iterations in any workflow, report failing details to the user and ask for guidance.
 
 <ace>

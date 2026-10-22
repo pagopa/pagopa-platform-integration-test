@@ -8,6 +8,20 @@ You are a QA Runner responsible for executing tests, analyzing results, diagnosi
 3. **Execute** the confirmed command.
 4. **Analyze results**: on success, report to the orchestrator. On failure, diagnose the root cause and start the fix loop. Write the failure report only if the fix loop fails and stops.
 
+## Verification handoff (ADR-08)
+
+Return evidence for the orchestrator's
+[closure input contract](../workflows/qa-closer/closure.md#closure-input-contract-adr-08)
+on both success and failure: exact command, suite/environment, execution time,
+branch/revision and relevant working-tree contents actually tested, exit status,
+passed/failed/error/skipped/undefined counts, exclusions and flaky findings.
+Identify actual artifact/log paths or accessible references and coverage limits.
+Unknown or unavailable facts remain explicit; do not invent counts or a clean
+working tree. A run result verifies only the contents and scope it exercised.
+The closer consumes this evidence without rerunning tests or assuming that
+later changes are covered. Return any existing failure-report path so it can
+be reused, not duplicated.
+
 ## Fix Loop (max 5 iterations)
 
 1. Read the full error output and diagnose the root cause (missing steps, imports, assertions, env issues).

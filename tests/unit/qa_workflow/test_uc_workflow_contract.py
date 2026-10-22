@@ -124,13 +124,19 @@ def test_all_local_contract_links_and_tables() -> None:
         DOCS / 'uc-workflow.md', DOCS / 'uc-workflow-validation.md',
         ROOT / 'docs' / 'agent-personas' / 'qa-analyst.md',
         ROOT / 'docs' / 'agent-personas' / 'qa-orchestrator.md',
+        ROOT / 'docs' / 'agent-personas' / 'qa-closer.md',
         ROOT / '.github' / 'agents' / 'QA-analyst.agent.md',
         ROOT / '.github' / 'agents' / 'QA-orchestrator.agent.md',
+        ROOT / '.github' / 'agents' / 'Qa-closer.agent.md',
         SKILLS / 'review-feature-files' / 'SKILL.md',
+        SKILLS / 'ppa-readme' / 'SKILL.md',
+        SKILLS / 'ppa-commit' / 'SKILL.md',
+        SKILLS / 'ppa-pr' / 'SKILL.md',
         ROOT / '.github' / 'instructions' / 'gherkin.instructions.md',
     ])
     paths.extend((ROOT / 'docs' / 'workflows' / 'qa-analyst').glob('*.md'))
-    paths.extend((ROOT / 'docs' / 'adr').glob('ADR-0[2-7]-*.md'))
+    paths.extend((ROOT / 'docs' / 'workflows' / 'qa-closer').glob('*.md'))
+    paths.extend((ROOT / 'docs' / 'adr').glob('ADR-*.md'))
     for path in paths:
         text = _read(path)
         for target in re.findall(r'\[[^\]]+\]\(([^)]+)\)', text):
@@ -451,8 +457,8 @@ def test_uc_identity_survives_new_ace_requests_without_schema_migration() -> Non
         assert clause in workflow
 
 
-@pytest.mark.parametrize('number', range(2, 8))
-def test_analyst_decisions_are_recorded_as_accepted(number: int) -> None:
+@pytest.mark.parametrize('number', range(2, 14))
+def test_qa_decisions_are_recorded_as_accepted(number: int) -> None:
     """Keep each agreed ADR discoverable with a link to its operational owner."""
     matches = list((ROOT / 'docs' / 'adr').glob(f"ADR-{number:02d}-*.md"))
     assert len(matches) == 1
@@ -461,6 +467,153 @@ def test_analyst_decisions_are_recorded_as_accepted(number: int) -> None:
     assert '## Decision' in text
     assert '## Consequences' in text
     assert re.search(r'\[[^\]]+\]\(\.\./', text)
+
+
+def test_readme_skill_is_discoverable_scoped_and_non_recursive() -> None:
+    """Keep README maintenance reusable without forced edits or execution."""
+    text = _read(SKILLS / 'ppa-readme' / 'SKILL.md')
+    metadata = text.split('---', 2)[1]
+    assert 'name: ppa-readme\n' in metadata
+    assert 0 < len(metadata.split('description: >-', 1)[1].strip()) <= 1024
+    assert 'once per coherent change set' in text
+    assert 'staged, unstaged and intended untracked files' in text
+    assert 'A broad restructuring' in text
+    assert 'requires explicit confirmation' in text
+    assert 'current relevant\ncontents and scope' in text
+    assert 'does not recursively trigger another full assessment' in text
+    assert '`updated`, `no-update-needed` or `blocked`' in text
+    assert 'Do not run tests' in text
+    assert 'return the assessment and required changes to the orchestrator' in text
+    instructions = _read(ROOT / 'AGENTS.md')
+    assert '## README maintenance gate (ADR-11)' in instructions
+    assert 'before an eventual commit' in instructions
+    assert 'does not expand permissions' in instructions
+    assert '.github/skills/ppa-readme/SKILL.md' in instructions
+    readme = _read(ROOT / 'README.md')
+    assert '[`/ppa-readme`](.github/skills/ppa-readme/SKILL.md)' in readme
+    assert 'docs/workflows/qa-closer/closure.md' in readme
+
+
+def test_closure_verification_is_current_scoped_runner_evidence() -> None:
+    """Require real execution evidence without count growth or closer reruns."""
+    workflow = _read(ROOT / 'docs' / 'workflows' / 'qa-closer' / 'closure.md')
+    inputs = _table_rows(workflow, '| Input | Required content |')
+    assert [row[0] for row in inputs] == [
+        'Identity and scope', 'Verification', 'Evidence', 'Documentation',
+        'Publication plan', 'Prior closure state',
+    ]
+    assert 'working-tree contents verified' in inputs[1][1]
+    assert 'A larger test count' in workflow
+    assert 'A matching HEAD\nalone does not establish freshness' in workflow
+    assert 'zero executed tests' in workflow
+    assert 'If relevant contents changed after verification, stop publication' in workflow
+    assert 'do not rerun tests' in workflow
+    runner = _read(ROOT / 'docs' / 'agent-personas' / 'qa-runner.md')
+    assert '## Verification handoff (ADR-08)' in runner
+    assert 'passed/failed/error/skipped/undefined counts' in runner
+    assert 'Return any existing failure-report path' in runner
+
+
+def test_closure_staging_and_outgoing_commits_preserve_authorized_scope() -> None:
+    """Block wrong-branch or unrelated publication without automatic repair."""
+    workflow = _read(ROOT / 'docs' / 'workflows' / 'qa-closer' / 'closure.md')
+    assert 'Detached HEAD,\n   `main`, the repository default branch' in workflow
+    assert 'do not checkout, switch, create a branch' in workflow
+    assert 'Unrelated staged\n   content blocks a commit' in workflow
+    assert 'do not include it or\n   unstage it silently' in workflow
+    assert 'inspect outgoing commits as well as the current index' in workflow
+    assert 'No merge, force push, amend' in workflow
+    persona = _read(ROOT / 'docs' / 'agent-personas' / 'qa-closer.md')
+    assert 'stage all changes' not in persona
+    assert 'Do NOT edit feature files, test code' in persona
+    assert 'Do NOT run tests' in persona
+
+
+def test_closure_approvals_are_independent_and_refusals_win() -> None:
+    """Prevent green results or a skill default from inventing publication consent."""
+    workflow = _read(ROOT / 'docs' / 'workflows' / 'qa-closer' / 'closure.md')
+    decisions = _table_rows(workflow, '| Decision | Meaning |')
+    assert [row[0] for row in decisions] == [
+        '`commit: true`', '`push: true`', '`create_pr: true`',
+        'Any explicit `false`', 'Unresolved decision',
+    ]
+    assert 'test success does not supply consent' in decisions[-1][1]
+    assert 'do not ask again to override a refusal' in decisions[-2][1]
+    assert 'no-push/commit-only restriction\nmust be passed explicitly' in workflow
+    assert 'If a PR needs an unpublished commit but push is forbidden' in workflow
+    orchestrator = _read(ROOT / 'docs' / 'agent-personas' / 'qa-orchestrator.md')
+    assert '## Closure handoff (ADR-08 through ADR-13)' in orchestrator
+    assert 'No success condition sets `create_pr: true` implicitly' in orchestrator
+    assert 'independent `commit`, `push` and `create_pr` decisions' in orchestrator
+    assert 'or **ALL** tests pass' not in _read(
+        ROOT / 'docs' / 'agent-personas' / 'qa-closer.md'
+    )
+
+
+def test_closure_documentation_and_ignore_are_conditional() -> None:
+    """Reuse current README assessments and avoid mandatory ignore churn."""
+    workflow = _read(ROOT / 'docs' / 'workflows' / 'qa-closer' / 'closure.md')
+    assert 'reuse an assessment that actually covers its current\ncontents' in workflow
+    assert 'Report `no-update-needed` when appropriate' in workflow
+    assert 'Do not create or edit `.gitignore` merely because closure ran' in workflow
+    assert 'Local ignored reports remain local' in workflow
+    assert 'without a new commit or push' in workflow
+
+
+def test_closer_reports_only_markdown_for_unresolved_suite_errors() -> None:
+    """Keep success, non-suite work and publication failures out of suite reporting."""
+    workflow = _read(ROOT / 'docs' / 'workflows' / 'qa-closer' / 'closure.md')
+    assert '**only for work on test suites with\nunresolved errors' in workflow
+    assert 'Earlier failures resolved by current verified results' in workflow
+    assert 'a Git/PR/tool failure alone does not' in workflow
+    assert 'no commit, push\n  or PR through this path' in workflow
+    assert "reuse the runner's relevant Markdown failure report" in workflow
+    assert 'Unknown values remain unknown' in workflow
+    assert 'No HTML/Allure generation or serving, Confluence templates/API' in workflow
+    assert 'GitHub PR template\n  remains mandatory' in workflow
+    wrapper = _read(ROOT / '.github' / 'agents' / 'Qa-closer.agent.md')
+    description = wrapper.split('---', 2)[1].splitlines()[1]
+    assert 'HTML report' not in description
+    assert 'report-only closure' in description
+    assert 'Standalone reports are Markdown only' in wrapper
+
+
+def test_closure_ace_capture_has_one_owner_and_no_recursive_commit() -> None:
+    """Allow only explicitly scoped sanitized traces and defer closer capture."""
+    workflow = _read(ROOT / 'docs' / 'workflows' / 'qa-closer' / 'closure.md')
+    assert 'Do not create or edit ACE files here' in workflow
+    assert 'ACE files are excluded from closure scope by default' in workflow
+    assert 'evidence of successful privacy finalization' in workflow
+    assert 'Raw or uncertain trace contents must not be' in workflow
+    assert "closer's own trace is captured after its result by the orchestrator" in workflow
+    assert 'There is no recursive commit' in workflow
+    orchestrator = _read(ROOT / 'docs' / 'agent-personas' / 'qa-orchestrator.md')
+    assert 'privacy-finalize\nthose through the existing ACE lifecycle afterward' in orchestrator
+    assert 'automatically\npublish newly captured traces' in orchestrator
+
+
+def test_closure_recovery_reuses_verified_publication_state() -> None:
+    """Resume the failed action rather than duplicating commits or PRs."""
+    workflow = _read(ROOT / 'docs' / 'workflows' / 'qa-closer' / 'closure.md')
+    states = _table_rows(workflow, '| Last verified state | Resume behavior |')
+    assert len(states) == 5
+    assert 'not a new commit' in states[1][1]
+    assert 'only the needed PR step' in states[2][1]
+    assert 'do not duplicate it' in states[3][1]
+    assert 'ask before any potentially duplicate write' in states[4][1]
+    assert "use only\n   the skill's push procedure" in workflow
+    assert 'Actual actions, checks, lesson IDs and friction' in workflow
+    assert '`completed`, `report-only`, `partial` or `blocked`' in workflow
+
+
+def test_closure_acceptance_matrix_distinguishes_expectations_from_runs() -> None:
+    """Retain closure trial cases without pretending static checks ran an agent."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'qa-closer' / 'validation.md')
+    cases = _table_rows(text, '| Case | Input or state | Expected result |')
+    assert [row[0] for row in cases] == [f"C-{number:02d}" for number in range(1, 17)]
+    assert all(all(cell for cell in row) for row in cases)
+    assert 'not evidence that these scenarios have been executed' in text
+    assert 'not a simulated\nagent or real publication' in text
 
 
 @pytest.mark.parametrize('label', ['FP', 'AF', 'EF'])

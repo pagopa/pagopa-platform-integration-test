@@ -35,6 +35,18 @@ Applies to custom agents and non-custom coding agents working in this repository
 1. Before creating or editing any `.py` file, read [`.github/instructions/python-scripts.instructions.md`](.github/instructions/python-scripts.instructions.md).
 2. When editing behave step files (`src/**/steps/**/*.py`), also read [`.github/instructions/behave-steps.instructions.md`](.github/instructions/behave-steps.instructions.md).
 
+## README maintenance gate (ADR-11)
+
+After each coherent change set that modifies the repository, apply
+[ppa-readme](.github/skills/ppa-readme/SKILL.md) before an eventual commit, or
+reuse an assessment covering the current relevant contents and scope. Assess
+once per change set, not after every edit; no recursive reassessment is needed
+just because that final README update was saved. A justified no-update result
+is valid. Roles without README write permission return the assessment and
+required changes to the orchestrator/user for an authorized writer; this rule
+does not expand permissions, require self-delegation, or start QA-closer.
+Reassess only when subsequent changes affect documentation.
+
 ## Agent instruction loading policy
 
 Each agent reads **only** the instruction files listed for its role. Instructions not listed are out of scope for that agent.
@@ -44,7 +56,7 @@ Each agent reads **only** the instruction files listed for its role. Instruction
 | `QA-analyst` | [`gherkin.instructions.md`](.github/instructions/gherkin.instructions.md) |
 | `QA-engineer` | [`python-scripts.instructions.md`](.github/instructions/python-scripts.instructions.md), [`behave-steps.instructions.md`](.github/instructions/behave-steps.instructions.md) |
 | `QA-runner` | [`run-tests.instructions.md`](.github/instructions/run-tests.instructions.md) |
-| `QA-closer` | [Commit skill](.github/skills/ppa-commit/SKILL.md), [PR creation skill](.github/skills/ppa-pr/SKILL.md) |
+| `QA-closer` | [Closure workflow](docs/workflows/qa-closer/closure.md), [README skill](.github/skills/ppa-readme/SKILL.md), [Commit skill](.github/skills/ppa-commit/SKILL.md), [PR creation skill](.github/skills/ppa-pr/SKILL.md) |
 | `QA-orchestrator` | all of the above (delegates to sub-agents) |
 | `Mermaid-flow-engineer` | [`.github/skills/mermaid-flow/SKILL.md`](.github/skills/mermaid-flow/SKILL.md) |
 | `Marp-presentation-engineer` | [`.github/skills/marp-presentation/SKILL.md`](.github/skills/marp-presentation/SKILL.md) |

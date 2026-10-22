@@ -1,6 +1,6 @@
 ---
 description: 'Use when: Gherkin feature files need review, correction, creation from UC/documentation, or explanation'
-model: Claude Sonnet 5
+model: Claude Sonnet 5.5
 tools: [read/readFile, search/fileSearch, web/fetch, vscode/askQuestions, edit/editFiles, execute/runInTerminal, edit, edit/createFile, edit/createDirectory, search/listDirectory, search/textSearch, apply_patch]
 user-invocable: true
 
