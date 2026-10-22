@@ -70,7 +70,7 @@ def populate_test_run(test_run: Test_runs, summary_path: str, version: str, test
         if test_run.total_failures == 0:
             test_run.revision_result = "GO"
             test_run.revisioned = True
-            test_run.revision_date = datetime.now()
+            test_run.revision_date = datetime.now().isoformat()
 
     return test_run
 
@@ -177,6 +177,7 @@ def save_test_suite(test_suite: Test_suites, config: Dynaconf):
     return Test_suites(**test_suite_out.json())
 
 def save_test_runs(test_run: Test_runs,  config: Dynaconf):
+    """Save a test run with datetime fields serialized as ISO 8601 strings."""
     api = config.get("qa_hub_apis", None).get("save_test_runs", None)
     test_run.id = ''    
     test_run.suite_id = str(test_run.suite_id)
