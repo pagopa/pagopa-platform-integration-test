@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 import argparse
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from dynaconf import Dynaconf
 
@@ -63,7 +63,8 @@ def populate_test_run(test_run: Test_runs, summary_path: str, version: str, test
         if version is not None:
             test_run.test_version = str(version)
         if test_object is not None:
-            test_run.allure_url = f"{ALLURE_BASE_URL}{test_object}-tests/{datetime.fromtimestamp(time_data.get('start') or 0 / 1000).strftime('%Y-%m-%d_%H:%M:%S')}/index.html"
+            allure_start = datetime.fromtimestamp((time_data.get('start') or 0) / 1000.0) - timedelta(hours=2)
+            test_run.allure_url = f"{ALLURE_BASE_URL}{test_object}-tests/{allure_start.strftime('%Y-%m-%d_%H:%M:%S')}/index.html"
         
         test_run.total_failures = calculate_total_failures(test_run)
         if test_run.total_failures == 0:
@@ -308,9 +309,9 @@ def main():
             test_run = populate_test_run(test_run, os.path.join(run_dir, SUMMARY_FILE_PATH), test_version, test_suite.test_object)
             # Populating test executions based on the test cases JSON files
             if os.path.exists(os.path.join(run_dir, TEST_CASES_PATH)):
-                test_executions = populate_test_executions(os.path.join(run_dir, TEST_CASES_PATH), test_run.id)
+                test_executions = populate_test_executions(os.path.join(run_dir, TEST_CASES_PATH), test_run.allure_url)
             else:
-                 test_executions = populate_test_executions(os.path.join(run_dir, ALLURE_RESULT_PATH), test_run.id)
+                 test_executions = populate_test_executions(os.path.join(run_dir, ALLURE_RESULT_PATH), test_run.allure_url)
                  
             # Save the newly created test run in the database and get the generated ID to associate with test executions
             test_run = save_test_runs(test_run, full_config)
