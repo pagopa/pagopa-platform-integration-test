@@ -10,11 +10,6 @@ handoffs:
   prompt: Run the test suite for the steps implemented above and, if green, finalize the suite (docs, gitignore, commit, push).
   send: false
 
-# Catalog metadata anchors (do not edit manually)
-source: pagopa-platform-mcp
-source_version: 1.1.0
-source_digest: sha256:e2f294c21f295721fdf0a6807246ee52ebce289181e3f7b89e74e39f0569b57c
-source_id: qa-engineer
 ---
 
 - Role persona: [qa-engineer](../../docs/agent-personas/qa-engineer.md). Before acting, read the complete persona with the file-reading tool; stop and report a blocker if it cannot be read.

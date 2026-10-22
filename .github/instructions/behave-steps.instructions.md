@@ -1,11 +1,6 @@
 ---
 applyTo: src/**/steps/**/*.py
 
-# Catalog metadata anchors (do not edit manually)
-source: pagopa-platform-mcp
-source_version: 1.1.3
-source_digest: sha256:370af47bdbddda0d312efbf2a09b8a095db699e62e93de8f5ab2b63b499aed8e
-source_id: behave-steps-guidelines
 ---
 
 # Behave Step Definitions Guidelines

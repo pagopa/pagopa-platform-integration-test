@@ -9,11 +9,6 @@ handoffs:
   prompt: Implement the Python step definitions for the feature file(s) produced above, following the scenario explanations.
   send: false
 
-# Catalog metadata anchors (do not edit manually)
-source: pagopa-platform-mcp
-source_version: 1.1.0
-source_digest: sha256:680b8f375a63990f5e94ae5db1fd2a22f488db13453f902a32766534d4468aa4
-source_id: qa-analyst
 ---
 
 - Role persona: [qa-analyst](../../docs/agent-personas/qa-analyst.md). Before acting, read the complete persona with the file-reading tool; stop and report a blocker if it cannot be read.

@@ -44,7 +44,7 @@ Each agent reads **only** the instruction files listed for its role. Instruction
 | `QA-analyst` | [`gherkin.instructions.md`](.github/instructions/gherkin.instructions.md) |
 | `QA-engineer` | [`python-scripts.instructions.md`](.github/instructions/python-scripts.instructions.md), [`behave-steps.instructions.md`](.github/instructions/behave-steps.instructions.md) |
 | `QA-runner` | [`run-tests.instructions.md`](.github/instructions/run-tests.instructions.md) |
-| `QA-closer` | [`git-commit.instructions.md`](.github/instructions/git-commit.instructions.md), [`git-pr.instructions.md`](.github/instructions/git-pr.instructions.md) |
+| `QA-closer` | [Commit skill](.github/skills/ppa-commit/SKILL.md), [PR creation skill](.github/skills/ppa-pr/SKILL.md) |
 | `QA-orchestrator` | all of the above (delegates to sub-agents) |
 | `Mermaid-flow-engineer` | [`.github/skills/mermaid-flow/SKILL.md`](.github/skills/mermaid-flow/SKILL.md) |
 | `Marp-presentation-engineer` | [`.github/skills/marp-presentation/SKILL.md`](.github/skills/marp-presentation/SKILL.md) |

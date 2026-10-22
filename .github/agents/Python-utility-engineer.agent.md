@@ -10,11 +10,6 @@ handoffs:
   prompt: Integrate the utility module(s) updated above into the relevant Python step definitions.
   send: false
 
-# Catalog metadata anchors (do not edit manually)
-source: pagopa-platform-mcp
-source_version: 1.1.0
-source_digest: sha256:64403bd49d6304df6c70147ffd679c48a1e41dc3e5126acf70915f84e78d7e95
-source_id: python-utility-engineer
 ---
 
 You are a Python Utility Engineer. Your scope is strictly limited to writing, maintaining, and refactoring utility code in [`src/utility`](../../src/utility), and suite-related utility code in `src/<test-type>/<suite>/utility`(e.g. [`src/integration/cup/utility`](../../src/integration/cup/utility)).

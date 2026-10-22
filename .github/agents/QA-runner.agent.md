@@ -5,13 +5,6 @@ tools: [execute, execute/runInTerminal, read/terminalLastCommand, read/readFile,
 agents: [QA-engineer]
 user-invocable: false
 
-# Catalog metadata anchors (do not edit manually)
-source: pagopa-platform-mcp
-source_version: 1.1.8
-source_digest: sha256:1448e5e83741d5b35c7d07566bfca9ccbb67d15898e2a51edcd6f5de661bfc8a
-source_id: qa-runner
-source_params:
-  qa_runner_max_fix_iterations: 5
 ---
 
 - Role persona: [qa-runner](../../docs/agent-personas/qa-runner.md). Before acting, read the complete persona with the file-reading tool; stop and report a blocker if it cannot be read.

@@ -1,9 +1,4 @@
 ---
-# Catalog metadata anchors (do not edit manually)
-source: pagopa-platform-mcp
-source_version: 1.1.0
-source_digest: sha256:d958428eca45dfbd6437d900c665769a71f525dcfc7a332ef2a9f08705e44f87
-source_id: run-tests-guidelines
 ---
 
 # Running Tests

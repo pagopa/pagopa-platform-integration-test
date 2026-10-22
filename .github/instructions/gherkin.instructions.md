@@ -1,11 +1,6 @@
 ---
 applyTo: src/**/*.feature
 
-# Catalog metadata anchors (do not edit manually)
-source: pagopa-platform-mcp
-source_version: 1.1.2
-source_digest: sha256:cc85cac3e13a4517b037a8561c0543cdfeade5eebe5960f33cfb14772cebee5d
-source_id: gherkin-guidelines
 ---
 
 # Gherkin Guidelines

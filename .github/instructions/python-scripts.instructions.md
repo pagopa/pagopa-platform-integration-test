@@ -1,11 +1,6 @@
 ---
 applyTo: '**/*.py'
 
-# Catalog metadata anchors (do not edit manually)
-source: pagopa-platform-mcp
-source_version: 1.1.0
-source_digest: sha256:1b92485c0e9c28bd9ec322cafe8f1dc6aa277d048ce8636a5d22a6a729d7480c
-source_id: python-scripts-guidelines
 ---
 
 # Python Scripts Guidelines

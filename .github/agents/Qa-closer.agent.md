@@ -4,11 +4,6 @@ model: GPT-5.4 mini
 tools: [read/readFile, edit/createFile, edit/editFiles, search/fileSearch, read/terminalLastCommand, execute/runInTerminal, execute/getTerminalOutput, vscode/askQuestions]
 user-invocable: false
 
-# Catalog metadata anchors (do not edit manually)
-source: pagopa-platform-mcp
-source_version: 1.1.0
-source_digest: sha256:971627c7f1c10653152cd9ed004f011151cd2f8e991576305f957dac5822f501
-source_id: qa-closer
 ---
 
 - Role persona: [qa-closer](../../docs/agent-personas/qa-closer.md). Before acting, read the complete persona with the file-reading tool; stop and report a blocker if it cannot be read.
