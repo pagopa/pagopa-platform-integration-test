@@ -32,7 +32,7 @@ def calculate_total_failures(test_run: Test_runs) -> int:
     return (test_run.failed_scenario or 0) + (test_run.broken_scenario or 0) + (test_run.skipped_scenario or 0)
 
 
-def populate_test_run(test_run: Test_runs, summary_path: str, version: str, test_object: str):
+def populate_test_run(test_run: Test_runs, summary_path: str, version: str, test_object: str, allure_subfolder: str):
     '''
     Populate the test_run object based on the data found in summary.json file.
 
@@ -62,9 +62,9 @@ def populate_test_run(test_run: Test_runs, summary_path: str, version: str, test
         test_run.duration_ms = time_data.get('duration') or 0
         if version is not None:
             test_run.test_version = str(version)
-        if test_object is not None:
-            allure_start = datetime.fromtimestamp((time_data.get('start') or 0) / 1000.0)
-            test_run.allure_url = f"{ALLURE_BASE_URL}{test_object}-tests/{allure_start.strftime('%Y-%m-%d_%H:%M:%S')}/index.html"
+        if allure_subfolder is not None:
+            allure_start = datetime.fromtimestamp((time_data.get('start') or 0) / 1000.0).strftime("%Y-%m-%d_%H:%M:%S")
+            test_run.allure_url = f"{ALLURE_BASE_URL}{allure_subfolder}/{allure_start}/index.html"
         
         test_run.total_failures = calculate_total_failures(test_run)
         if test_run.total_failures == 0:
@@ -308,7 +308,7 @@ def main():
             # Populate the test run object based on the summary.json file 
             test_run.suite_id = latest_suite_version_obj.id
             test_version = (nrt_suite or find_nrt_suite(test_suite.test_object.lower(), suites) or {}).get('version')
-            test_run = populate_test_run(test_run, os.path.join(run_dir, SUMMARY_FILE_PATH), test_version, test_suite.test_object)
+            test_run = populate_test_run(test_run, os.path.join(run_dir, SUMMARY_FILE_PATH), test_version, test_suite.test_object, nrt_suite.get('allure_subfolder') if nrt_suite else None)
             # Populating test executions based on the test cases JSON files
             if os.path.exists(os.path.join(run_dir, TEST_CASES_PATH)):
                 test_executions = populate_test_executions(os.path.join(run_dir, TEST_CASES_PATH), test_run.allure_url)
