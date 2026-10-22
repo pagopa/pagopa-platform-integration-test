@@ -34,6 +34,15 @@ class Test_runs:
     trigger_type: Optional[str] = None
     test_version: Optional[str] = None
     test_origin: Optional[str] = None
+    revisioned: bool | None = False
+    revision_date: datetime | None = None
+    revisioned_by: str | None = None
+    revision_result: str | None = None
+    allure_url: str | None = None
+    product_issue: str | None = None
+    product_issue_status: str | None = None
+    qa_issue: str | None = None
+    qa_issue_status: str | None = None
 
 
 @dataclass
@@ -47,6 +56,8 @@ class Test_executions:
     duration_ms: Optional[int] = None
     error_message: Optional[str] = None
     retries: Optional[int] = None
+    revision_note: str | None = None
+    allure_url: str | None = None
 
 
 __all__ = [

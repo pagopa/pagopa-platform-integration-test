@@ -21,3 +21,5 @@ TEST_CASES_PATH = "data/test-cases"
 
 NRT_SUITES_FILE = GITHUB_ROOT / "nrt-suites.json"
 
+ALLURE_BASE_URL = "https://pagopa.github.io/pagopa-platform-integration-test/"
+
