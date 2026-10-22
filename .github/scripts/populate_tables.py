@@ -63,7 +63,7 @@ def populate_test_run(test_run: Test_runs, summary_path: str, version: str, test
         if version is not None:
             test_run.test_version = str(version)
         if test_object is not None:
-            allure_start = datetime.fromtimestamp((time_data.get('start') or 0) / 1000.0) - timedelta(hours=2)
+            allure_start = datetime.fromtimestamp((time_data.get('start') or 0) / 1000.0)
             test_run.allure_url = f"{ALLURE_BASE_URL}{test_object}-tests/{allure_start.strftime('%Y-%m-%d_%H:%M:%S')}/index.html"
         
         test_run.total_failures = calculate_total_failures(test_run)
