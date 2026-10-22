@@ -125,6 +125,11 @@ def test_all_local_contract_links_and_tables() -> None:
         ROOT / 'docs' / 'agent-personas' / 'qa-analyst.md',
         ROOT / 'docs' / 'agent-personas' / 'qa-orchestrator.md',
         ROOT / 'docs' / 'agent-personas' / 'qa-closer.md',
+        ROOT / 'docs' / 'agent-personas' / 'qa-engineer.md',
+        ROOT / '.github' / 'agents' / 'QA-engineer.agent.md',
+        ROOT / '.github' / 'agents' / 'Python-utility-engineer.agent.md',
+        SKILLS / 'review-behave-steps' / 'SKILL.md',
+        ROOT / '.github' / 'instructions' / 'behave-steps.instructions.md',
         ROOT / '.github' / 'agents' / 'QA-analyst.agent.md',
         ROOT / '.github' / 'agents' / 'QA-orchestrator.agent.md',
         ROOT / '.github' / 'agents' / 'Qa-closer.agent.md',
@@ -136,6 +141,7 @@ def test_all_local_contract_links_and_tables() -> None:
     ])
     paths.extend((ROOT / 'docs' / 'workflows' / 'qa-analyst').glob('*.md'))
     paths.extend((ROOT / 'docs' / 'workflows' / 'qa-closer').glob('*.md'))
+    paths.extend((ROOT / 'docs' / 'workflows' / 'qa-engineer').glob('*.md'))
     paths.extend((ROOT / 'docs' / 'adr').glob('ADR-*.md'))
     for path in paths:
         text = _read(path)
@@ -457,7 +463,7 @@ def test_uc_identity_survives_new_ace_requests_without_schema_migration() -> Non
         assert clause in workflow
 
 
-@pytest.mark.parametrize('number', range(2, 14))
+@pytest.mark.parametrize('number', range(2, 20))
 def test_qa_decisions_are_recorded_as_accepted(number: int) -> None:
     """Keep each agreed ADR discoverable with a link to its operational owner."""
     matches = list((ROOT / 'docs' / 'adr').glob(f"ADR-{number:02d}-*.md"))
@@ -467,6 +473,70 @@ def test_qa_decisions_are_recorded_as_accepted(number: int) -> None:
     assert '## Decision' in text
     assert '## Consequences' in text
     assert re.search(r'\[[^\]]+\]\(\.\./', text)
+
+
+def test_engineer_routing_and_review_permissions() -> None:
+    """Keep review read-only and direct engineer use free from self-delegation."""
+    workflow = _read(ROOT / 'docs' / 'workflows' / 'qa-engineer' / 'implementation.md')
+    rows = _table_rows(workflow, '| Activity | Behavior | Allowed output |')
+    assert [row[0] for row in rows] == [
+        'Review', 'Implement or extend', 'Fix or refactor',
+    ]
+    assert 'Review can examine incomplete code or draft features' in workflow
+    assert 'No corrected copies of code' in workflow
+    review = _read(SKILLS / 'review-behave-steps' / 'SKILL.md')
+    assert 'never self-delegate' in review
+    assert 'Only an explicitly requested Markdown report' in review
+    assert 'Chat-only requests write\n   no report' in review
+    assert 'Other file types creation-only' not in review
+
+
+def test_engineer_readiness_scope_and_utility_ownership() -> None:
+    """Require real functional inputs and keep helpers with their specialist."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'qa-engineer' / 'implementation.md')
+    for clause in (
+        'Check these even when invoked directly',
+        'Stop affected implementation on unresolved functional requirements',
+        'never self-delegate',
+        'Existing-test maintenance does not require a new UC run',
+        'Blueprints supply technical patterns, not product requirements',
+        'Python-utility-engineer owns new reusable helpers',
+        'both suite-local and shared',
+    ):
+        assert clause in text
+    assert 'suite wiring in `environment.py`' in text
+    profile = _read(ROOT / '.github' / 'profiles' / 'behave-steps.profile.yaml')
+    assert 'suite_utility_path_template: src/<test-type>/<suite>/utility' in profile
+    assert 'suite_utility_path_template: src/integration/' not in profile
+
+
+def test_engineer_parallelism_requires_disjoint_writers() -> None:
+    """Keep common files single-owner and check semantic binding collisions."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'qa-engineer' / 'implementation.md')
+    assert 'only when write sets are disjoint' in text
+    assert 'shared files have one\nwriter' in text
+    assert 'Matching patterns may overlap' in text
+    orchestrator = _read(ROOT / 'docs' / 'agent-personas' / 'qa-orchestrator.md')
+    assert '## Engineer ownership and result gate (ADR-14 through ADR-19)' in orchestrator
+    assert 'group or serialize overlapping work' in orchestrator
+    assert 'one-engineer-per-feature parallelism, isolation' not in orchestrator
+
+
+def test_engineer_and_utility_return_without_running_tests_or_handoffs() -> None:
+    """Require runner-approved verification, not imaginary specialist executions."""
+    for name in ('QA-engineer', 'Python-utility-engineer'):
+        text = _read(ROOT / '.github' / 'agents' / f'{name}.agent.md')
+        assert 'handoffs:' not in text.split('---', 2)[1]
+    utility = _read(ROOT / '.github' / 'agents' / 'Python-utility-engineer.agent.md')
+    assert 'do not execute them' in utility
+    assert 'Do NOT execute unit tests, shell commands' in utility
+    text = _read(ROOT / 'docs' / 'workflows' / 'qa-engineer' / 'implementation.md')
+    assert '`review-complete`, `implemented-not-run`, `partial` or `blocked`' in text
+    assert 'no indirect test execution through delegation' in text
+    assert 'do not write ACE trace files' in text
+    runner = _read(ROOT / 'docs' / 'agent-personas' / 'qa-runner.md')
+    assert 'Utility unit tests or expanded commands' in runner
+    assert 'require command approval before execution' in runner
 
 
 def test_readme_skill_is_discoverable_scoped_and_non_recursive() -> None:

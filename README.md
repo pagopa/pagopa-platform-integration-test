@@ -977,6 +977,13 @@ Riferimenti: regole operative di progetto, feature file esistenti.
 
 Riferimenti: regole operative di progetto, `reports/`, suite esistenti.
 
+Il [workflow QA-engineer](docs/workflows/qa-engineer/implementation.md) distingue
+review, implementazione e fix/refactor. L'ingegnere implementa binding e wiring
+autorizzato della suite; i nuovi helper riusabili sono affidati allo specialista
+utility, anche per API ed E2E. Gli agenti di implementazione non eseguono test:
+restituiscono codice e verifiche statiche al runner, che esegue i comandi approvati.
+Il parallelismo richiede file con ownership disgiunta, non solo feature diverse.
+
 ### Manutenzione README e chiusura QA
 
 Dopo ogni insieme coerente di modifiche, usare

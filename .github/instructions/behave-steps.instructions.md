@@ -17,6 +17,11 @@ Read [`.github/profiles/behave-steps.profile.yaml`](../../.github/profiles/behav
   - `scenario_01.py`
   - `scenario_02_03_06.py`
 - Keep decorators unique across files to avoid duplicate/matching collisions.
+- Inspect the suite's actual loaded binding scope and matcher rules before adding
+  a decorator; different patterns can still match the same step.
+- Shared step files and hooks have one write owner during parallel work. Report
+  new overlapping dependencies before editing; do not assume one feature means
+  one independent file set.
 
 ## Step implementation
 
@@ -32,3 +37,5 @@ Read [`.github/profiles/behave-steps.profile.yaml`](../../.github/profiles/behav
 - Search the codebase for existing test suites to understand project conventions: `environment.py`/`configuration.py`, existing step patterns and assertion styles.
 - Inspect every path listed in the profile's `shared_utility_documentation` before coding, then reuse existing utility modules whenever they already cover the scenario needs.
 - Store suite-specific utility using the profile's `suite_utility_path_template`.
+- Substitute the actual suite type (`api`, `integration` or `e2e`); do not default
+  API/E2E helpers to integration. Follow the active role's utility ownership rules.

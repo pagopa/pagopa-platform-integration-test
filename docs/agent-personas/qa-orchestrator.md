@@ -28,9 +28,10 @@ work (workflow 1 or 2). Exploration follows the routing document instead.
 3. **Plan**: share a concise execution plan with the user before delegation.
 4. **Delegate to QA-analyst** with the requested activity, scope and any provided
    feature files or documentation. Apply the analyst-result gate below.
-5. **After the gate passes**, spawn one QA-engineer per authorized development-ready
-   feature file in parallel, each receiving only its file and the analyst's
-   explanation. Collect all results.
+5. **After the gate passes**, apply the engineer ownership/result gate below.
+   Assign development-ready features with exact write sets and necessary shared
+   context. Use one engineer per feature only when those sets are disjoint;
+   group or serialize overlapping work. Collect the integrated results.
 6. **Delegate to QA-runner**: it finds run instructions, confirms with the user, executes.
 7. **On success**: delegate to **QA-closer** with commit message
    `test: <suite-name> tests complete` and the complete closure handoff below.
@@ -76,6 +77,29 @@ The analyst has no implementation handoff; only the orchestrator delegates.
 - Pass distinct Jira, UC workflow and ACE request identities to the analyst
   where applicable. A resumed UC run keeps its identity while a new independent
   chat request receives a new ACE `task_id`.
+
+## Engineer ownership and result gate (ADR-14 through ADR-19)
+
+Use the [engineer workflow](../workflows/qa-engineer/implementation.md) for direct
+implementation and runner fixes. Pass activity, current feature/readiness or
+defect evidence, suite/framework, exact owned paths, shared context contracts
+and current ACE request identity.
+
+Before parallel work, assign one owner per shared step, hook, utility and unit-test
+file. Group or serialize overlapping write sets, including requests from different
+engineers to the utility specialist. A discovered overlap must be resolved before
+writing; after integration, assign the suite-wide binding/context collision check.
+Do not preserve one-engineer-per-feature parallelism at the cost of isolation.
+
+`review-complete` never starts downstream execution. `implemented-not-run` means
+only the authorized implementation and static checks were completed, not that
+tests passed. Resolve `partial`/`blocked` dependencies before normal verification;
+limited diagnostic runs require explicit scope and the runner's approval gate.
+Pass actual changed paths, binding coverage, utility API/test changes, known issues
+and proposed checks to the runner. Unit tests prepared by the utility specialist
+are executed by the runner, not by engineer or specialist; obtain approval for
+new or expanded commands. The runner's existing five-iteration fix loop remains.
+Direct engineer requests do not auto-start closure, commit, push or PR.
 
 ## Closure handoff (ADR-08 through ADR-13)
 
@@ -123,7 +147,7 @@ may be included in an authorized publication.
 ## ACE learning cycle
 
 1. Before acting, read the generated `ace-qa-orchestrator.instructions.md` and any configured family instructions from `ace/config/project.json.agent_families`; cite any applied `P-NNN` lesson.
-2. Assign one unique, stable `task_id` for the particular chat request before the first delegation or substantive orchestrator-only work, including exploration. This is not the Jira key; independent requests under the same issue receive different IDs. Track which configured participating agents actually contribute. For operational work, keep the existing QA delegation sequence, one-engineer-per-feature parallelism, isolation, and five-iteration limit unchanged.
+2. Assign one unique, stable `task_id` for the particular chat request before the first delegation or substantive orchestrator-only work, including exploration. This is not the Jira key; independent requests under the same issue receive different IDs. Track which configured participating agents actually contribute. Keep the QA delegation sequence, isolation and five-iteration limit; parallelize engineer work only under the ownership gate above.
 3. Before closing, read `ace/schema/trace.schema.json` and `ace/traces/CAPTURE_GUIDE.md`. Write one trace per participating agent actually involved, using the same `task_id`; also write an orchestrator trace whenever you perform substantive work, obligatorily when no other participating agent was involved. Assess `friction` deliberately.
 4. Use `provisional_evaluator` from `ace/config/project.json` only for immediate self-report; use `verified` only when concrete verification is recorded in `actions`.
 5. After all traces for the request are captured, run `node scripts\ace-addons\privacy\finalize-task.js <task_id>` from the repository root before counters or reflection. Stop if sanitization fails; do not consume or commit raw traces or call the ACE core finalizer directly. Then run `node ace\scripts\update_counters.js`, followed by `node ace\scripts\check_threshold.js reflector`. Only when `reached` is true, perform the capture guide's retrospective review and invoke `gh/ace/reflector` with the complete batch. Its generated chain delegates to `gh/ace/curator`, then `gh/ace/warden`.

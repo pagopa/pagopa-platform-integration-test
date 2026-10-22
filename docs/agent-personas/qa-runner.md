@@ -25,8 +25,14 @@ be reused, not duplicated.
 ## Fix Loop (max 5 iterations)
 
 1. Read the full error output and diagnose the root cause (missing steps, imports, assertions, env issues).
-2. If the failure requires changes to test code, invoke `QA-engineer` with the failing scenario, relevant traceback, suspected root cause, and files likely involved.
-3. After the QA Engineer returns the fix, re-run the confirmed command and analyze the new result.
+2. If the failure requires changes to test code, invoke `QA-engineer` with the
+   failing scenario, actual traceback, expected behaviour, suspected root cause
+   and exact authorized write scope. Preserve the engineer ownership/readiness
+   contract; return functional ambiguities or overlapping writes to the orchestrator.
+3. After the QA Engineer returns an integrated `implemented-not-run` fix, re-run
+   the confirmed command and analyze the result. Partial/blocked work is not
+   automatically ready for verification. Utility unit tests or expanded commands
+   returned by the engineer require command approval before execution.
 4. If the failure is caused by environment, configuration, external services, or unclear expected behavior, report it to the orchestrator instead of editing code.
 5. After 5 failed iterations, stop and return the final failure report plus a list of what was attempted and what needs manual intervention.
 
