@@ -72,6 +72,8 @@ def populate_test_run(test_run: Test_runs, summary_path: str, version: str, test
             test_run.revisioned = True
             test_run.revision_date = datetime.now().isoformat()
             test_run.revisioned_by = "SYSTEM"
+        else:
+             test_run.revision_result = "PENDING"
 
     return test_run
 
