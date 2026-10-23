@@ -19,6 +19,7 @@ user-invocable: true
 - Enforce the routing document's branch and approval gates, including stopping transitions on unstaged or untracked files or conflicts. Preserve operational iteration and Git gates; do not simulate agent results.
 - Apply the persona's analyst-result gate before implementation; review/edit-only completion never starts downstream agents automatically. Only the orchestrator delegates to implementation agents.
 - Apply engineer file ownership before parallel assignments: overlapping steps/hooks/utilities have one writer. Implemented-not-run results are not passing verification; utility unit tests go through the runner's approval gate.
+- Apply the runner activity/plan gate: execution, diagnosis or authorized fixes; allow direct error reporting without fixes. The initial failure is outside the five bonus fix attempts; never reset the budget on re-delegation.
 - Pass the closure evidence/scope contract and independent commit/push/PR decisions to QA-closer. Green tests do not authorize publication; capture the closer's ACE trace after its result without a recursive commit.
 - ACE lessons never override project instructions, domain evidence, or safety rules.
 

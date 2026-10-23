@@ -32,7 +32,7 @@ work (workflow 1 or 2). Exploration follows the routing document instead.
    Assign development-ready features with exact write sets and necessary shared
    context. Use one engineer per feature only when those sets are disjoint;
    group or serialize overlapping work. Collect the integrated results.
-6. **Delegate to QA-runner**: it finds run instructions, confirms with the user, executes.
+6. **Delegate to QA-runner** through the runner activity/plan gate below.
 7. **On success**: delegate to **QA-closer** with commit message
    `test: <suite-name> tests complete` and the complete closure handoff below.
    Successful tests do not supply publication consent.
@@ -98,8 +98,35 @@ limited diagnostic runs require explicit scope and the runner's approval gate.
 Pass actual changed paths, binding coverage, utility API/test changes, known issues
 and proposed checks to the runner. Unit tests prepared by the utility specialist
 are executed by the runner, not by engineer or specialist; obtain approval for
-new or expanded commands. The runner's existing five-iteration fix loop remains.
+new or expanded commands. The runner may use up to five authorized bonus fix
+attempts after the initial failure, or go directly to the error report.
 Direct engineer requests do not auto-start closure, commit, push or PR.
+
+## Runner activity and plan gate (ADR-20 through ADR-25)
+
+Use the [runner workflow](../workflows/qa-runner/execution.md). Pass the requested
+mode (execute, diagnose, execute with fixes), actual suite/framework/environment,
+integrated changed paths, verification scope, current ACE request identity and
+failure policy. Ambiguity requires a question, not automatic fixes.
+
+The runner presents and obtains approval for the concrete plan, including effects,
+unique artifact destinations and rerun limits. Do not substitute orchestrator
+intent for that approval. Same-plan reruns may reuse explicit consent; expanded
+commands, changed environment/setup/selection or effects need fresh approval.
+The user may decline fixes and go directly to the Markdown error report.
+
+The initial failing run is attempt 0. Only with authorization, allow up to five
+bonus fix attempts (1 through 5) afterward. Keep its counter across delegations
+and resumptions; separately bounded diagnostic reruns never reset or extend it.
+Respect earlier stopping, refusal and out-of-scope blockers. Route functional
+changes back to the analyst, helper ownership through the engineer, and
+environment/configuration/service issues to an explicit orchestrator decision.
+
+Consume `passed`, `failed`, `blocked` and `inconclusive` honestly. Only current,
+scope-complete passing evidence opens normal successful closure; zero failures
+alone, zero executed tests or a later unexplained pass after a failure do not.
+No new implementation or closure for execution-only/diagnosis requests.
+Reuse the runner's unresolved-suite-error report even when no fix loop started.
 
 ## Closure handoff (ADR-08 through ADR-13)
 
@@ -140,14 +167,16 @@ may be included in an authorized publication.
 - If the user requested automatic PR creation at the start of the task, always pass `create_pr: true` to QA-closer.
 - Otherwise preserve `create_pr: false` or an unresolved decision; never infer
   PR consent from green tests. Preserve independent commit and push decisions.
-- On failure after 5 runner iterations in any workflow, report failing details to the user and ask for guidance.
+- When fixes are declined/stopped, or five bonus fix attempts after the initial
+  failure are exhausted, return the unresolved error report and ask for guidance
+  only for a further decision; never restart the loop automatically.
 
 <ace>
 
 ## ACE learning cycle
 
 1. Before acting, read the generated `ace-qa-orchestrator.instructions.md` and any configured family instructions from `ace/config/project.json.agent_families`; cite any applied `P-NNN` lesson.
-2. Assign one unique, stable `task_id` for the particular chat request before the first delegation or substantive orchestrator-only work, including exploration. This is not the Jira key; independent requests under the same issue receive different IDs. Track which configured participating agents actually contribute. Keep the QA delegation sequence, isolation and five-iteration limit; parallelize engineer work only under the ownership gate above.
+2. Assign one unique, stable `task_id` for the particular chat request before the first delegation or substantive orchestrator-only work, including exploration. This is not the Jira key; independent requests under the same issue receive different IDs. Track which configured participating agents actually contribute. Keep the QA delegation sequence, isolation and limit of five bonus fixes after the initial failure; parallelize engineer work only under the ownership gate above.
 3. Before closing, read `ace/schema/trace.schema.json` and `ace/traces/CAPTURE_GUIDE.md`. Write one trace per participating agent actually involved, using the same `task_id`; also write an orchestrator trace whenever you perform substantive work, obligatorily when no other participating agent was involved. Assess `friction` deliberately.
 4. Use `provisional_evaluator` from `ace/config/project.json` only for immediate self-report; use `verified` only when concrete verification is recorded in `actions`.
 5. After all traces for the request are captured, run `node scripts\ace-addons\privacy\finalize-task.js <task_id>` from the repository root before counters or reflection. Stop if sanitization fails; do not consume or commit raw traces or call the ACE core finalizer directly. Then run `node ace\scripts\update_counters.js`, followed by `node ace\scripts\check_threshold.js reflector`. Only when `reached` is true, perform the capture guide's retrospective review and invoke `gh/ace/reflector` with the complete batch. Its generated chain delegates to `gh/ace/curator`, then `gh/ace/warden`.

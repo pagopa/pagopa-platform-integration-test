@@ -126,6 +126,9 @@ def test_all_local_contract_links_and_tables() -> None:
         ROOT / 'docs' / 'agent-personas' / 'qa-orchestrator.md',
         ROOT / 'docs' / 'agent-personas' / 'qa-closer.md',
         ROOT / 'docs' / 'agent-personas' / 'qa-engineer.md',
+        ROOT / 'docs' / 'agent-personas' / 'qa-runner.md',
+        ROOT / '.github' / 'agents' / 'QA-runner.agent.md',
+        ROOT / '.github' / 'instructions' / 'run-tests.instructions.md',
         ROOT / '.github' / 'agents' / 'QA-engineer.agent.md',
         ROOT / '.github' / 'agents' / 'Python-utility-engineer.agent.md',
         SKILLS / 'review-behave-steps' / 'SKILL.md',
@@ -142,6 +145,7 @@ def test_all_local_contract_links_and_tables() -> None:
     paths.extend((ROOT / 'docs' / 'workflows' / 'qa-analyst').glob('*.md'))
     paths.extend((ROOT / 'docs' / 'workflows' / 'qa-closer').glob('*.md'))
     paths.extend((ROOT / 'docs' / 'workflows' / 'qa-engineer').glob('*.md'))
+    paths.extend((ROOT / 'docs' / 'workflows' / 'qa-runner').glob('*.md'))
     paths.extend((ROOT / 'docs' / 'adr').glob('ADR-*.md'))
     for path in paths:
         text = _read(path)
@@ -463,7 +467,7 @@ def test_uc_identity_survives_new_ace_requests_without_schema_migration() -> Non
         assert clause in workflow
 
 
-@pytest.mark.parametrize('number', range(2, 20))
+@pytest.mark.parametrize('number', range(2, 26))
 def test_qa_decisions_are_recorded_as_accepted(number: int) -> None:
     """Keep each agreed ADR discoverable with a link to its operational owner."""
     matches = list((ROOT / 'docs' / 'adr').glob(f"ADR-{number:02d}-*.md"))
@@ -537,6 +541,131 @@ def test_engineer_and_utility_return_without_running_tests_or_handoffs() -> None
     runner = _read(ROOT / 'docs' / 'agent-personas' / 'qa-runner.md')
     assert 'Utility unit tests or expanded commands' in runner
     assert 'require command approval before execution' in runner
+
+
+def test_runner_modes_and_optional_fixes_are_explicit() -> None:
+    """Keep execution and diagnosis from silently authorizing code corrections."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'qa-runner' / 'execution.md')
+    modes = _table_rows(text, '| Mode | Allowed actions | After an unresolved suite failure |')
+    assert [row[0] for row in modes] == ['Execute', 'Diagnose', 'Execute with fixes']
+    assert 'no code fixes' in modes[0][1]
+    assert 'additional execution needs an approved plan' in modes[1][1]
+    assert 'A missing answer is not fix authorization' in text
+    assert '**go directly to report**' in text
+    assert 'do\nnot ask redundantly' in text
+    assert 'The user may stop/decline the loop' in text
+
+
+def test_runner_plan_covers_scope_effects_and_reusable_consent() -> None:
+    """Require concrete approval without repeatedly asking for unchanged reruns."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'qa-runner' / 'execution.md')
+    for clause in (
+        'interpreter/tool, working directory',
+        'Explicit effective environment',
+        'potential effects on external systems',
+        'Unique run/attempt artifact destinations',
+        'Use the dedicated question tool to approve the plan',
+        'Material command, interpreter, selector, environment',
+        'Fixed-plan reruns can reuse consent only',
+        'repeatability/data preparation is established and approved',
+        'same shell process',
+    ):
+        assert clause in text
+
+
+def test_runner_results_require_complete_current_evidence() -> None:
+    """Keep zero failures, old artifacts and unexplained retries from clean passes."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'qa-runner' / 'execution.md')
+    states = _table_rows(text, '| Result | Meaning |')
+    assert [row[0] for row in states] == [
+        '`passed`', '`failed`', '`blocked`', '`inconclusive`',
+    ]
+    for clause in (
+        'Exit code alone is insufficient',
+        'including zero tests',
+        'Expected excluded tests outside the agreed scope do not fail',
+        'Unknown counts remain\nunknown',
+        'do not claim a new passing verification',
+        'classify current verification as inconclusive, not clean',
+        'relevant source/configuration changes during execution',
+    ):
+        assert clause in text
+
+
+def test_runner_fix_budget_starts_after_initial_failure_and_cannot_reset() -> None:
+    """Require five bonus cycles after attempt zero, with early reporting allowed."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'qa-runner' / 'execution.md')
+    for clause in (
+        'initial failed execution is **attempt 0**, outside the bonus budget',
+        'bonus fix attempts numbered 1 through 5',
+        'at most six normal verification executions',
+        'Starting a bonus\nattempt reserves its slot',
+        'do not\nreset the counter by redelegating',
+        'They require a separately\n  approved finite budget',
+        'they cannot replenish bonus',
+        'No need to consume the five attempts',
+        'After bonus attempt 5 fails, stop and report',
+    ):
+        assert clause in text
+    orchestrator = _read(ROOT / 'docs' / 'agent-personas' / 'qa-orchestrator.md')
+    assert '## Runner activity and plan gate (ADR-20 through ADR-25)' in orchestrator
+    assert 'Keep its counter across delegations' in orchestrator
+    assert 'five-iteration' not in orchestrator
+
+
+def test_runner_artifacts_processes_and_local_commands_are_isolated() -> None:
+    """Preserve per-attempt evidence and avoid duplicate runs after wait timeouts."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'qa-runner' / 'execution.md')
+    for clause in (
+        'Never delete shared result directories',
+        'retrieve the original process result',
+        'terminate only the exact owned',
+        'Never kill by process name',
+        'No HTML report\ngeneration/server',
+    ):
+        assert clause in text
+    instructions = _read(ROOT / '.github' / 'instructions' / 'run-tests.instructions.md')
+    assert 'src\\integration\\$suite' in instructions
+    assert 'src/bdd' not in instructions
+    assert 'Remove-Item' not in instructions
+    assert '<Test rule>' not in instructions
+    assert 'Resolve-Path -LiteralPath' in instructions
+    assert 'reports\\junit\\$suite-uat\\$runId\\$attemptId' in instructions
+    assert '-f allure_behave.formatter:AllureFormatter -o $outDir' in instructions
+    assert '$testExit = $LASTEXITCODE' in instructions
+    readme = _read(ROOT / 'README.md')
+    local = readme.split('## Esecuzione locale', 1)[1].split('### GPD Cucumber.js', 1)[0]
+    assert 'Remove-Item' not in local
+    assert 'rm -rf' not in local
+    assert '--junit-directory=$junitDir' in local
+    assert 'reports/allure-results/<suite>-<env>/<run-id>/<attempt-id>' in readme
+    assert 'docs/workflows/qa-runner/execution.md' in readme
+    assert (ROOT / 'src' / 'integration' / 'wisp').is_dir()
+    assert (ROOT / 'src' / 'integration' / 'fdr').is_dir()
+
+
+def test_runner_error_reports_do_not_require_fixes_or_expand_write_scope() -> None:
+    """Allow report updates after declined fixes, never code or ACE edits."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'qa-runner' / 'execution.md')
+    for clause in (
+        'whether the loop was skipped, declined, stopped',
+        'reuse the same failure report',
+        'Successful work needs no standalone success report',
+        'without evidence of suite errors needs chat',
+        'Report\nediting permission does not extend to features',
+        'On failed persistence, return the actual error',
+        'the runner writes no ACE files',
+        'No automatic invocation of QA-closer',
+    ):
+        assert clause in text
+    wrapper = _read(ROOT / '.github' / 'agents' / 'QA-runner.agent.md')
+    metadata = wrapper.split('---', 2)[1]
+    assert 'edit/createFile' in metadata
+    assert 'edit/editFiles' in metadata
+    assert 'agents: [QA-engineer]' in metadata
+    assert 'model: Claude Sonnet 5\n' in metadata
+    assert 'handoffs:' not in metadata
+    assert 'first failure is attempt 0' in wrapper
 
 
 def test_readme_skill_is_discoverable_scoped_and_non_recursive() -> None:

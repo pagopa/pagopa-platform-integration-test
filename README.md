@@ -400,6 +400,10 @@ Riferimenti: `src/e2e/checkout/features/*.feature`,
 ## Esecuzione locale
 
 Tutti i comandi Behave vanno eseguiti dalla root del repository.
+Gli esempi locali creano output separati per run e tentativo (`initial-00`);
+per i fix usare `fix-01` fino a `fix-05`, conservando le evidenze precedenti.
+Se una destinazione esiste gia, fermarsi senza sovrascriverla. Con il runner,
+ambiente, selezione, effetti e politica dei tentativi richiedono un piano approvato.
 
 ### Singola suite API
 
@@ -408,10 +412,9 @@ PowerShell:
 ```powershell
 $env:TARGET_ENV = "uat"
 $suite = "cart"
-$outDir = "reports\allure-results\$suite-$env:TARGET_ENV"
-
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $outDir
-New-Item $outDir -ItemType Directory -Force | Out-Null
+$runId = [guid]::NewGuid().ToString("N")
+$outDir = "reports\allure-results\$suite-$env:TARGET_ENV\$runId\initial-00"
+New-Item $outDir -ItemType Directory -ErrorAction Stop | Out-Null
 
 behave "src\api\$suite" `
   -f allure_behave.formatter:AllureFormatter -o $outDir `
@@ -423,10 +426,11 @@ Bash:
 ```bash
 export TARGET_ENV=uat
 suite="cart"
-out_dir="reports/allure-results/${suite}-${TARGET_ENV}"
-
-rm -rf "$out_dir"
-mkdir -p "$out_dir"
+run_id="$(date -u +%Y%m%dT%H%M%SZ)-${RANDOM}"
+run_dir="reports/allure-results/${suite}-${TARGET_ENV}/${run_id}"
+out_dir="${run_dir}/initial-00"
+mkdir -p "$run_dir" || exit 1
+mkdir "$out_dir" || exit 1
 
 behave "src/api/${suite}" \
   -f allure_behave.formatter:AllureFormatter -o "$out_dir" \
@@ -445,29 +449,34 @@ PowerShell:
 ```powershell
 $env:TARGET_ENV = "uat"
 $suite = "wisp"
-$outDir = "reports\allure-results\$suite-uat"
-
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $outDir
-New-Item $outDir -ItemType Directory -Force | Out-Null
+$env:suite = $suite
+$runId = [guid]::NewGuid().ToString("N")
+$outDir = "reports\allure-results\$suite-uat\$runId\initial-00"
+$junitDir = "reports\junit\$suite-uat\$runId\initial-00"
+New-Item $outDir -ItemType Directory -ErrorAction Stop | Out-Null
+New-Item $junitDir -ItemType Directory -ErrorAction Stop | Out-Null
 
 behave "src\integration\$suite" --tags=@runnable  `
   -f allure_behave.formatter:AllureFormatter -o $outDir `
-  -f progress --junit-directory=junit --junit --summary --show-timings -v
+  -f progress --junit-directory=$junitDir --junit --summary --show-timings -v
 ```
 
 Bash:
 
 ```bash
 export TARGET_ENV=uat
-suite="wisp"
-out_dir="reports/allure-results/${suite}-uat"
-
-rm -rf "$out_dir"
-mkdir -p "$out_dir"
+export suite="wisp"
+run_id="$(date -u +%Y%m%dT%H%M%SZ)-${RANDOM}"
+run_dir="reports/allure-results/${suite}-uat/${run_id}"
+junit_run_dir="reports/junit/${suite}-uat/${run_id}"
+out_dir="${run_dir}/initial-00"
+junit_dir="${junit_run_dir}/initial-00"
+mkdir -p "$run_dir" "$junit_run_dir" || exit 1
+mkdir "$out_dir" "$junit_dir" || exit 1
 
 behave "src/integration/${suite}" --tags=@runnable \
   -f allure_behave.formatter:AllureFormatter -o "$out_dir" \
-  -f progress --junit-directory=junit --junit --summary --show-timings -v
+  -f progress --junit-directory="$junit_dir" --junit --summary --show-timings -v
 ```
 
 Per FdR usare `suite="fdr"`.
@@ -482,10 +491,9 @@ PowerShell:
 
 ```powershell
 $env:TARGET_ENV = "uat"
-$outDir = "reports\allure-results\ebollo-uat"
-
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $outDir
-New-Item $outDir -ItemType Directory -Force | Out-Null
+$runId = [guid]::NewGuid().ToString("N")
+$outDir = "reports\allure-results\ebollo-uat\$runId\initial-00"
+New-Item $outDir -ItemType Directory -ErrorAction Stop | Out-Null
 
 behave "src\integration\ebollo" `
   -f allure_behave.formatter:AllureFormatter -o $outDir `
@@ -496,10 +504,11 @@ Bash:
 
 ```bash
 export TARGET_ENV=uat
-out_dir="reports/allure-results/ebollo-uat"
-
-rm -rf "$out_dir"
-mkdir -p "$out_dir"
+run_id="$(date -u +%Y%m%dT%H%M%SZ)-${RANDOM}"
+run_dir="reports/allure-results/ebollo-uat/${run_id}"
+out_dir="${run_dir}/initial-00"
+mkdir -p "$run_dir" || exit 1
+mkdir "$out_dir" || exit 1
 
 behave "src/integration/ebollo" \
   -f allure_behave.formatter:AllureFormatter -o "$out_dir" \
@@ -516,10 +525,9 @@ PowerShell:
 ```powershell
 $env:ENV_FILE = "dev.env"
 $env:HEADLESS = "true"
-$outDir = "reports\allure-results\checkout-dev"
-
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $outDir
-New-Item $outDir -ItemType Directory -Force | Out-Null
+$runId = [guid]::NewGuid().ToString("N")
+$outDir = "reports\allure-results\checkout-dev\$runId\initial-00"
+New-Item $outDir -ItemType Directory -ErrorAction Stop | Out-Null
 
 behave "src\e2e\checkout" `
   -f allure_behave.formatter:AllureFormatter -o $outDir `
@@ -531,10 +539,11 @@ Bash:
 ```bash
 export ENV_FILE=dev.yaml
 export HEADLESS=true
-out_dir="reports/allure-results/checkout-dev"
-
-rm -rf "$out_dir"
-mkdir -p "$out_dir"
+run_id="$(date -u +%Y%m%dT%H%M%SZ)-${RANDOM}"
+run_dir="reports/allure-results/checkout-dev/${run_id}"
+out_dir="${run_dir}/initial-00"
+mkdir -p "$run_dir" || exit 1
+mkdir "$out_dir" || exit 1
 
 behave "src/e2e/checkout" \
   -f allure_behave.formatter:AllureFormatter -o "$out_dir" \
@@ -564,37 +573,40 @@ Riferimenti: `src/integration/gpd/package.json`, `src/integration/gpd/README.md`
 In locale usare:
 
 ```text
-reports/allure-results/<suite>-<env>
+reports/allure-results/<suite>-<env>/<run-id>/<attempt-id>
+reports/junit/<suite>-<env>/<run-id>/<attempt-id>
 ```
 
 Nei workflow WISP/FdR il runner produce `allure-results` nella working directory, poi il report
 HTML viene pubblicato come artefatto e copiato su GitHub Pages.
+Le convenzioni CI restano invariate; in locale non mescolare tentativi o cancellare
+la directory condivisa per preparare una nuova esecuzione.
 
 Riferimenti: regole operative di progetto, `.github/workflows/wisp-tests.yml`,
 `.github/workflows/fdr-tests.yml`, `.github/workflows/run_behave_tests.yml`.
 
 ### Aprire il report locale
 
-PowerShell, usando un percorso assoluto su Windows:
+Solo quando richiesto, aprire l'output di un tentativo preciso. PowerShell,
+risolvendo dalla root del repository un percorso assoluto esistente:
 
 ```powershell
-allure serve `
-  "...\pagopa-platform-integration-test\reports\allure-results\cart-uat" `
-  --port 5300
+$results = (Resolve-Path -LiteralPath "reports\allure-results\cart-uat\<run-id>\initial-00" -ErrorAction Stop).Path
+allure serve $results --port 5300
 ```
 
 Bash:
 
 ```bash
-allure serve "$PWD/reports/allure-results/cart-uat" --port 5300
+allure serve "$PWD/reports/allure-results/cart-uat/<run-id>/initial-00" --port 5300
 ```
 
 In alternativa, generare una directory HTML statica:
 
 ```bash
-allure generate reports/allure-results/cart-uat \
-  -o reports/allure-html/cart-uat --clean
-allure open reports/allure-html/cart-uat --port 5300
+allure generate "reports/allure-results/cart-uat/<run-id>/initial-00" \
+  -o "reports/allure-html/cart-uat/<run-id>/initial-00"
+allure open "reports/allure-html/cart-uat/<run-id>/initial-00" --port 5300
 ```
 
 Nota sul formatter Behave: `-o` si associa al primo formatter indicato. Mettere sempre
@@ -969,7 +981,8 @@ Riferimenti: regole operative di progetto, feature file esistenti.
 2. Implementare o aggiornare solo gli step necessari.
 3. Riutilizzare helper, fixture e pattern gia presenti nella suite scelta come blueprint.
 4. Eseguire la suite con Allure e JUnit quando disponibile.
-5. Considerare completata la modifica solo con `0` scenari falliti.
+5. Verificare che lo scope approvato sia stato realmente eseguito: exit code,
+   conteggi, errori, esclusioni e artifact correnti; `0` falliti da solo non basta.
 6. Se restano errori nella lavorazione di una suite, salvare o riusare in `reports/`
    il report Markdown del runner, in italiano, con scenari falliti, evidenze,
    causa probabile e azioni correttive. Nessun report autonomo di successo.
@@ -983,6 +996,13 @@ autorizzato della suite; i nuovi helper riusabili sono affidati allo specialista
 utility, anche per API ed E2E. Gli agenti di implementazione non eseguono test:
 restituiscono codice e verifiche statiche al runner, che esegue i comandi approvati.
 Il parallelismo richiede file con ownership disgiunta, non solo feature diverse.
+
+Il [workflow QA-runner](docs/workflows/qa-runner/execution.md) distingue esecuzione,
+diagnosi e esecuzione con fix autorizzati. Dopo il primo fallimento (tentativo 0),
+si puo andare direttamente al report oppure usare fino a **cinque tentativi bonus
+di fix**, con piano approvato e artifact isolati. Non sono cinque esecuzioni totali:
+il primo run non consuma il budget. Il runner distingue `passed`, `failed`,
+`blocked` e `inconclusive`; non cancella la storia di errori intermittenti.
 
 ### Manutenzione README e chiusura QA
 

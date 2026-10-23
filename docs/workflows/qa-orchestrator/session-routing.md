@@ -113,8 +113,9 @@ Use this procedure only after the matrix's choices and approvals are complete.
 - **Workflows 1 and 2:** enter the persona's new-suite or modification/fix
   sequence according to the requested work, not according to whether the branch
   is new. Workflow 2 never renames the branch to match a suite convention.
-  Delegate operational QA work; preserve runner approvals, the five-iteration
-  limit, closer gates, and explicit PR intent.
+  Delegate operational QA work; preserve runner plan approvals and failure
+  policy, at most five bonus fixes after the initial failure (not five total
+  executions), closer gates, and explicit PR intent.
 - **Workflow 3:** answer QA questions, discuss hypotheses, and formulate plans
   without mandatory sub-agent delegation. Delegate a bounded specialist
   question only when needed. Do not automatically implement tests/features,
