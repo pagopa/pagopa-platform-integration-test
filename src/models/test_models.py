@@ -35,7 +35,7 @@ class Test_runs:
     test_version: Optional[str] = None
     test_origin: Optional[str] = None
     revisioned: bool | None = False
-    revision_date: datetime | None = None
+    revision_date: Optional[datetime] | None = None
     revisioned_by: str | None = None
     revision_result: str | None = None
     allure_url: str | None = None
