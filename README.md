@@ -223,13 +223,16 @@ Riferimenti: `config.yaml`, `config/.secrets_template.yaml`,
 
 ### E2E test
 
-Le suite Behave sotto `src/e2e/` caricano ognuna un file env locale tramite variabile `ENV_FILE`.
-Es. `dev.yaml` in checkout.
+Checkout carica `<TARGET_ENV>.yaml` dalla directory della suite tramite
+`load_configurations`; senza selettore usa UAT. Il loader corrente non legge
+`ENV_FILE`. L'esempio seleziona UAT, ambiente registrato per Checkout NRT.
+Nell'hook `HEADLESS` e `E2E_TIMEOUT_MS` vengono prima dalla configurazione:
+le variabili omonime sono fallback, non override garantiti.
 
 PowerShell:
 
 ```powershell
-$env:ENV_FILE = "dev.env"
+$env:TARGET_ENV = "uat"
 $env:HEADLESS = "true"
 $env:E2E_TIMEOUT_MS = "80000"
 ```
@@ -237,12 +240,13 @@ $env:E2E_TIMEOUT_MS = "80000"
 Bash:
 
 ```bash
-export ENV_FILE=dev.yaml
+export TARGET_ENV=uat
 export HEADLESS=true
 export E2E_TIMEOUT_MS=80000
 ```
 
-Riferimenti: `src/e2e/checkout/environment.py`, `src/e2e/checkout/dev.yaml`.
+Riferimenti: `src/e2e/checkout/environment.py`, `src/conf/configuration.py`,
+`src/e2e/checkout/uat.yaml`, `.github/nrt-suites.json`.
 
 ### Gestione dei secret
 
@@ -404,26 +408,49 @@ Gli esempi locali creano output separati per run e tentativo (`initial-00`);
 per i fix usare `fix-01` fino a `fix-05`, conservando le evidenze precedenti.
 Se una destinazione esiste gia, fermarsi senza sovrascriverla. Con il runner,
 ambiente, selezione, effetti e politica dei tentativi richiedono un piano approvato.
+Gli esempi Behave seguenti sono per una **shell dedicata**, con interprete Python
+esplicitamente scelto al posto di `<approved-python-executable>` (per esempio il
+percorso assoluto del virtualenv verificato). Propagano l'exit code al chiamante:
+in uso interattivo conservare/riferire lo stato senza eseguire `exit`.
+Non richiedono installazioni o probe live impliciti. Per suite NRT risolvere
+ID, path, tag e ambienti dal [catalogo corrente](.github/nrt-suites.json);
+per altre suite usare configurazione e documentazione effettive. I selettori
+non provano da soli quale deployment venga usato.
+
+Gli esempi acquisiscono stdout/stderr nel terminale/tool, non scrivono
+automaticamente un log su disco: concordare una cattura conservata e riportarne
+solo riferimenti reali. Tenere separati esito dei test e problemi di persistenza,
+senza pubblicare output sensibili. Dettagli su interprete, configurazione,
+preflight e stato remoto nelle [istruzioni di esecuzione](.github/instructions/run-tests.instructions.md).
 
 ### Singola suite API
 
 PowerShell:
 
 ```powershell
+$ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $false
+$python = (Get-Command "<approved-python-executable>" -CommandType Application -ErrorAction Stop).Source
 $env:TARGET_ENV = "uat"
 $suite = "cart"
 $runId = [guid]::NewGuid().ToString("N")
 $outDir = "reports\allure-results\$suite-$env:TARGET_ENV\$runId\initial-00"
 New-Item $outDir -ItemType Directory -ErrorAction Stop | Out-Null
 
-behave "src\api\$suite" `
+$LASTEXITCODE = $null
+& $python -m behave "src\api\$suite" `
   -f allure_behave.formatter:AllureFormatter -o $outDir `
   -f progress --summary --show-timings
+$testExit = $LASTEXITCODE
+if ($null -eq $testExit) { throw "Test process did not return an exit code" }
+exit $testExit
 ```
 
 Bash:
 
 ```bash
+python="<approved-python-executable>"
+command -v "$python" >/dev/null || { printf '%s\n' "Python executable unavailable" >&2; exit 1; }
 export TARGET_ENV=uat
 suite="cart"
 run_id="$(date -u +%Y%m%dT%H%M%SZ)-${RANDOM}"
@@ -432,9 +459,11 @@ out_dir="${run_dir}/initial-00"
 mkdir -p "$run_dir" || exit 1
 mkdir "$out_dir" || exit 1
 
-behave "src/api/${suite}" \
+"$python" -m behave "src/api/${suite}" \
   -f allure_behave.formatter:AllureFormatter -o "$out_dir" \
   -f progress --summary --show-timings
+test_exit=$?
+exit "$test_exit"
 ```
 
 Sostituire `cart` con `auth-service`, `checkout-npg` o `ecommerce-cdc`.
@@ -444,28 +473,43 @@ Riferimenti: regole operative di progetto, `src/api/utility/api_test_environment
 
 ### WISP e FdR
 
+L'esempio seleziona WISP. Per la suite NRT FdR3 usare `suite="fdr3"` e
+confermare path/tag/ambiente nel catalogo. La suite legacy `fdr` e distinta:
+usarla solo se espressamente richiesta, senza sostituirla a `fdr3`.
+
 PowerShell:
 
 ```powershell
+$ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $false
+$python = (Get-Command "<approved-python-executable>" -CommandType Application -ErrorAction Stop).Source
 $env:TARGET_ENV = "uat"
 $suite = "wisp"
 $env:suite = $suite
+$tagArgs = @("--tags=@runnable")
 $runId = [guid]::NewGuid().ToString("N")
 $outDir = "reports\allure-results\$suite-uat\$runId\initial-00"
 $junitDir = "reports\junit\$suite-uat\$runId\initial-00"
 New-Item $outDir -ItemType Directory -ErrorAction Stop | Out-Null
 New-Item $junitDir -ItemType Directory -ErrorAction Stop | Out-Null
 
-behave "src\integration\$suite" --tags=@runnable  `
+$LASTEXITCODE = $null
+& $python -m behave "src\integration\$suite" @tagArgs `
   -f allure_behave.formatter:AllureFormatter -o $outDir `
   -f progress --junit-directory=$junitDir --junit --summary --show-timings -v
+$testExit = $LASTEXITCODE
+if ($null -eq $testExit) { throw "Test process did not return an exit code" }
+exit $testExit
 ```
 
 Bash:
 
 ```bash
+python="<approved-python-executable>"
+command -v "$python" >/dev/null || { printf '%s\n' "Python executable unavailable" >&2; exit 1; }
 export TARGET_ENV=uat
 export suite="wisp"
+tag_args=("--tags=@runnable")
 run_id="$(date -u +%Y%m%dT%H%M%SZ)-${RANDOM}"
 run_dir="reports/allure-results/${suite}-uat/${run_id}"
 junit_run_dir="reports/junit/${suite}-uat/${run_id}"
@@ -474,12 +518,15 @@ junit_dir="${junit_run_dir}/initial-00"
 mkdir -p "$run_dir" "$junit_run_dir" || exit 1
 mkdir "$out_dir" "$junit_dir" || exit 1
 
-behave "src/integration/${suite}" --tags=@runnable \
+"$python" -m behave "src/integration/${suite}" "${tag_args[@]}" \
   -f allure_behave.formatter:AllureFormatter -o "$out_dir" \
   -f progress --junit-directory="$junit_dir" --junit --summary --show-timings -v
+test_exit=$?
+exit "$test_exit"
 ```
 
-Per FdR usare `suite="fdr"`.
+I riferimenti storici seguenti descrivono WISP/FdR legacy; per NRT usare anche
+il [workflow corrente](.github/workflows/nrt-run-suite.yml) e il catalogo.
 
 Riferimenti: `.github/workflows/wisp-tests.yml`, `.github/workflows/fdr-tests.yml`,
 `.github/workflows/run_behave_tests.yml`, `src/integration/wisp/features/**`,
@@ -490,19 +537,28 @@ Riferimenti: `.github/workflows/wisp-tests.yml`, `.github/workflows/fdr-tests.ym
 PowerShell:
 
 ```powershell
+$ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $false
+$python = (Get-Command "<approved-python-executable>" -CommandType Application -ErrorAction Stop).Source
 $env:TARGET_ENV = "uat"
 $runId = [guid]::NewGuid().ToString("N")
 $outDir = "reports\allure-results\ebollo-uat\$runId\initial-00"
 New-Item $outDir -ItemType Directory -ErrorAction Stop | Out-Null
 
-behave "src\integration\ebollo" `
+$LASTEXITCODE = $null
+& $python -m behave "src\integration\ebollo" `
   -f allure_behave.formatter:AllureFormatter -o $outDir `
   -f progress --summary --show-timings
+$testExit = $LASTEXITCODE
+if ($null -eq $testExit) { throw "Test process did not return an exit code" }
+exit $testExit
 ```
 
 Bash:
 
 ```bash
+python="<approved-python-executable>"
+command -v "$python" >/dev/null || { printf '%s\n' "Python executable unavailable" >&2; exit 1; }
 export TARGET_ENV=uat
 run_id="$(date -u +%Y%m%dT%H%M%SZ)-${RANDOM}"
 run_dir="reports/allure-results/ebollo-uat/${run_id}"
@@ -510,9 +566,11 @@ out_dir="${run_dir}/initial-00"
 mkdir -p "$run_dir" || exit 1
 mkdir "$out_dir" || exit 1
 
-behave "src/integration/ebollo" \
+"$python" -m behave "src/integration/ebollo" \
   -f allure_behave.formatter:AllureFormatter -o "$out_dir" \
   -f progress --summary --show-timings
+test_exit=$?
+exit "$test_exit"
 ```
 
 Riferimenti: `src/integration/ebollo/environment.py`,
@@ -520,38 +578,59 @@ Riferimenti: `src/integration/ebollo/environment.py`,
 
 ### E2E 
 
+L'esempio segue l'entry NRT `checkout` in UAT e i suoi due argomenti tag.
+Il loader corrente legge `<TARGET_ENV>.yaml` dalla root della suite (default
+UAT); non usa `ENV_FILE`. `HEADLESS` dal file di configurazione ha precedenza
+sul fallback d'ambiente nell'hook. Confermare configurazione e disponibilita
+del browser richiesto prima del run, senza installarlo implicitamente.
+
 PowerShell:
 
 ```powershell
-$env:ENV_FILE = "dev.env"
+$ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $false
+$python = (Get-Command "<approved-python-executable>" -CommandType Application -ErrorAction Stop).Source
+$env:TARGET_ENV = "uat"
+$env:suite = "checkout"
 $env:HEADLESS = "true"
+$tagArgs = @("--tags=@e2e", "--tags=~@skip")
 $runId = [guid]::NewGuid().ToString("N")
-$outDir = "reports\allure-results\checkout-dev\$runId\initial-00"
+$outDir = "reports\allure-results\checkout-uat\$runId\initial-00"
 New-Item $outDir -ItemType Directory -ErrorAction Stop | Out-Null
 
-behave "src\e2e\checkout" `
+$LASTEXITCODE = $null
+& $python -m behave "src\e2e\checkout" @tagArgs `
   -f allure_behave.formatter:AllureFormatter -o $outDir `
   -f progress --summary --show-timings
+$testExit = $LASTEXITCODE
+if ($null -eq $testExit) { throw "Test process did not return an exit code" }
+exit $testExit
 ```
 
 Bash:
 
 ```bash
-export ENV_FILE=dev.yaml
+python="<approved-python-executable>"
+command -v "$python" >/dev/null || { printf '%s\n' "Python executable unavailable" >&2; exit 1; }
+export TARGET_ENV=uat
+export suite=checkout
 export HEADLESS=true
+tag_args=("--tags=@e2e" "--tags=~@skip")
 run_id="$(date -u +%Y%m%dT%H%M%SZ)-${RANDOM}"
-run_dir="reports/allure-results/checkout-dev/${run_id}"
+run_dir="reports/allure-results/checkout-uat/${run_id}"
 out_dir="${run_dir}/initial-00"
 mkdir -p "$run_dir" || exit 1
 mkdir "$out_dir" || exit 1
 
-behave "src/e2e/checkout" \
+"$python" -m behave "src/e2e/checkout" "${tag_args[@]}" \
   -f allure_behave.formatter:AllureFormatter -o "$out_dir" \
   -f progress --summary --show-timings
+test_exit=$?
+exit "$test_exit"
 ```
 
 Riferimenti: `src/e2e/checkout/environment.py`,
-`src/e2e/checkout/dev.yaml`.
+`src/conf/configuration.py`, `src/e2e/checkout/uat.yaml`.
 
 ### GPD Cucumber.js
 
@@ -1040,6 +1119,11 @@ si puo andare direttamente al report oppure usare fino a **cinque tentativi bonu
 di fix**, con piano approvato e artifact isolati. Non sono cinque esecuzioni totali:
 il primo run non consuma il budget. Il runner distingue `passed`, `failed`,
 `blocked` e `inconclusive`; non cancella la storia di errori intermittenti.
+ADR-55--ADR-58 richiedono interprete/stato reale, selezione corrente, evidenze
+effettivamente acquisite e provenienza della configurazione. Le aggiunte finali
+ADR-59 e ADR-60 limitano il preflight e distinguono terminazione locale da
+rollback remoto: dopo una mutazione interrotta verificare ripetibilita ed effetti
+incerti prima di rilanciare, con osservazione/cleanup solo se autorizzati.
 
 ### Manutenzione README e chiusura QA
 

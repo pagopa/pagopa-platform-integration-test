@@ -473,7 +473,7 @@ def test_uc_identity_survives_new_ace_requests_without_schema_migration() -> Non
         assert clause in workflow
 
 
-@pytest.mark.parametrize('number', range(2, 55))
+@pytest.mark.parametrize('number', range(2, 61))
 def test_qa_decisions_are_recorded_as_accepted(number: int) -> None:
     """Keep each agreed ADR discoverable with a link to its operational owner."""
     matches = list((ROOT / 'docs' / 'adr').glob(f"ADR-{number:02d}-*.md"))
@@ -648,6 +648,119 @@ def test_runner_artifacts_processes_and_local_commands_are_isolated() -> None:
     assert 'docs/workflows/qa-runner/execution.md' in readme
     assert (ROOT / 'src' / 'integration' / 'wisp').is_dir()
     assert (ROOT / 'src' / 'integration' / 'fdr').is_dir()
+
+
+def test_runner_launch_examples_bind_interpreter_and_propagate_status() -> None:
+    """Keep dedicated-shell examples explicit about launch and final exit state."""
+    instructions = _read(ROOT / '.github' / 'instructions' / 'run-tests.instructions.md')
+    readme = _read(ROOT / 'README.md')
+    local = readme.split('## Esecuzione locale', 1)[1].split('### GPD Cucumber.js', 1)[0]
+    for text, expected in ((instructions, 2), (local, 4)):
+        blocks = [
+            block for block in re.findall(r'```powershell\n(.*?)```', text, re.DOTALL)
+            if '& $python -m behave' in block
+        ]
+        assert len(blocks) == expected
+        for block in blocks:
+            assert '-CommandType Application -ErrorAction Stop' in block
+            assert '$ErrorActionPreference = "Stop"' in block
+            assert '$PSNativeCommandUseErrorActionPreference = $false' in block
+            assert block.index('$LASTEXITCODE = $null') < block.index('& $python')
+            assert re.search(
+                r'& \$python -m behave[^\n]*(?:`\n[^\n]*)*\n'
+                r'\$testExit = \$LASTEXITCODE\n'
+                r'if \(\$null -eq \$testExit\) \{ throw "[^"]+" \}\n'
+                r'exit \$testExit\n',
+                block,
+            )
+    bash_blocks = re.findall(r'```bash\n(.*?)```', local, re.DOTALL)
+    assert len(bash_blocks) == 4
+    for block in bash_blocks:
+        assert 'command -v "$python"' in block
+        assert '"$python" -m behave' in block
+        assert 'test_exit=$?\nexit "$test_exit"' in block
+    assert 'interactive terminal' in instructions
+    assert 'failure to start' in instructions
+
+
+def test_runner_catalog_resolution_preserves_tags_and_legacy_identity() -> None:
+    """Resolve catalog entries without forbidding local suites or merging identities."""
+    text = _read(ROOT / '.github' / 'instructions' / 'run-tests.instructions.md')
+    for clause in (
+        '`behave_path`', '`tags`', '`envs`', '`needs_playwright`',
+        '`fdr` and `fdr3` are distinct suites', 'local unregistered suites',
+        '`Invoke-Expression`/`eval`', 'Record deliberate partial selection',
+    ):
+        assert clause in text
+    catalog = json.loads(_read(ROOT / '.github' / 'nrt-suites.json'))
+    suites = {suite['id']: suite for suite in catalog['suites']}
+    assert suites['fdr3']['behave_path'] == 'src/integration/fdr3'
+    assert suites['wisp']['tags'] == suites['fdr3']['tags'] == ['@runnable']
+    assert suites['checkout']['tags'] == ['@e2e', '~@skip']
+    readme = _read(ROOT / 'README.md')
+    assert '$tagArgs = @("--tags=@e2e", "--tags=~@skip")' in readme
+    assert 'tag_args=("--tags=@e2e" "--tags=~@skip")' in readme
+
+
+def test_runner_capture_distinguishes_outcome_and_persistence() -> None:
+    """Require actual output references and prevent fictional files or unsafe transfers."""
+    text = ' '.join(_read(
+        ROOT / '.github' / 'instructions' / 'run-tests.instructions.md'
+    ).split())
+    for clause in (
+        'retained tool/session stdout/stderr', 'not proof that a file was written',
+        'not an implicit log file', 'specify encoding/path',
+        'Distinguish test outcome from capture/artifact-write/report failures',
+        'Use only actual paths/references', 'authorized protected location',
+    ):
+        assert clause in text
+
+
+def test_runner_effective_configuration_does_not_invent_environment_proof() -> None:
+    """Require selector precedence and document the actual Checkout loader."""
+    text = ' '.join(_read(
+        ROOT / '.github' / 'instructions' / 'run-tests.instructions.md'
+    ).split())
+    for clause in (
+        'their precedence', 'framework defaults and hooks',
+        'not secret values or a whole environment dump',
+        'Do not assume `TARGET_ENV` alone proves',
+        "do not clear the user's entire environment",
+    ):
+        assert clause in text
+    readme = _read(ROOT / 'README.md')
+    local = readme.split('## Esecuzione locale', 1)[1].split(
+        '### E2E \n', 1
+    )[1].split('### GPD', 1)[0]
+    assert '$env:TARGET_ENV = "uat"' in local
+    assert 'export TARGET_ENV=uat' in local
+    assert 'non usa `ENV_FILE`' in local
+    assert '$env:ENV_FILE' not in local and 'export ENV_FILE' not in local
+    assert '$env:ENV_FILE' not in readme and 'export ENV_FILE' not in readme
+    assert 'checkout-dev' not in local
+    assert (ROOT / 'src' / 'e2e' / 'checkout' / 'uat.yaml').is_file()
+    loader = _read(ROOT / 'src' / 'conf' / 'configuration.py')
+    assert "os.getenv('TARGET_ENV', 'uat').lower()" in loader
+
+
+def test_runner_preflight_and_remote_recovery_additions_remain_last() -> None:
+    """Keep scoped readiness and uncertain remote outcomes outside implicit permissions."""
+    text = ' '.join(_read(
+        ROOT / '.github' / 'instructions' / 'run-tests.instructions.md'
+    ).split())
+    for clause in (
+        'imports, version checks and credential probes',
+        'not permission to install', 'Possessing credentials does not authorize',
+        'does not roll back a request', 'unknown remote outcomes',
+        'completion/idempotency/repeatability', 'Remote observation and cleanup',
+        'No automatic rollback, broad deletion', 'does not reset the bonus budget',
+    ):
+        assert clause in text
+    assert text.index('## Proportionate preflight') > text.index('## Effective configuration')
+    assert text.index('## Interrupted mutations') > text.index('## Proportionate preflight')
+    workflow = _read(ROOT / 'docs' / 'workflows' / 'qa-runner' / 'execution.md')
+    assert 'Local process termination is not remote rollback' in workflow
+    assert 'static inspection does not authorize probes' in workflow
 
 
 def test_runner_error_reports_do_not_require_fixes_or_expand_write_scope() -> None:

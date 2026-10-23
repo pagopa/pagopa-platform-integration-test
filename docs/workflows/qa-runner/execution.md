@@ -54,6 +54,11 @@ not itself a new test scope. Do not repeatedly run consumable/transactional test
 unless repeatability/data preparation is established and approved.
 Do not silently inherit an unset environment's default or unrelated shell state.
 Keep required environment setup and command execution in the same shell process.
+Apply [execution mechanics ADR-55 through ADR-60](../../../.github/instructions/run-tests.instructions.md#interpreter-and-launch-outcome-adr-55):
+resolve interpreter/module entrypoint, real catalog or local suite selection,
+configuration precedence and actual evidence capture. No missing executable or
+stale native status counts as a test result. Include any executable preflight
+diagnostics/setup in consent; static inspection does not authorize probes.
 Package installation needs explicit approval; certificate errors do not authorize
 `verify=False`, trust bypasses or changing the tested protocol.
 
@@ -78,6 +83,10 @@ Distinguish a wait timeout from a test timeout. On cancellation or a real execut
 timeout, retain partial artifacts and uncertainty, terminate only the exact owned
 process tree when authorized, and verify it stopped before restarting against
 shared state. Never kill by process name or report still-running tests as passed.
+Local process termination is not remote rollback. For interrupted mutations,
+report unknown remote effects/residual resources and stop unsafe repetition.
+Any remote observation/cleanup needs approved exact run-owned scope; preserve
+actual outcomes and the fix budget, never automatically delete or reissue work.
 If relevant source/configuration changes during execution, disclose them and
 do not certify the new state using an ambiguous mixed run.
 
