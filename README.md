@@ -1040,6 +1040,10 @@ Riferimenti: `scenario_parser.py`, `.github/workflows/landing_pages.yaml`.
 
 ## Contribuire
 
+Indici degli asset AI: [agenti](.github/agents/README.md),
+[skill](.github/skills/README.md), [istruzioni](.github/instructions/README.md)
+e [profili](.github/profiles/README.md), con scope, modalita d'uso ed esempi.
+
 ### Convenzioni Gherkin
 
 - Usare un solo `Feature` per file.
