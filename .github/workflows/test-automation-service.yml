@@ -40,6 +40,13 @@ on:
         required: false
         type: boolean
         default: true
+    secrets:
+      NRT_SECRETS_BUNDLE:
+        description: "Environment secret bundle for NRT suites that require it"
+        required: false
+      TAS_GH_PAGES_TOKEN:
+        description: "Token with contents:write access to the TAS repository for cross-repository Pages publication"
+        required: false
     outputs:
       passed:
         description: "Number of passed scenarios"
@@ -106,11 +113,14 @@ on:
 run-name: "tas-${{ inputs.correlation_id || github.run_id }}"
 
 permissions:
-  contents: write
+  contents: read
+  actions: write
 
 jobs:
   run_tests:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     environment: ${{ inputs.environment }}
     env:
       TARGET_ENV: ${{ inputs.environment }}
@@ -122,6 +132,7 @@ jobs:
       total:    ${{ steps.summary.outputs.total }}
       duration: ${{ steps.summary.outputs.duration }}
       outcome:  ${{ steps.summary.outputs.outcome }}
+      publish_timestamp: ${{ steps.publish_timestamp.outputs.timestamp }}
     steps:
       - name: Log invocation metadata
         run: |
@@ -134,7 +145,15 @@ jobs:
           # workflow YAML and the code checked out below — they are always aligned.
           echo "::notice title=Ref::${{ github.ref }} (sha: ${{ github.sha }})"
 
+      - name: Generate report timestamp
+        id: publish_timestamp
+        run: echo "timestamp=$(date +'%d-%m-%Y_%H:%M:%S')" >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          token: ${{ secrets.TAS_GH_PAGES_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Setup Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
@@ -370,40 +389,23 @@ jobs:
             allure-results/
           if-no-files-found: warn
 
-      - name: Checkout gh-pages branch
-        id: checkout_gh_pages
-        if: always()
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-        with:
-          ref: gh-pages
-          path: gh-pages
-
-      - name: Prepare TAS results for publication
-        id: prepare_tas_results
-        if: always() && steps.checkout_gh_pages.outcome == 'success'
+      - name: Build TAS AI prompt
+        id: build_ai_prompt
+        if: always() && steps.summary.outputs.failed != '' && steps.summary.outputs.failed != '0'
         env:
-          REPORT_DIR: ${{ inputs.test_suite }}-${{ inputs.test_type }}
-        run: |
-          PUBLISH_TIMESTAMP="$(date +'%d-%m-%Y_%H:%M:%S')"
-          DEST="gh-pages/TAS/${PUBLISH_TIMESTAMP}"
-          mkdir -p "$DEST"
+          ALLURE_RESULTS_DIR: allure-results
+          JUNIT_RESULTS_DIR: junit
+          PROMPT_OUTPUT: ai-analysis-input/prompt.txt
+          SUITE_LABEL: ${{ inputs.test_suite }} ${{ inputs.test_type }}
+        run: python .github/scripts/build_ai_prompt.py
 
-          if [ -d "$REPORT_DIR" ]; then
-            cp -a "$REPORT_DIR"/. "$DEST"/
-          fi
-          for result in behave-results.json test-summary.json junit allure-results; do
-            if [ -e "$result" ]; then
-              cp -a "$result" "$DEST"/
-            fi
-          done
-
-      - name: Publish TAS results to gh-pages
-        if: always() && steps.prepare_tas_results.outcome == 'success'
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
+      - name: Upload TAS AI prompt
+        if: always() && steps.build_ai_prompt.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./gh-pages
-          publish_branch: gh-pages
+          name: tas-ai-prompt
+          path: ai-analysis-input/prompt.txt
+          if-no-files-found: error
 
       - name: Remove plaintext secrets
         if: always()
@@ -417,9 +419,137 @@ jobs:
           echo "::error::${{ steps.summary.outputs.failed }} scenario(s) failed out of ${{ steps.summary.outputs.total }} total."
           exit 1
 
+  ai_analysis:
+    name: TAS - AI failure analysis
+    if: always() && needs.run_tests.outputs.failed != '' && needs.run_tests.outputs.failed != '0'
+    needs: [run_tests]
+    permissions:
+      contents: read
+      actions: write
+    uses: ./.github/workflows/ai-report-analysis.yml
+    with:
+      prompt_artifact: tas-ai-prompt
+      analysis_artifact_name: tas-ai-analysis
+      max_tokens: '16384'
+      best_effort: true
+    secrets: inherit
+
+  publish_results:
+    name: TAS - Publish test results
+    if: always() && needs.run_tests.outputs.publish_timestamp != ''
+    needs: [run_tests, ai_analysis]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Checkout TAS publishing sources
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          token: ${{ secrets.TAS_GH_PAGES_TOKEN || secrets.GITHUB_TOKEN }}
+          path: tas-source
+
+      - name: Verify TAS Pages publishing token
+        env:
+          CALLER_REPOSITORY: ${{ github.repository }}
+          TAS_REPOSITORY: ${{ job.workflow_repository }}
+          TAS_GH_PAGES_TOKEN: ${{ secrets.TAS_GH_PAGES_TOKEN }}
+        run: |
+          if [ "$CALLER_REPOSITORY" != "$TAS_REPOSITORY" ] && [ -z "$TAS_GH_PAGES_TOKEN" ]; then
+            echo "::error::External workflow_call requires TAS_GH_PAGES_TOKEN with contents:write access to $TAS_REPOSITORY."
+            exit 1
+          fi
+
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: gh-pages
+          token: ${{ secrets.TAS_GH_PAGES_TOKEN || secrets.GITHUB_TOKEN }}
+          path: public
+
+      - name: Download test results artifact
+        if: always()
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: test-results
+          path: artifacts/test-results
+
+      - name: Download TAS AI analysis artifact
+        if: always() && needs.ai_analysis.result == 'success'
+        continue-on-error: true
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: tas-ai-analysis
+          path: artifacts/tas-ai-analysis
+
+      - name: Setup Python for report rendering
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: 3.x
+
+      - name: Install report rendering dependency
+        run: pip install jinja2
+
+      - name: Prepare TAS report contents
+        env:
+          REPORT_DIR: ${{ inputs.test_suite }}-${{ inputs.test_type }}
+          PUBLISH_TIMESTAMP: ${{ needs.run_tests.outputs.publish_timestamp }}
+          TEST_SUITE: ${{ inputs.test_suite }}
+          TEST_TYPE: ${{ inputs.test_type }}
+        run: |
+          DEST="public/TAS/${PUBLISH_TIMESTAMP}"
+          mkdir -p "$DEST"
+
+          REPORT_SOURCE="artifacts/test-results/${REPORT_DIR}"
+          if [ -d "$REPORT_SOURCE" ]; then
+            cp -a "$REPORT_SOURCE"/. "$DEST"/
+          fi
+          for result in behave-results.json test-summary.json junit allure-results; do
+            if [ -e "artifacts/test-results/$result" ]; then
+              cp -a "artifacts/test-results/$result" "$DEST"/
+            fi
+          done
+
+          if [ -f artifacts/tas-ai-analysis/analysis.md ]; then
+            python - <<'PY'
+          import os
+          import sys
+
+          workspace = os.getcwd()
+          tas_source = os.path.join(workspace, "tas-source")
+          sys.path.insert(0, os.path.join(tas_source, ".github", "scripts"))
+          os.chdir(tas_source)
+          from process_reports import deploy_ai_analysis
+
+          deploy_ai_analysis(
+              artifact_dir=os.path.join(workspace, "artifacts"),
+              run_dir=os.path.join(workspace, "public", "TAS", os.environ["PUBLISH_TIMESTAMP"]),
+              last_history_dir=None,
+              analysis_artifact_name="tas-ai-analysis",
+              suite_label=f"{os.environ['TEST_SUITE']} {os.environ['TEST_TYPE']}",
+              timestamp=os.environ["PUBLISH_TIMESTAMP"],
+              history_url=None,
+          )
+          PY
+          fi
+
+      - name: Publish TAS results to gh-pages
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
+        with:
+          personal_token: ${{ secrets.TAS_GH_PAGES_TOKEN || secrets.GITHUB_TOKEN }}
+          external_repository: ${{ job.workflow_repository }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+
   save_test_data:
     if: always()
     needs: [run_tests]
+    permissions:
+      contents: read
+      actions: read
     uses: ./.github/workflows/test-data-ingestion.yml
     secrets: inherit
     with:

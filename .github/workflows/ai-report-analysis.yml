@@ -19,6 +19,11 @@ on:
         description: 'Max output tokens'
         required: false
         default: '32'
+      best_effort:
+        description: 'Keep the workflow successful when analysis fails'
+        required: false
+        type: boolean
+        default: false
   workflow_call:
     inputs:
       prompt:
@@ -41,6 +46,11 @@ on:
         required: false
         type: string
         default: '32'
+      best_effort:
+        description: 'Keep the workflow successful when analysis fails'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -53,6 +63,7 @@ jobs:
   check-model-catalog:
     name: "Discover Gemini fallback models"
     runs-on: ubuntu-latest
+    continue-on-error: ${{ inputs.best_effort }}
     outputs:
       available_models: ${{ steps.check.outputs.available_models }}
     steps:
@@ -101,10 +112,16 @@ jobs:
   call-inference:
     name: "Call Gemini inference endpoint"
     needs: check-model-catalog
+    if: ${{ always() && needs.check-model-catalog.outputs.available_models != '' }}
     runs-on: ubuntu-latest
+    continue-on-error: ${{ inputs.best_effort }}
     steps:
       - name: Checkout repository scripts
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          token: ${{ secrets.TAS_GH_PAGES_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Download prompt artifact
         if: ${{ inputs.prompt_artifact != '' }}

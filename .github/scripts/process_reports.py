@@ -156,6 +156,7 @@ def deploy_ai_analysis(
     analysis_artifact_name,
     suite_label,
     timestamp,
+    history_url="../../index.html",
 ):
     """Render the AI analysis HTML page inside run_dir and last_history_dir.
 
@@ -193,9 +194,14 @@ def deploy_ai_analysis(
         timestamp=timestamp or "unknown",
         model=model,
         analysis_markdown=analysis_text,
+        history_url=history_url,
     )
 
-    for base in (Path(run_dir), Path(last_history_dir)):
+    report_dirs = [Path(run_dir)]
+    if last_history_dir is not None:
+        report_dirs.append(Path(last_history_dir))
+
+    for base in report_dirs:
         analysis_dir = base / "analysis"
         analysis_dir.mkdir(parents=True, exist_ok=True)
         (analysis_dir / "index.html").write_text(rendered, encoding="utf-8")
