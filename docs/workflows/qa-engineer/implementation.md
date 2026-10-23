@@ -64,6 +64,13 @@ module APIs before adding logic. Resolve local utility paths with the actual
 `<test-type>` and `<suite>`; never place API/E2E helpers under integration by default.
 Inspect the full relevant loaded step scope for reusable definitions and matcher
 collisions, not only the feature's proposed new file.
+Apply [Behave coding conventions](../../../.github/instructions/behave-steps.instructions.md)
+(ADR-38 through ADR-43): organization follows cohesive suite responsibilities,
+binding checks include kind/matcher/conversions, and context/reset/cleanup respect
+actual lifecycle scopes. Profile paths guide reuse/new helpers, not automatic
+legacy migrations. Preserve full logical assertions and structured input
+semantics, with bounded observation waits and safe diagnostics. These conventions
+do not expand writing or execution permissions.
 
 ## File and utility ownership (ADR-17)
 

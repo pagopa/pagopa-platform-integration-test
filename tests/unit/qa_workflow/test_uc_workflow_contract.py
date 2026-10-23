@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 from behave.parser import parse_feature
+from dynaconf.vendor.ruamel.yaml import YAML
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -471,7 +472,7 @@ def test_uc_identity_survives_new_ace_requests_without_schema_migration() -> Non
         assert clause in workflow
 
 
-@pytest.mark.parametrize('number', range(2, 38))
+@pytest.mark.parametrize('number', range(2, 44))
 def test_qa_decisions_are_recorded_as_accepted(number: int) -> None:
     """Keep each agreed ADR discoverable with a link to its operational owner."""
     matches = list((ROOT / 'docs' / 'adr').glob(f"ADR-{number:02d}-*.md"))
@@ -898,6 +899,120 @@ def test_utility_loading_readme_and_ace_follow_existing_authorities() -> None:
     assert 'docs/workflows/python-utility-engineer/implementation.md' in instructions
     readme = _read(ROOT / 'README.md')
     assert 'docs/workflows/python-utility-engineer/implementation.md' in readme
+
+
+def test_behave_organization_is_contextual_not_a_mandatory_refactor() -> None:
+    """Keep cohesive small suites valid and avoid unrelated file reshuffling."""
+    text = ' '.join(_read(ROOT / '.github' / 'instructions' / 'behave-steps.instructions.md').split())
+    for clause in (
+        'A small cohesive suite may use one step file',
+        '`common_steps.py` and scenario-numbered files are optional conventions',
+        "does not restrict the binding's loaded visibility",
+        'do not sacrifice cohesion',
+        'Do not rename/reorganize unrelated files',
+    ):
+        assert clause in text
+    assert 'Do not place all step definitions in a single file' not in text
+
+
+def test_behave_binding_checks_include_kinds_matchers_conversions_and_consumers() -> None:
+    """Distinguish legitimate cross-kind bindings from overlapping loaded patterns."""
+    text = ' '.join(_read(ROOT / '.github' / 'instructions' / 'behave-steps.instructions.md').split())
+    for clause in (
+        'actual loaded binding scope',
+        'active matcher, parameter names/conversions and function signature together',
+        'identical text under Given and When can be intentional',
+        'generic `step` registrations across kinds',
+        'Do not globally change `use_step_matcher`',
+        'inspect affected feature usage, including outlines',
+        'not prove runtime uniqueness',
+        'one write owner',
+    ):
+        assert clause in text
+
+
+def test_behave_context_state_and_cleanup_keep_lifecycle_ownership() -> None:
+    """Preserve framework state and original failures across isolated scenarios."""
+    text = ' '.join(_read(ROOT / '.github' / 'instructions' / 'behave-steps.instructions.md').split())
+    for clause in (
+        'attributes produced/consumed',
+        'do not indiscriminately clear `context`',
+        'not module globals, mutable class state or default arguments',
+        'each Scenario Outline row as an independent scenario',
+        'never rely on scenario execution order',
+        'Distinguish resetting data from releasing',
+        'failure paths and partial initialization',
+        'Preserve the original test failure when cleanup also fails',
+        'report the cleanup error explicitly',
+        "engineer's authorization/ownership contract",
+    ):
+        assert clause in text
+
+
+def test_behave_profile_is_valid_yaml_with_explicit_existing_readmes() -> None:
+    """Parse the actual profile and require concrete unique documentation files."""
+    profile_path = ROOT / '.github' / 'profiles' / 'behave-steps.profile.yaml'
+    profile = YAML(typ='safe').load(_read(profile_path))
+    assert set(profile) == {'shared_utility_documentation', 'suite_utility_path_template'}
+    paths = profile['shared_utility_documentation']
+    assert paths == [
+        'src/utility/README.md',
+        'src/utility/config/README.md',
+        'src/utility/rest/README.md',
+        'src/utility/json/README.md',
+        'src/utility/soap/README.md',
+    ]
+    assert all((ROOT / path).is_file() for path in paths)
+    assert profile['suite_utility_path_template'] == 'src/<test-type>/<suite>/utility'
+    text = ' '.join(_read(ROOT / '.github' / 'instructions' / 'behave-steps.instructions.md').split())
+    for clause in (
+        'Resolve profile paths from the repository root',
+        'missing, malformed or unreadable profile/required document',
+        'a new authorized utility directory need not already exist',
+        'does not require migrating existing legacy utility locations',
+        'Ask about material behaviour, compatibility, ownership or path ambiguity',
+        'profile paths do not authorize',
+    ):
+        assert clause in text
+
+
+def test_behave_assertions_preserve_full_outcomes_and_structured_inputs() -> None:
+    """Protect multi-property and negative checks from quotas or guessed data."""
+    text = ' '.join(_read(ROOT / '.github' / 'instructions' / 'behave-steps.instructions.md').split())
+    for clause in (
+        'all necessary assertions',
+        'Assertion count is not a target',
+        'not merely reassert a value the test itself prepared',
+        'Do not reject intentionally invalid input locally',
+        '`context.table` and `context.text`',
+        'all relevant rows',
+        'missing, null, empty and intentionally invalid data',
+        'leading-zero identifiers',
+        'Do not edit Gherkin just to fit an implementation',
+    ):
+        assert clause in text
+
+
+def test_behave_waits_and_diagnostics_do_not_repeat_mutations_or_expand_execution() -> None:
+    """Require bounded observation and safe failures without new role permissions."""
+    text = ' '.join(_read(ROOT / '.github' / 'instructions' / 'behave-steps.instructions.md').split())
+    for clause in (
+        'condition-based waits with finite timeouts',
+        'Never repeat a payment/create/delete',
+        'shared-resource isolation are explicit execution-plan concerns',
+        'Generate random data only where requirements permit',
+        'Redact credentials, tokens and personal data',
+        'do not dump whole payloads/responses/context',
+        'retry-until-green',
+        'do not grant test execution, environment probes or package installation',
+    ):
+        assert clause in text
+    additions = [text.index(f'(ADR-{number}, addition)') for number in (42, 43)]
+    assert additions[0] < additions[1]
+    assert text.index('(ADR-41)') < additions[0]
+    workflow = _read(ROOT / 'docs' / 'workflows' / 'qa-engineer' / 'implementation.md')
+    assert 'ADR-38 through ADR-43' in workflow
+    assert 'do not expand writing or execution permissions' in workflow
 
 
 def test_pr_labels_use_catalog_ids_accepted_by_ci_not_display_names() -> None:

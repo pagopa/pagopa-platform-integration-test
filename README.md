@@ -1005,6 +1005,12 @@ autorizzato della suite; i nuovi helper riusabili sono affidati allo specialista
 utility, anche per API ed E2E. Gli agenti di implementazione non eseguono test:
 restituiscono codice e verifiche statiche al runner, che esegue i comandi approvati.
 Il parallelismo richiede file con ownership disgiunta, non solo feature diverse.
+Le [istruzioni Behave](.github/instructions/behave-steps.instructions.md) e il
+[profilo dei percorsi](.github/profiles/behave-steps.profile.yaml) precisano
+organizzazione per responsabilita, compatibilita dei binding e lifecycle del
+context, senza imporre frammentazione o migrazioni delle utility legacy.
+Le aggiunte ADR-42 e ADR-43 coprono asserzioni complete, input strutturati,
+attese finite e diagnostica sicura; non ampliano i permessi di esecuzione.
 
 Il [workflow Python-utility-engineer](docs/workflows/python-utility-engineer/implementation.md)
 copre review, implementazione e manutenzione delle utility condivise e di suite.
