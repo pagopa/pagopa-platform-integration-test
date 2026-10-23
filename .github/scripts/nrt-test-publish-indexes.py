@@ -9,6 +9,7 @@ import runpy
 import shutil
 import tempfile
 import unittest
+from unittest import mock
 
 
 SOURCE_ROOT = Path(__file__).resolve().parents[2]
@@ -135,6 +136,96 @@ class PublisherTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     PUBLISHER["update_suite"](report.parent)
                 self.assertFalse((report / "stats.json").exists())
+
+    def test_current_run_analysis_and_history_links(self):
+        """Publish aggregate HTML and Markdown without changing unrelated reports."""
+        old = self.write_report("old-run", 1000)
+        current = self.write_report("current-run", 2000, array=True)
+        newer = self.write_report("newer-run", 3000)
+        previous_analysis = newer / "analysis"
+        previous_analysis.mkdir()
+        (previous_analysis / "index.html").write_text("previous analysis")
+        matrix = {"include": [
+            {"id": "checkout", "label": "Checkout", "allure_subfolder": "checkout-e2e-tests"},
+            {"id": "missing", "label": "Missing", "allure_subfolder": "missing-tests"},
+        ]}
+        source = Path("nrt-allure-history/checkout-e2e-tests-uat/42/widgets")
+        source.mkdir(parents=True)
+        shutil.copyfile(current / "widgets/summary.json", source / "summary.json")
+        analysis = Path("artifacts/nrt-ai-analysis")
+        analysis.mkdir(parents=True)
+        (analysis / "analysis.md").write_text("# Shared root cause", encoding="utf-8")
+        (analysis / "response.json").write_text('{"modelVersion": "test-model"}')
+        Path(".github/nrt-suites.json").write_text(json.dumps({"suites": matrix["include"]}))
+
+        # Windows cannot create the colon-containing production timestamp paths.
+        clock = mock.Mock(wraps=PUBLISHER["datetime"])
+        clock.fromtimestamp = mock.Mock()
+        clock.fromtimestamp.return_value.strftime.return_value = current.name
+        with mock.patch.dict(PUBLISHER["main"].__globals__, datetime=clock):
+            with mock.patch.dict(os.environ, {
+                "AI_ANALYSIS_RESULT": "success",
+                "SUITE_MATRIX": json.dumps(matrix),
+                "TARGET_ENV": "uat",
+                "RUN_NUMBER": "42",
+            }):
+                PUBLISHER["main"]()
+        clock.fromtimestamp.assert_called_once_with(2.0, PUBLISHER["timezone"].utc)
+        clock.fromtimestamp.return_value.strftime.assert_called_once_with("%Y-%m-%d_%H:%M:%S")
+
+        rendered = (current / "analysis/index.html").read_text(encoding="utf-8")
+        self.assertIn("Shared root cause", rendered)
+        self.assertIn("AGGREGATE NRT ANALYSIS", rendered)
+        self.assertIn("test-model", rendered)
+        self.assertIn('href="../index.html"', rendered)
+        self.assertEqual(
+            (current / "analysis/analysis.md").read_text(encoding="utf-8"),
+            "# Shared root cause",
+        )
+        self.assertFalse((old / "analysis").exists())
+        self.assertFalse(Path("public/missing-tests").exists())
+        self.assertEqual((previous_analysis / "index.html").read_text(), "previous analysis")
+        self.assertEqual(
+            (current.parent / "last-history/analysis/index.html").read_text(),
+            "previous analysis",
+        )
+        index = (current.parent / "index.html").read_text(encoding="utf-8")
+        self.assertIn("./current-run/analysis/index.html", index)
+        self.assertNotIn("./old-run/analysis/index.html", index)
+
+        PUBLISHER["update_suite"](current.parent)
+        shutil.rmtree(newer)
+        PUBLISHER["update_suite"](current.parent)
+        self.assertEqual(
+            (current.parent / "last-history/analysis/index.html").read_text(encoding="utf-8"),
+            rendered,
+        )
+
+    def test_missing_or_empty_successful_analysis_fails(self):
+        """Reject a successful AI job that did not produce a usable response."""
+        matrix = {"include": []}
+        with self.assertRaisesRegex(ValueError, "missing or empty"):
+            PUBLISHER["publish_ai_analysis"](matrix, "uat", "42")
+        analysis = Path("artifacts/nrt-ai-analysis")
+        analysis.mkdir(parents=True)
+        (analysis / "analysis.md").write_text(" \n")
+        with self.assertRaisesRegex(ValueError, "missing or empty"):
+            PUBLISHER["publish_ai_analysis"](matrix, "uat", "42")
+
+    def test_failed_ai_does_not_block_allure_publication(self):
+        """Keep Allure indexes available when the supplemental AI job fails."""
+        current = self.write_report("current-run", 2000)
+        Path(".github/nrt-suites.json").write_text(json.dumps({"suites": [
+            {"id": "checkout", "label": "Checkout", "allure_subfolder": "checkout-e2e-tests"},
+        ]}))
+        with mock.patch.dict(os.environ, {"AI_ANALYSIS_RESULT": "failure"}):
+            PUBLISHER["main"]()
+        self.assertTrue((current / "stats.json").is_file())
+        self.assertFalse((current / "analysis").exists())
+        self.assertNotIn(
+            "./current-run/analysis/index.html",
+            (current.parent / "index.html").read_text(encoding="utf-8"),
+        )
 
 
 if __name__ == "__main__":
