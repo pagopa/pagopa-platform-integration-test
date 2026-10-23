@@ -37,6 +37,15 @@ return the gap to the orchestrator for QA-analyst; do not edit the feature,
 choose an expected result, substitute plausible data, or turn placeholders into
 runtime defaults. A ready subset requires explicit scope authorization.
 
+For new/changed bindings follow the
+[empty-Examples-cell contract](../../../.github/instructions/gherkin.instructions.md#null-inputs-adr-44):
+accept raw empty outline text and interpret it as Python `None` before typed
+conversion or payload construction. Preserve JSON null rather than omitting it
+or stringifying it. Receive the analyst's affected parameters/rows and agreed
+missing/empty/null distinctions; unresolved representation returns to the analyst.
+Propose checks of matcher acceptance, actual decoding and serialization, not
+only parser syntax. No global parser patch or bulk migration of legacy suites.
+
 For a fix, obtain the failing scenario, actual error/traceback when available,
 expected behaviour and target scope. A clearly described static defect does not
 require fabricating a failed run. For a refactor, identify behaviour and public

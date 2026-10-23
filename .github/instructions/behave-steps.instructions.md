@@ -96,6 +96,17 @@ requirements or exceed the active role's ownership.
   the agreed contract. Validate required table headers/cells, all relevant rows
   and document formats; do not silently ignore input, replace missing data with
   guessed values, or confuse missing, null, empty and intentionally invalid data.
+- Under [the Gherkin null contract](gherkin.instructions.md#null-inputs-adr-44),
+  an empty Examples cell MUST become Python `None` in new/changed bindings.
+  Behave substitutes raw empty text: ensure the matcher accepts it, then decode
+  only the intended outline inputs before numeric/type conversion, request
+  construction or assertions. Do not globally convert every empty string in
+  context/tables/docstrings or use `value or None` (which also loses zero/false).
+  JSON encoding preserves intentional `None` as `null`, not an omitted key or
+  string. Keep explicit empty strings and absent fields distinct under the agreed
+  representation; literal `null`/`None` text is not a universal sentinel.
+  Propose targeted matcher/decoding/serialization regression checks, including
+  a genuine empty cell and non-null controls. No bulk migration/parser patch.
 - Preserve lexical values such as leading-zero identifiers unless the contract
   requires conversion. Missing actions/oracles are requirements gaps, not helper
   defaults. Do not edit Gherkin just to fit an implementation.

@@ -472,7 +472,7 @@ def test_uc_identity_survives_new_ace_requests_without_schema_migration() -> Non
         assert clause in workflow
 
 
-@pytest.mark.parametrize('number', range(2, 44))
+@pytest.mark.parametrize('number', range(2, 49))
 def test_qa_decisions_are_recorded_as_accepted(number: int) -> None:
     """Keep each agreed ADR discoverable with a link to its operational owner."""
     matches = list((ROOT / 'docs' / 'adr').glob(f"ADR-{number:02d}-*.md"))
@@ -1013,6 +1013,197 @@ def test_behave_waits_and_diagnostics_do_not_repeat_mutations_or_expand_executio
     workflow = _read(ROOT / 'docs' / 'workflows' / 'qa-engineer' / 'implementation.md')
     assert 'ADR-38 through ADR-43' in workflow
     assert 'do not expand writing or execution permissions' in workflow
+
+
+def test_gherkin_empty_cell_contract_is_explicit_across_role_handoffs() -> None:
+    """Require None interpretation without falsely claiming automatic parser conversion."""
+    instructions = ' '.join(_read(ROOT / '.github' / 'instructions' / 'gherkin.instructions.md').split())
+    for clause in (
+        'MUST mean intentional `null`',
+        "Python `None` at the binding's input interpretation boundary",
+        'parser does not perform the required conversion automatically',
+        'a matcher rejecting empty input does not satisfy the contract',
+        'before type conversion, request construction or assertions',
+        'not silently omit the field',
+        'Do not use truthiness (`value or None`)',
+        'not already implemented or executed Python',
+        'not an automatic migration',
+    ):
+        assert clause in instructions
+    behave = _read(ROOT / '.github' / 'instructions' / 'behave-steps.instructions.md')
+    assert 'an empty Examples cell MUST become Python `None`' in behave
+    assert 'genuine empty cell and non-null controls' in behave
+    engineer = _read(ROOT / 'docs' / 'workflows' / 'qa-engineer' / 'implementation.md')
+    assert 'accept raw empty outline text and interpret it as Python `None`' in engineer
+    analyst = _read(ROOT / 'docs' / 'workflows' / 'qa-analyst' / 'activity-routing.md')
+    assert 'requiring conversion to Python `None`' in analyst
+    data = _read(SKILLS / 'uc-test-data' / 'SKILL.md')
+    assert 'An intentional null from the requirements is not a TODO' in data
+    assert 'this is not an automatic Behave conversion' in data
+
+
+def test_gherkin_parser_supplies_empty_text_not_none_to_the_binding() -> None:
+    """Expose the real parser boundary so documented null decoding cannot be assumed."""
+    feature = parse_feature(
+        'Feature: Abstract null boundary\n'
+        '  Scenario Outline: Input interpretation\n'
+        '    When the value "<value>" is supplied\n'
+        '    Then its meaning is checked\n'
+        '    Examples:\n'
+        '      | value         |\n'
+        '      |               |\n'
+        '      | 0             |\n'
+        '      | false         |\n'
+        '      | 001           |\n'
+        '      | null          |\n'
+        '      | __TODO_D001__ |\n'
+    )
+    outline = feature.scenarios[0]
+    assert [row.cells[0] for row in outline.examples[0].table.rows] == [
+        '', '0', 'false', '001', 'null', '__TODO_D001__',
+    ]
+    assert outline.scenarios[0].steps[0].name == 'the value "" is supplied'
+    assert len(outline.scenarios) == 6
+    assert '001' in outline.scenarios[3].steps[0].name
+    assert '__TODO_D001__' in outline.scenarios[5].steps[0].name
+
+
+def test_gherkin_outline_simplification_preserves_cases_tags_and_binding_impact() -> None:
+    """Keep constant-column cleanup conditional on actual semantic equivalence."""
+    text = ' '.join(_read(ROOT / '.github' / 'instructions' / 'gherkin.instructions.md').split())
+    for clause in (
+        'candidate for simplification, not an unconditional edit',
+        'Examples blocks, tags, coverage/source associations',
+        'data tables and docstrings',
+        'Preserve lexical values and the null contract',
+        'do not silently collapse distinct rows or tagged Examples blocks',
+        'otherwise retain the outline',
+        'report old/new wording, generated-case and tag changes',
+    ):
+        assert clause in text
+    feature = parse_feature(
+        'Feature: Abstract tagged coverage\n'
+        '  Scenario Outline: Repeated values with different selection\n'
+        '    When the value "<value>" is supplied\n'
+        '    Then the result is observed\n'
+        '    @group_a\n'
+        '    Examples: First coverage\n'
+        '      | value |\n'
+        '      | same  |\n'
+        '    @group_b\n'
+        '    Examples: Second coverage\n'
+        '      | value |\n'
+        '      | same  |\n'
+    )
+    outline = feature.scenarios[0]
+    assert len(outline.examples) == 2
+    assert [list(example.tags) for example in outline.examples] == [
+        ['group_a'], ['group_b'],
+    ]
+    assert len(outline.scenarios) == 2
+
+
+def test_gherkin_identity_survives_reordering_with_bounded_source_access() -> None:
+    """Preserve IDs and require admitted allocation rather than forbidden suite scans."""
+    text = ' '.join(_read(ROOT / '.github' / 'instructions' / 'gherkin.instructions.md').split())
+    for clause in (
+        'retain existing identifiers even when scenario order changes',
+        'without renumbering existing scenarios or recycling',
+    ):
+        assert clause in text
+    for clause in (
+        "within the active workflow's admitted reading scope",
+        'obtain an authoritative allocation/confirmation',
+        'do not bypass those rules',
+        'Report exhausted numeric ranges',
+        'an old-to-new identity mapping',
+        'Reuse an existing valid tracking comment',
+        'Do not derive it from Jira',
+    ):
+        assert clause in text
+
+
+def test_gherkin_profile_regexes_compile_with_consistent_examples() -> None:
+    """Validate Python regex syntax, named groups and filename/tag identity relations."""
+    profile = YAML(typ='safe').load(_read(ROOT / '.github' / 'profiles' / 'gherkin.profile.yaml'))
+    assert profile['regex_dialect'] == 'python_re'
+    filename = profile['filename']
+    tags = profile['tags']['dynamic_tags']
+    file_pattern = re.compile(filename['regex'])
+    feature_pattern = re.compile(tags['feature_regex'])
+    scenario_pattern = re.compile(tags['scenario_regex'])
+    file_match = file_pattern.fullmatch(filename['example'])
+    feature_match = feature_pattern.fullmatch(tags['feature_tag_example'])
+    scenario_match = scenario_pattern.fullmatch(tags['scenario_tag_example'])
+    assert file_match and feature_match and scenario_match
+    assert set(file_pattern.groupindex) == set(filename['regex_groups'])
+    assert set(feature_pattern.groupindex) == {'suite', 'feature_progressive', 'short_feature'}
+    assert set(scenario_pattern.groupindex) == {'suite', 'feature_progressive', 'scenario_progressive'}
+    assert file_match['suite'].lower() == feature_match['suite'] == scenario_match['suite']
+    assert file_match['feature_progressive'] == feature_match['feature_progressive']
+    assert file_match['feature_progressive'] == scenario_match['feature_progressive']
+    assert file_match['feature'][0].isupper()
+    assert feature_match['short_feature'][0].isupper()
+    assert len(feature_match['short_feature'].split('_')) <= tags['regex_groups']['short_feature']['word_limit']
+    assert scenario_match['scenario_progressive'] == '01'
+    assert 'stable on maintenance' in tags['regex_groups']['scenario_progressive']['description']
+    tracking = re.compile(profile['tracking_comment']['regex'])
+    assert tracking.fullmatch('#1234567890')
+    assert not tracking.fullmatch('#123456789')
+
+
+@pytest.mark.parametrize('number', ['000', '00', '1', '1000'])
+def test_gherkin_profile_rejects_invalid_feature_progressives(number: str) -> None:
+    """Enforce nonzero three-digit identity without widening exhausted ranges."""
+    profile = YAML(typ='safe').load(_read(ROOT / '.github' / 'profiles' / 'gherkin.profile.yaml'))
+    assert not re.fullmatch(profile['filename']['regex'], f'FEAT_{number}_FdR3_Aggiungi_pagamenti.feature')
+    assert not re.fullmatch(profile['tags']['dynamic_tags']['feature_regex'], f'@fdr3_{number}_Aggiungi_pagamenti')
+
+
+@pytest.mark.parametrize('number', ['00', '0', '001', '100'])
+def test_gherkin_profile_rejects_invalid_scenario_progressives(number: str) -> None:
+    """Enforce nonzero two-digit scenario IDs independently from their file position."""
+    profile = YAML(typ='safe').load(_read(ROOT / '.github' / 'profiles' / 'gherkin.profile.yaml'))
+    assert not re.fullmatch(profile['tags']['dynamic_tags']['scenario_regex'], f'@fdr3_001_{number}')
+
+
+def test_gherkin_profile_limit_counts_definitions_not_outline_expansion() -> None:
+    """Exercise the exact twelve-definition limit separately from generated cases."""
+    profile = YAML(typ='safe').load(_read(ROOT / '.github' / 'profiles' / 'gherkin.profile.yaml'))
+    assert profile['scenario_counting'] == 'definitions'
+    assert profile['max_scenarios_per_file'] == 12
+    text = 'Feature: Abstract definition count\n'
+    for number in range(1, 14):
+        text += (
+            f'  Scenario Outline: Case {number}\n'
+            '    When value "<value>" is supplied\n'
+            '    Then the result is checked\n'
+            '    Examples:\n'
+            '      | value |\n'
+            '      | first |\n'
+            '      | next  |\n'
+        )
+        if number == 12:
+            feature = parse_feature(text)
+            assert len(feature.scenarios) == profile['max_scenarios_per_file']
+            assert sum(len(outline.scenarios) for outline in feature.scenarios) == 24
+    assert len(parse_feature(text).scenarios) > profile['max_scenarios_per_file']
+
+
+def test_gherkin_observable_outcomes_are_last_and_do_not_invent_requirements() -> None:
+    """Keep the new completion criteria last while preserving source and role boundaries."""
+    text = ' '.join(_read(ROOT / '.github' / 'instructions' / 'gherkin.instructions.md').split())
+    assert text.index('(ADR-47)') < text.index('(ADR-48, addition)')
+    for clause in (
+        'asynchronous request acceptance from completed business processing',
+        'not just that some exception or failure occurs',
+        'Do not add unsupported error codes',
+        'never guessed defaults',
+        'No new mandatory matrix',
+        'Distinguish valid YAML, profile conformity and Gherkin grammar',
+        "analyst performs read-based checks and only its permitted language-help command",
+    ):
+        assert clause in text
 
 
 def test_pr_labels_use_catalog_ids_accepted_by_ci_not_display_names() -> None:

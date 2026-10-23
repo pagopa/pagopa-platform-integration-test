@@ -109,6 +109,15 @@ When invoked directly, return the result to the user; do not start another agent
 Neither readiness nor a syntax check proves that Python exists, the environment
 works, or tests have passed.
 
+Apply [ADR-44 through ADR-48](../../../.github/instructions/gherkin.instructions.md#null-inputs-adr-44):
+include intentional empty Examples cells and affected parameter/row locations
+in implementation impact, requiring conversion to Python `None`. Distinguish
+null, absent and explicitly empty-string inputs before readiness. State the
+binding obligation without claiming Python conversion already exists or ran.
+Preserve existing identifiers, report outline expansion separately from file
+definition count, and return missing observable outcome criteria as functional
+gaps in the existing report/chat contract, not invented defaults.
+
 ## Review reports and ACE (ADR-06)
 
 During review, no feature may be created or modified, including alternative

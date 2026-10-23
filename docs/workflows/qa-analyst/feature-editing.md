@@ -58,6 +58,13 @@ this is not delegation to another analyst.
 - Check language, keyword roles, outline parameters/tables, tags, independence,
   data placeholders, source-supported outcomes and preservation of intended
   coverage. Reconcile TODO comments when the associated input is resolved.
+- For outline normalization, preserve distinct rows/Examples tags and source
+  coverage; consider table/docstring placeholders and changed binding text.
+  Preserve stable identifiers on insertions/reordering. Renumbering/splitting
+  needs authorized paths, an old/new identity mapping and workflow reconciliation.
+- Distinguish intentional null cells from missing data and empty strings.
+  Hand off the mandatory empty-cell-to-`None` conversion for new/changed bindings;
+  feature syntax alone does not verify conversion.
 - The analyst performs static inspection with read tools, not parser commands,
   tests, Git commands or environment queries. The only terminal exception remains
   `behave --lang-help <language code>`. Label externally supplied validation

@@ -1,20 +1,22 @@
 # Project conventions for Gherkin feature files.
 language: it
+regex_dialect: python_re
 max_scenarios_per_file: 12
+scenario_counting: definitions
 filename:
   example: FEAT_001_FdR3_Aggiungi_pagamenti.feature
-  regex: '^FEAT_(?<feature_progressive>\d{3})_(?<suite>[A-Za-z0-9]+)_(?<feature>[A-Za-z0-9]+(?:_[A-Za-z0-9]+)*)\.feature$'
+  regex: '^FEAT_(?P<feature_progressive>(?!000)[0-9]{3})_(?P<suite>[A-Za-z0-9]+)_(?P<feature>[A-Za-z0-9]+(?:_[A-Za-z0-9]+)*)\.feature$'
   regex_groups:
     feature_progressive: 
       description: 3-digit 0-padded progressive number starting from 001, identifying each feature file within its suite
     suite:
-      case: Capitalized_Snake_Case
+      case: canonical_suite_token_preserve_acronyms
       word_limit: 1
-      description: suite name
+      description: canonical single-token suite name, preserving established acronym casing (for example FdR3)
     feature:
-      case: Capitalized_Snake_Case
+      case: initial_uppercase_preserve_spelling_and_acronyms
       word_limit: none
-      description: feature slug
+      description: underscore-separated feature slug starting uppercase; later words preserve established spelling (for example Aggiungi_pagamenti)
 indentation:
   feature: 0
   scenario: 2
@@ -34,23 +36,23 @@ tags:
       - ["@positive", "@negative"]
   dynamic_tags:
     required: true
-    feature_tag_example: "@fdr3_002_Crea_revisione"
-    scenario_tag_example: "@fdr3_002_02"
-    feature_regex: '^@(?<suite>[A-Za-z0-9]+)_(?<feature_progressive>\d{3})_(?<short_feature>[A-Za-z0-9]+(?:_[A-Za-z0-9]+)*)$'
-    scenario_regex: '^@(?<suite>[A-Za-z0-9]+)_(?<feature_progressive>\d{3})_(?<scenario_progressive>\d{2})$'
+    feature_tag_example: "@fdr3_001_Aggiungi_pagamenti"
+    scenario_tag_example: "@fdr3_001_01"
+    feature_regex: '^@(?P<suite>[a-z0-9]+)_(?P<feature_progressive>(?!000)[0-9]{3})_(?P<short_feature>[A-Za-z0-9]+(?:_[A-Za-z0-9]+)*)$'
+    scenario_regex: '^@(?P<suite>[a-z0-9]+)_(?P<feature_progressive>(?!000)[0-9]{3})_(?P<scenario_progressive>(?!00)[0-9]{2})$'
     regex_groups:
       feature_progressive: 
         description: exactly the same as in the filename
       suite:
-        case: snake_Case
+        case: lowercase_canonical_suite_token
         word_limit: 1
         description: suite name from the filename, converted to lowercase (for example FdR3 becomes fdr3)
       short_feature:
-        case: Capitalized_Snake_Case
+        case: initial_uppercase_preserve_spelling_and_acronyms
         word_limit: 5
         description: short and synthetic feature slug, derived from the one in the filename
       scenario_progressive:
-        description: 2-digit 0-padded number representing scenario order within the file, restarting from 01 in each feature file
+        description: 2-digit 0-padded identifier from 01; initially assigned in scenario order, stable on maintenance, unique within the file
 tracking_comment:
   required: true
   regex: '^#[0-9]{10}$'

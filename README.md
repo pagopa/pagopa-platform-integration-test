@@ -999,6 +999,15 @@ rilevanti invalidano le evidenze dipendenti e le esecuzioni parallele richiedono
 anche isolamento dei dati/risorse esterne. Esito QA e completamento ACE sono
 distinti: un blocco del bookkeeping non autorizza a ripetere test o azioni Git.
 
+Le [istruzioni Gherkin](.github/instructions/gherkin.instructions.md) e il
+[profilo associato](.github/profiles/gherkin.profile.yaml) mantengono stabili gli
+identificativi durante la manutenzione e contano il limite di 12 sulle definizioni,
+non sulle righe Examples espanse. Le celle Examples vuote significano null:
+per i binding nuovi/modificati e obbligatoria la conversione esplicita a Python
+`None`, poiche Behave fornisce testo vuoto. Non viene migrato automaticamente il
+codice legacy. Gli outline si semplificano solo preservando copertura e selezione;
+l'aggiunta ADR-48 richiede esiti osservabili supportati dalle fonti.
+
 Il [workflow QA-engineer](docs/workflows/qa-engineer/implementation.md) distingue
 review, implementazione e fix/refactor. L'ingegnere implementa binding e wiring
 autorizzato della suite; i nuovi helper riusabili sono affidati allo specialista

@@ -5,7 +5,12 @@ applyTo: src/**/*.feature
 
 # Gherkin Guidelines
 
-Read [`.github/profiles/gherkin.profile.yaml`](../../.github/profiles/gherkin.profile.yaml) before editing a feature file and apply its language, structure, indentation, file naming conventions, and tag values. Ask the user for a profile value only when the profile is absent or does not define the required setting.
+Read [the Gherkin profile](../../.github/profiles/gherkin.profile.yaml) before
+editing and resolve it from the repository root. Apply its language, structure,
+indentation, naming and tags. Report missing, malformed, unreadable or
+contradictory settings explicitly; stop dependent changes rather than inventing
+values. Ask about material functional, compatibility, ownership or profile
+ambiguities, reusing answers already established.
 
 The profile governs configurable values; these instructions govern semantics
 and scenario design. Existing features may serve as style references only
@@ -18,12 +23,104 @@ Ask for clarification on unresolved conflicts rather than choosing silently.
 - Use `Background` for shared preconditions.
 - Write Gherkin using the profile language and its official Gherkin keywords; do not invent keyword translations. Use correct grammar and consistent terminology; mind accent marks; do NOT translate acronyms. Technical terms may remain in English (login, token, API, etc.).
 - Use the profile language with `behave --lang-help <language>` when a keyword dictionary is needed.
-- Apply the profile maximum number of scenarios per file; split files by semantic grouping when needed.
+- Apply the profile maximum to Scenario/Scenario Outline definitions, not expanded
+  Examples rows. Report expanded execution counts separately. Group new files
+  semantically; splitting existing files needs authorized output paths and
+  preserved identity/coverage, not automatic renaming or scope expansion.
 - Use consistent formatting and indentation.
 - Use third-person singular present tense for steps (e.g. "l'utente effettua il login", not "io effettuo il login", nor "come utente voglio").
 - Where the active workflow permits, consult existing feature files only for conventions not already defined here or in the profile; ask the user which to follow as a blueprint when needed.
-- If an `Examples` column has the same value in every row, replace its placeholders in the outline with that literal value and remove the column. Preserve variations in the remaining columns. If no variable parameters remain, convert the outline to a regular scenario without an `Examples` table.
-- Empty cells in `Examples` tables (i.e. `| |`) represent a `null` (`None`) value for that parameter.
+
+## Null inputs (ADR-44)
+
+An empty `Examples` cell (`| |`) MUST mean intentional `null`, represented as
+Python `None` at the binding's input interpretation boundary. It is never an
+unresolved data placeholder or an intentional empty string. Keep this project
+convention even though Behave's parser/substitution returns raw empty text:
+the parser does not perform the required conversion automatically.
+
+For new/changed features, identify affected parameters/rows in the implementation
+handoff. New/changed bindings MUST accept their empty outline values and convert
+them to `None` before type conversion, request construction or assertions; a
+matcher rejecting empty input does not satisfy the contract. JSON serialization
+must preserve intentional `None` as `null`, not silently omit the field, stringify
+it as `"None"`/`"null"`, or substitute a default. For other transports, explicit
+null representation follows the supported API contract, not a guessed encoding.
+
+An absent field and an intentional empty string remain distinct. When those
+values must coexist with null, establish an explicit, unambiguous representation
+and decoding contract from requirements/user clarification; do not invent a
+universal sentinel or reinterpret literal text such as `null`. Preserve numeric
+zero, false, leading-zero identifiers and literal nonempty values. Do not use
+truthiness (`value or None`) as a generic conversion rule.
+
+Analyst readiness requires a clear supported data meaning and a stated conversion
+obligation, not already implemented or executed Python. Engineer/runner checks
+must cover matcher acceptance and actual converted values, not just feature
+syntax. If the representation is unresolved, keep the affected output draft.
+This is mandatory for new/modified scope, not an automatic migration of all
+legacy features/bindings. Do not globally patch the Behave parser.
+
+## Safe outline normalization (ADR-45)
+
+A constant Examples column is a candidate for simplification, not an unconditional
+edit. Before replacing its placeholders with a literal, inspect all relevant
+Examples blocks, tags, coverage/source associations and placeholder uses in steps,
+data tables and docstrings. Preserve lexical values and the null contract.
+
+Normalize only when behaviour, case coverage, selection and binding impact are
+established equivalent within the authorized scope. Preserve remaining variations;
+do not silently collapse distinct rows or tagged Examples blocks. If no variable
+parameters remain, conversion to an ordinary scenario is allowed only when those
+same conditions hold; otherwise retain the outline or ask for a scoped decision.
+For existing features, report old/new wording, generated-case and tag changes.
+An apparent formatting optimization is not authority to alter binding consumers.
+
+## Stable identity and tracking (ADR-46)
+
+At initial creation allocate unique feature progressives within the target suite
+and scenario progressives from `01` in each file. During maintenance retain
+existing identifiers even when scenario order changes; allocate an unused
+progressive to additions, without renumbering existing scenarios or recycling
+identifiers known to be referenced. Never silently renumber on insertion/deletion.
+
+Check relevant suite/file allocations only within the active workflow's admitted
+reading scope. When UC source rules prevent reading executable suites, obtain
+an authoritative allocation/confirmation from the user or admitted registry;
+do not bypass those rules, guess uniqueness or claim it was checked globally.
+Missing allocation evidence is a question, not permission to scan excluded paths.
+Report exhausted numeric ranges rather than widening the profile silently.
+
+Renumbering, file splitting/moving or identifier changes need explicit scope
+approval, an old-to-new identity mapping and impact on selectors/reports/UC
+registries. Follow the owning workflow's reconciliation rules.
+Reuse an existing valid tracking comment; if a required value is absent/invalid,
+ask for the authoritative ten-digit value. Do not derive it from Jira, a timestamp
+or another technical ID. Tracking is distinct from dynamic feature/scenario tags.
+
+## Profile interpretation and validation (ADR-47)
+
+The profile's regex dialect is Python `re`, including `(?P<name>...)` groups.
+Apply full-string matching and the declared case/word-limit rules together:
+matching a lexical regex alone does not establish semantic profile compliance.
+Use the canonical suite token with preserved acronym casing in filenames and
+its lowercase form in identifier tags. Slugs start uppercase and preserve
+established spelling/acronyms; underscore-separated words need not all start
+uppercase. Do not silently rename legacy files to enforce a new convention.
+
+Feature progressives match across filename and identifier tags. Scenario IDs
+are unique within the file but remain stable rather than positional. Match tag
+suite tokens to the filename's suite token after lowercase conversion.
+The profile limits definitions per file; also report actual expanded rows/cases
+without claiming they ran. An outline contributes one definition and one
+execution case per Examples row.
+
+Distinguish valid YAML, profile conformity and Gherkin grammar; none proves
+runtime bindings, environment readiness or passing tests. Use syntax supported
+by the actual suite/parser, not unsupported newer Gherkin constructs. The
+analyst performs read-based checks and only its permitted language-help command;
+external parser/test results stay attributed to their actual producer.
+No profile value grants editing, execution or source-reading permission.
 
 ## Project operational context
 
@@ -120,7 +217,10 @@ weaken an external-domain check into a generic change of page.
 - Keep data provenance, approval, fitness and availability warnings in the active workflow's reports, not in feature comments. Data-warning comments are only for unresolved placeholders: identify the affected requirements and outline rows. Remove the corresponding comment when its last placeholder is resolved, without treating remaining report uncertainties as resolved. Preserve the mandatory tracking and language declarations and any separately required traceability.
 
 ## Tags
-- Feature and scenario identifier tags are mandatory; use the profile formats. Each feature file has its own progressive number within its suite, matching the filename and all identifier tags in that file. Scenario numbering restarts from `01` in each file.
+- Feature and scenario identifier tags are mandatory; use the profile formats.
+  Each feature progressive is unique within its suite and matches its filename
+  and tags. Initially number scenarios from `01` in each file; on maintenance,
+  preserve stable identifiers under ADR-46 rather than renumbering by position.
 - Other profile labels are optional. `@positive` and `@negative` are mutually exclusive; neither is mandatory.
 - Preserve existing tags unless they conflict with these rules; ask for clarification before changing conflicting tags.
 - Place the feature identifier immediately above the feature and scenario tags immediately above their scenario, one per line, at the corresponding feature or scenario indentation.
@@ -241,3 +341,21 @@ supported by the requirements in a real scenario.
       | lettore        | contenuto documento |
       | ospite         | accesso negato      |
 ```
+
+## Observable completion criteria (ADR-48, addition)
+
+- Then states the source-supported observable outcome, not merely "correct",
+  "valid" or "fast" without criteria. Identify the affected entity/correlation,
+  state, properties and applicable cardinality when needed to remove ambiguity.
+- Distinguish asynchronous request acceptance from completed business processing.
+  State the required observation; a technical wait cannot invent a deadline or
+  replace proof of the final result.
+- Negative cases verify the specified rejection/error and any required preserved
+  state, not just that some exception or failure occurs. Do not add unsupported
+  error codes, text or absence-of-side-effect assertions.
+- Thresholds, time limits, numeric tolerances/units, ordering and normalization
+  rules come from admitted requirements or an explicit decision, never guessed
+  defaults or the current observed implementation.
+- Missing criteria are functional gaps in the active workflow's existing report
+  or non-UC chat summary. Return questions/draft readiness, not invented checks.
+  No new mandatory matrix or additional reporting artifact is introduced.
