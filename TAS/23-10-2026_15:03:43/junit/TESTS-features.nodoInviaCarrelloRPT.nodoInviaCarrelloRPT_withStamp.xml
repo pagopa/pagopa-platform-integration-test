@@ -1,0 +1,247 @@
+<testsuite name="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_withStamp.L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT" tests="9" errors="0" failures="7" skipped="0" time="57.863034" timestamp="2026-10-23T15:10:07.430375" hostname="runnervm8k3b6"><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_withStamp.L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT" name="L'utente paga un carrello con singola RPT senza versamento semplice e una marca da bollo" status="failed" time="7.127143"><failure type="AssertionError" message="The field [paymentToken] does not exists.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.124s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_withStamp.feature:18
+Assertion Failed: The field [paymentToken] does not exists.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc5d9170>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 200
+INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '351179276814317124', 'state': 'OK'}]}
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc5d84a0>
+ERROR:root:[Assert Error] The field [paymentToken] does not exists.]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_WithStamp_005_01
+  Scenario: L'utente paga un carrello con singola RPT senza versamento semplice e una marca da bollo
+    Dati i sistemi sono operativi ... passed in 1.248s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.755s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.124s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_withStamp.L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT" name="L'utente paga un carrello con singola RPT con un versamento semplice e una marca da bollo" status="failed" time="7.433372"><failure type="AssertionError" message="The field [paymentToken] does not exists.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.491s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_withStamp.feature:29
+Assertion Failed: The field [paymentToken] does not exists.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc476bb0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 200
+INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '351179276815175552', 'state': 'OK'}]}
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc7177e0>
+ERROR:root:[Assert Error] The field [paymentToken] does not exists.]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_WithStamp_005_02
+  Scenario: L'utente paga un carrello con singola RPT con un versamento semplice e una marca da bollo
+    Dati i sistemi sono operativi ... passed in 1.241s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.700s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.491s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_withStamp.L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT" name="L'utente paga un carrello con singola RPT con due versamenti semplici e una marca da bollo" status="failed" time="7.607506"><failure type="AssertionError" message="The field [paymentToken] does not exists.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.680s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_withStamp.feature:40
+Assertion Failed: The field [paymentToken] does not exists.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc476f70>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 200
+INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '351179276815991326', 'state': 'OK'}]}
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc4768e0>
+ERROR:root:[Assert Error] The field [paymentToken] does not exists.]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_WithStamp_005_03
+  Scenario: L'utente paga un carrello con singola RPT con due versamenti semplici e una marca da bollo
+    Dati i sistemi sono operativi ... passed in 1.244s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 3 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.683s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.680s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_withStamp.L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT" name="L'utente paga un carrello con due RPT, entrambe senza versamento semplice e con una marca da bollo" status="failed" time="7.248604"><failure type="AssertionError" message="The field [paymentToken] does not exists.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.164s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_withStamp.feature:52
+Assertion Failed: The field [paymentToken] does not exists.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc474c20>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 200
+INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '351179276816854206', 'state': 'OK'}, {'fiscalCode': '15376371009', 'noticeNumber': '351179276816849754', 'state': 'OK'}]}
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc4747c0>
+ERROR:root:[Assert Error] The field [paymentToken] does not exists.]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_WithStamp_005_04
+  Scenario: L'utente paga un carrello con due RPT, entrambe senza versamento semplice e con una marca da bollo
+    Dati i sistemi sono operativi ... passed in 1.199s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.885s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.164s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_withStamp.L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT" name="L'utente paga un carrello con due RPT, entrambe con un versamento semplice e una marca da bollo" status="failed" time="8.738871"><failure type="AssertionError" message="The field [paymentToken] does not exists.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 6.090s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_withStamp.feature:64
+Assertion Failed: The field [paymentToken] does not exists.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc4a9b20>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 200
+INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '351179276817796334', 'state': 'OK'}, {'fiscalCode': '15376371009', 'noticeNumber': '351179276817800172', 'state': 'OK'}]}
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc4aac50>
+ERROR:root:[Assert Error] The field [paymentToken] does not exists.]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_WithStamp_005_05
+  Scenario: L'utente paga un carrello con due RPT, entrambe con un versamento semplice e una marca da bollo
+    Dati i sistemi sono operativi ... passed in 1.219s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 1.429s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 6.090s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_withStamp.L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT" name="L'utente paga un carrello con due RPT, con quantita diverse di versamenti semplici e marche da bollo" status="failed" time="7.939967"><failure type="AssertionError" message="The field [paymentToken] does not exists.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.309s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_withStamp.feature:76
+Assertion Failed: The field [paymentToken] does not exists.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc4aa5c0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 200
+INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '351179276818701363', 'state': 'OK'}, {'fiscalCode': '15376371009', 'noticeNumber': '351179276818697323', 'state': 'OK'}]}
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc4a9c10>
+ERROR:root:[Assert Error] The field [paymentToken] does not exists.]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_WithStamp_005_06
+  Scenario: L'utente paga un carrello con due RPT, con quantita diverse di versamenti semplici e marche da bollo
+    Dati i sistemi sono operativi ... passed in 1.790s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 3 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 4 versamenti di cui 2 sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.840s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.309s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_withStamp.L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT" name="L'utente paga un carrello con tre RPT, con quantita diverse di versamenti semplici e marche da bollo" status="failed" time="7.977526"><failure type="AssertionError" message="The field [paymentToken] does not exists.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.927s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_withStamp.feature:89
+Assertion Failed: The field [paymentToken] does not exists.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc4a9b20>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 200
+INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '351179276819597092', 'state': 'OK'}, {'fiscalCode': '15376371009', 'noticeNumber': '351179276819592042', 'state': 'OK'}, {'fiscalCode': '15376371009', 'noticeNumber': '351179276819588103', 'state': 'OK'}]}
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc4a8db0>
+ERROR:root:[Assert Error] The field [paymentToken] does not exists.]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_WithStamp_005_07
+  Scenario: L'utente paga un carrello con tre RPT, con quantita diverse di versamenti semplici e marche da bollo
+    Dati i sistemi sono operativi ... passed in 1.204s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 3 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 4 versamenti di cui 2 sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 2 versamenti di cui 2 sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.845s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.927s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_withStamp.L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello con una RPT che ha una quantita di versamenti e marche da bollo oltre il limite" status="passed" time="1.828624"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_WithStamp_005_08
+  Scenario: L'utente tenta di pagare un carrello con una RPT che ha una quantita di versamenti e marche da bollo oltre il limite
+    Dati i sistemi sono operativi ... passed in 1.202s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 6 versamenti di cui 3 sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC senza verifica dell'URL di redirect ... passed in 0.627s
+    Allora il pagamento fallisce essendo il numero di versamenti oltre il limite e viene restituito l'errore PPT_SINTASSI_XSD ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_withStamp.L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello con due RPT che hanno una quantita di versamenti e marche da bollo oltre il limite" status="passed" time="1.961421"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_WithStamp_005_09
+  Scenario: L'utente tenta di pagare un carrello con due RPT che hanno una quantita di versamenti e marche da bollo oltre il limite
+    Dati i sistemi sono operativi ... passed in 1.181s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 6 versamenti di cui 2 sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC senza verifica dell'URL di redirect ... passed in 0.780s
+    Allora il pagamento fallisce essendo il numero di versamenti oltre il limite e viene restituito l'errore PPT_SINTASSI_XSD ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

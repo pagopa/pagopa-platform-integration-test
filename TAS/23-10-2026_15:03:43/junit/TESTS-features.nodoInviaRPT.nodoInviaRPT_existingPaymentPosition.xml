@@ -1,0 +1,142 @@
+<testsuite name="features.nodoInviaRPT.nodoInviaRPT_existingPaymentPosition.Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT" tests="6" errors="0" failures="3" skipped="0" time="41.684011" timestamp="2026-10-23T15:10:55.142511" hostname="runnervm8k3b6"><testcase classname="features.nodoInviaRPT.nodoInviaRPT_existingPaymentPosition.Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT" name="Utente paga un pagamento singolo con un versamento e nessuna marca da bollo gia esistente in GPD" status="failed" time="7.46838"><failure type="AssertionError" message="The field [paymentToken] does not exists.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.932s
+Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_existingPaymentPosition.feature:18
+Assertion Failed: The field [paymentToken] does not exists.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc4776a0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 200
+INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '348179276820866246', 'state': 'OK'}]}
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc451760>
+ERROR:root:[Assert Error] The field [paymentToken] does not exists.]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path @NodoInviaRPT_ExistingPaymentPosition_003_01
+  Scenario: Utente paga un pagamento singolo con un versamento e nessuna marca da bollo gia esistente in GPD
+    Dati i sistemi sono operativi ... passed in 1.230s
+    Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a VALID ... passed in 0.626s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.681s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.932s
+    E la posizione debitoria è chiusa ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_existingPaymentPosition.Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT" name="Utente paga un pagamento singolo senza versamenti semplici e una marca da bollo gia esistente in GPD" status="failed" time="7.54338"><failure type="AssertionError" message="The field [paymentToken] does not exists.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.009s
+Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_existingPaymentPosition.feature:27
+Assertion Failed: The field [paymentToken] does not exists.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc477380>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 200
+INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '348179276821708399', 'state': 'OK'}]}
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc477330>
+ERROR:root:[Assert Error] The field [paymentToken] does not exists.]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path @NodoInviaRPT_ExistingPaymentPosition_003_02
+  Scenario: Utente paga un pagamento singolo senza versamenti semplici e una marca da bollo gia esistente in GPD
+    Dati i sistemi sono operativi ... passed in 1.178s
+    Data una singola RPT di tipo BBT con 1 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a VALID ... passed in 0.636s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.721s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.009s
+    E la posizione debitoria è chiusa ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_existingPaymentPosition.Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT" name="Utente paga un pagamento singolo con un versamento e una marca da bollo gia esistente in GPD" status="failed" time="7.50283"><failure type="AssertionError" message="The field [paymentToken] does not exists.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.019s
+Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_existingPaymentPosition.feature:39
+Assertion Failed: The field [paymentToken] does not exists.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc4a89f0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 200
+INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '348179276822562983', 'state': 'OK'}]}
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc4a8e00>
+ERROR:root:[Assert Error] The field [paymentToken] does not exists.]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path @NodoInviaRPT_ExistingPaymentPosition_003_03
+  Scenario: Utente paga un pagamento singolo con un versamento e una marca da bollo gia esistente in GPD
+    Dati i sistemi sono operativi ... passed in 1.175s
+    Data una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a VALID ... passed in 0.626s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.683s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.019s
+    E la posizione debitoria è chiusa ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_existingPaymentPosition.Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT" name="Utente tenta di pagare un pagamento singolo con un versamento e nessuna marca da bollo gia esistente in GPD in stato non valido" status="passed" time="6.113945"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @unhappy_path @NodoInviaRPT_ExistingPaymentPosition_003_04
+  Scenario: Utente tenta di pagare un pagamento singolo con un versamento e nessuna marca da bollo gia esistente in GPD in stato non valido
+    Dati i sistemi sono operativi ... passed in 1.173s
+    Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a DRAFT ... passed in 0.636s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.692s
+    Allora la conversione al nuovo modello fallisce nel wisp-converter ... passed in 0.862s
+    E la ricevuta KO è inviata ... passed in 2.751s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_existingPaymentPosition.Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT" name="Utente tenta di pagare un pagamento singolo inserito da ACA e in stato valido" status="passed" time="6.925781"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @unhappy_path @NodoInviaRPT_ExistingPaymentPosition_003_05
+  Scenario: Utente tenta di pagare un pagamento singolo inserito da ACA e in stato valido
+    Dati i sistemi sono operativi ... passed in 1.236s
+    Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 01 e stato uguale a VALID ... passed in 0.620s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.680s
+    Allora la conversione al nuovo modello fallisce nel wisp-converter ... passed in 1.640s
+    E la ricevuta KO è inviata ... passed in 2.750s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_existingPaymentPosition.Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT" name="Utente tenta di pagare un pagamento singolo inserito da ACA e in stato non valido" status="passed" time="6.129695"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @unhappy_path @NodoInviaRPT_ExistingPaymentPosition_003_06
+  Scenario: Utente tenta di pagare un pagamento singolo inserito da ACA e in stato non valido
+    Dati i sistemi sono operativi ... passed in 1.220s
+    Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 01 e stato uguale a DRAFT ... passed in 0.629s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.702s
+    Allora la conversione al nuovo modello fallisce nel wisp-converter ... passed in 0.817s
+    E la ricevuta KO è inviata ... passed in 2.762s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

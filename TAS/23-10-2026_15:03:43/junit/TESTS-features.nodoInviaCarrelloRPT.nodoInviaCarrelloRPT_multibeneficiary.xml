@@ -1,0 +1,194 @@
+<testsuite name="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_multibeneficiary.L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT" tests="8" errors="0" failures="4" skipped="0" time="39.67533" timestamp="2026-10-23T15:07:00.691239" hostname="runnervm8k3b6"><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_multibeneficiary.L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT" name="L'utente paga un carrello multibeneficiario con due RPT con un totale di due versamenti" status="failed" time="8.203373"><failure type="AssertionError" message="The field [paymentToken] does not exists.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario ... failed in 5.958s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_multibeneficiary.feature:19
+Assertion Failed: The field [paymentToken] does not exists.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc5d87c0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 200
+INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '351179276797605933', 'state': 'OK'}]}
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc452e80>
+ERROR:root:[Assert Error] The field [paymentToken] does not exists.]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_MultiBeneficiario_007_01
+  Scenario: L'utente paga un carrello multibeneficiario con due RPT con un totale di due versamenti
+    Dati i sistemi sono operativi ... passed in 1.414s
+    Dato un carrello di RPT multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.831s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario ... failed in 5.958s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_multibeneficiary.L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT" name="L'utente paga un carrello multibeneficiario con due RPT con un totale di tre versamenti" status="failed" time="8.653167"><failure type="AssertionError" message="The field [paymentToken] does not exists.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario ... failed in 5.174s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_multibeneficiary.feature:31
+Assertion Failed: The field [paymentToken] does not exists.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc4531a0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 200
+INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '351179276798653088', 'state': 'OK'}]}
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc434a90>
+ERROR:root:[Assert Error] The field [paymentToken] does not exists.]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_MultiBeneficiario_007_02
+  Scenario: L'utente paga un carrello multibeneficiario con due RPT con un totale di tre versamenti
+    Dati i sistemi sono operativi ... passed in 1.806s
+    Dato un carrello di RPT multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 2 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 1.672s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario ... failed in 5.174s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_multibeneficiary.L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT" name="L'utente paga un carrello multibeneficiario con due RPT con un totale di quattro versamenti" status="failed" time="7.342985"><failure type="AssertionError" message="The field [paymentToken] does not exists.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario ... failed in 5.256s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_multibeneficiary.feature:43
+Assertion Failed: The field [paymentToken] does not exists.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc5d8040>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 200
+INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '351179276799456734', 'state': 'OK'}]}
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc5d8040>
+ERROR:root:[Assert Error] The field [paymentToken] does not exists.]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_MultiBeneficiario_007_03
+  Scenario: L'utente paga un carrello multibeneficiario con due RPT con un totale di quattro versamenti
+    Dati i sistemi sono operativi ... passed in 1.209s
+    Dato un carrello di RPT multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 3 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.878s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario ... failed in 5.256s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_multibeneficiary.L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT" name="L'utente paga un carrello multibeneficiario con due RPT con un totale di cinque versamenti" status="failed" time="7.423373"><failure type="AssertionError" message="The field [paymentToken] does not exists.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario ... failed in 5.364s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_multibeneficiary.feature:55
+Assertion Failed: The field [paymentToken] does not exists.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc452fc0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 200
+INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '351179276800290401', 'state': 'OK'}]}
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc450f40>
+ERROR:root:[Assert Error] The field [paymentToken] does not exists.]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_MultiBeneficiario_007_04
+  Scenario: L'utente paga un carrello multibeneficiario con due RPT con un totale di cinque versamenti
+    Dati i sistemi sono operativi ... passed in 1.241s
+    Dato un carrello di RPT multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 4 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.818s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario ... failed in 5.364s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_multibeneficiary.L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello multibeneficiario con due RPT con un totale di sei versamenti, ma il carrello ha piu di 5 versamenti" status="passed" time="2.01251"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_MultiBeneficiario_007_05
+  Scenario: L'utente tenta di pagare un carrello multibeneficiario con due RPT con un totale di sei versamenti, ma il carrello ha piu di 5 versamenti
+    Dati i sistemi sono operativi ... passed in 1.231s
+    Dato un carrello di RPT multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 5 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC senza verifica dell'URL di redirect ... passed in 0.781s
+    E il tentativo di pagamento fallisce ... passed in 0.000s
+    Allora la risposta contiene il campo description con valore 'Il carrello deve avere massimo 5 versamenti totali' ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_multibeneficiary.L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello multibeneficiario con tre RPT con un versamento ciascuna, ma il carrello ha piu di 2 RPT" status="passed" time="1.997916"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_MultiBeneficiario_007_06
+  Scenario: L'utente tenta di pagare un carrello multibeneficiario con tre RPT con un versamento ciascuna, ma il carrello ha piu di 2 RPT
+    Dati i sistemi sono operativi ... passed in 1.221s
+    Dato un carrello di RPT multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC senza verifica dell'URL di redirect ... passed in 0.777s
+    E il tentativo di pagamento fallisce ... passed in 0.000s
+    Allora la risposta contiene il campo description con valore 'Il carrello non contiene solo 2 RPT' ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_multibeneficiary.L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello multibeneficiario con due RPT, in cui la seconda ha due versamenti, ma la seconda RPT contiene piu di un versamento" status="passed" time="2.025502"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_MultiBeneficiario_007_07
+  Scenario: L'utente tenta di pagare un carrello multibeneficiario con due RPT, in cui la seconda ha due versamenti, ma la seconda RPT contiene piu di un versamento
+    Dati i sistemi sono operativi ... passed in 1.226s
+    Dato un carrello di RPT multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 3 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 2 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC senza verifica dell'URL di redirect ... passed in 0.799s
+    E il tentativo di pagamento fallisce ... passed in 0.000s
+    Allora la risposta contiene il campo description con valore 'La seconda RPT non contiene solo 1 versamento' ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_multibeneficiary.L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello multibeneficiario con due RPT con una marca da bollo, ma fallisce perche una RPT ha la marca da bollo" status="passed" time="2.016503"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_MultiBeneficiario_007_08
+  Scenario: L'utente tenta di pagare un carrello multibeneficiario con due RPT con una marca da bollo, ma fallisce perche una RPT ha la marca da bollo
+    Dati i sistemi sono operativi ... passed in 1.230s
+    Dato un carrello di RPT multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC senza verifica dell'URL di redirect ... passed in 0.786s
+    E il tentativo di pagamento fallisce ... passed in 0.000s
+    Allora la risposta contiene il campo description con valore 'Nessuna RPT deve contienere marca da bollo' ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

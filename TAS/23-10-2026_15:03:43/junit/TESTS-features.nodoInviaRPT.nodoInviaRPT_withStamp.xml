@@ -1,0 +1,145 @@
+<testsuite name="features.nodoInviaRPT.nodoInviaRPT_withStamp.Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT" tests="6" errors="0" failures="4" skipped="0" time="33.403552" timestamp="2026-10-23T15:12:47.365400" hostname="runnervm8k3b6"><testcase classname="features.nodoInviaRPT.nodoInviaRPT_withStamp.Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT" name="Utente paga un pagamento singolo con nessun versamento semplice e una marca da bollo" status="failed" time="7.13672"><failure type="AssertionError" message="The field [paymentToken] does not exists.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.091s
+Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_withStamp.feature:17
+Assertion Failed: The field [paymentToken] does not exists.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc477b50>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 200
+INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '351179276833075426', 'state': 'OK'}]}
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc4538d0>
+ERROR:root:[Assert Error] The field [paymentToken] does not exists.]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path @NodoInviaRPT_WithStamp_002_01
+  Scenario: Utente paga un pagamento singolo con nessun versamento semplice e una marca da bollo
+    Dati i sistemi sono operativi ... passed in 1.356s
+    Data una singola RPT di tipo BBT con 1 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.689s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.091s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_withStamp.Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT" name="Utente paga un pagamento singolo con un versamento semplice e una marca da bollo" status="failed" time="7.193854"><failure type="AssertionError" message="The field [paymentToken] does not exists.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.132s
+Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_withStamp.feature:27
+Assertion Failed: The field [paymentToken] does not exists.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc4bdc60>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 200
+INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '351179276833876842', 'state': 'OK'}]}
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc4aa610>
+ERROR:root:[Assert Error] The field [paymentToken] does not exists.]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path @NodoInviaRPT_WithStamp_002_02
+  Scenario: Utente paga un pagamento singolo con un versamento semplice e una marca da bollo
+    Dati i sistemi sono operativi ... passed in 1.212s
+    Data una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.849s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 5.132s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_withStamp.Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT" name="Utente paga un pagamento singolo con due versamenti semplici e una marca da bollo" status="failed" time="8.090075"><failure type="AssertionError" message="The field [paymentToken] does not exists.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 6.173s
+Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_withStamp.feature:37
+Assertion Failed: The field [paymentToken] does not exists.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc4bfa10>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 200
+INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '351179276834683215', 'state': 'OK'}]}
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc4bc4a0>
+ERROR:root:[Assert Error] The field [paymentToken] does not exists.]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path @NodoInviaRPT_WithStamp_002_03
+  Scenario: Utente paga un pagamento singolo con due versamenti semplici e una marca da bollo
+    Dati i sistemi sono operativi ... passed in 1.205s
+    Data una singola RPT di tipo BBT con 3 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.712s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 6.173s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_withStamp.Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT" name="Utente paga un pagamento singolo con due versamenti semplici e due marche da bollo" status="failed" time="6.893471"><failure type="AssertionError" message="The field [paymentToken] does not exists.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.947s
+Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_withStamp.feature:47
+Assertion Failed: The field [paymentToken] does not exists.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc4bc9a0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 200
+INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '351179276835594615', 'state': 'OK'}]}
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7f74fc4bd170>
+ERROR:root:[Assert Error] The field [paymentToken] does not exists.]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path @NodoInviaRPT_WithStamp_002_04
+  Scenario: Utente paga un pagamento singolo con due versamenti semplici e due marche da bollo
+    Dati i sistemi sono operativi ... passed in 1.246s
+    Data una singola RPT di tipo BBT con 4 versamenti di cui 2 sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.700s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.947s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_withStamp.Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT" name="Utente paga un pagamento singolo di tipo PO con nessun versamento semplice e una marca da bollo" status="passed" time="2.124115"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path @NodoInviaRPT_WithStamp_002_05
+  Scenario: Utente paga un pagamento singolo di tipo PO con nessun versamento semplice e una marca da bollo
+    Dati i sistemi sono operativi ... passed in 1.398s
+    Data una singola RPT di tipo PO con 1 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.726s
+    Allora la risposta contiene il vecchio URL WISP ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_withStamp.Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT" name="Utente paga un pagamento singolo di tipo PO con un versamento semplice e una marca da bollo, ma fallisce la validazione semantica" status="passed" time="1.965316"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @unhappy_path @NodoInviaRPT_WithStamp_002_06
+  Scenario: Utente paga un pagamento singolo di tipo PO con un versamento semplice e una marca da bollo, ma fallisce la validazione semantica
+    Dati i sistemi sono operativi ... passed in 1.250s
+    Data una singola RPT di tipo PO con 2 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ma il pagamento fallisce ... passed in 0.715s
+    Allora il pagamento fallisce having invalid semantic validation due to incorrect RPT structure e viene restituito l'errore PPT_SEMANTICA ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
