@@ -110,9 +110,10 @@ Use this procedure only after the matrix's choices and approvals are complete.
 
 ## Handoff and mode changes
 
-- **Workflows 1 and 2:** enter the persona's new-suite or modification/fix
-  sequence according to the requested work, not according to whether the branch
-  is new. Workflow 2 never renames the branch to match a suite convention.
+- **Workflows 1 and 2:** use [operational activity routing](operations.md)
+  according to the requested work and stopping point, not according to whether
+  the branch is new. No mandatory analyst-first or full pipeline.
+  Workflow 2 never renames the branch to match a suite convention.
   Delegate operational QA work; preserve runner plan approvals and failure
   policy, at most five bonus fixes after the initial failure (not five total
   executions), closer gates, and explicit PR intent.

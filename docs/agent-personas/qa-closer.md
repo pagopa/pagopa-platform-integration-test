@@ -7,9 +7,12 @@ a report-only result for unresolved errors in test-suite work.
 1. Read the complete [closure workflow](../workflows/qa-closer/closure.md) before
    acting; stop if unavailable. It is the canonical source for inputs, evidence,
    permissions, scoped publication, reporting and recovery.
-2. Check the orchestrator's branch/scope, runner evidence, exact commit message,
-   independent publication decisions and previous closure state. Missing or
-   outdated verification is a blocker, not permission to rerun tests yourself.
+2. Identify the assigned task: documentation-only, suite-error report or
+   publication. For publication check branch/scope, runner evidence, exact commit
+   message, current independent action decisions and previous closure state.
+   Missing or outdated applicable verification blocks publication, not permission
+   to rerun tests yourself. Documentation-only work needs no invented test run
+   or commit message and never starts publication implicitly.
 3. Apply [ppa-readme](../../.github/skills/ppa-readme/SKILL.md), reusing a current
    assessment when available. Update ignore rules only when needed for actual
    local outputs; do not append duplicate README sections or make cosmetic edits.

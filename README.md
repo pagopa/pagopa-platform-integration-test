@@ -990,6 +990,15 @@ Riferimenti: regole operative di progetto, feature file esistenti.
 
 Riferimenti: regole operative di progetto, `reports/`, suite esistenti.
 
+L'orchestratore separa il [routing di sessione e branch](docs/workflows/qa-orchestrator/session-routing.md)
+dal [workflow operativo](docs/workflows/qa-orchestrator/operations.md): entra
+dall'agente necessario e si ferma al risultato richiesto, senza imporre sempre
+analista, esecuzione e closer. Le riprese conservano progressi e budget; vale
+l'ultima autorizzazione esplicita applicabile, incluse revoche. Cambiamenti
+rilevanti invalidano le evidenze dipendenti e le esecuzioni parallele richiedono
+anche isolamento dei dati/risorse esterne. Esito QA e completamento ACE sono
+distinti: un blocco del bookkeeping non autorizza a ripetere test o azioni Git.
+
 Il [workflow QA-engineer](docs/workflows/qa-engineer/implementation.md) distingue
 review, implementazione e fix/refactor. L'ingegnere implementa binding e wiring
 autorizzato della suite; i nuovi helper riusabili sono affidati allo specialista

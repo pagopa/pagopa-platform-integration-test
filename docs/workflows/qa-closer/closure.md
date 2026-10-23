@@ -4,6 +4,13 @@ QA-closer prepares documentation and performs only authorized publication action
 It does not run tests, fix code/features, choose a new branch, or capture ACE traces.
 Read the complete workflow before closure; stop if required inputs cannot be read.
 
+For a documentation-only assignment, use actual scoped inputs and perform only
+the requested README/ignore maintenance; runtime verification, a commit message
+and publication decisions are not prerequisites to saving authorized documentation.
+Use `not-applicable` where appropriate. This exception never authorizes Git
+publication or a standalone success report; publication still requires all
+applicable evidence/action gates below.
+
 ## Closure input contract (ADR-08)
 
 The orchestrator supplies the following facts, using explicit `unknown` or

@@ -146,6 +146,7 @@ def test_all_local_contract_links_and_tables() -> None:
     paths.extend((ROOT / 'docs' / 'workflows' / 'qa-closer').glob('*.md'))
     paths.extend((ROOT / 'docs' / 'workflows' / 'qa-engineer').glob('*.md'))
     paths.extend((ROOT / 'docs' / 'workflows' / 'qa-runner').glob('*.md'))
+    paths.extend((ROOT / 'docs' / 'workflows' / 'qa-orchestrator').glob('*.md'))
     paths.extend((ROOT / 'docs' / 'adr').glob('ADR-*.md'))
     for path in paths:
         text = _read(path)
@@ -444,7 +445,7 @@ def test_implementation_delegation_requires_orchestrator_readiness_gate() -> Non
         '`ready-for-development`', '`blocked`',
     ]
     assert 'never introduce these activity labels as new UC schema enums' in routing
-    orchestrator = _read(ROOT / 'docs' / 'agent-personas' / 'qa-orchestrator.md')
+    orchestrator = _read(ROOT / 'docs' / 'workflows' / 'qa-orchestrator' / 'operations.md')
     assert '## Analyst-result gate (ADR-05)' in orchestrator
     assert 'Require explicit `ready-for-development`' in orchestrator
     assert 'the user explicitly\n  authorizes that partial implementation scope' in orchestrator
@@ -467,7 +468,7 @@ def test_uc_identity_survives_new_ace_requests_without_schema_migration() -> Non
         assert clause in workflow
 
 
-@pytest.mark.parametrize('number', range(2, 26))
+@pytest.mark.parametrize('number', range(2, 32))
 def test_qa_decisions_are_recorded_as_accepted(number: int) -> None:
     """Keep each agreed ADR discoverable with a link to its operational owner."""
     matches = list((ROOT / 'docs' / 'adr').glob(f"ADR-{number:02d}-*.md"))
@@ -520,7 +521,7 @@ def test_engineer_parallelism_requires_disjoint_writers() -> None:
     assert 'only when write sets are disjoint' in text
     assert 'shared files have one\nwriter' in text
     assert 'Matching patterns may overlap' in text
-    orchestrator = _read(ROOT / 'docs' / 'agent-personas' / 'qa-orchestrator.md')
+    orchestrator = _read(ROOT / 'docs' / 'workflows' / 'qa-orchestrator' / 'operations.md')
     assert '## Engineer ownership and result gate (ADR-14 through ADR-19)' in orchestrator
     assert 'group or serialize overlapping work' in orchestrator
     assert 'one-engineer-per-feature parallelism, isolation' not in orchestrator
@@ -607,7 +608,7 @@ def test_runner_fix_budget_starts_after_initial_failure_and_cannot_reset() -> No
         'After bonus attempt 5 fails, stop and report',
     ):
         assert clause in text
-    orchestrator = _read(ROOT / 'docs' / 'agent-personas' / 'qa-orchestrator.md')
+    orchestrator = _read(ROOT / 'docs' / 'workflows' / 'qa-orchestrator' / 'operations.md')
     assert '## Runner activity and plan gate (ADR-20 through ADR-25)' in orchestrator
     assert 'Keep its counter across delegations' in orchestrator
     assert 'five-iteration' not in orchestrator
@@ -666,6 +667,121 @@ def test_runner_error_reports_do_not_require_fixes_or_expand_write_scope() -> No
     assert 'model: Claude Sonnet 5\n' in metadata
     assert 'handoffs:' not in metadata
     assert 'first failure is attempt 0' in wrapper
+
+
+def test_orchestrator_activity_routing_is_independent_from_branch_mode() -> None:
+    """Route scoped requests without a mandatory analyst or full pipeline."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'qa-orchestrator' / 'operations.md')
+    rows = _table_rows(text, '| Requested activity | Entry and route | Stop boundary |')
+    assert [row[0] for row in rows] == [
+        'Explain or explore', 'Review features', 'Review Python steps',
+        'Create or edit features', 'Implement or fix test code',
+        'Diagnose or execute tests', 'Documentation or publication closure',
+        'Complete suite work',
+    ]
+    assert 'QA-engineer in review mode' in rows[2][1]
+    assert 'QA-runner in the requested mode' in rows[5][1]
+    assert 'no implicit implementation or closure' in rows[5][2]
+    assert 'Functional requirements/scenario changes or uncertainty return to the analyst' in text
+    persona = _read(ROOT / 'docs' / 'agent-personas' / 'qa-orchestrator.md')
+    assert '../workflows/qa-orchestrator/operations.md' in persona
+    assert 'Always start with the analyst' not in persona
+    assert '**On success**: delegate' not in persona
+    routing = _read(ROOT / 'docs' / 'workflows' / 'qa-orchestrator' / 'session-routing.md')
+    assert '[operational activity routing](operations.md)' in routing
+
+
+def test_orchestrator_resumption_reconciles_progress_and_active_owners() -> None:
+    """Preserve partial artifacts and ownership before retrying interrupted work."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'qa-orchestrator' / 'operations.md')
+    for clause in (
+        'Objective, activity mode, deliverable and explicit stopping point',
+        'Exact read/write scope',
+        'remaining bonus/diagnostic budgets',
+        'completed, partial, blocked or delegation',
+        'original writer/process is still active',
+        'release/transfer ownership before resuming',
+        'No mandatory new tracking file',
+        'restart at the last established step',
+        'Independent chat requests get a new ACE ID',
+    ):
+        assert clause in text
+
+
+def test_orchestrator_propagates_revocation_without_undo_claims() -> None:
+    """Make latest scoped consent authoritative, not an obsolete initial PR request."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'qa-orchestrator' / 'operations.md')
+    for clause in (
+        'latest explicit applicable decision supersedes an earlier one',
+        'An earlier PR request does not survive a later',
+        'Pass the updated decisions to every affected delegate',
+        'stop future affected actions',
+        'do not claim a completed push/PR was undone',
+        'Never ask again merely to overturn an explicit refusal',
+        'same still-valid scope/environment/effects',
+    ):
+        assert clause in text
+    persona = _read(ROOT / 'docs' / 'agent-personas' / 'qa-orchestrator.md')
+    assert 'always pass `create_pr: true`' not in persona
+    assert 'Latest explicit applicable authorization wins' in persona
+
+
+def test_orchestrator_invalidation_is_scoped_and_parallel_resources_are_safe() -> None:
+    """Reassess relevant dependencies without treating file isolation as data isolation."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'qa-orchestrator' / 'operations.md')
+    rows = _table_rows(text, '| Change or dependency | Required reassessment |')
+    assert len(rows) == 5
+    assert 'Analyst readiness' in rows[0][1]
+    assert 'runner verification' in rows[1][1]
+    assert 'do not indiscriminately invalidate tests' in rows[2][1]
+    assert 'no whole-task passing claim' in rows[3][1]
+    assert 'serialize if unsafe or uncertain' in rows[4][1]
+    assert 'File-disjoint engineers do not imply safe parallel suite execution' in text
+    assert 'Do not run verification concurrently with relevant' in text
+    assert 'targeted fresh checks' in text
+
+
+def test_orchestrator_completion_and_documentation_do_not_force_publication() -> None:
+    """Keep README assessment independent from automatic closer or Git actions."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'qa-orchestrator' / 'operations.md')
+    for clause in (
+        'Activity completion is not publication',
+        'even without a commit',
+        'restricted agents return requirements for an',
+        'Invoke QA-closer only for an actual assigned',
+        'Successful\nwork needs no standalone success report',
+        'Documentation-only closer work does not',
+    ):
+        assert clause in text
+    closer = _read(ROOT / 'docs' / 'workflows' / 'qa-closer' / 'closure.md')
+    assert 'For a documentation-only assignment' in closer
+    assert 'never authorizes Git\npublication' in closer
+    wrapper = _read(ROOT / '.github' / 'agents' / 'QA-orchestrator.agent.md')
+    assert 'edit/createFile' in wrapper.split('---', 2)[1]
+    assert 'They never authorize test/feature edits' in wrapper
+    readme = _read(ROOT / 'README.md')
+    assert 'docs/workflows/qa-orchestrator/operations.md' in readme
+
+
+def test_orchestrator_ace_recovery_does_not_replay_qa_or_publication() -> None:
+    """Retain privacy ordering and blocked-stage recovery without changing ACE runtime."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'qa-orchestrator' / 'operations.md')
+    for clause in (
+        'Track QA result separately from ACE completion',
+        'not new ACE\nschema enums',
+        'Stop ACE processing\non failure',
+        'before retrying',
+        'do not blindly repeat a possibly completed counter/reflection',
+        'separate correction-trace procedure',
+        'do not rerun tests, commits, pushes or PRs',
+        'Do not change runtime/scripts/playbooks',
+    ):
+        assert clause in text
+    persona = _read(ROOT / 'docs' / 'agent-personas' / 'qa-orchestrator.md')
+    assert 'scripts\\ace-addons\\privacy\\finalize-task.js <task_id>' in persona
+    assert persona.index('privacy\\finalize-task.js') < persona.index('update_counters.js')
+    assert persona.index('update_counters.js') < persona.index('check_threshold.js')
+    assert 'only gh/ace/warden' in persona
 
 
 def test_readme_skill_is_discoverable_scoped_and_non_recursive() -> None:
@@ -740,10 +856,10 @@ def test_closure_approvals_are_independent_and_refusals_win() -> None:
     assert 'do not ask again to override a refusal' in decisions[-2][1]
     assert 'no-push/commit-only restriction\nmust be passed explicitly' in workflow
     assert 'If a PR needs an unpublished commit but push is forbidden' in workflow
-    orchestrator = _read(ROOT / 'docs' / 'agent-personas' / 'qa-orchestrator.md')
+    orchestrator = _read(ROOT / 'docs' / 'workflows' / 'qa-orchestrator' / 'operations.md')
     assert '## Closure handoff (ADR-08 through ADR-13)' in orchestrator
     assert 'No success condition sets `create_pr: true` implicitly' in orchestrator
-    assert 'independent `commit`, `push` and `create_pr` decisions' in orchestrator
+    assert 'independent `commit`, `push` and `create_pr` decisions' in ' '.join(orchestrator.split())
     assert 'or **ALL** tests pass' not in _read(
         ROOT / 'docs' / 'agent-personas' / 'qa-closer.md'
     )
@@ -786,7 +902,7 @@ def test_closure_ace_capture_has_one_owner_and_no_recursive_commit() -> None:
     assert 'Raw or uncertain trace contents must not be' in workflow
     assert "closer's own trace is captured after its result by the orchestrator" in workflow
     assert 'There is no recursive commit' in workflow
-    orchestrator = _read(ROOT / 'docs' / 'agent-personas' / 'qa-orchestrator.md')
+    orchestrator = _read(ROOT / 'docs' / 'workflows' / 'qa-orchestrator' / 'operations.md')
     assert 'privacy-finalize\nthose through the existing ACE lifecycle afterward' in orchestrator
     assert 'automatically\npublish newly captured traces' in orchestrator
 
