@@ -383,11 +383,9 @@ jobs:
         if: always() && steps.checkout_gh_pages.outcome == 'success'
         env:
           REPORT_DIR: ${{ inputs.test_suite }}-${{ inputs.test_type }}
-          TEST_SUITE: ${{ inputs.test_suite }}
-          TEST_TYPE: ${{ inputs.test_type }}
         run: |
-          DEST="gh-pages/TAS/${TEST_SUITE}-${TEST_TYPE}"
-          rm -rf "$DEST"
+          PUBLISH_TIMESTAMP="$(date +'%d-%m-%Y_%H:%M:%S')"
+          DEST="gh-pages/TAS/${PUBLISH_TIMESTAMP}"
           mkdir -p "$DEST"
 
           if [ -d "$REPORT_DIR" ]; then
