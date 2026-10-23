@@ -127,6 +127,7 @@ def test_all_local_contract_links_and_tables() -> None:
         ROOT / 'docs' / 'agent-personas' / 'qa-closer.md',
         ROOT / 'docs' / 'agent-personas' / 'qa-engineer.md',
         ROOT / 'docs' / 'agent-personas' / 'qa-runner.md',
+        ROOT / 'docs' / 'agent-personas' / 'python-utility-engineer.md',
         ROOT / '.github' / 'agents' / 'QA-runner.agent.md',
         ROOT / '.github' / 'instructions' / 'run-tests.instructions.md',
         ROOT / '.github' / 'agents' / 'QA-engineer.agent.md',
@@ -147,6 +148,7 @@ def test_all_local_contract_links_and_tables() -> None:
     paths.extend((ROOT / 'docs' / 'workflows' / 'qa-engineer').glob('*.md'))
     paths.extend((ROOT / 'docs' / 'workflows' / 'qa-runner').glob('*.md'))
     paths.extend((ROOT / 'docs' / 'workflows' / 'qa-orchestrator').glob('*.md'))
+    paths.extend((ROOT / 'docs' / 'workflows' / 'python-utility-engineer').glob('*.md'))
     paths.extend((ROOT / 'docs' / 'adr').glob('ADR-*.md'))
     for path in paths:
         text = _read(path)
@@ -468,7 +470,7 @@ def test_uc_identity_survives_new_ace_requests_without_schema_migration() -> Non
         assert clause in workflow
 
 
-@pytest.mark.parametrize('number', range(2, 32))
+@pytest.mark.parametrize('number', range(2, 38))
 def test_qa_decisions_are_recorded_as_accepted(number: int) -> None:
     """Keep each agreed ADR discoverable with a link to its operational owner."""
     matches = list((ROOT / 'docs' / 'adr').glob(f"ADR-{number:02d}-*.md"))
@@ -782,6 +784,119 @@ def test_orchestrator_ace_recovery_does_not_replay_qa_or_publication() -> None:
     assert persona.index('privacy\\finalize-task.js') < persona.index('update_counters.js')
     assert persona.index('update_counters.js') < persona.index('check_threshold.js')
     assert 'only gh/ace/warden' in persona
+
+
+def test_utility_modes_do_not_turn_review_into_implementation() -> None:
+    """Keep utility reviews read-only even when code edits are available."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'python-utility-engineer' / 'implementation.md')
+    rows = _table_rows(text, '| Activity | Required behaviour | Allowed output |')
+    assert [row[0] for row in rows] == ['Review', 'Implement or extend', 'Fix or refactor']
+    assert 'only an explicitly requested Markdown report' in rows[0][2]
+    assert 'do not create corrected copies elsewhere' in text
+    assert 'Explanation-only requests\nremain in chat' in text
+    assert 'Supplied files alone do\nnot authorize editing' in text
+    wrapper = _read(ROOT / '.github' / 'agents' / 'Python-utility-engineer.agent.md')
+    assert '../../docs/agent-personas/python-utility-engineer.md' in wrapper
+    assert '../../docs/workflows/python-utility-engineer/implementation.md' in wrapper
+
+
+def test_utility_direct_inputs_and_error_contract_are_required() -> None:
+    """Require technical evidence without inventing business behaviour or forms."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'python-utility-engineer' / 'implementation.md')
+    for clause in (
+        'even when invoked directly',
+        'Supported behaviour, input/output types/shapes, errors',
+        'observable behaviour and interfaces to preserve',
+        'not proof of an unspecified product requirement',
+        'not a nonexistent delegation packet',
+        'Ask only about material gaps',
+        'Do not guess business',
+        'meaningful underlying failure information',
+    ):
+        assert clause in text
+
+
+def test_utility_write_scope_includes_exports_without_outside_scope_escape() -> None:
+    """Bound local/shared ownership, docs and tests without accepting generic expansion."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'python-utility-engineer' / 'implementation.md')
+    for clause in (
+        'src/<test-type>/<suite>/utility',
+        'related package exports',
+        'For a review only the explicitly requested Markdown report is writable',
+        'including `environment.py`',
+        'Generic confirmation of an outside-scope request does not expand this role',
+        'Shared utilities, exports and unit-test files need one writer',
+        'Preserve\npre-existing edits',
+        "Do not independently edit a caller's step/hook",
+    ):
+        assert clause in text
+    engineer = _read(ROOT / 'docs' / 'workflows' / 'qa-engineer' / 'implementation.md')
+    assert '../python-utility-engineer/implementation.md' in engineer
+    assert 'remaining caller is an integration blocker' in engineer
+
+
+def test_utility_compatibility_covers_observables_and_migration_ownership() -> None:
+    """Keep unchanged signatures from hiding incompatible returns, errors or side effects."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'python-utility-engineer' / 'implementation.md')
+    for clause in (
+        'public API/exports and relevant call sites',
+        'disclose uninspected/dynamic consumers',
+        'return shapes',
+        'exceptions, missing/null/empty inputs, argument mutation',
+        'caching/shared state, lifecycle and side effects',
+        'obtain explicit approval for that break',
+        'Migrate only owned utility consumers',
+        'If incompatible consumers remain, return `partial` or `blocked`',
+    ):
+        assert clause in text
+
+
+def test_utility_unit_tests_are_isolated_and_never_executed_by_specialist() -> None:
+    """Require genuine isolated cases and honest status without granting execution tools."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'python-utility-engineer' / 'implementation.md')
+    states = _table_rows(text, '| Result | Meaning |')
+    assert [row[0] for row in states] == [
+        '`review-complete`', '`implemented-not-run`', '`partial`', '`blocked`',
+    ]
+    for clause in (
+        'controlled mocks/fakes/temporary inputs',
+        'Do not introduce real credentials, implicit network/service access',
+        'Avoid tautological assertions',
+        'Do not execute unit tests, imports, compilation',
+        'otherwise state the unresolved setup',
+        'tests written separately from tests proposed but not executed',
+        'a failed save\nis not a saved deliverable',
+    ):
+        assert clause in text
+    metadata = _read(ROOT / '.github' / 'agents' / 'Python-utility-engineer.agent.md').split('---', 2)[1]
+    assert 'model: GPT-5.3-Codex\n' in metadata
+    assert 'user-invocable: true' in metadata
+    assert 'execute' not in metadata
+    assert 'agents:' not in metadata
+    assert 'handoffs:' not in metadata
+
+
+def test_utility_loading_readme_and_ace_follow_existing_authorities() -> None:
+    """Align reuse documentation and instruction loading without inventing an ACE role."""
+    text = _read(ROOT / 'docs' / 'workflows' / 'python-utility-engineer' / 'implementation.md')
+    for module in ('config', 'rest', 'json', 'soap'):
+        assert f'../../../src/utility/{module}/README.md' in text
+    for clause in (
+        'consult all four module entrypoints',
+        'Return a reuse-only recommendation',
+        'After coherent implementation changes assess the relevant README',
+        'return broader needs to the caller/user',
+        'not an autonomous configured ACE participant',
+        "Do not read\nanother role's scoped lessons",
+        'consciously\nassessed friction',
+        'the orchestrator owns capture',
+    ):
+        assert clause in text
+    instructions = _read(ROOT / 'AGENTS.md')
+    assert '| `Python-utility-engineer` | [`python-scripts.instructions.md`]' in instructions
+    assert 'docs/workflows/python-utility-engineer/implementation.md' in instructions
+    readme = _read(ROOT / 'README.md')
+    assert 'docs/workflows/python-utility-engineer/implementation.md' in readme
 
 
 def test_readme_skill_is_discoverable_scoped_and_non_recursive() -> None:

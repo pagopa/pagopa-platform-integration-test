@@ -1006,6 +1006,13 @@ utility, anche per API ed E2E. Gli agenti di implementazione non eseguono test:
 restituiscono codice e verifiche statiche al runner, che esegue i comandi approvati.
 Il parallelismo richiede file con ownership disgiunta, non solo feature diverse.
 
+Il [workflow Python-utility-engineer](docs/workflows/python-utility-engineer/implementation.md)
+copre review, implementazione e manutenzione delle utility condivise e di suite.
+Richiede un contratto tecnico anche nell'uso diretto e verifica l'impatto sui
+chiamanti, non solo le firme. Scrive unit test isolati senza eseguirli; migrazioni
+di step/hook o modifiche fuori scope tornano al rispettivo owner. Non e un
+partecipante ACE autonomo: restituisce lavoro e attriti al chiamante.
+
 Il [workflow QA-runner](docs/workflows/qa-runner/execution.md) distingue esecuzione,
 diagnosi e esecuzione con fix autorizzati. Dopo il primo fallimento (tentativo 0),
 si puo andare direttamente al report oppure usare fino a **cinque tentativi bonus

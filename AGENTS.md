@@ -55,6 +55,7 @@ Each agent reads **only** the instruction files listed for its role. Instruction
 |-------|-------------------|
 | `QA-analyst` | [`gherkin.instructions.md`](.github/instructions/gherkin.instructions.md) |
 | `QA-engineer` | [`python-scripts.instructions.md`](.github/instructions/python-scripts.instructions.md), [`behave-steps.instructions.md`](.github/instructions/behave-steps.instructions.md) |
+| `Python-utility-engineer` | [`python-scripts.instructions.md`](.github/instructions/python-scripts.instructions.md) |
 | `QA-runner` | [`run-tests.instructions.md`](.github/instructions/run-tests.instructions.md) |
 | `QA-closer` | [Closure workflow](docs/workflows/qa-closer/closure.md), [README skill](.github/skills/ppa-readme/SKILL.md), [Commit skill](.github/skills/ppa-commit/SKILL.md), [PR creation skill](.github/skills/ppa-pr/SKILL.md) |
 | `QA-orchestrator` | all of the above (delegates to sub-agents) |
@@ -64,6 +65,12 @@ Each agent reads **only** the instruction files listed for its role. Instruction
 > **Detailed instructions** live in `.github/instructions/`. Skills live in `.github/skills/<name>/SKILL.md`. Do not duplicate content here.
 
 The ACE-participating QA agents (`QA-orchestrator`, `QA-analyst`, `QA-engineer`, `QA-runner`, and `QA-closer`) additionally read only their respective generated `.github/instructions/ace-<canonical-id>.instructions.md` and any family instructions explicitly assigned to them in `ace/config/project.json`. This exception does not authorize reading another role's project instructions.
+
+`Python-utility-engineer` follows its
+[utility workflow](docs/workflows/python-utility-engineer/implementation.md).
+It is not an autonomous configured ACE participant: it returns actual work and
+friction to the caller, without loading other roles' scoped lessons or writing
+ACE traces under an invented participant identity.
 
 ## Project-owned ACE privacy addon
 

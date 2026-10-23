@@ -83,6 +83,10 @@ directly when sufficient. Delegate only a concrete missing utility change, with:
 
 The specialist returns API, files, compatibility impact, tests written and checks
 actually performed. Integrate its result only after reading the changed API.
+Use its [utility workflow](../python-utility-engineer/implementation.md) contract:
+include relevant consumers and error/compatibility expectations, preserve exact
+ownership including exports/tests, and resolve any breaking-change migration.
+An incompatible remaining caller is an integration blocker, not a completed fix.
 Do not independently change the same utility files, duplicate a helper inside
 steps, or broaden a specialist assignment to avoid ownership rules.
 If delegation is unavailable, report the dependency instead of silently taking over.
