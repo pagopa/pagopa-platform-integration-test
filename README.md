@@ -1014,6 +1014,12 @@ autorizzato della suite; i nuovi helper riusabili sono affidati allo specialista
 utility, anche per API ed E2E. Gli agenti di implementazione non eseguono test:
 restituiscono codice e verifiche statiche al runner, che esegue i comandi approvati.
 Il parallelismo richiede file con ownership disgiunta, non solo feature diverse.
+Le [istruzioni Python](.github/instructions/python-scripts.instructions.md)
+definiscono docstring utili, tipi e compatibilita nello scope modificato.
+Le aggiunte ADR-52, ADR-53 e ADR-54 richiedono errori espliciti, effetti/risorse
+gestiti e verifiche proporzionate, senza introdurre nuovi tool o autorizzare
+gli ingegneri a eseguire test. Nessun profilo YAML Python aggiuntivo e richiesto.
+
 Le [istruzioni Behave](.github/instructions/behave-steps.instructions.md) e il
 [profilo dei percorsi](.github/profiles/behave-steps.profile.yaml) precisano
 organizzazione per responsabilita, compatibilita dei binding e lifecycle del

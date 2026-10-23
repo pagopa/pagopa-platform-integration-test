@@ -144,6 +144,7 @@ def test_all_local_contract_links_and_tables() -> None:
         SKILLS / 'ppa-commit' / 'SKILL.md',
         SKILLS / 'ppa-pr' / 'SKILL.md',
         ROOT / '.github' / 'instructions' / 'gherkin.instructions.md',
+        ROOT / '.github' / 'instructions' / 'python-scripts.instructions.md',
     ])
     paths.extend((ROOT / 'docs' / 'workflows' / 'qa-analyst').glob('*.md'))
     paths.extend((ROOT / 'docs' / 'workflows' / 'qa-closer').glob('*.md'))
@@ -472,7 +473,7 @@ def test_uc_identity_survives_new_ace_requests_without_schema_migration() -> Non
         assert clause in workflow
 
 
-@pytest.mark.parametrize('number', range(2, 49))
+@pytest.mark.parametrize('number', range(2, 55))
 def test_qa_decisions_are_recorded_as_accepted(number: int) -> None:
     """Keep each agreed ADR discoverable with a link to its operational owner."""
     matches = list((ROOT / 'docs' / 'adr').glob(f"ADR-{number:02d}-*.md"))
@@ -1204,6 +1205,113 @@ def test_gherkin_observable_outcomes_are_last_and_do_not_invent_requirements() -
         "analyst performs read-based checks and only its permitted language-help command",
     ):
         assert clause in text
+
+
+def test_python_docstrings_are_meaningful_and_limited_to_touched_functions() -> None:
+    """Retain mandatory English docstrings without authorizing unrelated legacy cleanup."""
+    path = ROOT / '.github' / 'instructions' / 'python-scripts.instructions.md'
+    raw = _read(path)
+    metadata = YAML(typ='safe').load(raw.split('---', 2)[1])
+    assert metadata['applyTo'] == '**/*.py'
+    text = ' '.join(raw.split())
+    for clause in (
+        'Every new or modified function',
+        '**English** docstring using triple quotes immediately below its definition',
+        'methods, step functions, fixtures, helpers and unit-test functions',
+        'Do not merely repeat the function name',
+        'Update documentation when the actual contract changes',
+        'do not launch a legacy docstring cleanup',
+        'not permission to edit outside the task/role',
+    ):
+        assert clause in text
+
+
+def test_python_types_preserve_values_without_inventing_runtime_support() -> None:
+    """Keep annotations distinct from input validation and preserve legitimate falsy data."""
+    text = ' '.join(_read(ROOT / '.github' / 'instructions' / 'python-scripts.instructions.md').split())
+    for clause in (
+        'Annotate parameters and returns of new public APIs and modified signatures',
+        'do not bulk-convert legacy annotations',
+        'An annotation or `cast` is not runtime validation',
+        'leading-zero identifiers',
+        'absent, null, empty, zero and false values',
+        'explicit `is None` decision',
+        'A CI value of `3.x` does not establish a minimum Python version',
+        'do not invent a repository-wide minimum',
+    ):
+        assert clause in text
+
+
+def test_python_reuse_and_compatibility_do_not_override_role_boundaries() -> None:
+    """Reference shared authorities instead of duplicating or expanding specialist ownership."""
+    text = ' '.join(_read(ROOT / '.github' / 'instructions' / 'python-scripts.instructions.md').split())
+    for clause in (
+        '../../AGENTS.md#shared-utility-reuse-rule-all-coding-agents',
+        'Read the relevant APIs/callers and exports',
+        'signatures/imports, result shapes, exceptions, input mutation',
+        'distinguish it from unintended changes to other callers',
+        'Breaking changes require explicit impact/migration decisions',
+        'pre-existing edits',
+        '../../docs/workflows/qa-engineer/implementation.md',
+        '../../docs/workflows/python-utility-engineer/implementation.md',
+        'Do not duplicate or override it here',
+    ):
+        assert clause in text
+
+
+def test_python_failures_are_not_silent_defaults_or_overbroad_catch_bans() -> None:
+    """Require honest failure propagation while allowing intentional boundary recovery."""
+    text = ' '.join(_read(ROOT / '.github' / 'instructions' / 'python-scripts.instructions.md').split())
+    for clause in (
+        'invalid input, an expected negative result and a technical failure',
+        'remain effective under Python optimization',
+        'Catch specific exceptions',
+        'must not silently stand in for a failed operation',
+        'Broad boundary catches may serve cleanup',
+        'Preserve useful exception context/chaining where safe',
+        'avoid logging the same traceback at every layer',
+        'personal data and full payloads',
+    ):
+        assert clause in text
+
+
+def test_python_import_and_cleanup_rules_preserve_intentional_bootstrap() -> None:
+    """Bound accidental import effects without requiring unsafe global-state refactors."""
+    text = ' '.join(_read(ROOT / '.github' / 'instructions' / 'python-scripts.instructions.md').split())
+    for clause in (
+        'Importing a reusable module must not accidentally run operational requests',
+        '`if __name__ == "__main__":`',
+        'Preserve intentional documented bootstrap behaviour',
+        'including partial initialization and failure paths',
+        'Cleanup must not hide the primary failure',
+        'Specify text encoding',
+        'documented contract',
+        'do not assume an arbitrary current directory',
+        'not an automatic ban or a silent relocation',
+        'report persistence failures',
+        'do not authorize live calls or environment probes',
+    ):
+        assert clause in text
+
+
+def test_python_verification_additions_are_last_and_do_not_grant_execution() -> None:
+    """Require proportionate isolated checks without tooling churn or false test claims."""
+    text = ' '.join(_read(ROOT / '.github' / 'instructions' / 'python-scripts.instructions.md').split())
+    for clause in (
+        'Unit tests isolate network, secrets',
+        'Select the smallest checks',
+        'Do not introduce or install formatters, linters, type checkers',
+        'Execution remains subject to the active role',
+        'QA-engineer and Python-utility-engineer write/propose checks but do not execute',
+        'tests, imports, compilation, shell commands, probes or package installation',
+        'No indirect execution through another unauthorized agent',
+        'Return actual static/editor checks separately from executed commands/results',
+        'saved code is not proof of passing tests',
+    ):
+        assert clause in text
+    sections = [text.index(f'(ADR-{number}, addition)') for number in (52, 53, 54)]
+    assert sections == sorted(sections)
+    assert text.index('(ADR-51)') < sections[0]
 
 
 def test_pr_labels_use_catalog_ids_accepted_by_ci_not_display_names() -> None:
