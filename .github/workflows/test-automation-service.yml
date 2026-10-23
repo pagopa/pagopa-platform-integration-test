@@ -106,7 +106,7 @@ on:
 run-name: "tas-${{ inputs.correlation_id || github.run_id }}"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   run_tests:
@@ -169,6 +169,7 @@ jobs:
         run: |
           set -u
           TEST_TYPE="${{ inputs.test_type }}"
+          TEST_SUITE="${{ inputs.test_suite }}"
           # Whitelist the test_type to avoid path injection from arbitrary callers
           # (workflow_call accepts free strings; workflow_dispatch is already a choice).
           case "$TEST_TYPE" in
@@ -178,6 +179,10 @@ jobs:
               exit 1
               ;;
           esac
+          if [[ ! "$TEST_SUITE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
+            echo "::error::Invalid test_suite '$TEST_SUITE' (expected a safe path component)"
+            exit 1
+          fi
           if [ "${{ inputs.test_suite }}" = "all" ]; then
             echo "path=src/${TEST_TYPE}" >> $GITHUB_OUTPUT
           else
@@ -341,15 +346,15 @@ jobs:
           echo "| **Outcome** | ${{ steps.summary.outputs.outcome == 'success' && '✅ PASSED' || '❌ FAILED' }} |" >> $GITHUB_STEP_SUMMARY
 
       - name: Build ${{ inputs.test_suite }} E2E Allure report
-        if: always()
+        if: always() && inputs.allure
         continue-on-error: true
         env:
-          SUBFOLDER: ${{ inputs.test_suite }}-tests
+          REPORT_DIR: ${{ inputs.test_suite }}-${{ inputs.test_type }}
         run: |
           # Generate the HTML report.
-          allure generate allure-results --clean -o ${{ inputs.test_suite }}-${{inputs.test_type}}
+          allure generate allure-results --clean -o "$REPORT_DIR"
 
-          echo "Report generated: $(ls ${{ inputs.test_suite }}-${{inputs.test_type}} | wc -l) top-level entries"
+          echo "Report generated: $(ls "$REPORT_DIR" | wc -l) top-level entries"
       
       
       - name: Upload test results artifact
@@ -358,12 +363,49 @@ jobs:
         with:
           name: test-results
           path: |
-           ${{ inputs.test_suite }}-${{inputs.test_type}}
+            ${{ inputs.test_suite }}-${{ inputs.test_type }}/
             behave-results.json
             test-summary.json
             junit/
             allure-results/
           if-no-files-found: warn
+
+      - name: Checkout gh-pages branch
+        id: checkout_gh_pages
+        if: always()
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Prepare TAS results for publication
+        id: prepare_tas_results
+        if: always() && steps.checkout_gh_pages.outcome == 'success'
+        env:
+          REPORT_DIR: ${{ inputs.test_suite }}-${{ inputs.test_type }}
+          TEST_SUITE: ${{ inputs.test_suite }}
+          TEST_TYPE: ${{ inputs.test_type }}
+        run: |
+          DEST="gh-pages/TAS/${TEST_SUITE}-${TEST_TYPE}"
+          rm -rf "$DEST"
+          mkdir -p "$DEST"
+
+          if [ -d "$REPORT_DIR" ]; then
+            cp -a "$REPORT_DIR"/. "$DEST"/
+          fi
+          for result in behave-results.json test-summary.json junit allure-results; do
+            if [ -e "$result" ]; then
+              cp -a "$result" "$DEST"/
+            fi
+          done
+
+      - name: Publish TAS results to gh-pages
+        if: always() && steps.prepare_tas_results.outcome == 'success'
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./gh-pages
+          publish_branch: gh-pages
 
       - name: Remove plaintext secrets
         if: always()

@@ -119,7 +119,7 @@ same tag.
 | `mode` | `sync` | — | Invocation mode: `sync`, `async` or `raw` |
 | `ref` | `main` | — | TAS repo branch/tag to run the tests from |
 | `tags` | `""` | — | Behave tag expression (e.g. `@runnable`, `@e2e`, `@a,@b`). Empty = workflow default (`@runnable`) |
-| `allure` | `"false"` | — | Also produce an Allure results directory (`allure-results/`) inside the `test-results` artifact. Render/host is left to the caller |
+| `allure` | `"false"` | — | Also produce an Allure HTML report. TAS publishes test results under `TAS/<suite>-<test_type>` on its GitHub Pages site |
 | `github_token` | — | ✅ | GitHub PAT (scopes `public_repo` + `actions:read`). Must be passed explicitly (composite actions cannot read caller secrets). |
 | `caller_id` | `${{ github.repository }}/${{ github.run_id }}` | — | Identifier of the calling system (traceability) |
 | `correlation_id` | `${{ github.run_id }}-${{ github.run_attempt }}` | — | Unique ID to correlate the run with the caller |

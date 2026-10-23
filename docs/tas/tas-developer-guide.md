@@ -491,6 +491,15 @@ possible to choose at runtime which branch to run the tests on. If your team and
 are developing in parallel on separate feature branches, this option is not suitable until
 that branch has been merged into `main`.
 
+The called workflow also publishes test results to the TAS repository's GitHub Pages site at
+`TAS/<test_suite>-<test_type>`. The caller must grant the reusable workflow write access to
+repository contents:
+
+```yaml
+permissions:
+  contents: write
+```
+
 ```yaml
 # .github/workflows/deploy.yml  (in your repository)
 name: Build, Test & Deploy
