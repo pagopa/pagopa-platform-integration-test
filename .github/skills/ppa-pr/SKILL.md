@@ -2,7 +2,7 @@
 name: ppa-pr
 description: >-
   Create a GitHub pull request for this project using the repository template,
-  mandatory reviewers, release labels, and explicit source/target branch routing.
+  mandatory reviewers, CI suite/skip labels, release labels, and explicit branch routing.
   Use when asked to open or create a PR, or when QA-closer reaches its PR creation
   gate. Accept optional branches, title override, reviewer usernames, and context.
 ---
@@ -47,8 +47,9 @@ Do not use prompt-specific input placeholders or require a particular model.
      If refs are missing, resolve them without changing the working tree; if a
      push is needed and is not already authorized, ask before pushing.
    - Reject identical source and target branches. Check for an existing open PR
-     for that source/target pair; if present, return its actual metadata and URL
-     rather than creating a duplicate.
+     for that source/target pair; if present, retain its metadata for label
+     verification below rather than creating a duplicate. Do not modify an
+     existing PR without authorization.
 
 2. **Resolve assignee and reviewers.**
    - Run `$ghUser = gh api user --jq ".login"` and use that login as assignee.
@@ -88,13 +89,20 @@ Do not use prompt-specific input placeholders or require a particular model.
 5. **Resolve title and labels.**
    - Use a valid user-supplied English title override when present.
    - Otherwise infer `<type>: <branch codename> - <short semantic changes analysis>`.
-   - Infer labels from the changes, including exactly one of `patch`, `minor`, or
-     `major`. Additional labels may include `bug`, `documentation`, `size/large`,
-     or `size/small`. Verify availability with `gh label list`; if a required
-     label is missing, report the blocker rather than silently omitting it or
-     creating repository labels without authorization.
+   - Follow the **Suite and skip label policy** below. Available policy labels
+     include `patch`, `minor`, `major`, `skip`, and the suite IDs from the catalog.
+     Additional labels may include `bug`, `documentation`, `size/large` or
+     `size/small`; they never replace required policy labels.
+   - Verify availability with `gh label list --limit 200`; if the result is
+     truncated, retrieve the remaining labels before deciding that one is absent.
+     A missing required label is a blocker, not permission to omit it, substitute
+     the catalog's descriptive label or create repository labels without approval.
 
 6. **Create and verify the PR.**
+   - If an open PR for the resolved source/target already exists, check its
+     current labels against the same policy. Return its actual metadata/URL
+     when compliant; report a mismatch and obtain authorization before changing
+     labels. Do not return an existing noncompliant PR as a successful result.
    - Use `gh pr create` with explicit `--base`, `--head`, `--title`, completed
      `--body` or `--body-file`, labels, all reviewers, and `$ghUser` as assignee.
    - On failure, report the actual error. Do not retry by weakening requirements.
@@ -102,6 +110,51 @@ Do not use prompt-specific input placeholders or require a particular model.
      head, labels, assignee, and requested reviewers. Report any mismatch
      explicitly instead of claiming success.
    - Remove only temporary body files created by this invocation.
+
+## Suite and skip label policy
+
+Read [the NRT suite catalog](../../nrt-suites.json) and the relevant label checks
+in [CI](../../workflows/check_pr.yml). For the resolved published source, inspect
+its catalog with `git show "${head}:.github/nrt-suites.json"` rather than assuming
+the current working-tree file belongs to that branch. Missing/unreadable/malformed
+catalog data or comparison errors are blockers, never a reason to choose `skip`.
+If source catalog changes disagree with the catalog used by the applicable CI
+check, report the conflict before creating the PR.
+
+Use each entry's **`id` as the GitHub suite label**, exactly as stored. The `label`
+field is a human-readable display name, not the PR label accepted by CI.
+Use `behave_path` to associate changed paths with the suite, normalizing path
+separators and matching directory boundaries, not arbitrary name substrings.
+Do not hardcode a duplicate suite list or infer labels from a Jira/branch name.
+
+Read the actual `${base}...${head}` change scope and relevant hunks/context to
+identify the suite worked on. The supplied task context can explain suite-specific
+documentation, configuration or shared-helper changes outside `behave_path`,
+but does not override the actual diff. For renames/deletions inspect
+`git diff "${base}...${head}" --name-status --find-renames` and the relevant prior
+catalog/path when needed. Do not ignore a deleted or renamed suite.
+Read tools and reasoning suffice for this bounded classification; no new script
+or live test execution is required to determine labels.
+
+| Established PR scope | Required policy labels |
+| --- | --- |
+| Exactly one catalog suite worked on | Its exact `id`, plus exactly one of `patch`, `minor` or `major`; no `skip` |
+| No test suite involved | `skip`, with no suite label and no `patch`, `minor` or `major` |
+| Multiple suites worked on | Stop: CI accepts at most one suite label; ask to split the PR scope, never silently pick one |
+| Ambiguous suite impact or a worked-on suite absent from the catalog | Ask for clarification/catalog resolution; do not treat unknown as no suite |
+
+Shared utilities can affect several suites: inspect the relevant consumers/task
+scope and distinguish incidental potential impact from actual suite work. If
+the classification remains uncertain, ask rather than defaulting to `skip` or
+adding all suite labels. General tooling/agent maintenance with no suite work
+uses `skip`. An unregistered suite is still suite work, not a skip case.
+
+`skip` replaces increment labels only for no-suite work: mixing it with an
+increment still triggers the CI suite-label check. Preserve unrelated optional
+labels, but conflicting user-supplied/existing policy labels require resolution,
+not silent omission or creation with a known invalid combination.
+Verify the final labels on GitHub, including the required suite ID or `skip`
+and the absence of conflicting policy labels.
 
 ## Output
 
@@ -120,4 +173,11 @@ response.
 > "refactor: PQ-714 - consolidate PR workflow".
 
 Use that source and title, obtain the target from the repository's default branch
-because none was supplied, and apply the full workflow above.
+because none was supplied, and apply the full workflow above. If the actual diff
+only changes general agent assets and involves no suite, use `skip` without
+`patch`, `minor` or `major`.
+
+For a diff confined to the checkout suite, read its catalog entry and use
+`checkout` (the `id`), not `Checkout E2E` (the display `label`), together with the
+appropriate increment label. Always re-read the catalog rather than relying on
+this example as a maintained suite list.

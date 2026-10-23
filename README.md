@@ -1050,6 +1050,13 @@ Usare uno dei prefissi seguenti nel messaggio di commit:
 La PR deve descrivere cambiamenti, motivazione, test eseguiti e tipo di modifica. Il workflow
 di PR applica automaticamente label di dimensione in base alle righe modificate.
 
+La skill [`/ppa-pr`](.github/skills/ppa-pr/SKILL.md) ricava la suite lavorata dal
+diff e da [`.github/nrt-suites.json`](.github/nrt-suites.json): la label GitHub e
+il campo `id`, non il nome descrittivo `label`, coerentemente con la CI.
+Per una suite richiede il suo `id` e un solo incremento (`patch`, `minor` o `major`);
+senza suite usa `skip`, senza incremento ne label di suite. Scope ambiguo,
+multi-suite o suite non censita richiedono risoluzione, non un `skip` di ripiego.
+
 Riferimenti: `.github/PULL_REQUEST_TEMPLATE.md`, `.github/workflows/check_pr.yml`, regole operative di progetto.
 
 ## Release e versionamento
@@ -1073,7 +1080,10 @@ La base di partenza e `1.0.0` (`initial_version`).
 
 Le versioni delle singole suite sono indipendenti dal tag di release del repository e sono
 registrate in `suite_versions.json`. Il loro aggiornamento e guidato dalle **label della PR**:
-assegnare una label di incremento (`major`, `minor` o `patch`) e una label della suite coinvolta(`wisp`, `checkout` o `fdr`). Usare `skip` quando non si vuole aggiornare la versione di una suite.
+il workflow di bump riconosce una label di incremento (`major`, `minor` o `patch`)
+e una label di suite dal proprio elenco storico (`wisp`, `checkout` o `fdr`).
+Questo elenco e distinto dagli ID del catalogo usati per validare le PR;
+la policy della skill e descritta nella sezione Commit e PR.
 
 Quando la PR viene mergiata, il workflow `Bump test suite version` legge le label. Se trova sia l'incremento sia la suite, esegue lo script che aumenta la versione di quella suite all'interno del file json; infine crea un commit e pubblica il file aggiornato su `main`.
 Con `skip`, o senza una delle due label necessarie, il file non viene aggiornato. Questo flusso e separato dal versionamento della release, che dipende invece dai messaggi di commit.

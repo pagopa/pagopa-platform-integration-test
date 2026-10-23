@@ -1,4 +1,5 @@
 """Static contract regressions and isolated syntax probes, not agent execution."""
+import json
 import re
 from pathlib import Path
 
@@ -897,6 +898,62 @@ def test_utility_loading_readme_and_ace_follow_existing_authorities() -> None:
     assert 'docs/workflows/python-utility-engineer/implementation.md' in instructions
     readme = _read(ROOT / 'README.md')
     assert 'docs/workflows/python-utility-engineer/implementation.md' in readme
+
+
+def test_pr_labels_use_catalog_ids_accepted_by_ci_not_display_names() -> None:
+    """Keep PR suite-label instructions aligned with the unchanged CI catalog field."""
+    text = _read(SKILLS / 'ppa-pr' / 'SKILL.md')
+    assert "each entry's **`id` as the GitHub suite label**" in text
+    assert 'field is a human-readable display name' in text
+    assert 'Use `behave_path` to associate changed paths' in text
+    assert 'git show "${head}:.github/nrt-suites.json"' in text
+    assert 'or infer labels from a Jira/branch name' in text
+    assert 'Do not hardcode a duplicate suite list' in text
+    assert 'no new script' in text
+    ci = _read(ROOT / '.github' / 'workflows' / 'check_pr.yml')
+    assert '[.suites[].id]' in ci
+    assert "const suites = JSON.parse(process.env.SUITE_IDS)" in ci
+    catalog = json.loads(_read(ROOT / '.github' / 'nrt-suites.json'))
+    suites = catalog['suites']
+    assert suites
+    ids = [suite['id'] for suite in suites]
+    assert len(ids) == len(set(ids))
+    assert all(isinstance(suite_id, str) and suite_id.strip() for suite_id in ids)
+    assert all(suite['behave_path'] for suite in suites)
+
+
+def test_pr_suite_and_skip_policy_is_exclusive_and_unknown_is_not_skip() -> None:
+    """Require one suite plus increment, or skip alone, with blocked ambiguous scopes."""
+    text = _read(SKILLS / 'ppa-pr' / 'SKILL.md')
+    rows = _table_rows(text, '| Established PR scope | Required policy labels |')
+    assert [row[0] for row in rows] == [
+        'Exactly one catalog suite worked on', 'No test suite involved',
+        'Multiple suites worked on',
+        'Ambiguous suite impact or a worked-on suite absent from the catalog',
+    ]
+    assert 'exactly one of `patch`, `minor` or `major`; no `skip`' in rows[0][1]
+    assert '`skip`, with no suite label and no `patch`, `minor` or `major`' in rows[1][1]
+    assert 'Stop: CI accepts at most one suite label' in rows[2][1]
+    assert 'do not treat unknown as no suite' in rows[3][1]
+    assert 'never a reason to choose `skip`' in text
+    assert '--name-status --find-renames' in text
+    assert 'directory boundaries' in text
+    assert 'Shared utilities can affect several suites' in text
+    assert 'mixing it with an\nincrement still triggers' in text
+    assert '`major`, `skip`, and the suite IDs' in text
+
+
+def test_pr_existing_labels_and_final_github_state_require_verification() -> None:
+    """Avoid bypassing suite policy on an existing PR or a partial label listing."""
+    text = _read(SKILLS / 'ppa-pr' / 'SKILL.md')
+    assert 'gh label list --limit 200' in text
+    assert 'retrieve the remaining labels' in text
+    assert 'Do not return an existing noncompliant PR as a successful result' in text
+    assert 'obtain authorization before changing' in text
+    assert 'absence of conflicting policy labels' in text
+    readme = _read(ROOT / 'README.md')
+    assert '[`/ppa-pr`](.github/skills/ppa-pr/SKILL.md)' in readme
+    assert 'senza suite usa `skip`, senza incremento ne label di suite' in readme
 
 
 def test_readme_skill_is_discoverable_scoped_and_non_recursive() -> None:
