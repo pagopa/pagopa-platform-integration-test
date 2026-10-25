@@ -1,21 +1,3 @@
-## Executive Summary & Cross-Suite Analysis
-
-Across the NRT suite runs (`checkout`, `fdr3`, and `wisp`), three distinct failure patterns were identified:
-
-1. **Missing `paymentToken` in `activatePaymentNoticeV2` API (WISP Suite - 90 failures)**
-   - **Root Cause**: The backend `activatePaymentNoticeV2` service endpoint returned a response without a `paymentToken` field during payment notice activation.
-   - **Recommended Action**: Inspect backend logs for `activatePaymentNoticeV2` API to determine why payment notice activation fails to generate or return a valid `paymentToken`.
-
-2. **PSP Selection Timeout for Postepay (Checkout Suite)**
-   - **Root Cause**: Playwright UI tests timed out waiting for the Postepay radio button (`#psp-radio-PPAYITR1XXX`) on `https://uat.checkout.pagopa.it/lista-psp`.
-   - **Recommended Action**: Verify that the Postepay PSP (`PPAYITR1XXX`) is enabled and returned by the UAT PSP list endpoint, or increase element wait timeouts if rendering is delayed.
-
-3. **Incorrect Error Handling & Payment Failures (Checkout Suite)**
-   - **Root Cause**: Invalid notice code range (302400000000000000-302409999999999999) returned a generic creditor error (`L’Ente Creditore sta avendo problemi nella risposta`) instead of `PAA_PAGAMENTO_SCONOSCIUTO`, and Wordline payment processing failed returning `Il pagamento non è andato a buon fine`.
-   - **Recommended Action**: Fix error message mapping for invalid notice codes on backend/frontend, and check Wordline payment gateway mock/connector status in UAT.
-
----
-
 ## Suite: checkout
 
 # 1. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
@@ -39,40 +21,17 @@ File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave
     ) from exc
 ```
 ### Root cause
-The PSP selection option `#psp-radio-PPAYITR1XXX` was not visible on the `/lista-psp` page within the 5000 ms timeout.
+The Postepay PSP radio button was not rendered or clickable within the 5-second timeout on the PSP list page.
+
 ### Category
 environment
+
 ### Recommended action
-Verify Postepay PSP (`PPAYITR1XXX`) configuration in UAT and increase locator timeout if page rendering is slow.
+Increase the locator timeout or verify the availability and response times of the PSP selection service in the UAT environment.
 
 ---
 
-# 2. Viene mostrato l'errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell'intervallo 302400000000000000-302409999999999999 -- @1.1
-- **status**: failed
-- **fullName**: `Attivazione pagamento Checkout: Viene mostrato l'errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell'intervallo 302400000000000000-302409999999999999`
-- **message**: AssertionError: Expected modal header to contain 'Non riusciamo a trovare l’avviso', but got: 'L’Ente Creditore sta avendo problemi nella risposta'
-- **trace**:
-```
-File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/model.py", line 1329, in run
-    match.run(runner.context)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/matchers.py", line 98, in run
-    self.func(context, *args, **kwargs)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 245, in step_error_modal_header
-    assert expected_header in header_text, (
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-```
-### Root cause
-The backend returned a general Creditor Institution error instead of mapping the invalid notice code to `PAA_PAGAMENTO_SCONOSCIUTO`.
-### Category
-application bug
-### Recommended action
-Fix notice code validation handling for the 302400000000000000-302409999999999999 range to return the expected error modal.
-
----
-
-# 3. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
+# 2. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
 - **status**: broken
 - **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta "Postepay" viene completato con successo`
 - **message**: RuntimeError: Timeout on locator '#psp-radio-PPAYITR1XXX' after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)
@@ -93,18 +52,20 @@ File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave
     ) from exc
 ```
 ### Root cause
-Postepay radio locator `#psp-radio-PPAYITR1XXX` timed out during authenticated checkout flow.
+Authentication flow timed out waiting for the Postepay PSP selection element to become visible.
+
 ### Category
 environment
+
 ### Recommended action
-Check UAT PSP availability service for authenticated user sessions.
+Investigate potential performance degradation or rendering delays on the UAT checkout PSP list page.
 
 ---
 
-# 4. Un pagamento con configurazione carta "Wordline" viene completato con successo -- @1.2
+# 3. Viene mostrato l'errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell'intervallo 302400000000000000-302409999999999999 -- @1.1
 - **status**: failed
-- **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta "Wordline" viene completato con successo`
-- **message**: AssertionError: Expected 'Hai pagato' in result message, but got: 'Il pagamento non è andato a buon fine'
+- **fullName**: `Attivazione pagamento Checkout: Viene mostrato l'errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell'intervallo 302400000000000000-302409999999999999`
+- **message**: AssertionError: Expected modal header to contain 'Non riusciamo a trovare l’avviso', but got: 'L’Ente Creditore sta avendo problemi nella risposta'
 - **trace**:
 ```
 File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/model.py", line 1329, in run
@@ -113,26 +74,28 @@ File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave
   File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/matchers.py", line 98, in run
     self.func(context, *args, **kwargs)
     ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 309, in step_check_payment_success
-    assert "Hai pagato" in message_text, (
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 245, in step_error_modal_header
+    assert expected_header in header_text, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ```
 ### Root cause
-Wordline payment authorization or completion failed at gateway level, displaying payment failure page instead of success confirmation.
+The system returned a creditor issuer error message instead of the expected notice not found error message.
+
 ### Category
 application bug
+
 ### Recommended action
-Investigate backend and Wordline gateway integration logs for payment outcome failure.
+Verify backend mapping for invalid notice codes to ensure `PAA_PAGAMENTO_SCONOSCIUTO` triggers the correct user-facing error copy.
 
 ---
 
-# 5. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
+# 4. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
 - **status**: broken
 - **fullName**: `features.checkout_npg.Attivazione pagamento Checkout.Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1`
 - **message**: Timeout on locator '#psp-radio-PPAYITR1XXX' after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)
 - **trace**:
 ```
-Failing step: E L'utente seleziona il PSP con id "PPAYITR1XXX" ... failed in 5.059s
+Failing step: E L'utente seleziona il PSP con id "PPAYITR1XXX" ... failed in 5.053s
 Location: src/e2e/checkout/features/checkout_npg.feature:35
 Traceback (most recent call last):
   File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 93, in locate_and_click
@@ -155,40 +118,44 @@ Traceback (most recent call last):
   File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/playwright/_impl/_connection.py", line 69, in 
 ```
 ### Root cause
-Playwright timed out waiting for Postepay PSP option to become visible on PSP selection screen.
+Playwright timed out waiting for the Postepay PSP option selector to load on the checkout page.
+
 ### Category
-environment
+flaky
+
 ### Recommended action
-Ensure Postepay PSP service response is returned properly by UAT API backend.
+Add an explicit wait for the list container to fully populate before attempting to locate individual PSP radio buttons.
 
 ---
 
-# 6. Viene mostrato l'errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell'intervallo 302400000000000000-302409999999999999 -- @1.1
+# 5. Viene mostrato l'errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell'intervallo 302400000000000000-302409999999999999 -- @1.1
 - **status**: failed
 - **fullName**: `features.checkout_npg.Attivazione pagamento Checkout.Viene mostrato l'errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell'intervallo 302400000000000000-302409999999999999 -- @1.1`
 - **message**: Expected modal header to contain 'Non riusciamo a trovare l’avviso', but got: 'L’Ente Creditore sta avendo problemi nella risposta'
 - **trace**:
 ```
-Failing step: E L'intestazione della modale di errore contiene "Non riusciamo a trovare l’avviso" ... failed in 0.005s
+Failing step: E L'intestazione della modale di errore contiene "Non riusciamo a trovare l’avviso" ... failed in 0.017s
 Location: src/e2e/checkout/features/checkout_npg.feature:57
 Assertion Failed: Expected modal header to contain 'Non riusciamo a trovare l’avviso', but got: 'L’Ente Creditore sta avendo problemi nella risposta'
 ```
 ### Root cause
-Mismatch in error modal text when validating notice codes in 302400000000000000-302409999999999999 interval.
+Mismatched error handling logic displaying a generic creditor problem modal instead of the specific notice-not-found message.
+
 ### Category
 application bug
+
 ### Recommended action
-Update API/frontend response handling to show expected notice missing error message.
+Review error code translations and UI mapping rules in the checkout frontend for invalid notice code ranges.
 
 ---
 
-# 7. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
+# 6. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
 - **status**: broken
 - **fullName**: `features.checkout_npg_auth.Attivazione pagamento Checkout autenticato.Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1`
 - **message**: Timeout on locator '#psp-radio-PPAYITR1XXX' after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)
 - **trace**:
 ```
-Failing step: E L'utente seleziona il PSP con id "PPAYITR1XXX" ... failed in 5.052s
+Failing step: E L'utente seleziona il PSP con id "PPAYITR1XXX" ... failed in 5.064s
 Location: src/e2e/checkout/features/checkout_npg_auth.feature:36
 Traceback (most recent call last):
   File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 93, in locate_and_click
@@ -211,52 +178,30 @@ Traceback (most recent call last):
   File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/playwright/_impl/_connection.py", line 69
 ```
 ### Root cause
-Timeout locating Postepay PSP element `#psp-radio-PPAYITR1XXX`.
+Network latency or slow API responses preventing the Postepay payment option from rendering within the allotted timeframe.
+
 ### Category
 environment
-### Recommended action
-Verify Postepay PSP service status in UAT environment.
 
----
-
-# 8. Un pagamento con configurazione carta "Wordline" viene completato con successo -- @1.2
-- **status**: failed
-- **fullName**: `features.checkout_npg_auth.Attivazione pagamento Checkout autenticato.Un pagamento con configurazione carta "Wordline" viene completato con successo -- @1.2`
-- **message**: Expected 'Hai pagato' in result message, but got: 'Il pagamento non è andato a buon fine'
-- **trace**:
-```
-Failing step: Allora Viene mostrato un messaggio di pagamento completato con successo ... failed in 31.558s
-Location: src/e2e/checkout/features/checkout_npg_auth.feature:39
-Assertion Failed: Expected 'Hai pagato' in result message, but got: 'Il pagamento non è andato a buon fine'
-Captured logging:
-INFO:src.e2e.checkout.helper:Performing login
-```
-### Root cause
-Authenticated Wordline payment failed to complete successfully on UAT environment.
-### Category
-application bug
 ### Recommended action
-Review Wordline integration logs for authenticated payment flows.
+Monitor UAT environment performance and consider raising the default Playwright action timeout for CI pipelines.
 
 ---
 
 ## Common patterns
-- **UI Locator Timeouts on PSP selection**: Postepay PSP radio option (`#psp-radio-PPAYITR1XXX`) consistently failed to render across both anonymous and authenticated checkout scenarios.
-- **Backend Assertion Discrepancies**: Incorrect error message returned for specific notice code validation intervals and transaction failures for Wordline payment gateway.
+- **PSP Selection Timeouts**: Multiple test cases across standard and authenticated checkout suites fail while attempting to locate the Postepay PSP radio button due to rendering delays or environment slowness.
+- **Error Assertion Mismatches**: Negative test cases for invalid notice codes fail because the application displays a generic creditor error banner instead of the expected specific error message.
 
 ---
-
 ## Suite: fdr3
-
-No test failures were found in the 'FDR-3' suite execution; please confirm that test execution was complete and no tests were unintentionally skipped.
+Execution of the FDR-3 suite completed successfully with no failures or skipped tests.
 
 ---
-
 ## Suite: wisp
 
-# 1. L'utente paga un carrello con singola RPT con una marca da bollo gia esistente in GPD
+# 1. L'utente paga un carrello con due RPT con versamenti multipli gia esistente in GPD
 - **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L'utente paga un carrello con singola RPT con una marca da bollo gia esistente in GPD`
+- **fullName**: `L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L'utente paga un carrello con due RPT con versamenti multipli gia esistente in GPD`
 - **message**: AssertionError: The field [paymentToken] does not exists.
 - **trace**:
 ```
@@ -280,51 +225,19 @@ File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave
            ^^^^^
 ```
 ### Root cause
-The `activatePaymentNoticeV2` API call response did not contain the required `paymentToken` field.
+The activation request failed to return a `paymentToken`, indicating a failure upstream in the activation service or node communication.
+
 ### Category
 application bug
+
 ### Recommended action
-Investigate backend `activatePaymentNoticeV2` service implementation in UAT to ensure `paymentToken` is generated and returned.
+Inspect WISP backend logs during `activatePaymentNoticeV2` calls to determine why payment tokens are missing in responses.
 
 ---
 
-# 2. Utente esegue un primo reindirizzamento, poi ripete il reindirizzamento e completa il flusso di pagamento
+# 2. Utente paga un pagamento singolo con un versamento semplice e una marca da bollo
 - **status**: failed
-- **fullName**: `Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT: Utente esegue un primo reindirizzamento, poi ripete il reindirizzamento e completa il flusso di pagamento`
-- **message**: AssertionError: The field [paymentToken] does not exists.
-- **trace**:
-```
-File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/model.py", line 1329, in run
-    match.run(runner.context)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/matchers.py", line 98, in run
-    self.func(context, *args, **kwargs)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "src/integration/wisp/steps/steps.py", line 181, in user_redirected_again_to_checkout
-    steputils.send_index_activatePaymentNoticeV2_request(context, 5)
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 865, in send_index_activatePaymentNoticeV2_request
-    check_field_with_non_null_value(context, 'paymentToken')
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 362, in check_field_with_non_null_value
-    assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
-    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.py", line 7, in assert_show_message
-    assert assertion_value, message
-          
-```
-### Root cause
-The `activatePaymentNoticeV2` response lacked `paymentToken` during repeated redirection steps.
-### Category
-application bug
-### Recommended action
-Verify token persistence and generation logic on repeated redirection requests in `activatePaymentNoticeV2`.
-
----
-
-# 3. L'utente paga un carrello con due RPT con almeno una marca da bollo gia esistente in GPD
-- **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L'utente paga un carrello con due RPT con almeno una marca da bollo gia esistente in GPD`
+- **fullName**: `Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con un versamento semplice e una marca da bollo`
 - **message**: AssertionError: The field [paymentToken] does not exists.
 - **trace**:
 ```
@@ -348,17 +261,55 @@ File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave
            ^^^^^
 ```
 ### Root cause
-Response from `activatePaymentNoticeV2` missing `paymentToken` field for multi-RPT cart.
+The payment activation step failed to generate or return a valid `paymentToken` for single payments with stamps.
+
 ### Category
 application bug
+
 ### Recommended action
-Check `activatePaymentNoticeV2` handling for cart payment notices in GPD integration.
+Verify integration between WISP and the Nodo services handling `activatePaymentNoticeV2`.
 
 ---
 
-# 4. Utente paga un pagamento singolo con due versamenti semplici e una marca da bollo
+# 3. L'utente tenta di pagare un carrello con due RPT ma la chiusura del pagamento fallisce, poi ritenta con successo
 - **status**: failed
-- **fullName**: `Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con due versamenti semplici e una marca da bollo`
+- **fullName**: `L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L'utente tenta di pagare un carrello con due RPT ma la chiusura del pagamento fallisce, poi ritenta con successo`
+- **message**: AssertionError: The field [paymentToken] does not exists.
+- **trace**:
+```
+File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/integration/wisp/steps/steps.py", line 209, in user_redirected_to_checkout
+    steputils.send_index_activatePaymentNoticeV2_request(context, 5)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 865, in send_index_activatePaymentNoticeV2_request
+    check_field_with_non_null_value(context, 'paymentToken')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 362, in check_field_with_non_null_value
+    assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.py", line 7, in assert_show_message
+    assert assertion_value, message
+           ^^^^^
+```
+### Root cause
+Retry flow failed because the initial activation request did not produce a `paymentToken`.
+
+### Category
+application bug
+
+### Recommended action
+Ensure retry mechanisms correctly re-initialize session state and request valid tokens from the backend.
+
+---
+
+# 4. L'utente paga un carrello con due RPT senza marca da bollo di cui una gia esistente in GPD
+- **status**: failed
+- **fullName**: `L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L'utente paga un carrello con due RPT senza marca da bollo di cui una gia esistente in GPD`
 - **message**: AssertionError: The field [paymentToken] does not exists.
 - **trace**:
 ```
@@ -382,15 +333,125 @@ File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave
            ^^^^^
 ```
 ### Root cause
-Missing `paymentToken` in response of `activatePaymentNoticeV2`.
+Cart activation involving existing GPD debt positions failed to return a `paymentToken`.
+
 ### Category
 application bug
+
 ### Recommended action
-Verify notice activation response when processing payments containing stamp duties (*marca da bollo*).
+Check GPD and WISP integration logic when resolving existing debt positions during cart activations.
 
 ---
 
-# 5. Utente paga un pagamento singolo con un versamento e nessuna marca da bollo
+# 5. L'utente paga un carrello con tre RPT, con quantita diverse di versamenti semplici e marche da bollo
+- **status**: failed
+- **fullName**: `L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con tre RPT, con quantita diverse di versamenti semplici e marche da bollo`
+- **message**: AssertionError: The field [paymentToken] does not exists.
+- **trace**:
+```
+File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/integration/wisp/steps/steps.py", line 169, in user_redirected_to_checkout
+    steputils.send_index_activatePaymentNoticeV2_request(context, 5)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 865, in send_index_activatePaymentNoticeV2_request
+    check_field_with_non_null_value(context, 'paymentToken')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 362, in check_field_with_non_null_value
+    assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.py", line 7, in assert_show_message
+    assert assertion_value, message
+           ^^^^^
+```
+### Root cause
+Complex cart activation request failed to yield a `paymentToken` response.
+
+### Category
+application bug
+
+### Recommended action
+Debug cart parsing and activation handling for multi-RPT payloads containing mixed payment types.
+
+---
+
+# 6. L'utente tenta di pagare un carrello con due RPT ma la chiusura del pagamento fallisce
+- **status**: failed
+- **fullName**: `L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L'utente tenta di pagare un carrello con due RPT ma la chiusura del pagamento fallisce`
+- **message**: AssertionError: The field [paymentToken] does not exists.
+- **trace**:
+```
+File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/integration/wisp/steps/steps.py", line 209, in user_redirected_to_checkout
+    steputils.send_index_activatePaymentNoticeV2_request(context, 5)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 865, in send_index_activatePaymentNoticeV2_request
+    check_field_with_non_null_value(context, 'paymentToken')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 362, in check_field_with_non_null_value
+    assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.py", line 7, in assert_show_message
+    assert assertion_value, message
+           ^^^^^
+```
+### Root cause
+Activation step failed to retrieve a `paymentToken` prior to testing payment closure failure behavior.
+
+### Category
+application bug
+
+### Recommended action
+Ensure test pre-conditions correctly generate payment tokens before triggering closure failure scenarios.
+
+---
+
+# 7. Utente paga un pagamento singolo con nessun versamento semplice e una marca da bollo
+- **status**: failed
+- **fullName**: `Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con nessun versamento semplice e una marca da bollo`
+- **message**: AssertionError: The field [paymentToken] does not exists.
+- **trace**:
+```
+File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/integration/wisp/steps/steps.py", line 169, in user_redirected_to_checkout
+    steputils.send_index_activatePaymentNoticeV2_request(context, 5)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 865, in send_index_activatePaymentNoticeV2_request
+    check_field_with_non_null_value(context, 'paymentToken')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 362, in check_field_with_non_null_value
+    assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.py", line 7, in assert_show_message
+    assert assertion_value, message
+           ^^^^^
+```
+### Root cause
+Activation request for stamp-only payment failed to return a `paymentToken`.
+
+### Category
+application bug
+
+### Recommended action
+Verify stamp-only payment activation logic in WISP and Nodo.
+
+---
+
+# 8. Utente paga un pagamento singolo con un versamento e nessuna marca da bollo
 - **status**: failed
 - **fullName**: `Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con un versamento e nessuna marca da bollo`
 - **message**: AssertionError: The field [paymentToken] does not exists.
@@ -416,17 +477,19 @@ File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave
            ^^^^^
 ```
 ### Root cause
-Standard single-payment `activatePaymentNoticeV2` response missing `paymentToken`.
+Basic single payment activation request failed to return a `paymentToken`.
+
 ### Category
 application bug
+
 ### Recommended action
-Check backend system health and `activatePaymentNoticeV2` API contract fulfillment.
+Check core WISP activation service health and response payloads.
 
 ---
 
-# 6. L'utente paga un carrello con due RPT, entrambe senza versamento semplice e con una marca da bollo
+# 9. Utente paga un pagamento singolo senza versamenti semplici e una marca da bollo gia esistente in GPD
 - **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con due RPT, entrambe senza versamento semplice e con una marca da bollo`
+- **fullName**: `Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT: Utente paga un pagamento singolo senza versamenti semplici e una marca da bollo gia esistente in GPD`
 - **message**: AssertionError: The field [paymentToken] does not exists.
 - **trace**:
 ```
@@ -450,15 +513,124 @@ File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave
            ^^^^^
 ```
 ### Root cause
-`activatePaymentNoticeV2` call failed to return `paymentToken` for multi-RPT stamp duty carts.
+Activation of an existing GPD debt position with a stamp failed to produce a `paymentToken`.
+
 ### Category
 application bug
+
 ### Recommended action
-Investigate backend payload mapping for carts containing only stamp duties.
+Investigate GPD debt retrieval and token generation for stamp-based payment notices.
 
 ---
 
-# 7. L'utente paga un carrello con singola RPT con quattro versamenti
+# 10. Utente paga un pagamento singolo con due versamenti e nessuna marca da bollo
+- **status**: failed
+- **fullName**: `Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con due versamenti e nessuna marca da bollo`
+- **message**: AssertionError: The field [paymentToken] does not exists.
+- **trace**:
+```
+File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/integration/wisp/steps/steps.py", line 169, in user_redirected_to_checkout
+    steputils.send_index_activatePaymentNoticeV2_request(context, 5)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 865, in send_index_activatePaymentNoticeV2_request
+    check_field_with_non_null_value(context, 'paymentToken')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 362, in check_field_with_non_null_value
+    assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.py", line 7, in assert_show_message
+    assert assertion_value, message
+           ^^^^^
+```
+### Root cause
+Multi-transfer single payment activation failed to return a `paymentToken`.
+
+### Category
+application bug
+
+### Recommended action
+Review activation handling for notices with multiple transfers.
+
+---
+
+# 11. L'utente paga un carrello multibeneficiario con due RPT con un totale di quattro versamenti
+- **status**: failed
+- **fullName**: `L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT: L'utente paga un carrello multibeneficiario con due RPT con un totale di quattro versamenti`
+- **message**: AssertionError: The field [paymentToken] does not exists.
+- **trace**:
+```
+File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/integration/wisp/steps/steps.py", line 194, in user_redirected_to_checkout
+    steputils.send_index_activatePaymentNoticeV2_request(context, 5)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 865, in send_index_activatePaymentNoticeV2_request
+    check_field_with_non_null_value(context, 'paymentToken')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 362, in check_field_with_non_null_value
+    assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.py", line 7, in assert_show_message
+    assert assertion_value, message
+           ^^^^^
+```
+### Root cause
+Multi-beneficiary cart activation failed to return a `paymentToken`.
+
+### Category
+application bug
+
+### Recommended action
+Examine multi-beneficiary cart activation processing logic in WISP.
+
+---
+
+# 12. Utente tenta il pagamento, poi riprova il flusso ma fallisce
+- **status**: failed
+- **fullName**: `Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT: Utente tenta il pagamento, poi riprova il flusso ma fallisce`
+- **message**: AssertionError: The field [paymentToken] does not exists.
+- **trace**:
+```
+File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/integration/wisp/steps/steps.py", line 265, in send_activatePaymentNoticeV2_request
+    steputils.send_index_activatePaymentNoticeV2_request(context, 5)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 865, in send_index_activatePaymentNoticeV2_request
+    check_field_with_non_null_value(context, 'paymentToken')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 362, in check_field_with_non_null_value
+    assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.py", line 7, in assert_show_message
+    assert assertion_value, message
+```
+### Root cause
+Retry activation step failed to obtain a `paymentToken`.
+
+### Category
+application bug
+
+### Recommended action
+Verify session cleanup and re-activation handling during payment retry flows.
+
+---
+
+# 13. L'utente paga un carrello con singola RPT con quattro versamenti
 - **status**: failed
 - **fullName**: `L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con singola RPT con quattro versamenti`
 - **message**: AssertionError: The field [paymentToken] does not exists.
@@ -484,15 +656,125 @@ File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave
            ^^^^^
 ```
 ### Root cause
-Missing `paymentToken` in `activatePaymentNoticeV2` response for single RPT with 4 transfers.
+Single-RPT cart activation with four transfers failed to return a `paymentToken`.
+
 ### Category
 application bug
+
 ### Recommended action
-Verify activation endpoint capability for multi-transfer RPT payments.
+Check cart activation response mapping for single-RPT payloads with multiple transfers.
 
 ---
 
-# 8. L'utente paga un carrello con tre RPT con un versamento ciascuna
+# 14. L'utente paga un carrello con singola RPT con due versamenti semplici e una marca da bollo
+- **status**: failed
+- **fullName**: `L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con singola RPT con due versamenti semplici e una marca da bollo`
+- **message**: AssertionError: The field [paymentToken] does not exists.
+- **trace**:
+```
+File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/integration/wisp/steps/steps.py", line 169, in user_redirected_to_checkout
+    steputils.send_index_activatePaymentNoticeV2_request(context, 5)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 865, in send_index_activatePaymentNoticeV2_request
+    check_field_with_non_null_value(context, 'paymentToken')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 362, in check_field_with_non_null_value
+    assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.py", line 7, in assert_show_message
+    assert assertion_value, message
+           ^^^^^
+```
+### Root cause
+Cart activation with stamps and multiple transfers failed to return a `paymentToken`.
+
+### Category
+application bug
+
+### Recommended action
+Verify cart activation handling for mixed transfer and stamp configurations.
+
+---
+
+# 15. L'utente paga un carrello con singola RPT con un versamento
+- **status**: failed
+- **fullName**: `L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con singola RPT con un versamento`
+- **message**: AssertionError: The field [paymentToken] does not exists.
+- **trace**:
+```
+File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/integration/wisp/steps/steps.py", line 169, in user_redirected_to_checkout
+    steputils.send_index_activatePaymentNoticeV2_request(context, 5)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 865, in send_index_activatePaymentNoticeV2_request
+    check_field_with_non_null_value(context, 'paymentToken')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 362, in check_field_with_non_null_value
+    assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.py", line 7, in assert_show_message
+    assert assertion_value, message
+           ^^^^^
+```
+### Root cause
+Basic single-RPT cart activation failed to return a `paymentToken`.
+
+### Category
+application bug
+
+### Recommended action
+Investigate why basic cart activation requests fail to produce payment tokens.
+
+---
+
+# 16. L'utente paga un carrello con due RPT per un totale di cinque versamenti
+- **status**: failed
+- **fullName**: `L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con due RPT per un totale di cinque versamenti`
+- **message**: AssertionError: The field [paymentToken] does not exists.
+- **trace**:
+```
+File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/integration/wisp/steps/steps.py", line 169, in user_redirected_to_checkout
+    steputils.send_index_activatePaymentNoticeV2_request(context, 5)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 865, in send_index_activatePaymentNoticeV2_request
+    check_field_with_non_null_value(context, 'paymentToken')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 362, in check_field_with_non_null_value
+    assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.py", line 7, in assert_show_message
+    assert assertion_value, message
+           ^^^^^
+```
+### Root cause
+Cart activation with two RPTs and five total transfers failed to return a `paymentToken`.
+
+### Category
+application bug
+
+### Recommended action
+Review cart activation limits and transfer parsing logic in WISP.
+
+---
+
+# 17. L'utente paga un carrello con tre RPT con un versamento ciascuna
 - **status**: failed
 - **fullName**: `L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con tre RPT con un versamento ciascuna`
 - **message**: AssertionError: The field [paymentToken] does not exists.
@@ -518,17 +800,19 @@ File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave
            ^^^^^
 ```
 ### Root cause
-Missing `paymentToken` in `activatePaymentNoticeV2` for 3-RPT carts.
+Cart activation with three RPTs failed to return a `paymentToken`.
+
 ### Category
 application bug
+
 ### Recommended action
-Inspect backend multi-RPT cart activation pipeline.
+Inspect multi-RPT cart activation handling in WISP services.
 
 ---
 
-# 9. L'utente paga un carrello multibeneficiario con due RPT con un totale di due versamenti
+# 18. L'utente paga un carrello con tre RPT per un totale di cinque versamenti
 - **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT: L'utente paga un carrello multibeneficiario con due RPT con un totale di due versamenti`
+- **fullName**: `L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con tre RPT per un totale di cinque versamenti`
 - **message**: AssertionError: The field [paymentToken] does not exists.
 - **trace**:
 ```
@@ -536,4 +820,103 @@ File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave
     match.run(runner.context)
     ~~~~~~~~~^^^^^^^^^^^^^^^^
   File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/matchers.py", line 98, in run
-    self.func(context, *args, **kwargs
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/integration/wisp/steps/steps.py", line 169, in user_redirected_to_checkout
+    steputils.send_index_activatePaymentNoticeV2_request(context, 5)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 865, in send_index_activatePaymentNoticeV2_request
+    check_field_with_non_null_value(context, 'paymentToken')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 362, in check_field_with_non_null_value
+    assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.py", line 7, in assert_show_message
+    assert assertion_value, message
+           ^^^^^
+```
+### Root cause
+Complex 3-RPT cart activation failed to return a `paymentToken`.
+
+### Category
+application bug
+
+### Recommended action
+Debug backend handling of high-transfer multi-RPT cart requests.
+
+---
+
+# 19. Utente paga un pagamento singolo con un versamento e nessuna marca da bollo gia esistente in GPD
+- **status**: failed
+- **fullName**: `Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT: Utente paga un pagamento singolo con un versamento e nessuna marca da bollo gia esistente in GPD`
+- **message**: AssertionError: The field [paymentToken] does not exists.
+- **trace**:
+```
+File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/integration/wisp/steps/steps.py", line 169, in user_redirected_to_checkout
+    steputils.send_index_activatePaymentNoticeV2_request(context, 5)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 865, in send_index_activatePaymentNoticeV2_request
+    check_field_with_non_null_value(context, 'paymentToken')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 362, in check_field_with_non_null_value
+    assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.py", line 7, in assert_show_message
+    assert assertion_value, message
+           ^^^^^
+```
+### Root cause
+Activation of an existing GPD debt position failed to return a `paymentToken`.
+
+### Category
+application bug
+
+### Recommended action
+Check GPD service integration and data synchronization for existing debt activations.
+
+---
+
+# 20. L'utente paga un carrello con singola RPT con una marca da bollo gia esistente in GPD
+- **status**: failed
+- **fullName**: `L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L'utente paga un carrello con singola RPT con una marca da bollo gia esistente in GPD`
+- **message**: AssertionError: The field [paymentToken] does not exists.
+- **trace**:
+```
+File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.14.8/x64/lib/python3.14/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/integration/wisp/steps/steps.py", line 169, in user_redirected_to_checkout
+    steputils.send_index_activatePaymentNoticeV2_request(context, 5)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 865, in send_index_activatePaymentNoticeV2_request
+    check_field_with_non_null_value(context, 'paymentToken')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 362, in check_field_with_non_null_value
+    assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.py", line 7, in assert_show_message
+    assert assertion_value, message
+           ^^^^^
+```
+### Root cause
+Cart activation involving an existing GPD debt position with a stamp failed to return a `paymentToken`.
+
+### Category
+application bug
+
+### Recommended action
+Investigate GPD and WISP interaction for cart activations with stamps.
+
+---
+
+## Common patterns
+- **Missing Payment Token (`paymentToken`)**: Across all 90 failures in the WISP suite, the `activatePaymentNoticeV2` step consistently fails because the response payload lacks a valid `paymentToken`, pointing to a systemic failure in the WISP/Nodo activation pipeline.
