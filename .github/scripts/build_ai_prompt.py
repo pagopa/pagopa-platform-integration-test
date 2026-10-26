@@ -107,6 +107,20 @@ def build_prompt(
     max_trace_chars: int,
 ) -> str:
     """Render the Markdown prompt sent to the AI model."""
+    unique_failures: List[Dict[str, str]] = []
+    seen_failures = set()
+    for failure in failures:
+        identity = (
+            failure.get("fullName", "").strip() or failure["name"].strip(),
+            failure["status"].strip().lower(),
+            failure["message"].strip(),
+        )
+        if identity in seen_failures:
+            continue
+        seen_failures.add(identity)
+        unique_failures.append(failure)
+    failures = unique_failures
+
     if not failures:
         return (
             f"No test failures found in the '{suite_label}' suite. "

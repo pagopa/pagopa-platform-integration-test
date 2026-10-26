@@ -491,6 +491,25 @@ possible to choose at runtime which branch to run the tests on. If your team and
 are developing in parallel on separate feature branches, this option is not suitable until
 that branch has been merged into `main`.
 
+The called workflow publishes test results to the TAS repository's GitHub Pages site under
+`TAS/<timestamp>` (`dd-MM-yyyy_HH:mm:ss`). Failed runs also receive an AI analysis rendered at
+`TAS/<timestamp>/analysis/index.html` with the Markdown beside it at `analysis/analysis.md`.
+The analysis is best-effort and does not change the Behave outcome; the prompt includes the
+failure names, messages, and traces from Allure/JUnit. It is not linked from the Allure root
+page. The caller must grant the reusable workflow both permissions:
+
+```yaml
+permissions:
+  contents: write
+  actions: write
+```
+
+For calls from another repository, also configure `TAS_GH_PAGES_TOKEN` as a caller or
+organization secret with `contents: write` access to the TAS repository. Pass it, together
+with `REPORT_ANALYSIS_GEMINI_API_KEY`, using `secrets: inherit`. Calls originating in TAS itself
+use the workflow's `GITHUB_TOKEN`. TAS test secrets continue to come from its own
+`integration-tests` environment.
+
 ```yaml
 # .github/workflows/deploy.yml  (in your repository)
 name: Build, Test & Deploy
@@ -504,12 +523,14 @@ jobs:
   # ── Step 1: run integration tests ─────────────────────────────────────────
   integration-tests:
     uses: pagopa/pagopa-platform-integration-test/.github/workflows/test-automation-service.yml@main
+    secrets: inherit
     with:
       test_type: integration     # integration | e2e | api
       test_suite: wisp           # wisp | all
       environment: uat           # dev | uat
       caller_id: ${{ github.repository }}
-    # No secrets: to pass — test secrets live in the centralised TAS repository
+    # Pass REPORT_ANALYSIS_GEMINI_API_KEY and TAS_GH_PAGES_TOKEN with secrets: inherit.
+    # TAS test secrets remain managed by the TAS repository.
 
   # ── Step 2: deploy only if tests passed ───────────────────────────────────
   deploy:
@@ -542,12 +563,10 @@ jobs:
 
 > **No PAT required** for `workflow_call` invocations — **even when your caller lives in a
 > different repository**. GitHub resolves the `uses: …@<ref>` call natively (it does not go
-> through the REST API, so there is no token to supply), and because
-> `test-automation-service.yml` reads its test secrets from its **own** `integration-tests`
-> environment, those secrets are used regardless of the caller. Per GitHub's reusable-workflow
-> rules, environment secrets come from the repository that **defines** the workflow (the TAS
-> repo), not from the caller — so you do not pass, inherit, or configure any secret. A PAT is
-> only needed if you later want to download the run's artifact (see
+> through the REST API, so there is no token to supply). Test secrets are read from TAS's own
+> `integration-tests` environment, while `REPORT_ANALYSIS_GEMINI_API_KEY` must be available to
+> the caller and passed through with `secrets: inherit`. A PAT is only needed if you later want
+> to download the run's artifact (see
 > [Downloading the full report artifact](#downloading-the-full-report-artifact)).
 
 ### Choosing between Option 2 and Option 3

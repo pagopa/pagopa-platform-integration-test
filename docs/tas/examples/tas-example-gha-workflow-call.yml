@@ -5,8 +5,9 @@
 # Test Automation Service via synchronous workflow_call.
 #
 # Copy this file to .github/workflows/ in your repository.
-# No test-related secrets need to be configured: the TAS manages them
-# internally in its own "integration-tests" environment.
+# Test secrets are managed by TAS. Pass REPORT_ANALYSIS_GEMINI_API_KEY and
+# TAS_GH_PAGES_TOKEN from caller or organization secrets for failure analysis
+# and publication to the TAS repository's gh-pages branch.
 ##############################################################################
 
 name: Build, Integration Test & Deploy
@@ -15,6 +16,10 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
 
 jobs:
 
@@ -25,6 +30,7 @@ jobs:
     # after '@' must be a literal branch, tag or commit SHA. Update it manually
     # to pin to a different version of the TAS workflow (e.g. '@refs/tags/v1').
     uses: pagopa/pagopa-platform-integration-test/.github/workflows/test-automation-service.yml@main
+    secrets: inherit
     with:
       test_type:      integration   # integration | e2e | api
       test_suite:     tas_pass      
@@ -36,7 +42,8 @@ jobs:
       # Behave tag filter. Default @runnable matches the integration suites;
       # set to @e2e (with test_type: e2e) to run the e2e checkout suite.
       tags:           "@runnable"
-    # No secrets: to configure — test secrets live in the TAS repository.
+    # secrets: inherit passes the Gemini key and cross-repository Pages token;
+    # TAS test secrets are still read from its integration-tests environment.
 
   # ── 2. Log results ────────────────────────────────────────────────────────
   log-results:
