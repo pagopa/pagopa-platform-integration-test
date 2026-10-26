@@ -149,6 +149,39 @@ def build_index_page(root_dir):
         f.write(template.render(reports=reports))
     print(f"[INFO][build_index_page] written index page to {output_path}")
 
+def build_tas_index_page(root_dir):
+    """Build the TAS history index from complete timestamped reports."""
+    root_path = Path(root_dir)
+    reports = []
+    for report_dir in root_path.iterdir():
+        if not report_dir.is_dir():
+            continue
+        try:
+            timestamp = datetime.strptime(report_dir.name, "%d-%m-%Y_%H:%M:%S")
+        except ValueError:
+            continue
+        report_index = report_dir / "index.html"
+        if not report_index.is_file() or report_index.stat().st_size == 0:
+            continue
+        reports.append({
+            "timestamp": timestamp.strftime("%d-%m-%Y %H:%M:%S"),
+            "link": f"./{report_dir.name}/index.html",
+            "sort_key": timestamp,
+        })
+
+    reports.sort(key=lambda report: report["sort_key"], reverse=True)
+    for report in reports:
+        del report["sort_key"]
+
+    environment = Environment(
+        loader=FileSystemLoader(".github/templates"),
+        autoescape=select_autoescape(["html", "xml"]),
+    )
+    template = environment.get_template("tas-history-index-template.html")
+    (root_path / "index.html").write_text(
+        template.render(reports=reports), encoding="utf-8"
+    )
+
 def deploy_ai_analysis(
     artifact_dir,
     run_dir,

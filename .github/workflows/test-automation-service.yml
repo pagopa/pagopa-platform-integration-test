@@ -536,6 +536,21 @@ jobs:
           PY
           fi
 
+      - name: Generate TAS report history index
+        run: |
+          python - <<'PY'
+          import os
+          import sys
+
+          workspace = os.getcwd()
+          tas_source = os.path.join(workspace, "tas-source")
+          sys.path.insert(0, os.path.join(tas_source, ".github", "scripts"))
+          os.chdir(tas_source)
+          from process_reports import build_tas_index_page
+
+          build_tas_index_page(os.path.join(workspace, "public", "TAS"))
+          PY
+
       - name: Publish TAS results to gh-pages
         uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
         with:

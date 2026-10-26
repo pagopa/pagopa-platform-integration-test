@@ -1,6 +1,7 @@
 """Local regression tests for NRT GitHub Pages indexes."""
 
 import contextlib
+from datetime import datetime, timedelta
 import io
 import json
 import os
@@ -10,6 +11,8 @@ import shutil
 import tempfile
 import unittest
 from unittest import mock
+
+from process_reports import build_tas_index_page
 
 
 SOURCE_ROOT = Path(__file__).resolve().parents[2]
@@ -80,6 +83,65 @@ class PublisherTests(unittest.TestCase):
         self.assertEqual((technical / "history.json").read_text(), "unchanged")
         self.assertEqual(PUBLISHER["update_suite"](latest.parent), stats)
 
+    def test_tas_history_index_includes_complete_runs_newest_first(self):
+        """List complete TAS reports newest-first without deleting prior runs."""
+        root = Path("public/TAS")
+        now = datetime.now().replace(microsecond=0)
+        older_name = (now - timedelta(days=1)).strftime("%d-%m-%Y_%H:%M:%S")
+        newer_name = now.strftime("%d-%m-%Y_%H:%M:%S")
+        incomplete_name = (now + timedelta(seconds=1)).strftime("%d-%m-%Y_%H:%M:%S")
+        backing_dirs = {
+            older_name: root / "older-run",
+            newer_name: root / "newer-run",
+            incomplete_name: root / "incomplete-run",
+            "last-history": root / "history-run",
+        }
+        for backing_dir in backing_dirs.values():
+            backing_dir.mkdir(parents=True)
+        (backing_dirs[older_name] / "index.html").write_text("Older report")
+        (backing_dirs[newer_name] / "index.html").write_text("Newer report")
+        (backing_dirs[incomplete_name] / "index.html").write_text("")
+        (backing_dirs["last-history"] / "index.html").write_text("Not a timestamped run")
+
+        report_dirs = []
+        for name, backing_dir in backing_dirs.items():
+            report_dir = mock.MagicMock()
+            report_dir.name = name
+            report_dir.is_dir.return_value = True
+            report_dir.__truediv__.side_effect = lambda child, path=backing_dir: path / child
+            report_dirs.append(report_dir)
+        original_iterdir = Path.iterdir
+
+        def iterdir(path):
+            """Return virtual timestamped folders for the TAS root fixture."""
+            if path == root:
+                return iter(report_dirs)
+            return original_iterdir(path)
+
+        with mock.patch.object(Path, "iterdir", iterdir):
+            build_tas_index_page(root)
+
+        index = (root / "index.html").read_text(encoding="utf-8")
+        self.assertLess(
+            index.index(f"./{newer_name}/index.html"),
+            index.index(f"./{older_name}/index.html"),
+        )
+        self.assertNotIn(f"./{incomplete_name}/index.html", index)
+        self.assertNotIn("./last-history/index.html", index)
+        self.assertTrue((backing_dirs[older_name] / "index.html").is_file())
+        self.assertTrue((backing_dirs[newer_name] / "index.html").is_file())
+
+    def test_tas_history_index_shows_empty_state_without_reports(self):
+        """Render an empty state when no complete TAS reports are available."""
+        root = Path("public/TAS")
+        root.mkdir()
+
+        build_tas_index_page(root)
+
+        index = (root / "index.html").read_text(encoding="utf-8")
+        self.assertIn("Nessun report disponibile.", index)
+        self.assertNotIn('href="./', index)
+
     def test_dashboard_includes_registry_and_unavailable_suites(self):
         """Render real counters and mark unpublished suites without broken links."""
         self.write_report("32", 1000)
@@ -99,6 +161,7 @@ class PublisherTests(unittest.TestCase):
         self.assertIn("FDR-3", dashboard)
         self.assertIn("Report non ancora disponibile", dashboard)
         self.assertNotIn("./fdr3-tests/index.html", dashboard)
+        self.assertIn("./TAS/index.html", dashboard)
         self.assertIn("UTC", dashboard)
         self.assertTrue(Path("public/.nojekyll").exists())
 
