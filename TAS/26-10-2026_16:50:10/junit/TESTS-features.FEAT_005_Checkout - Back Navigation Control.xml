@@ -1,0 +1,215 @@
+<testsuite name="features.FEAT_005_Checkout - Back Navigation Control.Navigazione Lineare per il flusso di Pagamento" tests="14" errors="0" failures="0" skipped="0" time="45.807118" timestamp="2026-10-26T16:51:50.834979" hostname="runnervmtai0g"><testcase classname="features.FEAT_005_Checkout - Back Navigation Control.Navigazione Lineare per il flusso di Pagamento" name="Navigazione - Selezione tasto Inserisci tu i dati" status="passed" time="1.693933"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutBackNavigation_005_01 @runnable @happy_path
+  Scenario: Navigazione - Selezione tasto Inserisci tu i dati
+    Dato La pagina di checkout è aperta ... passed in 0.718s
+    E La lingua è impostata su "it" ... passed in 0.843s
+    Dato L’utente si trova sulla pagina "/" ... passed in 0.000s
+    Quando L’utente clicca sul tasto "Inserisci tu i dati" ... passed in 0.133s
+    Allora L’utente viene reindirizzato sulla pagina "/inserisci-dati-avviso" ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_005_Checkout - Back Navigation Control.Navigazione Lineare per il flusso di Pagamento" name="Navigazione - pagina dati avviso" status="passed" time="2.47872"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutBackNavigation_005_02 @runnable @happy_path
+  Scenario: Navigazione - pagina dati avviso
+    Dato La pagina di checkout è aperta ... passed in 0.265s
+    E La lingua è impostata su "it" ... passed in 0.388s
+    Dato L’utente si trova sulla pagina "/inserisci-dati-avviso" ... passed in 0.149s
+    E L’utente ha compilato i dati avviso inserendo il codice avviso "302042025112600001" e il CF ente "77777777777" ... passed in 0.421s
+    Quando L’utente clicca sul tasto "Continua" ... passed in 1.256s
+    Allora L’utente viene reindirizzato sulla pagina "/dati-pagamento" ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_005_Checkout - Back Navigation Control.Navigazione Lineare per il flusso di Pagamento" name="Navigazione - Conferma pagina di riepilogo" status="passed" time="2.495149"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutBackNavigation_005_03 @runnable @happy_path
+  Scenario: Navigazione - Conferma pagina di riepilogo
+    Dato La pagina di checkout è aperta ... passed in 0.261s
+    E La lingua è impostata su "it" ... passed in 0.410s
+    Dato L’utente si trova sulla pagina "/dati-pagamento" ... passed in 1.715s
+    Quando L’utente clicca sul tasto "Vai al pagamento" ... passed in 0.109s
+    Allora L’utente viene reindirizzato sulla pagina "/inserisci-email" ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_005_Checkout - Back Navigation Control.Navigazione Lineare per il flusso di Pagamento" name="Navigazione - Inserimento email" status="passed" time="2.834006"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutBackNavigation_005_04 @runnable @happy_path
+  Scenario: Navigazione - Inserimento email
+    Dato La pagina di checkout è aperta ... passed in 0.253s
+    E La lingua è impostata su "it" ... passed in 0.403s
+    Dato L’utente si trova sulla pagina "/inserisci-email" ... passed in 1.655s
+    E L’utente ha inserito l’indirizzo email "mail@pagopa.it" in entrambi i campi della maschera ... passed in 0.427s
+    Quando L’utente clicca sul tasto "Continua" ... passed in 0.096s
+    Allora L’utente viene reindirizzato sulla pagina "/scegli-metodo" ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_005_Checkout - Back Navigation Control.Navigazione Lineare per il flusso di Pagamento" name="Navigazione - Scelta metodo di pagamento “Carte di Credito”" status="passed" time="3.717967"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutBackNavigation_005_05 @runnable @happy_path
+  Scenario: Navigazione - Scelta metodo di pagamento “Carte di Credito”
+    Dato La pagina di checkout è aperta ... passed in 0.249s
+    E La lingua è impostata su "it" ... passed in 0.388s
+    Dato L’utente si trova sulla pagina "/scegli-metodo" ... passed in 2.643s
+    Quando L’utente clicca sul tasto "Carte di Credito" ... passed in 0.438s
+    Allora L’utente viene reindirizzato sulla pagina "/inserisci-carta" ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_005_Checkout - Back Navigation Control.Navigazione Lineare per il flusso di Pagamento" name="Click sul tasto indietro riporta alla pagina precedente del flusso -- @1.1 " status="passed" time="0.864671"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutBackNavigation_005_06 @runnable @happy_path
+  Schema dello scenario: Click sul tasto indietro riporta alla pagina precedente del flusso -- @1.1 
+    Dato La pagina di checkout è aperta ... passed in 0.267s
+    E La lingua è impostata su "it" ... passed in 0.394s
+    Dato L’utente si trova sulla pagina "/inserisci-dati-avviso" ... passed in 0.075s
+    Quando L’utente clicca sul tasto "Indietro" ... passed in 0.128s
+    Allora L’utente viene reindirizzato sulla pagina "/" ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_005_Checkout - Back Navigation Control.Navigazione Lineare per il flusso di Pagamento" name="Click sul tasto indietro riporta alla pagina precedente del flusso -- @1.2 " status="passed" time="2.328112"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutBackNavigation_005_06 @runnable @happy_path
+  Schema dello scenario: Click sul tasto indietro riporta alla pagina precedente del flusso -- @1.2 
+    Dato La pagina di checkout è aperta ... passed in 0.259s
+    E La lingua è impostata su "it" ... passed in 0.412s
+    Dato L’utente si trova sulla pagina "/dati-pagamento" ... passed in 1.588s
+    Quando L’utente clicca sul tasto "Indietro" ... passed in 0.069s
+    Allora L’utente viene reindirizzato sulla pagina "/inserisci-dati-avviso" ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_005_Checkout - Back Navigation Control.Navigazione Lineare per il flusso di Pagamento" name="Click sul tasto indietro riporta alla pagina precedente del flusso -- @1.3 " status="passed" time="2.504434"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutBackNavigation_005_06 @runnable @happy_path
+  Schema dello scenario: Click sul tasto indietro riporta alla pagina precedente del flusso -- @1.3 
+    Dato La pagina di checkout è aperta ... passed in 0.253s
+    E La lingua è impostata su "it" ... passed in 0.389s
+    Dato L’utente si trova sulla pagina "/inserisci-email" ... passed in 1.795s
+    Quando L’utente clicca sul tasto "Indietro" ... passed in 0.067s
+    Allora L’utente viene reindirizzato sulla pagina "/dati-pagamento" ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_005_Checkout - Back Navigation Control.Navigazione Lineare per il flusso di Pagamento" name="Click sul tasto indietro riporta alla pagina precedente del flusso -- @1.4 " status="passed" time="3.753989"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutBackNavigation_005_06 @runnable @happy_path
+  Schema dello scenario: Click sul tasto indietro riporta alla pagina precedente del flusso -- @1.4 
+    Dato La pagina di checkout è aperta ... passed in 0.254s
+    E La lingua è impostata su "it" ... passed in 0.413s
+    Dato L’utente si trova sulla pagina "/scegli-metodo" ... passed in 2.779s
+    Quando L’utente clicca sul tasto "Indietro" ... passed in 0.308s
+    Allora L’utente viene reindirizzato sulla pagina "/inserisci-email" ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_005_Checkout - Back Navigation Control.Navigazione Lineare per il flusso di Pagamento" name="Click sul tasto indietro riporta alla pagina precedente del flusso -- @1.5 " status="passed" time="4.13455"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutBackNavigation_005_06 @runnable @happy_path
+  Schema dello scenario: Click sul tasto indietro riporta alla pagina precedente del flusso -- @1.5 
+    Dato La pagina di checkout è aperta ... passed in 0.312s
+    E La lingua è impostata su "it" ... passed in 0.411s
+    Dato L’utente si trova sulla pagina "/inserisci-carta" ... passed in 3.325s
+    Quando L’utente clicca sul tasto "Indietro" ... passed in 0.087s
+    Allora L’utente viene reindirizzato sulla pagina "/scegli-metodo" ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_005_Checkout - Back Navigation Control.Navigazione Lineare per il flusso di Pagamento" name="Click sul tasto indietro riporta alla pagina precedente del flusso -- @1.6 " status="passed" time="6.179044"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutBackNavigation_005_06 @runnable @happy_path
+  Schema dello scenario: Click sul tasto indietro riporta alla pagina precedente del flusso -- @1.6 
+    Dato La pagina di checkout è aperta ... passed in 0.291s
+    E La lingua è impostata su "it" ... passed in 0.414s
+    Dato L’utente si trova sulla pagina "/lista-psp" ... passed in 5.111s
+    Quando L’utente clicca sul tasto "Indietro" ... passed in 0.363s
+    Allora L’utente viene reindirizzato sulla pagina "/scegli-metodo" ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_005_Checkout - Back Navigation Control.Navigazione Lineare per il flusso di Pagamento" name="Assenza loop di navigazione per indietro successivi da pagina Modifica metodo di pagamento" status="passed" time="5.978333"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutBackNavigation_005_07 @runnable @happy_path
+  Scenario: Assenza loop di navigazione per indietro successivi da pagina Modifica metodo di pagamento
+    Dato La pagina di checkout è aperta ... passed in 0.262s
+    E La lingua è impostata su "it" ... passed in 0.393s
+    Dato L’utente si trova sulla pagina "/riepilogo-pagamento" ... passed in 4.917s
+    E L’utente ha cliccato sul tasto "Modifica metodo di pagamento" ... passed in 0.053s
+    E L’utente raggiunge la pagina "/scegli-metodo" ... passed in 0.000s
+    Quando L’utente clicca ripetutamente sul tasto "Indietro" ... passed in 0.353s
+    Allora L’utente ritorna sulla HP dopo aver visitato una ed una sola volta, in ordine, le pagine "/inserisci-email", "/dati-pagamento", "/inserisci-dati-avviso", senza ripetizioni né ritorni a pagine già visitate ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_005_Checkout - Back Navigation Control.Navigazione Lineare per il flusso di Pagamento" name="Indietro da inserisci dati avviso per flusso con accesso diretto (senza history)" status="passed" time="1.390291"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutBackNavigation_005_08 @runnable @happy_path
+  Scenario: Indietro da inserisci dati avviso per flusso con accesso diretto (senza history)
+    Dato La pagina di checkout è aperta ... passed in 0.265s
+    E La lingua è impostata su "it" ... passed in 0.401s
+    Dato L’utente naviga sulla pagina "/inserisci-dati-avviso" selezionata da bookmark o URL diretto ... passed in 0.457s
+    Quando L’utente clicca sul tasto "Indietro" ... passed in 0.266s
+    Allora L’utente ritorna sulla HP senza uscire dall’applicativo ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_005_Checkout - Back Navigation Control.Navigazione Lineare per il flusso di Pagamento" name="Flusso lista PSP - indietro da /scegli-metodo (metodo APM)" status="passed" time="5.453919"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutBackNavigation_005_09 @runnable @happy_path
+  Scenario: Flusso lista PSP - indietro da /scegli-metodo (metodo APM)
+    Dato La pagina di checkout è aperta ... passed in 0.258s
+    E La lingua è impostata su "it" ... passed in 0.392s
+    Dato L’utente ha raggiunto la pagina "/lista-psp" dall’entry point "/scegli-metodo" (metodo APM) ... passed in 4.478s
+    Quando L’utente clicca sul tasto "Indietro" ... passed in 0.326s
+    Allora L’utente viene reindirizzato sulla pagina "/scegli-metodo" ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
