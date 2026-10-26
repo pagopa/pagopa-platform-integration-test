@@ -108,6 +108,8 @@ Riferimenti: `requirements.txt`, `.github/workflows/wisp-tests.yml`,
 
 ### Framework ACE (embedded)
 
+Repository originale di ACE: [daniele-quero/ace](https://github.com/daniele-quero/ace).
+
 Questo repository include un runtime ACE embedded per la raccolta delle trace di task e per il workflow di reflection del team. Per installare/configurare il framework, fare riferimento al README interno di ACE:
 
 - [ace/README_EMBEDDED.md](./ace/README_EMBEDDED.md)
