@@ -1,0 +1,106 @@
+<testsuite name="features.FEAT_004_FdR3_Cancellazione di uno o più pagamenti.Cancellazione di uno o più pagamenti" tests="6" errors="0" failures="0" skipped="0" time="0.0" timestamp="2026-10-26T14:45:38.790352" hostname="runnervmtai0g"><testcase classname="features.FEAT_004_FdR3_Cancellazione di uno o più pagamenti.Cancellazione di uno o più pagamenti" name="Cancellazione di un pagamento all’interno dell’FdR" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CancellazioneDiUnooPiuPagamentiFdR_004_01 @Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSP%20DEMO") @Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
+  Scenario: Cancellazione di un pagamento all’interno dell’FdR
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato Il PSP "PSP DEMO" con pspId "PSP DEMO" è correttamente censito a sistema ... untested in 0.000s
+    E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "INSERTED" ... untested in 0.000s
+    E contiene totPayments pagamenti con amount sumPayments ... untested in 0.000s
+    Quando si vuole cancellare n pagamenti con amount a ... untested in 0.000s
+    E Il PSP invia una richiesta di cancellazione attraverso l'API "Delete one or more payments from an existing flow" ... untested in 0.000s
+    Allora il sistema risponde con il codice di stato HTTP 200 ... untested in 0.000s
+    E Il numero residuo di pagamenti nel flusso viene aggiornato con totPayments-n ... untested in 0.000s
+    E L’amount totale viene correttamente aggiornato con sumPayments-a ... untested in 0.000s
+    E La data corrente viene impostata come last update dates ... untested in 0.000s
+    E I pagamenti da eliminare non sono più associati all’fdr ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_004_FdR3_Cancellazione di uno o più pagamenti.Cancellazione di uno o più pagamenti" name="Cancellazione di tutti i pagamenti all’interno dell’FdR" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CancellazioneDiUnooPiuPagamentiFdR_004_02 @Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSP%20DEMO") @Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
+  Scenario: Cancellazione di tutti i pagamenti all’interno dell’FdR
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato Il PSP "PSP DEMO" con pspId "PSP DEMO" è correttamente censito a sistema ... untested in 0.000s
+    E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "INSERTED" ... untested in 0.000s
+    E contiene m pagamenti ... untested in 0.000s
+    Quando si vuole cancellare tutti gli m pagamenti ... untested in 0.000s
+    E Il PSP invia una richiesta di cancellazione attraverso l'API "Delete one or more payments from an existing flow" ... untested in 0.000s
+    Allora il sistema rispone con il codice di stato HTTP 200 ... untested in 0.000s
+    E Il numero residuo di pagamenti nel flusso è 0 ... untested in 0.000s
+    E L’amount totale viene correttamente aggiornato a 0 ... untested in 0.000s
+    E La data corrente viene impostata come last update dates ... untested in 0.000s
+    E Lo stato dell’FDR viene impostato a "CREATED" ... untested in 0.000s
+    E I pagamenti da eliminare non sono più associati all’fdr ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_004_FdR3_Cancellazione di uno o più pagamenti.Cancellazione di uno o più pagamenti" name="Cancellazione di pagamenti con FdR KO" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CancellazioneDiUnooPiuPagamentiFdR_004_03
+  Scenario: Cancellazione di pagamenti con FdR KO
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato Il PSP "PSP DEMO" con pspId "PSP DEMO" è correttamente censito a sistema ... untested in 0.000s
+    E che il flusso di rendicontazione "2025-01-01PSPDEMO-9999" non esiste a sistema ... untested in 0.000s
+    Quando Il PSP invia una richiesta di cancellazione attraverso l'API "Delete one or more payments from an existing flow" ... untested in 0.000s
+    Allora il sistema rispone con il codice di stato HTTP 404 ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_004_FdR3_Cancellazione di uno o più pagamenti.Cancellazione di uno o più pagamenti" name="Cancellazione di più pagamenti di quanti presenti nell' FdR" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CancellazioneDiUnooPiuPagamentiFdR_004_04 @Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSP%20DEMO") @Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
+  Scenario: Cancellazione di più pagamenti di quanti presenti nell' FdR
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato Il PSP "PSP DEMO" con pspId "PSP DEMO" è correttamente censito a sistema ... untested in 0.000s
+    E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "INSERTED" ... untested in 0.000s
+    E contiene totPayments pagamenti ... untested in 0.000s
+    Quando si vuole cancellare n pagamenti con n>totPayments ... untested in 0.000s
+    E Il PSP invia una richiesta di cancellazione dei pagamenti attraverso l'API "Delete one or more payments from an existing flow" ... untested in 0.000s
+    Allora il PSP riceve un errore 400 Bad Request ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_004_FdR3_Cancellazione di uno o più pagamenti.Cancellazione di uno o più pagamenti" name="Cancellazione dei pagamenti di un FdR in stato  CREATED" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CancellazioneDiUnooPiuPagamentiFdR_004_05 @Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSP%20DEMO")
+  Scenario: Cancellazione dei pagamenti di un FdR in stato  CREATED
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato Il PSP "PSP DEMO" con pspId "PSP DEMO" è correttamente censito a sistema ... untested in 0.000s
+    E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "CREATED" ... untested in 0.000s
+    Quando Il PSP invia una richiesta di cancellazione dei pagamenti attraverso l'API "Delete one or more payments from an existing flow" ... untested in 0.000s
+    Allora il PSP riceve un errore 400 Bad Request ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_004_FdR3_Cancellazione di uno o più pagamenti.Cancellazione di uno o più pagamenti" name="Cancellazione dei pagamenti di un FdR in stato PUBLISHED" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CancellazioneDiUnooPiuPagamentiFdR_004_06 @Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSP%20DEMO") @Inserisci_Pagamenti(totPayments=3,sumPayments=3000) @Pubblica_FdR
+  Scenario: Cancellazione dei pagamenti di un FdR in stato PUBLISHED
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato Il PSP "PSP DEMO" con pspId "PSP DEMO" è correttamente censito a sistema ... untested in 0.000s
+    E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "PUBLISHED" ... untested in 0.000s
+    Quando Il PSP invia una richiesta di cancellazione dei pagamenti attraverso l'API "Delete one or more payments from an existing flow" ... untested in 0.000s
+    Allora il PSP riceve un errore 400 Bad Request ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

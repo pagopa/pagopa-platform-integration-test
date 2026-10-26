@@ -1,0 +1,154 @@
+<testsuite name="features.FEAT_001_FdR3_Creazione di un flusso di rendicontazione.Creazione di un nuovo flusso di rendicontazione" tests="9" errors="0" failures="0" skipped="0" time="0.0" timestamp="2026-10-26T14:45:38.785968" hostname="runnervmtai0g"><testcase classname="features.FEAT_001_FdR3_Creazione di un flusso di rendicontazione.Creazione di un nuovo flusso di rendicontazione" name="Creazione di un nuovo flusso di rendicontazione" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @positive @Fdr3_001_01
+  Scenario: Creazione di un nuovo flusso di rendicontazione
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema ... untested in 0.000s
+    E un nuovo id flusso di rendicontazione pari a "2025-06-30ABI50004-1178" ... untested in 0.000s
+    Quando il PSP invia una richiesta di creazione flusso tramite l'api "Create a new flow structure" ... untested in 0.000s
+    Allora il sistema risponde con il codice di stato HTTP 201 ... untested in 0.000s
+    E il nuovo flusso viene creato con id "2025-06-30ABI50004-1178" ... untested in 0.000s
+    E il flusso è in stato "CREATED" ... untested in 0.000s
+    E il campo "revision" è pari a 1 ... untested in 0.000s
+    E il campo "last_update_date" è aggiornato all'ora corrente ... untested in 0.000s
+    E il campo "creation_date" è aggiornato all'ora corrente ... untested in 0.000s
+    E il blob object corrispondente viene salvato correttamente a sistema ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_001_FdR3_Creazione di un flusso di rendicontazione.Creazione di un nuovo flusso di rendicontazione" name="L’identificativo del flusso di rendicontazione creato dal PSP non rispetta il formato standard -- @1.1 " status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @negative @Fdr3_001_02
+  Schema dello scenario: L’identificativo del flusso di rendicontazione creato dal PSP non rispetta il formato standard -- @1.1 
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema ... untested in 0.000s
+    E un nuovo id flusso di rendicontazione pari a "30-06-2025ABI50004-1178" ... untested in 0.000s
+    Quando il PSP invia una richiesta di creazione flusso tramite l'api "Create a new flow structure" ... untested in 0.000s
+    Allora il sistema risponde con il codice di stato HTTP 400 ... untested in 0.000s
+    E il flusso di rendicontazione non viene creato a sistema ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_001_FdR3_Creazione di un flusso di rendicontazione.Creazione di un nuovo flusso di rendicontazione" name="L’identificativo del flusso di rendicontazione creato dal PSP non rispetta il formato standard -- @1.2 " status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @negative @Fdr3_001_02
+  Schema dello scenario: L’identificativo del flusso di rendicontazione creato dal PSP non rispetta il formato standard -- @1.2 
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema ... untested in 0.000s
+    E un nuovo id flusso di rendicontazione pari a "2025-06-30ABI5000-1178" ... untested in 0.000s
+    Quando il PSP invia una richiesta di creazione flusso tramite l'api "Create a new flow structure" ... untested in 0.000s
+    Allora il sistema risponde con il codice di stato HTTP 400 ... untested in 0.000s
+    E il flusso di rendicontazione non viene creato a sistema ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_001_FdR3_Creazione di un flusso di rendicontazione.Creazione di un nuovo flusso di rendicontazione" name="L’identificativo del flusso di rendicontazione creato dal PSP non rispetta il formato standard -- @1.3 " status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @negative @Fdr3_001_02
+  Schema dello scenario: L’identificativo del flusso di rendicontazione creato dal PSP non rispetta il formato standard -- @1.3 
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema ... untested in 0.000s
+    E un nuovo id flusso di rendicontazione pari a "2025-06-30ABI50004-11%8" ... untested in 0.000s
+    Quando il PSP invia una richiesta di creazione flusso tramite l'api "Create a new flow structure" ... untested in 0.000s
+    Allora il sistema risponde con il codice di stato HTTP 400 ... untested in 0.000s
+    E il flusso di rendicontazione non viene creato a sistema ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_001_FdR3_Creazione di un flusso di rendicontazione.Creazione di un nuovo flusso di rendicontazione" name="Tentativo di creazione di un nuovo flusso da parte di un PSP non abilitato (not ENABLED)" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @negative @Fdr3_001_03
+  Scenario: Tentativo di creazione di un nuovo flusso da parte di un PSP non abilitato (not ENABLED)
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato il PSP "PSPDEMO2" con pspId "ABIDEMO2" correttamente censito a sistema ... untested in 0.000s
+    E il PSP "PSPDEMO2" non è in stato "ENABLED" ... untested in 0.000s
+    Quando il PSP invia una richiesta di creazione flusso tramite l'api "Create a new flow structure" ... untested in 0.000s
+    Allora il sistema risponde con il codice di stato HTTP 400 ... untested in 0.000s
+    E il flusso di rendicontazione non viene creato a sistema ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_001_FdR3_Creazione di un flusso di rendicontazione.Creazione di un nuovo flusso di rendicontazione" name="Tentativo di creazione di un nuovo flusso da parte di un PSP non censito" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @negative @Fdr3_001_04
+  Scenario: Tentativo di creazione di un nuovo flusso da parte di un PSP non censito
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato il PSP "PSPDEMO3" con pspId "ABIDEMO3" non è censito a sistema ... untested in 0.000s
+    Quando il PSP invia una richiesta di creazione flusso tramite l'api "Create a new flow structure" ... untested in 0.000s
+    Allora il sistema risponde con il codice di stato HTTP 400 ... untested in 0.000s
+    E il flusso di rendicontazione non viene creato a sistema ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_001_FdR3_Creazione di un flusso di rendicontazione.Creazione di un nuovo flusso di rendicontazione" name="Creazione di un flusso con ID già esistente in stato PUBLISHED" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @positive @Fdr3_001_05 @Crea_FdR(id_fdr="2025-06-30ABI50004-1178",id_psp="PSP%20DEMO") @Inserisci_Pagamenti(totPayments=3,sumPayments=3000) @Pubblica_FdR
+  Scenario: Creazione di un flusso con ID già esistente in stato PUBLISHED
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema ... untested in 0.000s
+    E che il flusso di rendicontazione "2025-06-30ABI50004-1178" esiste già in stato "PUBLISHED" ... untested in 0.000s
+    Quando il PSP invia una richiesta di creazione flusso tramite l'api "Create a new flow structure" ... untested in 0.000s
+    Allora il sistema risponde con il codice di stato HTTP 201 ... untested in 0.000s
+    E il nuovo flusso viene creato con id "2025-06-30ABI50004-1178" ... untested in 0.000s
+    E il flusso è in stato "CREATED" ... untested in 0.000s
+    E il campo "revision" è incrementato di 1 rispetto alla revisione esistente ... untested in 0.000s
+    E il campo "last_update_date" è aggiornato all'ora corrente ... untested in 0.000s
+    E il campo "creation_date" è aggiornato all'ora corrente ... untested in 0.000s
+    E il blob object corrispondente viene salvato correttamente a sistema ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_001_FdR3_Creazione di un flusso di rendicontazione.Creazione di un nuovo flusso di rendicontazione" name="Tentativo di creazione di un flusso con ID già esistente in uno stato non ammesso -- @1.1 " status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @negative @Fdr3_001_06 @Crea_FdRid_fdr=2025-06-30ABI50004-1178id_psp=PSP20DEMO @from_outline
+  Schema dello scenario: Tentativo di creazione di un flusso con ID già esistente in uno stato non ammesso -- @1.1 
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema ... untested in 0.000s
+    E che il flusso di rendicontazione "2025-06-30ABI50004-1178" esiste già in stato "CREATED" ... untested in 0.000s
+    Quando il PSP invia una richiesta di creazione flusso tramite l'api "Create a new flow structure" ... untested in 0.000s
+    Allora il sistema risponde con il codice di stato HTTP 400 ... untested in 0.000s
+    E il flusso di rendicontazione esistente non viene modificato a sistema ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_001_FdR3_Creazione di un flusso di rendicontazione.Creazione di un nuovo flusso di rendicontazione" name="Tentativo di creazione di un flusso con ID già esistente in uno stato non ammesso -- @1.2 " status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @negative @Fdr3_001_06 @Crea_FdRid_fdr=2025-06-30ABI50004-1178id_psp=PSP20DEMO @from_outline
+  Schema dello scenario: Tentativo di creazione di un flusso con ID già esistente in uno stato non ammesso -- @1.2 
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema ... untested in 0.000s
+    E che il flusso di rendicontazione "2025-06-30ABI50004-1178" esiste già in stato "INSERTED" ... untested in 0.000s
+    Quando il PSP invia una richiesta di creazione flusso tramite l'api "Create a new flow structure" ... untested in 0.000s
+    Allora il sistema risponde con il codice di stato HTTP 400 ... untested in 0.000s
+    E il flusso di rendicontazione esistente non viene modificato a sistema ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

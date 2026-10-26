@@ -1,0 +1,64 @@
+<testsuite name="features.FEAT_010_FdR1_Recupero degli fdr da parte dell'EC.Recupero degli fdr su FdR1 da parte dell'EC" tests="4" errors="0" failures="0" skipped="0" time="0.0" timestamp="2026-10-26T14:45:38.792940" hostname="runnervmtai0g"><testcase classname="features.FEAT_010_FdR1_Recupero degli fdr da parte dell'EC.Recupero degli fdr su FdR1 da parte dell'EC" name="Richiesta singolo flusso" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @RecuperoFdR1_010_01
+  Scenario: Richiesta singolo flusso
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema ... untested in 0.000s
+    E l'fdr "2025-01-01PSPDEMO-0001" è presente su FdR1 ... untested in 0.000s
+    Quando il PSP invia una richiesta di recupero tramite la nodoChiediFlussoRendicontazione per l'fdr "2025-01-01PSPDEMO-0001" ... untested in 0.000s
+    Allora il sistema risponde con il codice di stato HTTP 200 ... untested in 0.000s
+    E Il PSP riceve l'XML relativo all' FdR "2025-01-01PSPDEMO-0001" ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_010_FdR1_Recupero degli fdr da parte dell'EC.Recupero degli fdr su FdR1 da parte dell'EC" name="Richiesta elenco di flussi" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @RecuperoFdR1_010_02
+  Scenario: Richiesta elenco di flussi
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema ... untested in 0.000s
+    Quando il PSP invia una richiesta di recupero massivo tramite nodoChiediElencoFlussiRendicontazione per il PSP con pspId "PSPDEMO" ... untested in 0.000s
+    Allora il sistema risponde con il codice di stato HTTP 200 ... untested in 0.000s
+    E Il PSP riceve l'XML relativo all' insieme dei FdR relativi al psp con pspId "PSPDEMO" ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_010_FdR1_Recupero degli fdr da parte dell'EC.Recupero degli fdr su FdR1 da parte dell'EC" name="Richiesta singolo flusso per flusso non presente" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @RecuperoFdR1_010_03
+  Scenario: Richiesta singolo flusso per flusso non presente
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema ... untested in 0.000s
+    E l'fdr "2025-01-01PSPDEMO-0001" non è presente su FdR1 ... untested in 0.000s
+    Quando il PSP invia una richiesta di recupero tramite la nodoChiediFlussoRendicontazione per l'fdr "2025-01-01PSPDEMO-0001" ... untested in 0.000s
+    Allora il sistema risponde con il codice di stato HTTP 200 ... untested in 0.000s
+    E nella risposta è riportato il codice di errore 404 ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_010_FdR1_Recupero degli fdr da parte dell'EC.Recupero degli fdr su FdR1 da parte dell'EC" name="Richiesta elenco di flussi non presenti" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @RecuperoFdR1_010_04
+  Scenario: Richiesta elenco di flussi non presenti
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema ... untested in 0.000s
+    E non sono presenti flussi per il PSP con pspId "PSPDEMO" su FdR1 ... untested in 0.000s
+    Quando il PSP invia una richiesta di recupero massivo tramite nodoChiediElencoFlussiRendicontazione per il PSP con pspId "PSPDEMO" ... untested in 0.000s
+    Allora il sistema risponde con il codice di stato HTTP 200 ... untested in 0.000s
+    E nella risposta è riportato il codice di errore 404 ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

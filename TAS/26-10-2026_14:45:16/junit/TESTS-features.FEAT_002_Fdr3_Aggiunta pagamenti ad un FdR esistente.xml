@@ -1,0 +1,118 @@
+<testsuite name="features.FEAT_002_Fdr3_Aggiunta pagamenti ad un FdR esistente.Aggiunta di Pagamenti ad un Fdr esistente" tests="6" errors="0" failures="0" skipped="0" time="0.0" timestamp="2026-10-26T14:45:38.788063" hostname="runnervmtai0g"><testcase classname="features.FEAT_002_Fdr3_Aggiunta pagamenti ad un FdR esistente.Aggiunta di Pagamenti ad un Fdr esistente" name="Aggiunta con successo di una lista di pagamenti a un flusso di rendicontazione -- @1.1 " status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @happy_path @Fdr3_002_01
+  Schema dello scenario: Aggiunta con successo di una lista di pagamenti a un flusso di rendicontazione -- @1.1 
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema ... untested in 0.000s
+    E che esiste un flusso di rendicontazione creato dal PSP con identificativo "2025-06-30ABI50004-1178" ... untested in 0.000s
+    E il PSP ha una lista di 1 pagamenti da aggiungere al flusso la cui somma degli importi è 3 ... untested in 0.000s
+    Quando il PSP invia una richiesta di aggiunta pagamenti al flusso "2025-06-30ABI50004-1178" tramite la api "Add one or more payments to an existing flow" con un body valido ... untested in 0.000s
+    Allora il sistema risponde con il codice di stato HTTP 200 ... untested in 0.000s
+    E la lista di pagamenti viene aggiunta al flusso di rendicontazione "2025-06-30ABI50004-1178" ... untested in 0.000s
+    E il numero totale di pagamenti associati al flusso viene aggiornato con 1 ... untested in 0.000s
+    E l'importo totale del flusso viene aggiornato con 3 ... untested in 0.000s
+    E il campo "last_update_date" è aggiornato all'ora corrente ... untested in 0.000s
+    E lo stato del flusso diventa "INSERTED" ... untested in 0.000s
+    E il blob object corrispondente viene aggiornato correttamente a sistema ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_002_Fdr3_Aggiunta pagamenti ad un FdR esistente.Aggiunta di Pagamenti ad un Fdr esistente" name="Aggiunta con successo di una lista di pagamenti a un flusso di rendicontazione -- @1.2 " status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @happy_path @Fdr3_002_01
+  Schema dello scenario: Aggiunta con successo di una lista di pagamenti a un flusso di rendicontazione -- @1.2 
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema ... untested in 0.000s
+    E che esiste un flusso di rendicontazione creato dal PSP con identificativo "2025-06-30ABI50004-1178" ... untested in 0.000s
+    E il PSP ha una lista di 1000 pagamenti da aggiungere al flusso la cui somma degli importi è 29999 ... untested in 0.000s
+    Quando il PSP invia una richiesta di aggiunta pagamenti al flusso "2025-06-30ABI50004-1178" tramite la api "Add one or more payments to an existing flow" con un body valido ... untested in 0.000s
+    Allora il sistema risponde con il codice di stato HTTP 200 ... untested in 0.000s
+    E la lista di pagamenti viene aggiunta al flusso di rendicontazione "2025-06-30ABI50004-1178" ... untested in 0.000s
+    E il numero totale di pagamenti associati al flusso viene aggiornato con 1000 ... untested in 0.000s
+    E l'importo totale del flusso viene aggiornato con 29999 ... untested in 0.000s
+    E il campo "last_update_date" è aggiornato all'ora corrente ... untested in 0.000s
+    E lo stato del flusso diventa "INSERTED" ... untested in 0.000s
+    E il blob object corrispondente viene aggiornato correttamente a sistema ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_002_Fdr3_Aggiunta pagamenti ad un FdR esistente.Aggiunta di Pagamenti ad un Fdr esistente" name="Tentativo di aggiunta di una lista di pagamenti che supera il limite massimo consentito" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @negative_path @Fdr3_002_02
+  Scenario: Tentativo di aggiunta di una lista di pagamenti che supera il limite massimo consentito
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema ... untested in 0.000s
+    E che esiste un flusso di rendicontazione creato dal PSP con identificativo "2025-06-30ABI50004-1178" ... untested in 0.000s
+    E il PSP ha una lista di 1001 pagamenti da aggiungere al flusso la cui somma degli importi è 300 ... untested in 0.000s
+    E tale numero di pagamenti supera il limite massimo consentito per un singolo invio ... untested in 0.000s
+    Quando il PSP invia una richiesta di aggiunta pagamenti al flusso "2025-06-30ABI50004-1178" tramite l'api "Add one or more payments to an existing flow" con un body valido ... untested in 0.000s
+    Allora il sistema risponde con un errore di validazione ... untested in 0.000s
+    E restituisce il codice di stato HTTP 400 ... untested in 0.000s
+    E la lista di pagamenti non viene aggiunta al flusso di rendicontazione ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_002_Fdr3_Aggiunta pagamenti ad un FdR esistente.Aggiunta di Pagamenti ad un Fdr esistente" name="Tentativo di aggiunta pagamenti con somma degli importi non corretta" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @negative_path @FEAT_002_03
+  Scenario: Tentativo di aggiunta pagamenti con somma degli importi non corretta
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema ... untested in 0.000s
+    E che esiste un flusso di rendicontazione creato dal PSP con identificativo "2025-06-30ABI50004-1178" ... untested in 0.000s
+    E il PSP ha una lista di 10 pagamenti da aggiungere al flusso ... untested in 0.000s
+    Ma la somma degli importi 100 indicata nella richiesta non è corretta rispetto al totale dei singoli pagamenti ... untested in 0.000s
+    Quando il PSP invia una richiesta di aggiunta pagamenti al flusso "2025-06-30ABI50004-1178" tramite l'api "Add one or more payments to an existing flow" con un body formalmente valido ... untested in 0.000s
+    Allora il sistema risponde con un errore di validazione ... untested in 0.000s
+    E restituisce il codice di stato HTTP 400 ... untested in 0.000s
+    E la lista di pagamenti non viene aggiunta al flusso di rendicontazione ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_002_Fdr3_Aggiunta pagamenti ad un FdR esistente.Aggiunta di Pagamenti ad un Fdr esistente" name="Tentativo di aggiunta pagamenti a un flusso di rendicontazione non esistente a database" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @negative_path @Fdr3_002_04
+  Scenario: Tentativo di aggiunta pagamenti a un flusso di rendicontazione non esistente a database
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema ... untested in 0.000s
+    E che non esiste alcun flusso di rendicontazione creato dal PSP con identificativo "2025-06-30ABI50004-1176" ... untested in 0.000s
+    E il PSP ha una lista di 10 pagamenti da aggiungere con somma degli importi pari a 100 ... untested in 0.000s
+    Quando il PSP invia una richiesta di aggiunta pagamenti al flusso "2025-06-30ABI50004-1176" tramite l'api "Add one or more payments to an existing flow" con un body formalmente valido ... untested in 0.000s
+    Allora il sistema risponde con un errore di risorsa non trovata ... untested in 0.000s
+    E restituisce il codice di stato HTTP 404 ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_002_Fdr3_Aggiunta pagamenti ad un FdR esistente.Aggiunta di Pagamenti ad un Fdr esistente" name="Tentativo di aggiunta pagamenti a un flusso di rendicontazione già in stato PUBLISHED" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @negative_path @Fdr3_002_05
+  Scenario: Tentativo di aggiunta pagamenti a un flusso di rendicontazione già in stato PUBLISHED
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema ... untested in 0.000s
+    E che esiste un flusso di rendicontazione creato dal PSP con identificativo "2025-06-30ABI50004-1178" ... untested in 0.000s
+    E il flusso si trova in stato "PUBLISHED" ... untested in 0.000s
+    E il PSP ha una lista di 10 pagamenti da aggiungere con somma degli importi pari a 100 ... untested in 0.000s
+    Quando il PSP invia una richiesta di aggiunta pagamenti al flusso "flow_name" tramite l'api "Add one or more payments to an existing flow" con un body formalmente valido ... untested in 0.000s
+    Allora il sistema risponde con il codice di stato HTTP 404 ... untested in 0.000s
+    E il flusso di rendicontazione in stato "PUBLISHED" non viene modificato a sistema ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

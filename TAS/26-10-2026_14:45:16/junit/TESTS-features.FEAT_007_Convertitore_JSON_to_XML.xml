@@ -1,0 +1,51 @@
+<testsuite name="features.FEAT_007_Convertitore_JSON_to_XML.Ccnversione da JSON a XML di un Fdr" tests="3" errors="0" failures="0" skipped="0" time="0.0" timestamp="2026-10-26T14:45:38.792123" hostname="runnervmtai0g"><testcase classname="features.FEAT_007_Convertitore_JSON_to_XML.Ccnversione da JSON a XML di un Fdr" name="Conversione da Json a XML" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @ConversioneDaJSONaXML_007_01
+  Scenario: Conversione da Json a XML
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema ... untested in 0.000s
+    E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" è in stato PUBLISHED ... untested in 0.000s
+    E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" si trova all'interno di fdr3-flows ... untested in 0.000s
+    Quando Viene attivato il convertitore JSON to XML tramite la post /notify/fdr ... untested in 0.000s
+    Allora su Fdr1 è presente il flusso di rendicontazione "2025-01-01PSPDEMO-0001" in formato XML ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_007_Convertitore_JSON_to_XML.Ccnversione da JSON a XML di un Fdr" name="Recovery manuale singolo" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @ConversioneDaJSONaXML_007_02
+  Scenario: Recovery manuale singolo
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema ... untested in 0.000s
+    E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" è in stato PUBLISHED ... untested in 0.000s
+    E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" si trova all'interno di fdr3-flows ... untested in 0.000s
+    E che la conversione del flusso di rendicontazione "2025-01-01PSPDEMO-0001" è andata in errore ... untested in 0.000s
+    Quando Viene chiamato il servizio di retry singolo tramite la GET /errors/{blobName}/retry ... untested in 0.000s
+    Allora su Fdr1 è presente il flusso di rendicontazione "2025-01-01PSPDEMO-0001" in formato XML ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_007_Convertitore_JSON_to_XML.Ccnversione da JSON a XML di un Fdr" name="Recovery massivo" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @ConversioneDaJSONaXML_007_03
+  Scenario: Recovery massivo
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema ... untested in 0.000s
+    E che X flussi di rendicontazione sono in stato PUBLISHED ... untested in 0.000s
+    E che X flussi di rendicontazione sono all'interno di fdr3-flows ... untested in 0.000s
+    E che la conversione dei flussi di rendicontazione è andata in errore ... untested in 0.000s
+    Quando Viene chiamato il servizio di retry massivo tramite la GET /errors/retry ... untested in 0.000s
+    Allora su Fdr1 sono presenti tutti gli X flussi di rendicontazione in formato XML ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

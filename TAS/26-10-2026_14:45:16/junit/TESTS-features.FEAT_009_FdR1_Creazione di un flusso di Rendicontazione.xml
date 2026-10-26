@@ -1,0 +1,17 @@
+<testsuite name="features.FEAT_009_FdR1_Creazione di un flusso di Rendicontazione.Creazione di un flusso di rendicontazione su FdR1" tests="1" errors="0" failures="0" skipped="0" time="0.0" timestamp="2026-10-26T14:45:38.792725" hostname="runnervmtai0g"><testcase classname="features.FEAT_009_FdR1_Creazione di un flusso di Rendicontazione.Creazione di un flusso di rendicontazione su FdR1" name="Creazione FdR per EC non configurato come sFTP" status="untested" time="0"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @FdR1CreazioneFdR_009_01
+  Scenario: Creazione FdR per EC non configurato come sFTP
+    Dati i sistemi sono operativi ... untested in 0.000s
+    Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema ... untested in 0.000s
+    Quando Il PSP invia l'fdr "2025-01-01PSPDEMO-0001" tramite la nodoInviaFlussoRendicontazione verso FDR1 ... untested in 0.000s
+    Allora il sistema risponde con il codice di stato HTTP 200 ... untested in 0.000s
+    E viene ricevuto tramite response l'XML del flusso di rendicontazione ... untested in 0.000s
+    E su FdR1 è presente l'fdr "2025-01-01PSPDEMO-0001" in formato XML ... untested in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
