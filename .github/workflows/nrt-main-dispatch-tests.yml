@@ -95,7 +95,7 @@ jobs:
   publish_allure_reports:
     name: NRT - Publish Allure reports
     if: always() && needs.prepare.result == 'success'
-    needs: [prepare, run_suites]
+    needs: [prepare, run_suites, ai_analysis]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -118,6 +118,20 @@ jobs:
           path: nrt-allure-history
           merge-multiple: true
 
+      - name: Download aggregate AI analysis
+        if: needs.ai_analysis.result == 'success'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: nrt-ai-analysis
+          path: artifacts/nrt-ai-analysis
+
+      - name: Warn when AI analysis is unavailable
+        if: needs.ai_analysis.result != 'success'
+        env:
+          AI_ANALYSIS_RESULT: ${{ needs.ai_analysis.result }}
+        run: |
+          echo "::warning::AI analysis ended with ${AI_ANALYSIS_RESULT}; publishing Allure reports without analysis."
+
       - name: Add suite Allure histories to the published site
         env:
           SUITE_MATRIX: ${{ needs.prepare.outputs.matrix }}
@@ -130,6 +144,7 @@ jobs:
             for subfolder in "${subfolders[@]}"; do
               suite_history="nrt-allure-history/${subfolder}-${TARGET_ENV}"
               report_dir="${suite_history}/${RUN_NUMBER}"
+
               if [ ! -d "$report_dir" ]; then
                 echo "::warning::No Allure report was produced for ${subfolder} (${TARGET_ENV})."
                 continue
@@ -143,13 +158,6 @@ jobs:
               destination="public/${subfolder}/${timestamp}"
               mkdir -p "$destination"
               cp -r "$report_dir/." "$destination/"
-
-              # Keep the reusable workflow's environment-specific trend history.
-              if [ -d "${suite_history}/last-history" ]; then
-                history_destination="public/${subfolder}-${TARGET_ENV}/last-history"
-                mkdir -p "$history_destination"
-                cp -r "${suite_history}/last-history/." "$history_destination/"
-              fi
             done
           else
             echo "No Allure history artifacts were produced."
@@ -164,6 +172,11 @@ jobs:
         run: pip install jinja2
 
       - name: Update report indexes and statistics
+        env:
+          AI_ANALYSIS_RESULT: ${{ needs.ai_analysis.result }}
+          SUITE_MATRIX: ${{ needs.prepare.outputs.matrix }}
+          TARGET_ENV: ${{ needs.prepare.outputs.target_env }}
+          RUN_NUMBER: ${{ github.run_number }}
         run: python .github/scripts/nrt-publish-indexes.py
 
       - name: Deploy Allure reports to GitHub Pages
