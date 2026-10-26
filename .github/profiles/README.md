@@ -13,7 +13,7 @@ o contraddittorio blocca le modifiche dipendenti, senza valori inventati.
 | [gherkin.profile.yaml](gherkin.profile.yaml) | [Istruzioni Gherkin](../instructions/gherkin.instructions.md), QA-analyst | Lingua italiana; massimo 12 definizioni Scenario/Outline per file; naming, indentazione, tag e tracking. Regex in dialetto Python `re`, con gruppi nominati. |
 | [behave-steps.profile.yaml](behave-steps.profile.yaml) | [Istruzioni Behave](../instructions/behave-steps.instructions.md), QA-engineer | README delle utility da leggere e template `src/<test-type>/<suite>/utility`, risolto con tipo e suite effettivi. |
 
-Le istruzioni governano semantica e compatibilita; i profili ne forniscono i
+Le istruzioni governano semantica e compatibilità; i profili ne forniscono i
 parametri. Non duplicare qui regole null, ownership o autorizzazioni.
 Non esistono in questa cartella profili dedicati a Python generico o al runner.
 

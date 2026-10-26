@@ -10,8 +10,8 @@ Non caricare indiscriminatamente istruzioni o lezioni di altri ruoli.
 
 | File | Scope / utilizzatore | Contenuto |
 | --- | --- | --- |
-| [gherkin.instructions.md](gherkin.instructions.md) | `src/**/*.feature`; QA-analyst | Design Gherkin, identita/tag stabili, copertura, outline e celle vuote come null. Legge il [profilo Gherkin](../profiles/gherkin.profile.yaml). |
-| [python-scripts.instructions.md](python-scripts.instructions.md) | `**/*.py`; chi crea/modifica Python, inclusi engineer e utility engineer | Docstring, tipi, compatibilita, riuso, errori, risorse e verifica proporzionata. Non concede permessi di esecuzione. |
+| [gherkin.instructions.md](gherkin.instructions.md) | `src/**/*.feature`; QA-analyst | Design Gherkin, identità/tag stabili, copertura, outline e celle vuote come null. Legge il [profilo Gherkin](../profiles/gherkin.profile.yaml). |
+| [python-scripts.instructions.md](python-scripts.instructions.md) | `**/*.py`; chi crea/modifica Python, inclusi engineer e utility engineer | Docstring, tipi, compatibilità, riuso, errori, risorse e verifica proporzionata. Non concede permessi di esecuzione. |
 | [behave-steps.instructions.md](behave-steps.instructions.md) | `src/**/steps/**/*.py`; QA-engineer | Binding/matcher, context lifecycle, input strutturati, assertion, attese e riuso utility. Si aggiunge alle regole Python e legge il [profilo Behave](../profiles/behave-steps.profile.yaml). |
 | [run-tests.instructions.md](run-tests.instructions.md) | Esecuzione/diagnosi; QA-runner | Interprete, selezione suite, configurazione effettiva, evidenze, exit code, preflight e interruzioni. Gli esempi non autorizzano run o installazioni. |
 

@@ -1,19 +1,19 @@
 # Agenti
 
-Gli agenti definiscono responsabilita, strumenti e limiti; persona e workflow
+Gli agenti definiscono responsabilità, strumenti e limiti; persona e workflow
 collegati nei rispettivi file sono il contratto operativo completo.
-Selezionare un agente invocabile nel client e indicare attivita, input, scope
+Selezionare un agente invocabile nel client e indicare attività, input, scope
 e risultato atteso. Per runner e closer, non invocabili direttamente, passare
 dall'orchestratore.
 
 ## Catalogo e uso
 
-| Agente | Accesso | Responsabilita e limiti | Esempio di richiesta |
+| Agente | Accesso | Responsabilità e limiti | Esempio di richiesta |
 | --- | --- | --- | --- |
 | [QA-orchestrator](QA-orchestrator.agent.md) | Diretto | Coordina il lavoro QA e le deleghe; distingue nuovo lavoro, ripresa ed esplorazione. Non scrive feature o Python. | «Esplora la copertura WISP: restituisci gap e piano, senza modifiche o esecuzioni.» |
 | [QA-analyst](QA-analyst.agent.md) | Diretto | Review, modifica e creazione Gherkin da UC/documentazione. Non scrive Python e non esegue test. | «Analizza le feature allegate in sola lettura; segnala problemi con riferimenti di riga.» |
 | [QA-engineer](QA-engineer.agent.md) | Diretto | Review e implementazione di binding Python e wiring autorizzato. Delega le utility; restituisce `implemented-not-run`, non esegue test. | «Implementa gli step della feature allegata nella suite WISP, senza cambiare la feature o eseguire test.» |
-| [Python-utility-engineer](Python-utility-engineer.agent.md) | Diretto | Utility condivise/locali, export, test unitari e documentazione correlata. Non modifica step/hook e non esegue comandi. | «Rivedi l'utility allegata: verifica contratto e compatibilita dei chiamanti, senza modifiche.» |
+| [Python-utility-engineer](Python-utility-engineer.agent.md) | Diretto | Utility condivise/locali, export, test unitari e documentazione correlata. Non modifica step/hook e non esegue comandi. | «Rivedi l'utility allegata: verifica contratto e compatibilità dei chiamanti, senza modifiche.» |
 | [QA-runner](QA-runner.agent.md) | Delega | Esegue/diagnostica su piano approvato; non modifica codice/configurazione. Dopo il fallimento iniziale consente fino a cinque fix bonus autorizzati, oppure report diretto. | All'orchestratore: «Fai eseguire WISP in UAT: prima mostrami il piano; nessun fix automatico.» |
 | [Qa-closer](Qa-closer.agent.md) | Delega | Documentazione e pubblicazione con evidenze correnti e permessi separati per commit/push/PR; report-only per errori residui. Non esegue test. | All'orchestratore: «Con le evidenze runner correnti, delega la sola chiusura documentale; niente commit, push o PR.» |
 | [gh/ace/reflector](ACE-reflector.agent.md) | Diretto / ciclo ACE | Analizza batch di tracce e produce proposte supportate da evidenze; non modifica playbook. | «Analizza il batch di tracce sanitizzate indicato e produci le proposte previste dal contratto.» |
