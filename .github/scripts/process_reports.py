@@ -149,6 +149,45 @@ def build_index_page(root_dir):
         f.write(template.render(reports=reports))
     print(f"[INFO][build_index_page] written index page to {output_path}")
 
+def build_tas_index_page(root_dir):
+    """Build the TAS history index from complete timestamped reports."""
+    root_path = Path(root_dir)
+    reports = []
+    for report_dir in root_path.iterdir():
+        if not report_dir.is_dir():
+            continue
+        try:
+            timestamp = datetime.strptime(report_dir.name, "%d-%m-%Y_%H:%M:%S")
+        except ValueError:
+            continue
+        report_index = report_dir / "index.html"
+        if not report_index.is_file() or report_index.stat().st_size == 0:
+            continue
+        analysis_index = report_dir / "analysis" / "index.html"
+        has_analysis = analysis_index.is_file()
+        reports.append({
+            "timestamp": timestamp.strftime("%d-%m-%Y %H:%M:%S"),
+            "link": f"./{report_dir.name}/index.html",
+            "has_analysis": has_analysis,
+            "analysis_link": (
+                f"./{report_dir.name}/analysis/index.html" if has_analysis else None
+            ),
+            "sort_key": timestamp,
+        })
+
+    reports.sort(key=lambda report: report["sort_key"], reverse=True)
+    for report in reports:
+        del report["sort_key"]
+
+    environment = Environment(
+        loader=FileSystemLoader(".github/templates"),
+        autoescape=select_autoescape(["html", "xml"]),
+    )
+    template = environment.get_template("tas-history-index-template.html")
+    (root_path / "index.html").write_text(
+        template.render(reports=reports), encoding="utf-8"
+    )
+
 def deploy_ai_analysis(
     artifact_dir,
     run_dir,
@@ -156,6 +195,7 @@ def deploy_ai_analysis(
     analysis_artifact_name,
     suite_label,
     timestamp,
+    history_url="../../index.html",
 ):
     """Render the AI analysis HTML page inside run_dir and last_history_dir.
 
@@ -193,9 +233,14 @@ def deploy_ai_analysis(
         timestamp=timestamp or "unknown",
         model=model,
         analysis_markdown=analysis_text,
+        history_url=history_url,
     )
 
-    for base in (Path(run_dir), Path(last_history_dir)):
+    report_dirs = [Path(run_dir)]
+    if last_history_dir is not None:
+        report_dirs.append(Path(last_history_dir))
+
+    for base in report_dirs:
         analysis_dir = base / "analysis"
         analysis_dir.mkdir(parents=True, exist_ok=True)
         (analysis_dir / "index.html").write_text(rendered, encoding="utf-8")

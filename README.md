@@ -108,6 +108,8 @@ Riferimenti: `requirements.txt`, `.github/workflows/wisp-tests.yml`,
 
 ### Framework ACE (embedded)
 
+Repository originale di ACE: [daniele-quero/ace](https://github.com/daniele-quero/ace).
+
 Questo repository include un runtime ACE embedded per la raccolta delle trace di task e per il workflow di reflection del team. Per installare/configurare il framework, fare riferimento al README interno di ACE:
 
 - [ace/README_EMBEDDED.md](./ace/README_EMBEDDED.md)
@@ -223,13 +225,16 @@ Riferimenti: `config.yaml`, `config/.secrets_template.yaml`,
 
 ### E2E test
 
-Le suite Behave sotto `src/e2e/` caricano ognuna un file env locale tramite variabile `ENV_FILE`.
-Es. `dev.yaml` in checkout.
+Checkout carica `<TARGET_ENV>.yaml` dalla directory della suite tramite
+`load_configurations`; senza selettore usa UAT. Il loader corrente non legge
+`ENV_FILE`. L'esempio seleziona UAT, ambiente registrato per Checkout NRT.
+Nell'hook `HEADLESS` e `E2E_TIMEOUT_MS` vengono prima dalla configurazione:
+le variabili omonime sono fallback, non override garantiti.
 
 PowerShell:
 
 ```powershell
-$env:ENV_FILE = "dev.env"
+$env:TARGET_ENV = "uat"
 $env:HEADLESS = "true"
 $env:E2E_TIMEOUT_MS = "80000"
 ```
@@ -237,12 +242,13 @@ $env:E2E_TIMEOUT_MS = "80000"
 Bash:
 
 ```bash
-export ENV_FILE=dev.yaml
+export TARGET_ENV=uat
 export HEADLESS=true
 export E2E_TIMEOUT_MS=80000
 ```
 
-Riferimenti: `src/e2e/checkout/environment.py`, `src/e2e/checkout/dev.yaml`.
+Riferimenti: `src/e2e/checkout/environment.py`, `src/conf/configuration.py`,
+`src/e2e/checkout/uat.yaml`, `.github/nrt-suites.json`.
 
 ### Gestione dei secret
 
@@ -400,37 +406,66 @@ Riferimenti: `src/e2e/checkout/features/*.feature`,
 ## Esecuzione locale
 
 Tutti i comandi Behave vanno eseguiti dalla root del repository.
+Gli esempi locali creano output separati per run e tentativo (`initial-00`);
+per i fix usare `fix-01` fino a `fix-05`, conservando le evidenze precedenti.
+Se una destinazione esiste gia, fermarsi senza sovrascriverla. Con il runner,
+ambiente, selezione, effetti e politica dei tentativi richiedono un piano approvato.
+Gli esempi Behave seguenti sono per una **shell dedicata**, con interprete Python
+esplicitamente scelto al posto di `<approved-python-executable>` (per esempio il
+percorso assoluto del virtualenv verificato). Propagano l'exit code al chiamante:
+in uso interattivo conservare/riferire lo stato senza eseguire `exit`.
+Non richiedono installazioni o probe live impliciti. Per suite NRT risolvere
+ID, path, tag e ambienti dal [catalogo corrente](.github/nrt-suites.json);
+per altre suite usare configurazione e documentazione effettive. I selettori
+non provano da soli quale deployment venga usato.
+
+Gli esempi acquisiscono stdout/stderr nel terminale/tool, non scrivono
+automaticamente un log su disco: concordare una cattura conservata e riportarne
+solo riferimenti reali. Tenere separati esito dei test e problemi di persistenza,
+senza pubblicare output sensibili. Dettagli su interprete, configurazione,
+preflight e stato remoto nelle [istruzioni di esecuzione](.github/instructions/run-tests.instructions.md).
 
 ### Singola suite API
 
 PowerShell:
 
 ```powershell
+$ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $false
+$python = (Get-Command "<approved-python-executable>" -CommandType Application -ErrorAction Stop).Source
 $env:TARGET_ENV = "uat"
 $suite = "cart"
-$outDir = "reports\allure-results\$suite-$env:TARGET_ENV"
+$runId = [guid]::NewGuid().ToString("N")
+$outDir = "reports\allure-results\$suite-$env:TARGET_ENV\$runId\initial-00"
+New-Item $outDir -ItemType Directory -ErrorAction Stop | Out-Null
 
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $outDir
-New-Item $outDir -ItemType Directory -Force | Out-Null
-
-behave "src\api\$suite" `
+$LASTEXITCODE = $null
+& $python -m behave "src\api\$suite" `
   -f allure_behave.formatter:AllureFormatter -o $outDir `
   -f progress --summary --show-timings
+$testExit = $LASTEXITCODE
+if ($null -eq $testExit) { throw "Test process did not return an exit code" }
+exit $testExit
 ```
 
 Bash:
 
 ```bash
+python="<approved-python-executable>"
+command -v "$python" >/dev/null || { printf '%s\n' "Python executable unavailable" >&2; exit 1; }
 export TARGET_ENV=uat
 suite="cart"
-out_dir="reports/allure-results/${suite}-${TARGET_ENV}"
+run_id="$(date -u +%Y%m%dT%H%M%SZ)-${RANDOM}"
+run_dir="reports/allure-results/${suite}-${TARGET_ENV}/${run_id}"
+out_dir="${run_dir}/initial-00"
+mkdir -p "$run_dir" || exit 1
+mkdir "$out_dir" || exit 1
 
-rm -rf "$out_dir"
-mkdir -p "$out_dir"
-
-behave "src/api/${suite}" \
+"$python" -m behave "src/api/${suite}" \
   -f allure_behave.formatter:AllureFormatter -o "$out_dir" \
   -f progress --summary --show-timings
+test_exit=$?
+exit "$test_exit"
 ```
 
 Sostituire `cart` con `auth-service`, `checkout-npg` o `ecommerce-cdc`.
@@ -440,37 +475,60 @@ Riferimenti: regole operative di progetto, `src/api/utility/api_test_environment
 
 ### WISP e FdR
 
+L'esempio seleziona WISP. Per la suite NRT FdR3 usare `suite="fdr3"` e
+confermare path/tag/ambiente nel catalogo. La suite legacy `fdr` e distinta:
+usarla solo se espressamente richiesta, senza sostituirla a `fdr3`.
+
 PowerShell:
 
 ```powershell
+$ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $false
+$python = (Get-Command "<approved-python-executable>" -CommandType Application -ErrorAction Stop).Source
 $env:TARGET_ENV = "uat"
 $suite = "wisp"
-$outDir = "reports\allure-results\$suite-uat"
+$env:suite = $suite
+$tagArgs = @("--tags=@runnable")
+$runId = [guid]::NewGuid().ToString("N")
+$outDir = "reports\allure-results\$suite-uat\$runId\initial-00"
+$junitDir = "reports\junit\$suite-uat\$runId\initial-00"
+New-Item $outDir -ItemType Directory -ErrorAction Stop | Out-Null
+New-Item $junitDir -ItemType Directory -ErrorAction Stop | Out-Null
 
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $outDir
-New-Item $outDir -ItemType Directory -Force | Out-Null
-
-behave "src\integration\$suite" --tags=@runnable  `
+$LASTEXITCODE = $null
+& $python -m behave "src\integration\$suite" @tagArgs `
   -f allure_behave.formatter:AllureFormatter -o $outDir `
-  -f progress --junit-directory=junit --junit --summary --show-timings -v
+  -f progress --junit-directory=$junitDir --junit --summary --show-timings -v
+$testExit = $LASTEXITCODE
+if ($null -eq $testExit) { throw "Test process did not return an exit code" }
+exit $testExit
 ```
 
 Bash:
 
 ```bash
+python="<approved-python-executable>"
+command -v "$python" >/dev/null || { printf '%s\n' "Python executable unavailable" >&2; exit 1; }
 export TARGET_ENV=uat
-suite="wisp"
-out_dir="reports/allure-results/${suite}-uat"
+export suite="wisp"
+tag_args=("--tags=@runnable")
+run_id="$(date -u +%Y%m%dT%H%M%SZ)-${RANDOM}"
+run_dir="reports/allure-results/${suite}-uat/${run_id}"
+junit_run_dir="reports/junit/${suite}-uat/${run_id}"
+out_dir="${run_dir}/initial-00"
+junit_dir="${junit_run_dir}/initial-00"
+mkdir -p "$run_dir" "$junit_run_dir" || exit 1
+mkdir "$out_dir" "$junit_dir" || exit 1
 
-rm -rf "$out_dir"
-mkdir -p "$out_dir"
-
-behave "src/integration/${suite}" --tags=@runnable \
+"$python" -m behave "src/integration/${suite}" "${tag_args[@]}" \
   -f allure_behave.formatter:AllureFormatter -o "$out_dir" \
-  -f progress --junit-directory=junit --junit --summary --show-timings -v
+  -f progress --junit-directory="$junit_dir" --junit --summary --show-timings -v
+test_exit=$?
+exit "$test_exit"
 ```
 
-Per FdR usare `suite="fdr"`.
+I riferimenti storici seguenti descrivono WISP/FdR legacy; per NRT usare anche
+il [workflow corrente](.github/workflows/nrt-run-suite.yml) e il catalogo.
 
 Riferimenti: `.github/workflows/wisp-tests.yml`, `.github/workflows/fdr-tests.yml`,
 `.github/workflows/run_behave_tests.yml`, `src/integration/wisp/features/**`,
@@ -481,29 +539,40 @@ Riferimenti: `.github/workflows/wisp-tests.yml`, `.github/workflows/fdr-tests.ym
 PowerShell:
 
 ```powershell
+$ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $false
+$python = (Get-Command "<approved-python-executable>" -CommandType Application -ErrorAction Stop).Source
 $env:TARGET_ENV = "uat"
-$outDir = "reports\allure-results\ebollo-uat"
+$runId = [guid]::NewGuid().ToString("N")
+$outDir = "reports\allure-results\ebollo-uat\$runId\initial-00"
+New-Item $outDir -ItemType Directory -ErrorAction Stop | Out-Null
 
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $outDir
-New-Item $outDir -ItemType Directory -Force | Out-Null
-
-behave "src\integration\ebollo" `
+$LASTEXITCODE = $null
+& $python -m behave "src\integration\ebollo" `
   -f allure_behave.formatter:AllureFormatter -o $outDir `
   -f progress --summary --show-timings
+$testExit = $LASTEXITCODE
+if ($null -eq $testExit) { throw "Test process did not return an exit code" }
+exit $testExit
 ```
 
 Bash:
 
 ```bash
+python="<approved-python-executable>"
+command -v "$python" >/dev/null || { printf '%s\n' "Python executable unavailable" >&2; exit 1; }
 export TARGET_ENV=uat
-out_dir="reports/allure-results/ebollo-uat"
+run_id="$(date -u +%Y%m%dT%H%M%SZ)-${RANDOM}"
+run_dir="reports/allure-results/ebollo-uat/${run_id}"
+out_dir="${run_dir}/initial-00"
+mkdir -p "$run_dir" || exit 1
+mkdir "$out_dir" || exit 1
 
-rm -rf "$out_dir"
-mkdir -p "$out_dir"
-
-behave "src/integration/ebollo" \
+"$python" -m behave "src/integration/ebollo" \
   -f allure_behave.formatter:AllureFormatter -o "$out_dir" \
   -f progress --summary --show-timings
+test_exit=$?
+exit "$test_exit"
 ```
 
 Riferimenti: `src/integration/ebollo/environment.py`,
@@ -511,38 +580,59 @@ Riferimenti: `src/integration/ebollo/environment.py`,
 
 ### E2E 
 
+L'esempio segue l'entry NRT `checkout` in UAT e i suoi due argomenti tag.
+Il loader corrente legge `<TARGET_ENV>.yaml` dalla root della suite (default
+UAT); non usa `ENV_FILE`. `HEADLESS` dal file di configurazione ha precedenza
+sul fallback d'ambiente nell'hook. Confermare configurazione e disponibilita
+del browser richiesto prima del run, senza installarlo implicitamente.
+
 PowerShell:
 
 ```powershell
-$env:ENV_FILE = "dev.env"
+$ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $false
+$python = (Get-Command "<approved-python-executable>" -CommandType Application -ErrorAction Stop).Source
+$env:TARGET_ENV = "uat"
+$env:suite = "checkout"
 $env:HEADLESS = "true"
-$outDir = "reports\allure-results\checkout-dev"
+$tagArgs = @("--tags=@e2e", "--tags=~@skip")
+$runId = [guid]::NewGuid().ToString("N")
+$outDir = "reports\allure-results\checkout-uat\$runId\initial-00"
+New-Item $outDir -ItemType Directory -ErrorAction Stop | Out-Null
 
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $outDir
-New-Item $outDir -ItemType Directory -Force | Out-Null
-
-behave "src\e2e\checkout" `
+$LASTEXITCODE = $null
+& $python -m behave "src\e2e\checkout" @tagArgs `
   -f allure_behave.formatter:AllureFormatter -o $outDir `
   -f progress --summary --show-timings
+$testExit = $LASTEXITCODE
+if ($null -eq $testExit) { throw "Test process did not return an exit code" }
+exit $testExit
 ```
 
 Bash:
 
 ```bash
-export ENV_FILE=dev.yaml
+python="<approved-python-executable>"
+command -v "$python" >/dev/null || { printf '%s\n' "Python executable unavailable" >&2; exit 1; }
+export TARGET_ENV=uat
+export suite=checkout
 export HEADLESS=true
-out_dir="reports/allure-results/checkout-dev"
+tag_args=("--tags=@e2e" "--tags=~@skip")
+run_id="$(date -u +%Y%m%dT%H%M%SZ)-${RANDOM}"
+run_dir="reports/allure-results/checkout-uat/${run_id}"
+out_dir="${run_dir}/initial-00"
+mkdir -p "$run_dir" || exit 1
+mkdir "$out_dir" || exit 1
 
-rm -rf "$out_dir"
-mkdir -p "$out_dir"
-
-behave "src/e2e/checkout" \
+"$python" -m behave "src/e2e/checkout" "${tag_args[@]}" \
   -f allure_behave.formatter:AllureFormatter -o "$out_dir" \
   -f progress --summary --show-timings
+test_exit=$?
+exit "$test_exit"
 ```
 
 Riferimenti: `src/e2e/checkout/environment.py`,
-`src/e2e/checkout/dev.yaml`.
+`src/conf/configuration.py`, `src/e2e/checkout/uat.yaml`.
 
 ### GPD Cucumber.js
 
@@ -564,37 +654,40 @@ Riferimenti: `src/integration/gpd/package.json`, `src/integration/gpd/README.md`
 In locale usare:
 
 ```text
-reports/allure-results/<suite>-<env>
+reports/allure-results/<suite>-<env>/<run-id>/<attempt-id>
+reports/junit/<suite>-<env>/<run-id>/<attempt-id>
 ```
 
 Nei workflow WISP/FdR il runner produce `allure-results` nella working directory, poi il report
 HTML viene pubblicato come artefatto e copiato su GitHub Pages.
+Le convenzioni CI restano invariate; in locale non mescolare tentativi o cancellare
+la directory condivisa per preparare una nuova esecuzione.
 
 Riferimenti: regole operative di progetto, `.github/workflows/wisp-tests.yml`,
 `.github/workflows/fdr-tests.yml`, `.github/workflows/run_behave_tests.yml`.
 
 ### Aprire il report locale
 
-PowerShell, usando un percorso assoluto su Windows:
+Solo quando richiesto, aprire l'output di un tentativo preciso. PowerShell,
+risolvendo dalla root del repository un percorso assoluto esistente:
 
 ```powershell
-allure serve `
-  "...\pagopa-platform-integration-test\reports\allure-results\cart-uat" `
-  --port 5300
+$results = (Resolve-Path -LiteralPath "reports\allure-results\cart-uat\<run-id>\initial-00" -ErrorAction Stop).Path
+allure serve $results --port 5300
 ```
 
 Bash:
 
 ```bash
-allure serve "$PWD/reports/allure-results/cart-uat" --port 5300
+allure serve "$PWD/reports/allure-results/cart-uat/<run-id>/initial-00" --port 5300
 ```
 
 In alternativa, generare una directory HTML statica:
 
 ```bash
-allure generate reports/allure-results/cart-uat \
-  -o reports/allure-html/cart-uat --clean
-allure open reports/allure-html/cart-uat --port 5300
+allure generate "reports/allure-results/cart-uat/<run-id>/initial-00" \
+  -o "reports/allure-html/cart-uat/<run-id>/initial-00"
+allure open "reports/allure-html/cart-uat/<run-id>/initial-00" --port 5300
 ```
 
 Nota sul formatter Behave: `-o` si associa al primo formatter indicato. Mettere sempre
@@ -949,6 +1042,10 @@ Riferimenti: `scenario_parser.py`, `.github/workflows/landing_pages.yaml`.
 
 ## Contribuire
 
+Indici degli asset AI: [agenti](.github/agents/README.md),
+[skill](.github/skills/README.md), [istruzioni](.github/instructions/README.md)
+e [profili](.github/profiles/README.md), con scope, modalita d'uso ed esempi.
+
 ### Convenzioni Gherkin
 
 - Usare un solo `Feature` per file.
@@ -969,12 +1066,84 @@ Riferimenti: regole operative di progetto, feature file esistenti.
 2. Implementare o aggiornare solo gli step necessari.
 3. Riutilizzare helper, fixture e pattern gia presenti nella suite scelta come blueprint.
 4. Eseguire la suite con Allure e JUnit quando disponibile.
-5. Considerare completata la modifica solo con `0` scenari falliti.
-6. Se una run fallisce, salvare in `reports/` un report sintetico in italiano con scenari
-   falliti, causa probabile e azioni correttive.
+5. Verificare che lo scope approvato sia stato realmente eseguito: exit code,
+   conteggi, errori, esclusioni e artifact correnti; `0` falliti da solo non basta.
+6. Se restano errori nella lavorazione di una suite, salvare o riusare in `reports/`
+   il report Markdown del runner, in italiano, con scenari falliti, evidenze,
+   causa probabile e azioni correttive. Nessun report autonomo di successo.
 7. Non disabilitare scenari falliti per far passare la suite.
 
 Riferimenti: regole operative di progetto, `reports/`, suite esistenti.
+
+L'orchestratore separa il [routing di sessione e branch](docs/workflows/qa-orchestrator/session-routing.md)
+dal [workflow operativo](docs/workflows/qa-orchestrator/operations.md): entra
+dall'agente necessario e si ferma al risultato richiesto, senza imporre sempre
+analista, esecuzione e closer. Le riprese conservano progressi e budget; vale
+l'ultima autorizzazione esplicita applicabile, incluse revoche. Cambiamenti
+rilevanti invalidano le evidenze dipendenti e le esecuzioni parallele richiedono
+anche isolamento dei dati/risorse esterne. Esito QA e completamento ACE sono
+distinti: un blocco del bookkeeping non autorizza a ripetere test o azioni Git.
+
+Le [istruzioni Gherkin](.github/instructions/gherkin.instructions.md) e il
+[profilo associato](.github/profiles/gherkin.profile.yaml) mantengono stabili gli
+identificativi durante la manutenzione e contano il limite di 12 sulle definizioni,
+non sulle righe Examples espanse. Le celle Examples vuote significano null:
+per i binding nuovi/modificati e obbligatoria la conversione esplicita a Python
+`None`, poiche Behave fornisce testo vuoto. Non viene migrato automaticamente il
+codice legacy. Gli outline si semplificano solo preservando copertura e selezione;
+l'aggiunta ADR-48 richiede esiti osservabili supportati dalle fonti.
+
+Il [workflow QA-engineer](docs/workflows/qa-engineer/implementation.md) distingue
+review, implementazione e fix/refactor. L'ingegnere implementa binding e wiring
+autorizzato della suite; i nuovi helper riusabili sono affidati allo specialista
+utility, anche per API ed E2E. Gli agenti di implementazione non eseguono test:
+restituiscono codice e verifiche statiche al runner, che esegue i comandi approvati.
+Il parallelismo richiede file con ownership disgiunta, non solo feature diverse.
+Le [istruzioni Python](.github/instructions/python-scripts.instructions.md)
+definiscono docstring utili, tipi e compatibilita nello scope modificato.
+Le aggiunte ADR-52, ADR-53 e ADR-54 richiedono errori espliciti, effetti/risorse
+gestiti e verifiche proporzionate, senza introdurre nuovi tool o autorizzare
+gli ingegneri a eseguire test. Nessun profilo YAML Python aggiuntivo e richiesto.
+
+Le [istruzioni Behave](.github/instructions/behave-steps.instructions.md) e il
+[profilo dei percorsi](.github/profiles/behave-steps.profile.yaml) precisano
+organizzazione per responsabilita, compatibilita dei binding e lifecycle del
+context, senza imporre frammentazione o migrazioni delle utility legacy.
+Le aggiunte ADR-42 e ADR-43 coprono asserzioni complete, input strutturati,
+attese finite e diagnostica sicura; non ampliano i permessi di esecuzione.
+
+Il [workflow Python-utility-engineer](docs/workflows/python-utility-engineer/implementation.md)
+copre review, implementazione e manutenzione delle utility condivise e di suite.
+Richiede un contratto tecnico anche nell'uso diretto e verifica l'impatto sui
+chiamanti, non solo le firme. Scrive unit test isolati senza eseguirli; migrazioni
+di step/hook o modifiche fuori scope tornano al rispettivo owner. Non e un
+partecipante ACE autonomo: restituisce lavoro e attriti al chiamante.
+
+Il [workflow QA-runner](docs/workflows/qa-runner/execution.md) distingue esecuzione,
+diagnosi e esecuzione con fix autorizzati. Dopo il primo fallimento (tentativo 0),
+si puo andare direttamente al report oppure usare fino a **cinque tentativi bonus
+di fix**, con piano approvato e artifact isolati. Non sono cinque esecuzioni totali:
+il primo run non consuma il budget. Il runner distingue `passed`, `failed`,
+`blocked` e `inconclusive`; non cancella la storia di errori intermittenti.
+ADR-55--ADR-58 richiedono interprete/stato reale, selezione corrente, evidenze
+effettivamente acquisite e provenienza della configurazione. Le aggiunte finali
+ADR-59 e ADR-60 limitano il preflight e distinguono terminazione locale da
+rollback remoto: dopo una mutazione interrotta verificare ripetibilita ed effetti
+incerti prima di rilanciare, con osservazione/cleanup solo se autorizzati.
+
+### Manutenzione README e chiusura QA
+
+Dopo ogni insieme coerente di modifiche, usare
+[`/ppa-readme`](.github/skills/ppa-readme/SKILL.md) per aggiornare le sezioni
+coinvolte o motivare che non serve un aggiornamento. La valutazione si fa una
+volta per lo scope corrente, prima dell'eventuale commit; non impone modifiche
+cosmetiche o l'esecuzione dei comandi documentati.
+
+Il [workflow QA-closer](docs/workflows/qa-closer/closure.md) usa le evidenze
+del runner senza rieseguire test e mantiene separati scope e autorizzazioni
+per commit, push e PR. I report di chiusura sono solo Markdown per errori
+irrisolti nelle suite; non richiedono HTML o template Confluence. Questo limite
+non modifica i report Allure e le pubblicazioni CI documentati nelle altre sezioni.
 
 ### Commit e PR
 
@@ -991,6 +1160,13 @@ Usare uno dei prefissi seguenti nel messaggio di commit:
 
 La PR deve descrivere cambiamenti, motivazione, test eseguiti e tipo di modifica. Il workflow
 di PR applica automaticamente label di dimensione in base alle righe modificate.
+
+La skill [`/ppa-pr`](.github/skills/ppa-pr/SKILL.md) ricava la suite lavorata dal
+diff e da [`.github/nrt-suites.json`](.github/nrt-suites.json): la label GitHub e
+il campo `id`, non il nome descrittivo `label`, coerentemente con la CI.
+Per una suite richiede il suo `id` e un solo incremento (`patch`, `minor` o `major`);
+senza suite usa `skip`, senza incremento ne label di suite. Scope ambiguo,
+multi-suite o suite non censita richiedono risoluzione, non un `skip` di ripiego.
 
 Riferimenti: `.github/PULL_REQUEST_TEMPLATE.md`, `.github/workflows/check_pr.yml`, regole operative di progetto.
 

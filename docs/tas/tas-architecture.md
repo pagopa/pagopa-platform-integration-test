@@ -39,9 +39,13 @@ flowchart TB
       W1["Checkout + Setup"]:::work
       W2["Behave execution"]:::work
       W3["Result parsing"]:::work
-      W4["Artifact upload"]:::work
+      W4["Test artifact upload"]:::work
+      W5["Build AI prompt<br/>(on failures)"]:::work
+      AI["AI report analysis<br/>(best effort)"]:::work
+      W6["Publish timestamped Pages report"]:::work
 
-      W1 --> W2 --> W3 --> W4
+      W1 --> W2 --> W3 --> W4 --> W6
+      W3 -. "failures" .-> W5 --> AI --> W6
     end
 
     RESULTS[/"Artifacts:<br/>- test-summary.json<br/>- behave-results.json<br/>- junit/*.xml<br/>- allure-results/ (opt-in)"/]:::art
@@ -87,7 +91,7 @@ The central GHA workflow that runs the test suites. It supports two trigger mech
 | `caller_id` | string | ❌ | Identifier of the calling system for traceability |
 | `correlation_id` | string | ❌ | Unique ID to correlate the run with the caller |
 | `tags` | string | ❌ | Behave tag expression to filter scenarios (e.g. `@runnable`, `@e2e`). Default: `@runnable` |
-| `allure` | boolean | ❌ | Also produce an Allure results directory (`allure-results/`) inside the artifact. Default: `false` |
+| `allure` | boolean | ❌ | Also produce an Allure results directory (`allure-results/`) inside the artifact. Default: `true` |
 
 **Outputs** (available only via `workflow_call`):
 
@@ -105,6 +109,19 @@ The central GHA workflow that runs the test suites. It supports two trigger mech
 - `behave-results.json` — raw Behave JSON output
 - `junit/*.xml` — JUnit XML reports
 - `allure-results/` — Allure result files, only when the `allure` input is `true` (render to HTML with the Allure CLI)
+
+**Published report:** the workflow publishes the test artifact contents under
+`TAS/<timestamp>/` on `gh-pages`, where the timestamp format is `dd-MM-yyyy_HH:mm:ss`.
+When failures are present, the existing AI report workflow analyzes the Allure/JUnit failure
+names, messages, and traces. Its best-effort HTML and Markdown outputs are published under
+`TAS/<timestamp>/analysis/`; they do not affect the test outcome and are not linked from the
+Allure report root.
+
+For `workflow_call`, callers must grant `contents: write` and `actions: write`, and pass
+`REPORT_ANALYSIS_GEMINI_API_KEY` with `secrets: inherit`. External callers must also pass
+`TAS_GH_PAGES_TOKEN`, a token with `contents: write` access to the TAS repository; same-repository
+calls use the workflow's `GITHUB_TOKEN`. The TAS test secrets continue to be read from the TAS
+repository's `integration-tests` environment.
 
 ### 2. `tas_orchestrator.py` — internal engine (CLI bridge)
 

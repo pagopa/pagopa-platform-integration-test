@@ -119,7 +119,7 @@ same tag.
 | `mode` | `sync` | — | Invocation mode: `sync`, `async` or `raw` |
 | `ref` | `main` | — | TAS repo branch/tag to run the tests from |
 | `tags` | `""` | — | Behave tag expression (e.g. `@runnable`, `@e2e`, `@a,@b`). Empty = workflow default (`@runnable`) |
-| `allure` | `"false"` | — | Also produce an Allure results directory (`allure-results/`) inside the `test-results` artifact. Render/host is left to the caller |
+| `allure` | `"false"` | — | Also produce an Allure HTML report. TAS publishes reports under `TAS/<timestamp>`; failed runs also include AI analysis at `analysis/index.html` when the Gemini secret is available |
 | `github_token` | — | ✅ | GitHub PAT (scopes `public_repo` + `actions:read`). Must be passed explicitly (composite actions cannot read caller secrets). |
 | `caller_id` | `${{ github.repository }}/${{ github.run_id }}` | — | Identifier of the calling system (traceability) |
 | `correlation_id` | `${{ github.run_id }}-${{ github.run_attempt }}` | — | Unique ID to correlate the run with the caller |
@@ -146,6 +146,11 @@ same tag.
 
 In modes where an output is not produced, the value is an **empty string**.
 Downstream steps can branch on it with `if: steps.tas.outputs.run_id != ''`.
+
+For direct `workflow_call` integrations from another repository, configure
+`TAS_GH_PAGES_TOKEN` with `contents: write` access to the TAS repository and pass it with
+`secrets: inherit`. The composite-action dispatch path runs inside TAS and uses its own
+`GITHUB_TOKEN` for Pages publication.
 
 > **The action prints a post-step summary automatically** (sync: full
 > counters; async/raw: dispatch info with `correlation_id`, `run-name`
