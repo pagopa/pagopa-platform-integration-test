@@ -1190,14 +1190,38 @@ La base di partenza e `1.0.0` (`initial_version`).
 ### Versioni delle suite di test
 
 Le versioni delle singole suite sono indipendenti dal tag di release del repository e sono
-registrate in `suite_versions.json`. Il loro aggiornamento e guidato dalle **label della PR**:
-il workflow di bump riconosce una label di incremento (`major`, `minor` o `patch`)
-e una label di suite dal proprio elenco storico (`wisp`, `checkout` o `fdr`).
-Questo elenco e distinto dagli ID del catalogo usati per validare le PR;
-la policy della skill e descritta nella sezione Commit e PR.
+registrate nel [catalogo NRT](.github/nrt-suites.json). Il loro aggiornamento e guidato dalle
+**label della PR**, con una policy condivisa tra il check `Verify labels` e il workflow
+`Bump test suite version`:
 
-Quando la PR viene mergiata, il workflow `Bump test suite version` legge le label. Se trova sia l'incremento sia la suite, esegue lo script che aumenta la versione di quella suite all'interno del file json; infine crea un commit e pubblica il file aggiornato su `main`.
-Con `skip`, o senza una delle due label necessarie, il file non viene aggiornato. Questo flusso e separato dal versionamento della release, che dipende invece dai messaggi di commit.
+- Per versionare una suite, assegnare una label di incremento (`major`, `minor` o `patch`) e
+  una sola label corrispondente a un ID del catalogo: attualmente `wisp`, `checkout` o `fdr3`.
+  Il confronto non distingue maiuscole e minuscole.
+- Usare `skip` per documentazione, configurazioni, tooling/AI o altre modifiche che non devono
+  incrementare una versione di suite. **`skip` ha precedenza su tutte le altre label**:
+  il check passa anche insieme a `major`, `minor`, `patch` o piu label di suite, senza bump.
+- Le PR create da `dependabot[bot]` e `renovate[bot]` sono automaticamente esentate dal
+  versionamento delle suite. Le loro label di incremento descrivono le dipendenze e possono
+  rimanere sulla PR: non serve aggiungere `skip` o rimuovere `major`. L'esenzione usa l'autore
+  della PR, non chi applica una label; non si estende ad altri bot o alla sola label `dependencies`.
+- Senza `skip` o l'esenzione per i due bot, restano obbligatori incremento e singola suite.
+  Gli errori sono riportati nel check, senza aggiungere commenti ripetuti alla PR.
+
+Entrambi i workflow leggono le label correnti tramite API, non una copia potenzialmente
+obsoleta nell'evento. Quando la PR viene mergiata, solo una combinazione valida di incremento
+e suite avvia lo script di aggiornamento; il workflow crea quindi un commit del catalogo
+aggiornato su `main`. Con `skip` o una PR dei due bot non viene modificata alcuna versione di
+suite. Gli altri check e il versionamento della release del repository non sono esentati:
+quest'ultimo dipende dai messaggi di commit, non dalle label.
+
+La policy e implementata in [suite-version-labels.js](.github/scripts/suite-version-labels.js).
+I test locali non richiedono dipendenze npm ne accesso a servizi esterni:
+
+```powershell
+node --test .github\scripts\suite-version-labels.test.js
+```
+
+Gli stessi test vengono eseguiti nel job `Verify labels` sulle PR.
 
 ### Regole di incremento
 

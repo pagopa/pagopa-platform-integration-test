@@ -62,9 +62,15 @@ def populate_test_run(test_run: Test_runs, summary_path: str, version: str, test
         test_run.duration_ms = time_data.get('duration') or 0
         if version is not None:
             test_run.test_version = str(version)
+
+        subfolder = ""
+        if test_run.test_origin == "TAS":
+            subfolder = "TAS"
         if allure_subfolder is not None:
+            subfolder = allure_subfolder
+        if subfolder != "":
             allure_start = datetime.fromtimestamp((time_data.get('start') or 0) / 1000.0).strftime("%Y-%m-%d_%H:%M:%S")
-            test_run.allure_url = f"{ALLURE_BASE_URL}{allure_subfolder}/{allure_start}/index.html"
+            test_run.allure_url = f"{ALLURE_BASE_URL}{subfolder}/{allure_start}/index.html"
         
         test_run.total_failures = calculate_total_failures(test_run)
         if test_run.total_failures == 0:
