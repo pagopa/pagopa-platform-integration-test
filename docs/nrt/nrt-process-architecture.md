@@ -56,6 +56,7 @@ the new process is adopted.
 | `.github/workflows/nrt-run-suite.yml` | Reusable workflow containing the common setup, secret materialization, test execution, Allure generation, and artifact publication for one suite. |
 | `.github/workflows/nrt-sync-secrets.yml` | Runs daily or manually on self-hosted runners; reads Key Vault values, builds and validates per-environment bundles, then updates the matching GitHub Environment secret using GitHub's LibSodium-encrypted REST API. |
 | `.github/workflows/test-data-ingestion.yml` | Reusable workflow that downloads report artifacts and runs `.github/scripts/populate_tables.py` to save suites, runs, and executions through the QA Hub APIs. NRT calls it with `artifact_pattern: allure-report-*`; the legacy dispatch keeps using the `tmp_processed_reports` artifact. |
+| `.github/workflows/qa-hub-adx-sync.yml` | Runs nightly at 02:30 UTC in `yesterday` mode on dev and UAT, or manually on dev and UAT self-hosted runners; copies the QA Hub PostgreSQL tables (`test_suites`, `test_runs`, `test_executions`) into the matching `QA_NRT_*` Azure Data Explorer tables. See [QA Hub ADX sync](qa-hub-adx-sync.md). |
 | Existing report workflows | Consume NRT artifacts to publish reports and create the Confluence page. They are downstream consumers, not suite definitions. |
 
 The reusable workflow gives each suite an isolated job and runner. Shared job-level
@@ -127,6 +128,24 @@ bundle.
 Allure history is isolated by environment, for example `wisp-tests-uat` and
 `wisp-tests-dev`, so runs against different environments do not overwrite each other's
 trend data.
+
+The publisher in `nrt-main-dispatch-tests.yml` copies each report to
+`<allure_subfolder>/YYYY-MM-DD_HH:MM:SS/`, for example
+`checkout-e2e-tests/2026-10-15_14:41:04/`. The timestamp is the test start time
+from Allure's `widgets/summary.json`, formatted in UTC. Only the published report
+path changes: suite artifacts retain their environment suffix and run number,
+and `<allure_subfolder>-<env>/last-history` remains available to the reusable
+workflow. Previously published report folders are not migrated or removed.
+
+Before deployment, `nrt-publish-indexes.py` reuses `process_reports.py` to generate
+`stats.json` for published runs and rebuild each suite's `index.html`. It copies
+the latest run by Allure start time to `<allure_subfolder>/last-history/`, including
+its statistics and summary, without changing the environment-specific trend history.
+The root dashboard is rendered from the suite registry with the latest statistics
+and a UTC update timestamp; suites without reports are marked as unavailable.
+Invalid report data fails publication instead of publishing placeholder statistics.
+Local publisher regression tests can be run from the repository root with
+`python .github/scripts/nrt-test-publish-indexes.py -v` (requires Jinja2).
 
 ## 6. Secret synchronization and consumption
 
@@ -267,6 +286,18 @@ the suite outcomes and relevant failures. If the input exceeds the model context
 the prompt is reduced to failed scenarios and diagnostics. The analysis is supplemental:
 it does not replace the authoritative test outcome.
 
+Publication follows suite execution, aggregate prompt generation, and AI analysis, as in
+the legacy dispatch flow. The deployment job waits for `ai_analysis` and downloads
+`nrt-ai-analysis` when that job succeeds. It reuses the legacy analysis renderer to place
+`analysis/index.html` and `analysis/analysis.md` inside each selected suite's current
+timestamped report folder. The page is explicitly labelled as aggregate NRT analysis,
+not a suite-specific response. The suite history index exposes the existing **View
+Analysis** link, and `last-history` includes the analysis of the latest report.
+Older runs and unselected suites are not assigned the current analysis. A suite without
+a current Allure report is skipped with a warning. If AI analysis fails or is skipped,
+Allure publication still runs and emits a warning; a successful AI job with a missing
+or empty analysis artifact fails publication instead of silently omitting the report.
+
 The NRT Slack notification runs after suite execution and final-status evaluation, even
 when tests fail. During rollout, its heading is explicitly marked **NRT BETA TEST** so it
 cannot be confused with the established production notification. It combines each outcome artifact with the corresponding Allure
@@ -310,5 +341,7 @@ failed when required tests fail.
 - [Current Checkout E2E workflow](../../.github/workflows/checkout-e2e-tests.yml)
 - [Test data ingestion workflow](../../.github/workflows/test-data-ingestion.yml)
 - [Test data ingestion script](../../.github/scripts/populate_tables.py)
+- [QA Hub ADX sync workflow](../../.github/workflows/qa-hub-adx-sync.yml)
+- [QA Hub ADX sync script](../../.github/scripts/qa_hub_adx_sync.py)
 - [Secret resolver](../../src/conf/configuration.py)
 - [Configuration utility guidance](../../src/utility/config/README.md)

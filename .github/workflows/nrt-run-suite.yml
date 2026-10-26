@@ -144,7 +144,7 @@ jobs:
           ref: gh-pages
           path: gh-pages
           fetch-depth: 1
-          sparse-checkout: ${{ inputs.allure_subfolder }}-${{ inputs.target_env }}/last-history
+          sparse-checkout: ${{ inputs.allure_subfolder }}/last-history/history
 
       - name: Prepare Allure results
         if: always()
@@ -166,7 +166,7 @@ jobs:
         id: build_report
         continue-on-error: true
         run: |
-          history_dir="gh-pages/${SUBFOLDER}/last-history"
+          history_dir="gh-pages/${{ inputs.allure_subfolder }}/last-history/history"
           if [ -d "$history_dir" ]; then
             cp -r "$history_dir/." allure-results/history/
           fi
@@ -182,6 +182,14 @@ jobs:
         with:
           name: ${{ inputs.report_artifact }}
           path: allure-report
+          if-no-files-found: warn
+
+      - name: Upload Allure history for publication
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: nrt-allure-history-${{ inputs.suite_id }}
+          path: allure-history
           if-no-files-found: warn
 
       - name: Write suite outcome

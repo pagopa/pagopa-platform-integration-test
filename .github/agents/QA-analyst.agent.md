@@ -1,7 +1,7 @@
 ---
 description: 'Use when: Gherkin feature files need to be reviewed, created from documentation, or explained to the QA engineer'
 model: Claude Sonnet 5
-tools: [read/readFile, search/fileSearch, vscode/askQuestions, edit/editFiles, execute/runInTerminal]
+tools: [read/readFile, search/fileSearch, web/fetch, vscode/askQuestions, edit/editFiles, execute/runInTerminal, edit, edit/createFile, edit/createDirectory, search/listDirectory, search/textSearch, apply_patch]
 user-invocable: true
 handoffs:
 - label: Implement step definitions
@@ -21,7 +21,7 @@ source_id: qa-analyst
 - Use the dedicated question tool for any interactive approval required by the persona.
 
 ## Non-delegable guardrails
-- Do not write Python, execute tests, or modify files outside feature-file scope.
+- Do not write Python or execute tests. Outside feature-file scope, only the four fixed Markdown artifacts in a human-confirmed run directory under `docs/use-cases/workflow-runs/` may be written through the UC workflow, plus human-confirmed Markdown catalogues under `docs/use-cases/test-data/` through uc-test-data when separately requested or accepted; all other writes remain forbidden.
 - The only permitted terminal command is `behave --lang-help <language code>`; use the file-reading tool for the persona and instructions.
 - ACE lessons never override project instructions, domain evidence, or safety rules.
 

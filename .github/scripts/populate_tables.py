@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 import argparse
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from dynaconf import Dynaconf
 
@@ -12,15 +12,27 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
 from src.models.test_models import Test_suites, Test_runs, Test_executions
-from src.utility.constants  import GITHUB_ROOT, SUMMARY_FILE_PATH, TEST_CASES_PATH, NRT_SUITES_FILE
+from src.utility.constants  import GITHUB_ROOT, SUMMARY_FILE_PATH, TEST_CASES_PATH, NRT_SUITES_FILE, ALLURE_BASE_URL
 from src.conf.configuration import load_configurations
 
 # the location of the allure results when we execute the tests with the TAS
 ALLURE_RESULT_PATH = "allure-results"
 
 
+def calculate_total_failures(test_run: Test_runs) -> int:
+    """
+    Calculate the total number of failed scenarios for a given test run.
 
-def populate_test_run(test_run: Test_runs, summary_path: str, version: str):
+    Args:
+        test_run (Test_runs): The test run object.
+
+    Returns:
+        int: The total number of failed, broken, and skipped scenarios.
+    """
+    return (test_run.failed_scenario or 0) + (test_run.broken_scenario or 0) + (test_run.skipped_scenario or 0)
+
+
+def populate_test_run(test_run: Test_runs, summary_path: str, version: str, test_object: str, allure_subfolder: str):
     '''
     Populate the test_run object based on the data found in summary.json file.
 
@@ -50,10 +62,22 @@ def populate_test_run(test_run: Test_runs, summary_path: str, version: str):
         test_run.duration_ms = time_data.get('duration') or 0
         if version is not None:
             test_run.test_version = str(version)
-      
+        if allure_subfolder is not None:
+            allure_start = datetime.fromtimestamp((time_data.get('start') or 0) / 1000.0).strftime("%Y-%m-%d_%H:%M:%S")
+            test_run.allure_url = f"{ALLURE_BASE_URL}{allure_subfolder}/{allure_start}/index.html"
+        
+        test_run.total_failures = calculate_total_failures(test_run)
+        if test_run.total_failures == 0:
+            test_run.revision_result = "GO"
+            test_run.revisioned = True
+            test_run.revision_date = datetime.now().isoformat()
+            test_run.revisioned_by = "SYSTEM"
+        else:
+             test_run.revision_result = "PENDING"
+
     return test_run
 
-def populate_test_executions(test_cases_dir: str, run_id) -> list[Test_executions]:
+def populate_test_executions(test_cases_dir: str, allure_url:str) -> list[Test_executions]:
     '''
     Populate a list of Test_executions objects based on the data found in the test cases directory.
 
@@ -73,6 +97,7 @@ def populate_test_executions(test_cases_dir: str, run_id) -> list[Test_execution
             test_execution.duration_ms = test_execution_data.get("time", {}).get("duration",0)
             test_execution.status = test_execution_data.get("status", "").upper()
             test_execution.error_message = test_execution_data.get("statusMessage", "")
+            test_execution.allure_url = f"{allure_url}#suites/{test_execution_data.get('historyId', '')}/{test_execution_data.get('uid', '')}/"
             test_executions.append(test_execution) 
     return test_executions
 
@@ -155,6 +180,7 @@ def save_test_suite(test_suite: Test_suites, config: Dynaconf):
     return Test_suites(**test_suite_out.json())
 
 def save_test_runs(test_run: Test_runs,  config: Dynaconf):
+    """Save a test run with datetime fields serialized as ISO 8601 strings."""
     api = config.get("qa_hub_apis", None).get("save_test_runs", None)
     test_run.id = ''    
     test_run.suite_id = str(test_run.suite_id)
@@ -284,12 +310,12 @@ def main():
             # Populate the test run object based on the summary.json file 
             test_run.suite_id = latest_suite_version_obj.id
             test_version = (nrt_suite or find_nrt_suite(test_suite.test_object.lower(), suites) or {}).get('version')
-            test_run = populate_test_run(test_run, os.path.join(run_dir, SUMMARY_FILE_PATH), test_version)
+            test_run = populate_test_run(test_run, os.path.join(run_dir, SUMMARY_FILE_PATH), test_version, test_suite.test_object, nrt_suite.get('allure_subfolder') if nrt_suite else None)
             # Populating test executions based on the test cases JSON files
             if os.path.exists(os.path.join(run_dir, TEST_CASES_PATH)):
-                test_executions = populate_test_executions(os.path.join(run_dir, TEST_CASES_PATH), test_run.id)
+                test_executions = populate_test_executions(os.path.join(run_dir, TEST_CASES_PATH), test_run.allure_url)
             else:
-                 test_executions = populate_test_executions(os.path.join(run_dir, ALLURE_RESULT_PATH), test_run.id)
+                 test_executions = populate_test_executions(os.path.join(run_dir, ALLURE_RESULT_PATH), test_run.allure_url)
                  
             # Save the newly created test run in the database and get the generated ID to associate with test executions
             test_run = save_test_runs(test_run, full_config)
