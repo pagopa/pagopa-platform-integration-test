@@ -209,6 +209,13 @@ approval, or still unsuitable:
   if there is only one case and no meaningful variation, use a plain scenario.
 - Do not use an empty cell for missing data: it means null under the project
   conventions. An intentional null from the requirements is not a TODO.
+  Under [ADR-44](../../instructions/gherkin.instructions.md#null-inputs-adr-44),
+  new/changed bindings must convert the parser's raw empty outline text to Python
+  `None`; this is not an automatic Behave conversion. Record intentional null
+  parameters/rows for the translation/engineer handoff in the existing reports.
+  If empty string, absent field and null must be distinguished, resolve their
+  explicit representation before readiness. Do not invent sentinel values or
+  claim runtime conversion was implemented/tested by data retrieval.
 - Before the tags of **every Scenario or Scenario Outline with an unresolved
   placeholder**, add a
   comment using profile indentation that identifies the unresolved ids and

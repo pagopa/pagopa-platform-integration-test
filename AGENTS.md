@@ -35,6 +35,18 @@ Applies to custom agents and non-custom coding agents working in this repository
 1. Before creating or editing any `.py` file, read [`.github/instructions/python-scripts.instructions.md`](.github/instructions/python-scripts.instructions.md).
 2. When editing behave step files (`src/**/steps/**/*.py`), also read [`.github/instructions/behave-steps.instructions.md`](.github/instructions/behave-steps.instructions.md).
 
+## README maintenance gate (ADR-11)
+
+After each coherent change set that modifies the repository, apply
+[ppa-readme](.github/skills/ppa-readme/SKILL.md) before an eventual commit, or
+reuse an assessment covering the current relevant contents and scope. Assess
+once per change set, not after every edit; no recursive reassessment is needed
+just because that final README update was saved. A justified no-update result
+is valid. Roles without README write permission return the assessment and
+required changes to the orchestrator/user for an authorized writer; this rule
+does not expand permissions, require self-delegation, or start QA-closer.
+Reassess only when subsequent changes affect documentation.
+
 ## Agent instruction loading policy
 
 Each agent reads **only** the instruction files listed for its role. Instructions not listed are out of scope for that agent.
@@ -43,8 +55,9 @@ Each agent reads **only** the instruction files listed for its role. Instruction
 |-------|-------------------|
 | `QA-analyst` | [`gherkin.instructions.md`](.github/instructions/gherkin.instructions.md) |
 | `QA-engineer` | [`python-scripts.instructions.md`](.github/instructions/python-scripts.instructions.md), [`behave-steps.instructions.md`](.github/instructions/behave-steps.instructions.md) |
+| `Python-utility-engineer` | [`python-scripts.instructions.md`](.github/instructions/python-scripts.instructions.md) |
 | `QA-runner` | [`run-tests.instructions.md`](.github/instructions/run-tests.instructions.md) |
-| `QA-closer` | [`git-commit.instructions.md`](.github/instructions/git-commit.instructions.md), [`git-pr.instructions.md`](.github/instructions/git-pr.instructions.md) |
+| `QA-closer` | [Closure workflow](docs/workflows/qa-closer/closure.md), [README skill](.github/skills/ppa-readme/SKILL.md), [Commit skill](.github/skills/ppa-commit/SKILL.md), [PR creation skill](.github/skills/ppa-pr/SKILL.md) |
 | `QA-orchestrator` | all of the above (delegates to sub-agents) |
 | `Mermaid-flow-engineer` | [`.github/skills/mermaid-flow/SKILL.md`](.github/skills/mermaid-flow/SKILL.md) |
 | `Marp-presentation-engineer` | [`.github/skills/marp-presentation/SKILL.md`](.github/skills/marp-presentation/SKILL.md) |
@@ -52,6 +65,12 @@ Each agent reads **only** the instruction files listed for its role. Instruction
 > **Detailed instructions** live in `.github/instructions/`. Skills live in `.github/skills/<name>/SKILL.md`. Do not duplicate content here.
 
 The ACE-participating QA agents (`QA-orchestrator`, `QA-analyst`, `QA-engineer`, `QA-runner`, and `QA-closer`) additionally read only their respective generated `.github/instructions/ace-<canonical-id>.instructions.md` and any family instructions explicitly assigned to them in `ace/config/project.json`. This exception does not authorize reading another role's project instructions.
+
+`Python-utility-engineer` follows its
+[utility workflow](docs/workflows/python-utility-engineer/implementation.md).
+It is not an autonomous configured ACE participant: it returns actual work and
+friction to the caller, without loading other roles' scoped lessons or writing
+ACE traces under an invented participant identity.
 
 ## Project-owned ACE privacy addon
 

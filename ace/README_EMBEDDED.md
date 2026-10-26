@@ -1,5 +1,7 @@
 # ACE: Agentic Context Engineering — embedded integration
 
+Original ACE repository: [daniele-quero/ace](https://github.com/daniele-quero/ace).
+
 ACE is a framework that turns execution into durable operating memory for a team of agents. Instead of embedding the same rules in every prompt and improvising them task by task, the team records what actually happened, reflects on it, turns repeated patterns into structured proposals, validates those proposals, and then applies only the decisions that have real evidence behind them.
 
 The result is a learning loop: `trace` files become evidence, `proposal` documents become candidate changes, and the `playbook` plus the generated `instructions` become the system's durable, reusable context.
