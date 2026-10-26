@@ -286,6 +286,18 @@ the suite outcomes and relevant failures. If the input exceeds the model context
 the prompt is reduced to failed scenarios and diagnostics. The analysis is supplemental:
 it does not replace the authoritative test outcome.
 
+Publication follows suite execution, aggregate prompt generation, and AI analysis, as in
+the legacy dispatch flow. The deployment job waits for `ai_analysis` and downloads
+`nrt-ai-analysis` when that job succeeds. It reuses the legacy analysis renderer to place
+`analysis/index.html` and `analysis/analysis.md` inside each selected suite's current
+timestamped report folder. The page is explicitly labelled as aggregate NRT analysis,
+not a suite-specific response. The suite history index exposes the existing **View
+Analysis** link, and `last-history` includes the analysis of the latest report.
+Older runs and unselected suites are not assigned the current analysis. A suite without
+a current Allure report is skipped with a warning. If AI analysis fails or is skipped,
+Allure publication still runs and emits a warning; a successful AI job with a missing
+or empty analysis artifact fails publication instead of silently omitting the report.
+
 The NRT Slack notification runs after suite execution and final-status evaluation, even
 when tests fail. During rollout, its heading is explicitly marked **NRT BETA TEST** so it
 cannot be confused with the established production notification. It combines each outcome artifact with the corresponding Allure

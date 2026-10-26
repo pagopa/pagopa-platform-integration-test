@@ -7,6 +7,20 @@ source_id: gherkin-profile
 # Project conventions for Gherkin feature files.
 language: it
 max_scenarios_per_file: 12
+filename:
+  example: FEAT_001_FdR3_Aggiungi_pagamenti.feature
+  regex: '^FEAT_(?<feature_progressive>\d{3})_(?<suite>[A-Za-z0-9]+)_(?<feature>[A-Za-z0-9]+(?:_[A-Za-z0-9]+)*)\.feature$'
+  regex_groups:
+    feature_progressive: 
+      description: 3-digit 0-padded progressive number starting from 001, identifying each feature file within its suite
+    suite:
+      case: Capitalized_Snake_Case
+      word_limit: 1
+      description: suite name
+    feature:
+      case: Capitalized_Snake_Case
+      word_limit: none
+      description: feature slug
 indentation:
   feature: 0
   scenario: 2
@@ -15,14 +29,34 @@ indentation:
   table_rows: 6
   comments: 2
 tags:
-  scenario_labels:
-    - "@smoke"
-    - "@regression"
-    - "@<suite-name>"
-    - "@positive"
-    - "@negative"
-  feature_format: "@feature_file_name_001"
-  scenario_format: "@feature_file_name_001_01"
+  fixed_tags:
+    required: false
+    scenario_labels:
+      - "@smoke"
+      - "@regression"
+      - "@positive"
+      - "@negative"
+    mutually_exclusive_labels:
+      - ["@positive", "@negative"]
+  dynamic_tags:
+    required: true
+    feature_tag_example: "@fdr3_002_Crea_revisione"
+    scenario_tag_example: "@fdr3_002_02"
+    feature_regex: '^@(?<suite>[A-Za-z0-9]+)_(?<feature_progressive>\d{3})_(?<short_feature>[A-Za-z0-9]+(?:_[A-Za-z0-9]+)*)$'
+    scenario_regex: '^@(?<suite>[A-Za-z0-9]+)_(?<feature_progressive>\d{3})_(?<scenario_progressive>\d{2})$'
+    regex_groups:
+      feature_progressive: 
+        description: exactly the same as in the filename
+      suite:
+        case: snake_Case
+        word_limit: 1
+        description: suite name from the filename, converted to lowercase (for example FdR3 becomes fdr3)
+      short_feature:
+        case: Capitalized_Snake_Case
+        word_limit: 5
+        description: short and synthetic feature slug, derived from the one in the filename
+      scenario_progressive:
+        description: 2-digit 0-padded number representing scenario order within the file, restarting from 01 in each feature file
 tracking_comment:
   required: true
-  format: "#<10-digit-number>"
+  regex: '^#[0-9]{10}$'

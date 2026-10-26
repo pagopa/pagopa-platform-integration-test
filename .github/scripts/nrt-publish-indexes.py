@@ -9,7 +9,43 @@ from datetime import datetime, timezone
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from process_reports import build_index_page, extract_stats
+from process_reports import build_index_page, deploy_ai_analysis, extract_stats
+
+
+def publish_ai_analysis(matrix, target_env, run_number):
+    """Attach the aggregate analysis only to reports from the current workflow run."""
+    analysis_md = Path("artifacts/nrt-ai-analysis/analysis.md")
+    if not analysis_md.is_file() or not analysis_md.read_text(encoding="utf-8").strip():
+        raise ValueError(f"AI analysis succeeded but {analysis_md} is missing or empty")
+
+    for suite in matrix["include"]:
+        subfolder = suite["allure_subfolder"]
+        summary_path = (
+            Path("nrt-allure-history") / f"{subfolder}-{target_env}"
+            / str(run_number) / "widgets" / "summary.json"
+        )
+        if not summary_path.is_file():
+            print(f"::warning::No current Allure report for {suite['id']}; skipping AI publication")
+            continue
+        summary = json.loads(summary_path.read_text(encoding="utf-8"))
+        time_data = summary["time"]
+        if isinstance(time_data, list):
+            time_data = time_data[0]
+        timestamp = datetime.fromtimestamp(
+            time_data["start"] / 1000, timezone.utc
+        ).strftime("%Y-%m-%d_%H:%M:%S")
+        root_dir = Path("public") / subfolder
+        run_dir = root_dir / timestamp
+        if not (run_dir / "widgets" / "summary.json").is_file():
+            raise FileNotFoundError(f"Current Allure report was not published at {run_dir}")
+        deploy_ai_analysis(
+            artifact_dir="artifacts",
+            run_dir=run_dir,
+            last_history_dir=root_dir / "last-history",
+            analysis_artifact_name="nrt-ai-analysis",
+            suite_label=f"{suite['label']} - aggregate NRT analysis",
+            timestamp=timestamp,
+        )
 
 
 def update_suite(root_dir):
@@ -64,6 +100,12 @@ def main():
         time.tzset()
     with Path(".github/nrt-suites.json").open(encoding="utf-8") as registry_file:
         registry = json.load(registry_file)
+    if os.environ.get("AI_ANALYSIS_RESULT") == "success":
+        publish_ai_analysis(
+            json.loads(os.environ["SUITE_MATRIX"]),
+            os.environ["TARGET_ENV"],
+            os.environ["RUN_NUMBER"],
+        )
     public_dir = Path("public")
     suites = []
     for suite in registry["suites"]:
