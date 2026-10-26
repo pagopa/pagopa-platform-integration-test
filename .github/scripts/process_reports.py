@@ -163,9 +163,15 @@ def build_tas_index_page(root_dir):
         report_index = report_dir / "index.html"
         if not report_index.is_file() or report_index.stat().st_size == 0:
             continue
+        analysis_index = report_dir / "analysis" / "index.html"
+        has_analysis = analysis_index.is_file()
         reports.append({
             "timestamp": timestamp.strftime("%d-%m-%Y %H:%M:%S"),
             "link": f"./{report_dir.name}/index.html",
+            "has_analysis": has_analysis,
+            "analysis_link": (
+                f"./{report_dir.name}/analysis/index.html" if has_analysis else None
+            ),
             "sort_key": timestamp,
         })
 

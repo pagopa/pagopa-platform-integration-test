@@ -22,7 +22,12 @@
           {% for report in reports %}
           <tr>
             <td>{{ report.timestamp }}</td>
-            <td><a href="{{ report.link }}">Apri report</a></td>
+            <td>
+              <a class="btn btn-primary btn-sm" href="{{ report.link }}">Apri report</a>
+              {% if report.has_analysis %}
+              <a class="btn btn-outline-secondary btn-sm ms-1" href="{{ report.analysis_link }}">Apri analisi AI</a>
+              {% endif %}
+            </td>
           </tr>
           {% endfor %}
         </tbody>

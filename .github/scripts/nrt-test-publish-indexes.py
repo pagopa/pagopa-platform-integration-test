@@ -100,6 +100,9 @@ class PublisherTests(unittest.TestCase):
             backing_dir.mkdir(parents=True)
         (backing_dirs[older_name] / "index.html").write_text("Older report")
         (backing_dirs[newer_name] / "index.html").write_text("Newer report")
+        analysis_dir = backing_dirs[newer_name] / "analysis"
+        analysis_dir.mkdir()
+        (analysis_dir / "index.html").write_text("AI analysis")
         (backing_dirs[incomplete_name] / "index.html").write_text("")
         (backing_dirs["last-history"] / "index.html").write_text("Not a timestamped run")
 
@@ -128,6 +131,9 @@ class PublisherTests(unittest.TestCase):
         )
         self.assertNotIn(f"./{incomplete_name}/index.html", index)
         self.assertNotIn("./last-history/index.html", index)
+        self.assertIn(f' href="./{newer_name}/analysis/index.html"', index)
+        self.assertNotIn(f' href="./{older_name}/analysis/index.html"', index)
+        self.assertEqual(index.count("Apri analisi AI"), 1)
         self.assertTrue((backing_dirs[older_name] / "index.html").is_file())
         self.assertTrue((backing_dirs[newer_name] / "index.html").is_file())
 
