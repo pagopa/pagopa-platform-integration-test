@@ -540,7 +540,9 @@ jobs:
         run: |
           python - <<'PY'
           import os
+          import runpy
           import sys
+          from pathlib import Path
 
           workspace = os.getcwd()
           tas_source = os.path.join(workspace, "tas-source")
@@ -549,6 +551,17 @@ jobs:
           from process_reports import build_tas_index_page
 
           build_tas_index_page(os.path.join(workspace, "public", "TAS"))
+          public_link = Path("public")
+          if public_link.exists() or public_link.is_symlink():
+              raise FileExistsError(f"Unexpected path in TAS source checkout: {public_link}")
+          public_link.symlink_to(Path(workspace) / "public", target_is_directory=True)
+          try:
+              runpy.run_path(
+                  os.path.join(tas_source, ".github", "scripts", "nrt-publish-indexes.py"),
+                  run_name="__main__",
+              )
+          finally:
+              public_link.unlink()
           PY
 
       - name: Publish TAS results to gh-pages
