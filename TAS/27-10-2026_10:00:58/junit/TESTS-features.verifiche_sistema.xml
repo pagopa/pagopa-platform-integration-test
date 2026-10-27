@@ -1,0 +1,40 @@
+<testsuite name="features.verifiche_sistema.Verifica dell'operatività dei servizi core della piattaforma pagoPA" tests="3" errors="0" failures="0" skipped="0" time="0.000577" timestamp="2026-10-27T10:01:18.807531" hostname="runnervmtai0g"><testcase classname="features.verifiche_sistema.Verifica dell'operatività dei servizi core della piattaforma pagoPA" name="Il servizio di pagamento risponde correttamente alle richieste" status="passed" time="0.000188"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @tas_pass @smoke @TAS_Pass_001_01
+  Scenario: Il servizio di pagamento risponde correttamente alle richieste
+    Dato che il servizio di pagamento è raggiungibile ... passed in 0.000s
+    Quando viene inviata una richiesta di healthcheck ... passed in 0.000s
+    Allora la risposta ha codice HTTP 200 ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.verifiche_sistema.Verifica dell'operatività dei servizi core della piattaforma pagoPA" name="La connettività verso il nodo dei pagamenti è attiva" status="passed" time="0.0002"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @tas_pass @smoke @TAS_Pass_001_02
+  Scenario: La connettività verso il nodo dei pagamenti è attiva
+    Dato che il nodo dei pagamenti è configurato ... passed in 0.000s
+    Quando viene verificata la connettività di rete verso il nodo ... passed in 0.000s
+    Allora il nodo risponde entro il tempo limite previsto ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.verifiche_sistema.Verifica dell'operatività dei servizi core della piattaforma pagoPA" name="I parametri di configurazione dell'ambiente sono completi" status="passed" time="0.00019"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @tas_pass @smoke @TAS_Pass_001_03
+  Scenario: I parametri di configurazione dell'ambiente sono completi
+    Dato che il sistema è configurato per l'ambiente di test ... passed in 0.000s
+    Quando vengono verificati i parametri obbligatori di configurazione ... passed in 0.000s
+    Allora tutti i parametri di configurazione risultano validi ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

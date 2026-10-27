@@ -1,0 +1,40 @@
+<testsuite name="features.rendicontazione.Verifica del flusso di rendicontazione verso l'ente creditore" tests="3" errors="0" failures="0" skipped="0" time="0.000601" timestamp="2026-10-27T10:01:18.803739" hostname="runnervmtai0g"><testcase classname="features.rendicontazione.Verifica del flusso di rendicontazione verso l'ente creditore" name="Il flusso di rendicontazione viene creato correttamente" status="passed" time="0.000217"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @tas_pass @smoke @TAS_Pass_003_01
+  Scenario: Il flusso di rendicontazione viene creato correttamente
+    Dato che sono presenti transazioni da rendicontare ... passed in 0.000s
+    Quando viene avviata la creazione del flusso di rendicontazione ... passed in 0.000s
+    Allora il flusso di rendicontazione viene creato con successo ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.rendicontazione.Verifica del flusso di rendicontazione verso l'ente creditore" name="I dati del flusso di rendicontazione sono completi e coerenti" status="passed" time="0.000189"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @tas_pass @smoke @TAS_Pass_003_02
+  Scenario: I dati del flusso di rendicontazione sono completi e coerenti
+    Dato che il flusso di rendicontazione è stato creato ... passed in 0.000s
+    Quando vengono verificati i dati del flusso ... passed in 0.000s
+    Allora tutti i campi obbligatori del flusso risultano valorizzati ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.rendicontazione.Verifica del flusso di rendicontazione verso l'ente creditore" name="Il flusso di rendicontazione viene trasmesso all'ente creditore" status="passed" time="0.000195"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @tas_pass @smoke @TAS_Pass_003_03
+  Scenario: Il flusso di rendicontazione viene trasmesso all'ente creditore
+    Dato che il flusso di rendicontazione è pronto per la trasmissione ... passed in 0.000s
+    Quando viene avviata la trasmissione del flusso all'ente creditore ... passed in 0.000s
+    Allora l'ente creditore conferma la ricezione del flusso ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
