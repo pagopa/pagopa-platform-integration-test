@@ -1,0 +1,220 @@
+<testsuite name="features.checkout_npg_auth.Attivazione pagamento Checkout autenticato" tests="3" errors="3" failures="0" skipped="0" time="125.894233" timestamp="2026-10-27T11:17:41.967553" hostname="runnervm48cm3"><testcase classname="features.checkout_npg_auth.Attivazione pagamento Checkout autenticato" name="Un pagamento con configurazione carta &quot;Postepay&quot; viene completato con successo -- @1.1 " status="failed" time="42.308103"><error type="TimeoutError" message="Locator.wait_for: Timeout 30000ms exceeded.&#10;Call log:&#10;  - waiting for locator(&quot;#frame_CARD_NUMBER&quot;) to be visible&#10;    6 × locator resolved to hidden &lt;iframe seamless=&quot;&quot; id=&quot;frame_CARD_NUMBER&quot;&gt;&lt;/iframe&gt;&#10;">
+<![CDATA[
+Failing step: E L'utente inserisce il numero carta "5255000260000014" ... failed in 30.005s
+Location: src/e2e/checkout/features/checkout_npg_auth.feature:32
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 146, in step_fill_card_number
+    page.locator("#frame_CARD_NUMBER").wait_for(state="visible", timeout=30000)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/sync_api/_generated.py", line 17975, in wait_for
+    self._sync(self._impl_obj.wait_for(timeout=timeout, state=state))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_locator.py", line 692, in wait_for
+    await self._frame.wait_for_selector(
+        self._selector, strict=True, timeout=timeout, state=state
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 369, in wait_for_selector
+    await self._channel.send(
+        "waitForSelector", self._timeout, locals_to_params(locals())
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 558, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.wait_for: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("#frame_CARD_NUMBER") to be visible
+    6 × locator resolved to hidden <iframe seamless="" id="frame_CARD_NUMBER"></iframe>
+
+
+Captured logging:
+INFO:src.e2e.checkout.helper:Performing mock login
+INFO:src.e2e.checkout.helper:Login successful]]>
+</error><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_004_Checkout_scenario_01
+  Schema dello scenario: Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1 
+    Dato La pagina di checkout è aperta ... passed in 0.309s
+    E La lingua è impostata su "it" ... passed in 0.383s
+    E L'utente è autenticato ... passed in 8.363s
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso con prefisso "30200" ... passed in 0.455s
+    E L'utente inserisce il codice fiscale del pagatore "77777777777" ... passed in 0.192s
+    E L'utente clicca il pulsante verifica ... passed in 0.123s
+    E L'utente clicca il pulsante paga ... passed in 0.854s
+    E L'utente inserisce l'email "ecommerce-test-mailgroup@pagopa.it" ... passed in 0.331s
+    E L'utente conferma l'email "ecommerce-test-mailgroup@pagopa.it" ... passed in 0.405s
+    E L'utente seleziona il metodo di pagamento "CP" ... passed in 0.886s
+    E L'utente inserisce il numero carta "5255000260000014" ... failed in 30.005s
+    E L'utente inserisce la data di scadenza "12/30" ... skipped in 0.000s
+    E L'utente inserisce il codice di sicurezza "123" ... skipped in 0.000s
+    E L'utente inserisce il nome dell'intestatario carta "Test test" ... skipped in 0.000s
+    E L'utente seleziona il PSP con id "PPAYITR1XXX" ... skipped in 0.000s
+    E L'utente conferma la selezione del PSP ... skipped in 0.000s
+    E L'utente clicca il pulsante paga finale ... skipped in 0.000s
+    Allora Viene mostrato un messaggio di pagamento completato con successo ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.checkout_npg_auth.Attivazione pagamento Checkout autenticato" name="Un pagamento con configurazione carta &quot;Wordline&quot; viene completato con successo -- @1.2 " status="failed" time="42.056687"><error type="TimeoutError" message="Locator.wait_for: Timeout 30000ms exceeded.&#10;Call log:&#10;  - waiting for locator(&quot;#frame_CARD_NUMBER&quot;) to be visible&#10;    6 × locator resolved to hidden &lt;iframe seamless=&quot;&quot; id=&quot;frame_CARD_NUMBER&quot;&gt;&lt;/iframe&gt;&#10;">
+<![CDATA[
+Failing step: E L'utente inserisce il numero carta "5255000260000014" ... failed in 30.005s
+Location: src/e2e/checkout/features/checkout_npg_auth.feature:32
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 146, in step_fill_card_number
+    page.locator("#frame_CARD_NUMBER").wait_for(state="visible", timeout=30000)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/sync_api/_generated.py", line 17975, in wait_for
+    self._sync(self._impl_obj.wait_for(timeout=timeout, state=state))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_locator.py", line 692, in wait_for
+    await self._frame.wait_for_selector(
+        self._selector, strict=True, timeout=timeout, state=state
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 369, in wait_for_selector
+    await self._channel.send(
+        "waitForSelector", self._timeout, locals_to_params(locals())
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 558, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.wait_for: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("#frame_CARD_NUMBER") to be visible
+    6 × locator resolved to hidden <iframe seamless="" id="frame_CARD_NUMBER"></iframe>
+
+
+Captured logging:
+INFO:src.e2e.checkout.helper:Performing mock login
+INFO:src.e2e.checkout.helper:Login successful]]>
+</error><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_004_Checkout_scenario_01
+  Schema dello scenario: Un pagamento con configurazione carta "Wordline" viene completato con successo -- @1.2 
+    Dato La pagina di checkout è aperta ... passed in 0.259s
+    E La lingua è impostata su "it" ... passed in 0.386s
+    E L'utente è autenticato ... passed in 8.086s
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso con prefisso "30201" ... passed in 0.460s
+    E L'utente inserisce il codice fiscale del pagatore "77777777777" ... passed in 0.243s
+    E L'utente clicca il pulsante verifica ... passed in 0.173s
+    E L'utente clicca il pulsante paga ... passed in 0.822s
+    E L'utente inserisce l'email "ecommerce-test-mailgroup@pagopa.it" ... passed in 0.335s
+    E L'utente conferma l'email "ecommerce-test-mailgroup@pagopa.it" ... passed in 0.404s
+    E L'utente seleziona il metodo di pagamento "CP" ... passed in 0.885s
+    E L'utente inserisce il numero carta "5255000260000014" ... failed in 30.005s
+    E L'utente inserisce la data di scadenza "12/30" ... skipped in 0.000s
+    E L'utente inserisce il codice di sicurezza "123" ... skipped in 0.000s
+    E L'utente inserisce il nome dell'intestatario carta "Test test" ... skipped in 0.000s
+    E L'utente seleziona il PSP con id "BNLIITRR" ... skipped in 0.000s
+    E L'utente conferma la selezione del PSP ... skipped in 0.000s
+    E L'utente clicca il pulsante paga finale ... skipped in 0.000s
+    Allora Viene mostrato un messaggio di pagamento completato con successo ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.checkout_npg_auth.Attivazione pagamento Checkout autenticato" name="Un pagamento con configurazione carta &quot;Worldpay&quot; viene completato con successo -- @1.3 " status="failed" time="41.529444"><error type="TimeoutError" message="Locator.wait_for: Timeout 30000ms exceeded.&#10;Call log:&#10;  - waiting for locator(&quot;#frame_CARD_NUMBER&quot;) to be visible&#10;    6 × locator resolved to hidden &lt;iframe seamless=&quot;&quot; id=&quot;frame_CARD_NUMBER&quot;&gt;&lt;/iframe&gt;&#10;">
+<![CDATA[
+Failing step: E L'utente inserisce il numero carta "4242424242424242" ... failed in 30.003s
+Location: src/e2e/checkout/features/checkout_npg_auth.feature:32
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 146, in step_fill_card_number
+    page.locator("#frame_CARD_NUMBER").wait_for(state="visible", timeout=30000)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/sync_api/_generated.py", line 17975, in wait_for
+    self._sync(self._impl_obj.wait_for(timeout=timeout, state=state))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_locator.py", line 692, in wait_for
+    await self._frame.wait_for_selector(
+        self._selector, strict=True, timeout=timeout, state=state
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 369, in wait_for_selector
+    await self._channel.send(
+        "waitForSelector", self._timeout, locals_to_params(locals())
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 558, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.wait_for: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("#frame_CARD_NUMBER") to be visible
+    6 × locator resolved to hidden <iframe seamless="" id="frame_CARD_NUMBER"></iframe>
+
+
+Captured logging:
+INFO:src.e2e.checkout.helper:Performing mock login
+INFO:src.e2e.checkout.helper:Login successful]]>
+</error><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_004_Checkout_scenario_01
+  Schema dello scenario: Un pagamento con configurazione carta "Worldpay" viene completato con successo -- @1.3 
+    Dato La pagina di checkout è aperta ... passed in 0.255s
+    E La lingua è impostata su "it" ... passed in 0.388s
+    E L'utente è autenticato ... passed in 7.681s
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso con prefisso "30201" ... passed in 0.619s
+    E L'utente inserisce il codice fiscale del pagatore "77777777777" ... passed in 0.311s
+    E L'utente clicca il pulsante verifica ... passed in 0.137s
+    E L'utente clicca il pulsante paga ... passed in 0.837s
+    E L'utente inserisce l'email "ecommerce-test-mailgroup@pagopa.it" ... passed in 0.334s
+    E L'utente conferma l'email "ecommerce-test-mailgroup@pagopa.it" ... passed in 0.439s
+    E L'utente seleziona il metodo di pagamento "CP" ... passed in 0.525s
+    E L'utente inserisce il numero carta "4242424242424242" ... failed in 30.003s
+    E L'utente inserisce la data di scadenza "12/30" ... skipped in 0.000s
+    E L'utente inserisce il codice di sicurezza "123" ... skipped in 0.000s
+    E L'utente inserisce il nome dell'intestatario carta "Test test" ... skipped in 0.000s
+    E L'utente seleziona il PSP con id "WOLLNLB1" ... skipped in 0.000s
+    E L'utente conferma la selezione del PSP ... skipped in 0.000s
+    E L'utente clicca il pulsante paga finale ... skipped in 0.000s
+    Allora Viene mostrato un messaggio di pagamento completato con successo ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
