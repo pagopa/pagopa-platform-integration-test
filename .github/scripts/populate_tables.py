@@ -74,7 +74,7 @@ def populate_test_run(test_run: Test_runs, summary_path: str, version: str, test
         
         test_run.total_failures = calculate_total_failures(test_run)
         if test_run.total_failures == 0:
-            test_run.revision_result = "GO"
+            test_run.revision_result = "OK"
             test_run.revisioned = True
             test_run.revision_date = datetime.now().isoformat()
             test_run.revisioned_by = "SYSTEM"
