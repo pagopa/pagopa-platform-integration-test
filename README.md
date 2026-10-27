@@ -63,9 +63,8 @@ pagopa-platform-integration-test/
 │   │   ├── wisp/
 │   │   │   └── utility/             # helpers SOAP, request builder, routing
 │   │   ├── fdr/
-│   │   ├── ebollo/
-│   │   │   └── utility/             # helpers API MBD, UI Playwright, generators
-│   │   └── gpd/
+│   │   └── ebollo/
+│   │       └── utility/             # helpers API MBD, UI Playwright, generators
 │   └── e2e/
 │       └── checkout/                # Checkout E2E Behave/Playwright
 ├── reports/                         # output locali (allure-results/allure-html)
@@ -87,7 +86,7 @@ Riferimenti: struttura workspace, `.gitignore`, `.github/workflows/*`, `.github/
 | pip | installazione dipendenze Python | versione recente |
 | Java | Allure CLI e workflow report | 17 consigliata |
 | Allure CLI | generazione e apertura report | 2.x compatibile |
-| Node.js + npm/yarn | GPD Cucumber.js e Playwright JS | 18+ consigliata |
+| Node.js + npm | Playwright JS | 18+ consigliata |
 | jq | parsing JSON nei workflow Linux | richiesto in CI FdR e AI report analysis |
 
 Dipendenze Python principali presenti nel progetto:
@@ -133,11 +132,6 @@ Il progetto include un addon project-owned per anonimizzare le trace ACE prima c
 Per le suite Node.js opzionali:
 
 ```bash
-cd src/integration/gpd
-yarn install
-```
-
-```bash
 cd src/e2e/checkout
 npm install
 npx playwright install
@@ -151,8 +145,7 @@ pip install playwright
 playwright install chromium
 ```
 
-Riferimenti: `requirements.txt`, `src/integration/gpd/package.json`,
-`src/integration/gpd/README.md`, `src/e2e/checkout/package.json`,
+Riferimenti: `requirements.txt`, `src/e2e/checkout/package.json`,
 `src/e2e/checkout/environment.py`, `src/integration/ebollo/environment.py`.
 
 ## Configurazione
@@ -206,7 +199,7 @@ cp config/.secrets_template.yaml -> config/.secrets.yaml
 ```
 
 Il file `config/.secrets.yaml` è ignorato da git e deve contenere le subscription key e le
-password richieste dalle chiamate verso Nodo, GPD, Technical Support e canali WISP/Checkout.
+password richieste dalle chiamate verso Nodo, Technical Support e canali WISP/Checkout.
 
 PowerShell:
 
@@ -386,13 +379,10 @@ Riferimenti: `src/api/*/features/*.feature`, `src/api/*/environment.py`.
 | `wisp` | `src/integration/wisp` | Behave | scenari `nodoInviaRPT` e `nodoInviaCarrelloRPT`, tag `@runnable` |
 | `fdr` | `src/integration/fdr` | Behave | smoke/example suite con tag `@runnable` |
 | `ebollo` | `src/integration/ebollo` | Behave + Playwright Python | scenari eBollo e broadcast station |
-| `gpd` | `src/integration/gpd` | Cucumber.js | suite Node.js con script `yarn test:<env>` |
 
 Report locali consigliati: `reports/allure-results/<suite>-<env>` per le suite Behave.
-La suite GPD usa la reportistica Cucumber configurata dal runner JS.
 
-Riferimenti: `src/integration/**/features/**/*.feature`,
-`src/integration/gpd/package.json`, `src/integration/gpd/README.md`.
+Riferimenti: `src/integration/**/features/**/*.feature`.
 
 ### End-to-end
 
@@ -633,19 +623,6 @@ exit "$test_exit"
 
 Riferimenti: `src/e2e/checkout/environment.py`,
 `src/conf/configuration.py`, `src/e2e/checkout/uat.yaml`.
-
-### GPD Cucumber.js
-
-```bash
-cd src/integration/gpd
-yarn install
-yarn test:uat
-```
-
-Script disponibili: `test`, `test:local`, `test:dev`, `test:uat`, `test:prod`.
-
-Riferimenti: `src/integration/gpd/package.json`, `src/integration/gpd/README.md`.
-
 
 ## Report Allure
 
