@@ -78,15 +78,8 @@ Keep the summary specific, action-oriented, and in English.
    - QA-closer must preserve the exact orchestrator-provided message. If it is
      incompatible with project requirements, report the conflict rather than
      silently rewriting it.
-   - Append the following trailer unless the user explicitly requests otherwise;
-     do not duplicate it if already present:
-
-     ```text
-     Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
-     ```
-
 4. **Create and verify the commit.**
-   - Use `git commit -m "<message>"`, passing the chosen subject/body and trailer
+   - Use `git commit -m "<message>"`, passing the chosen subject/body
      without shell interpolation altering their contents.
    - Stop on a failed commit or hook; report the actual error. Do not bypass hooks,
      create a success-shaped fallback, or push after a failed commit.
