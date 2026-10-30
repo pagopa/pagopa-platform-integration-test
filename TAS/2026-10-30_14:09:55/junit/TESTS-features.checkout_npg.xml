@@ -1,0 +1,323 @@
+<testsuite name="features.checkout_npg.Attivazione pagamento Checkout" tests="8" errors="3" failures="1" skipped="0" time="300.258107" timestamp="2026-10-30T14:16:28.752998" hostname="runnervm48cm3"><testcase classname="features.checkout_npg.Attivazione pagamento Checkout" name="Un pagamento con configurazione carta &quot;Postepay&quot; viene completato con successo -- @1.1 " status="failed" time="14.560207"><error type="RuntimeError" message="Timeout on locator '#psp-radio-PPAYITR1XXX' after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)">
+<![CDATA[
+Failing step: E L'utente seleziona il PSP con id "PPAYITR1XXX" ... failed in 5.054s
+Location: src/e2e/checkout/features/checkout_npg.feature:35
+Traceback (most recent call last):
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 93, in locate_and_click
+    to_click.wait_for(state="visible", timeout=timeout)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/sync_api/_generated.py", line 17975, in wait_for
+    self._sync(self._impl_obj.wait_for(timeout=timeout, state=state))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_locator.py", line 692, in wait_for
+    await self._frame.wait_for_selector(
+        self._selector, strict=True, timeout=timeout, state=state
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 369, in wait_for_selector
+    await self._channel.send(
+        "waitForSelector", self._timeout, locals_to_params(locals())
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 558, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.wait_for: Timeout 5000ms exceeded.
+Call log:
+  - waiting for locator("#psp-radio-PPAYITR1XXX") to be visible
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 188, in step_select_psp
+    locate_and_click(page, f"#psp-radio-{psp_id}")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 129, in locate_and_click
+    raise RuntimeError(
+        f"Timeout on locator '{locator}' after {timeout} ms (url: {current_url})"
+    ) from exc
+RuntimeError: Timeout on locator '#psp-radio-PPAYITR1XXX' after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)
+
+Captured logging:
+ERROR:src.e2e.checkout.helper:Timeout waiting for #psp-radio-PPAYITR1XXX after 5000 ms at page https://uat.checkout.pagopa.it/lista-psp]]>
+</error><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_003_Checkout_scenario_01
+  Schema dello scenario: Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1 
+    Dato La pagina di checkout è aperta ... passed in 0.234s
+    E La lingua è impostata su "it" ... passed in 0.822s
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso con prefisso "30200" ... passed in 0.419s
+    E L'utente inserisce il codice fiscale del pagatore "77777777777" ... passed in 0.250s
+    E L'utente clicca il pulsante verifica ... passed in 0.131s
+    E L'utente clicca il pulsante paga ... passed in 0.884s
+    E L'utente inserisce l'email "ecommerce-test-mailgroup@pagopa.it" ... passed in 0.298s
+    E L'utente conferma l'email "ecommerce-test-mailgroup@pagopa.it" ... passed in 0.354s
+    E L'utente seleziona il metodo di pagamento "CP" ... passed in 0.406s
+    E L'utente inserisce il numero carta "5255000260000014" ... passed in 5.327s
+    E L'utente inserisce la data di scadenza "12/30" ... passed in 0.142s
+    E L'utente inserisce il codice di sicurezza "123" ... passed in 0.113s
+    E L'utente inserisce il nome dell'intestatario carta "Test test" ... passed in 0.126s
+    E L'utente seleziona il PSP con id "PPAYITR1XXX" ... failed in 5.054s
+    E L'utente conferma la selezione del PSP ... skipped in 0.000s
+    E L'utente clicca il pulsante paga finale ... skipped in 0.000s
+    Allora Viene mostrato un messaggio di pagamento completato con successo ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.checkout_npg.Attivazione pagamento Checkout" name="Un pagamento con configurazione carta &quot;Wordline&quot; viene completato con successo -- @1.2 " status="failed" time="131.285613"><error type="TimeoutError" message="Locator.wait_for: Timeout 120000ms exceeded.&#10;Call log:&#10;  - waiting for locator(&quot;#responsePageMessageTitle&quot;) to be visible&#10;">
+<![CDATA[
+Failing step: Allora Viene mostrato un messaggio di pagamento completato con successo ... failed in 120.004s
+Location: src/e2e/checkout/features/checkout_npg.feature:38
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 303, in step_check_payment_success
+    page.locator(result_title_selector).wait_for(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        state="visible", timeout=120000
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/sync_api/_generated.py", line 17975, in wait_for
+    self._sync(self._impl_obj.wait_for(timeout=timeout, state=state))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_locator.py", line 692, in wait_for
+    await self._frame.wait_for_selector(
+        self._selector, strict=True, timeout=timeout, state=state
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 369, in wait_for_selector
+    await self._channel.send(
+        "waitForSelector", self._timeout, locals_to_params(locals())
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 558, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.wait_for: Timeout 120000ms exceeded.
+Call log:
+  - waiting for locator("#responsePageMessageTitle") to be visible
+
+]]>
+</error><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_003_Checkout_scenario_01
+  Schema dello scenario: Un pagamento con configurazione carta "Wordline" viene completato con successo -- @1.2 
+    Dato La pagina di checkout è aperta ... passed in 0.237s
+    E La lingua è impostata su "it" ... passed in 0.820s
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso con prefisso "30201" ... passed in 0.358s
+    E L'utente inserisce il codice fiscale del pagatore "77777777777" ... passed in 0.235s
+    E L'utente clicca il pulsante verifica ... passed in 0.135s
+    E L'utente clicca il pulsante paga ... passed in 0.878s
+    E L'utente inserisce l'email "ecommerce-test-mailgroup@pagopa.it" ... passed in 0.268s
+    E L'utente conferma l'email "ecommerce-test-mailgroup@pagopa.it" ... passed in 0.348s
+    E L'utente seleziona il metodo di pagamento "CP" ... passed in 0.420s
+    E L'utente inserisce il numero carta "5255000260000014" ... passed in 4.209s
+    E L'utente inserisce la data di scadenza "12/30" ... passed in 0.132s
+    E L'utente inserisce il codice di sicurezza "123" ... passed in 0.110s
+    E L'utente inserisce il nome dell'intestatario carta "Test test" ... passed in 0.124s
+    E L'utente seleziona il PSP con id "BNLIITRR" ... passed in 2.892s
+    E L'utente conferma la selezione del PSP ... passed in 0.075s
+    E L'utente clicca il pulsante paga finale ... passed in 0.041s
+    Allora Viene mostrato un messaggio di pagamento completato con successo ... failed in 120.004s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.checkout_npg.Attivazione pagamento Checkout" name="Un pagamento con configurazione carta &quot;Worldpay&quot; viene completato con successo -- @1.3 " status="failed" time="131.453673"><error type="TimeoutError" message="Locator.wait_for: Timeout 120000ms exceeded.&#10;Call log:&#10;  - waiting for locator(&quot;#responsePageMessageTitle&quot;) to be visible&#10;">
+<![CDATA[
+Failing step: Allora Viene mostrato un messaggio di pagamento completato con successo ... failed in 120.003s
+Location: src/e2e/checkout/features/checkout_npg.feature:38
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 303, in step_check_payment_success
+    page.locator(result_title_selector).wait_for(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        state="visible", timeout=120000
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/sync_api/_generated.py", line 17975, in wait_for
+    self._sync(self._impl_obj.wait_for(timeout=timeout, state=state))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_locator.py", line 692, in wait_for
+    await self._frame.wait_for_selector(
+        self._selector, strict=True, timeout=timeout, state=state
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 369, in wait_for_selector
+    await self._channel.send(
+        "waitForSelector", self._timeout, locals_to_params(locals())
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 558, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.wait_for: Timeout 120000ms exceeded.
+Call log:
+  - waiting for locator("#responsePageMessageTitle") to be visible
+
+]]>
+</error><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_003_Checkout_scenario_01
+  Schema dello scenario: Un pagamento con configurazione carta "Worldpay" viene completato con successo -- @1.3 
+    Dato La pagina di checkout è aperta ... passed in 0.217s
+    E La lingua è impostata su "it" ... passed in 0.828s
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso con prefisso "30201" ... passed in 0.362s
+    E L'utente inserisce il codice fiscale del pagatore "77777777777" ... passed in 0.271s
+    E L'utente clicca il pulsante verifica ... passed in 0.071s
+    E L'utente clicca il pulsante paga ... passed in 0.869s
+    E L'utente inserisce l'email "ecommerce-test-mailgroup@pagopa.it" ... passed in 0.292s
+    E L'utente conferma l'email "ecommerce-test-mailgroup@pagopa.it" ... passed in 0.358s
+    E L'utente seleziona il metodo di pagamento "CP" ... passed in 0.376s
+    E L'utente inserisce il numero carta "4242424242424242" ... passed in 3.907s
+    E L'utente inserisce la data di scadenza "12/30" ... passed in 0.143s
+    E L'utente inserisce il codice di sicurezza "123" ... passed in 0.109s
+    E L'utente inserisce il nome dell'intestatario carta "Test test" ... passed in 0.128s
+    E L'utente seleziona il PSP con id "WOLLNLB1" ... passed in 3.390s
+    E L'utente conferma la selezione del PSP ... passed in 0.081s
+    E L'utente clicca il pulsante paga finale ... passed in 0.049s
+    Allora Viene mostrato un messaggio di pagamento completato con successo ... failed in 120.003s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.checkout_npg.Attivazione pagamento Checkout" name="Viene mostrato l'errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell'intervallo 302400000000000000-302409999999999999 -- @1.1 " status="failed" time="2.709785"><failure type="AssertionError" message="Expected modal header to contain 'Non riusciamo a trovare l’avviso', but got: 'L’Ente Creditore sta avendo problemi nella risposta'">
+<![CDATA[
+Failing step: E L'intestazione della modale di errore contiene "Non riusciamo a trovare l’avviso" ... failed in 0.022s
+Location: src/e2e/checkout/features/checkout_npg.feature:57
+Assertion Failed: Expected modal header to contain 'Non riusciamo a trovare l’avviso', but got: 'L’Ente Creditore sta avendo problemi nella risposta']]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @negative @FEAT_003_Checkout_scenario_02
+  Schema dello scenario: Viene mostrato l'errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell'intervallo 302400000000000000-302409999999999999 -- @1.1 
+    Dato La pagina di checkout è aperta ... passed in 0.238s
+    E La lingua è impostata su "it" ... passed in 0.834s
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso nell'intervallo "302400000000000000" a "302409999999999999" ... passed in 0.321s
+    E L'utente inserisce il codice fiscale del pagatore "77777777777" ... passed in 0.304s
+    E L'utente clicca il pulsante verifica ... passed in 0.166s
+    Allora Viene mostrata una modale di errore dopo "5" secondi ... passed in 0.825s
+    E L'intestazione della modale di errore contiene "Non riusciamo a trovare l’avviso" ... failed in 0.022s
+    E Il corpo della modale di errore contiene "L'avviso potrebbe essere stato già pagato. Per ricevere assistenza, contatta l’Ente Creditore." ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.checkout_npg.Attivazione pagamento Checkout" name="Viene mostrato l'errore PAA_PAGAMENTO_SCADUTO per codice avviso non valido nell'intervallo 302990000000000000-302999999999999999 -- @1.2 " status="passed" time="2.681778"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @negative @FEAT_003_Checkout_scenario_02
+  Schema dello scenario: Viene mostrato l'errore PAA_PAGAMENTO_SCADUTO per codice avviso non valido nell'intervallo 302990000000000000-302999999999999999 -- @1.2 
+    Dato La pagina di checkout è aperta ... passed in 0.231s
+    E La lingua è impostata su "it" ... passed in 0.828s
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso nell'intervallo "302990000000000000" a "302999999999999999" ... passed in 0.357s
+    E L'utente inserisce il codice fiscale del pagatore "77777777777" ... passed in 0.275s
+    E L'utente clicca il pulsante verifica ... passed in 0.128s
+    Allora Viene mostrata una modale di errore dopo "60" secondi ... passed in 0.837s
+    E L'intestazione della modale di errore contiene "L’avviso è scaduto e non è più possibile pagarlo" ... passed in 0.020s
+    E Il corpo della modale di errore contiene "Contatta l’Ente per maggiori informazioni." ... passed in 0.006s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.checkout_npg.Attivazione pagamento Checkout" name="Viene mostrato l'errore PPT_STAZIONE_INT_PA_TIMEOUT per codice avviso non valido nell'intervallo 302980000000000000-302989999999999999 -- @1.3 " status="passed" time="12.179359"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @negative @FEAT_003_Checkout_scenario_02
+  Schema dello scenario: Viene mostrato l'errore PPT_STAZIONE_INT_PA_TIMEOUT per codice avviso non valido nell'intervallo 302980000000000000-302989999999999999 -- @1.3 
+    Dato La pagina di checkout è aperta ... passed in 0.216s
+    E La lingua è impostata su "it" ... passed in 0.818s
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso nell'intervallo "302980000000000000" a "302989999999999999" ... passed in 0.344s
+    E L'utente inserisce il codice fiscale del pagatore "77777777777" ... passed in 0.276s
+    E L'utente clicca il pulsante verifica ... passed in 0.141s
+    Allora Viene mostrata una modale di errore dopo "60" secondi ... passed in 10.373s
+    E L'intestazione della modale di errore contiene "Si è verificato un errore imprevisto" ... passed in 0.006s
+    E Il corpo della modale di errore contiene "Riprova, oppure contatta l’assistenza" ... passed in 0.006s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.checkout_npg.Attivazione pagamento Checkout" name="Viene mostrato l'errore PAA_PAGAMENTO_DUPLICATO per codice avviso non valido nell'intervallo 302950100443009424-302950100443009424 -- @1.4 " status="passed" time="2.713244"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @negative @FEAT_003_Checkout_scenario_02
+  Schema dello scenario: Viene mostrato l'errore PAA_PAGAMENTO_DUPLICATO per codice avviso non valido nell'intervallo 302950100443009424-302950100443009424 -- @1.4 
+    Dato La pagina di checkout è aperta ... passed in 0.240s
+    E La lingua è impostata su "it" ... passed in 0.834s
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso nell'intervallo "302950100443009424" a "302950100443009424" ... passed in 0.374s
+    E L'utente inserisce il codice fiscale del pagatore "77777777777" ... passed in 0.250s
+    E L'utente clicca il pulsante verifica ... passed in 0.120s
+    Allora Viene mostrata una modale di errore dopo "5" secondi ... passed in 0.880s
+    E L'intestazione della modale di errore contiene "Questo avviso è stato già pagato!" ... passed in 0.015s
+    E Il corpo della modale di errore contiene "" ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.checkout_npg.Attivazione pagamento Checkout" name="Viene mostrato il codice di errore per ente creditore non raggiungibile -- @1.1 " status="passed" time="2.674447"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @negative @FEAT_003_Checkout_scenario_03
+  Schema dello scenario: Viene mostrato il codice di errore per ente creditore non raggiungibile -- @1.1 
+    Dato La pagina di checkout è aperta ... passed in 0.205s
+    E La lingua è impostata su "it" ... passed in 0.819s
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso nell'intervallo "302970000000000000" a "302979999999999999" ... passed in 0.372s
+    E L'utente inserisce il codice fiscale del pagatore "77777777777" ... passed in 0.282s
+    E L'utente clicca il pulsante verifica ... passed in 0.118s
+    Allora Viene mostrata una modale di errore ... passed in 0.851s
+    E L'intestazione della modale di errore contiene "L’Ente Creditore sta avendo problemi nella risposta" ... passed in 0.016s
+    E Il corpo della modale di errore contiene "Codice di errore per l'assistenza" ... passed in 0.006s
+    E Il codice di errore mostrato contiene "PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE" ... passed in 0.004s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
