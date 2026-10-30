@@ -111,7 +111,11 @@ The central GHA workflow that runs the test suites. It supports two trigger mech
 - `allure-results/` — Allure result files, only when the `allure` input is `true` (render to HTML with the Allure CLI)
 
 **Published report:** the workflow publishes the test artifact contents under
-`TAS/<timestamp>/` on `gh-pages`, where the timestamp format is `dd-MM-yyyy_HH:mm:ss`.
+`TAS/<timestamp>/` on `gh-pages`, where the timestamp is the Allure run start (`time.start` of
+`widgets/summary.json`) in UTC, formatted `YYYY-MM-DD_HH:mm:ss` like the NRT report folders, so that
+the QA Hub can derive the report link from the Allure start time. When the Allure summary is missing
+or invalid (failed run, `allure` disabled) the job start time (UTC, same format) is used instead.
+The history index also lists legacy folders named `dd-MM-yyyy_HH:mm:ss`.
 When failures are present, the existing AI report workflow analyzes the Allure/JUnit failure
 names, messages, and traces. Its best-effort HTML and Markdown outputs are published under
 `TAS/<timestamp>/analysis/`; they do not affect the test outcome and are not linked from the

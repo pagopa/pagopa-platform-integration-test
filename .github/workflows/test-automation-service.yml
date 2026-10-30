@@ -145,9 +145,11 @@ jobs:
           # workflow YAML and the code checked out below — they are always aligned.
           echo "::notice title=Ref::${{ github.ref }} (sha: ${{ github.sha }})"
 
+      # Fallback folder name (ISO, UTC) used by publish_results only when the
+      # Allure summary is unavailable. Same format as the NRT report folders.
       - name: Generate report timestamp
         id: publish_timestamp
-        run: echo "timestamp=$(date +'%d-%m-%Y_%H:%M:%S')" >> "$GITHUB_OUTPUT"
+        run: echo "timestamp=$(date -u +'%Y-%m-%d_%H:%M:%S')" >> "$GITHUB_OUTPUT"
 
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
@@ -496,10 +498,31 @@ jobs:
       - name: Prepare TAS report contents
         env:
           REPORT_DIR: ${{ inputs.test_suite }}-${{ inputs.test_type }}
-          PUBLISH_TIMESTAMP: ${{ needs.run_tests.outputs.publish_timestamp }}
+          FALLBACK_TIMESTAMP: ${{ needs.run_tests.outputs.publish_timestamp }}
           TEST_SUITE: ${{ inputs.test_suite }}
           TEST_TYPE: ${{ inputs.test_type }}
         run: |
+          # The report folder is named after the Allure run start (UTC,
+          # YYYY-MM-DD_HH:MM:SS), exactly like the NRT report folders, so that
+          # the QA Hub can build the report link from the Allure start time.
+          # Fall back to the job timestamp when the summary is missing/invalid
+          # (failed run, Allure disabled).
+          SUMMARY_FILE="artifacts/test-results/${REPORT_DIR}/widgets/summary.json"
+          PUBLISH_TIMESTAMP=""
+          if [ -f "$SUMMARY_FILE" ]; then
+            PUBLISH_TIMESTAMP=$(jq -er '
+              .time | if type == "array" then .[0] else . end
+              | .start | select(type == "number" and . > 0)
+              | . / 1000 | floor | strftime("%Y-%m-%d_%H:%M:%S")
+            ' "$SUMMARY_FILE" 2>/dev/null) || PUBLISH_TIMESTAMP=""
+          fi
+          if [ -z "$PUBLISH_TIMESTAMP" ]; then
+            echo "::warning::Allure summary unavailable; using the job timestamp for the TAS report folder."
+            PUBLISH_TIMESTAMP="$FALLBACK_TIMESTAMP"
+          fi
+          echo "PUBLISH_TIMESTAMP=${PUBLISH_TIMESTAMP}" >> "$GITHUB_ENV"
+          export PUBLISH_TIMESTAMP
+
           DEST="public/TAS/${PUBLISH_TIMESTAMP}"
           mkdir -p "$DEST"
 

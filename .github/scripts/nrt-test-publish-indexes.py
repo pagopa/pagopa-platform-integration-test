@@ -83,29 +83,15 @@ class PublisherTests(unittest.TestCase):
         self.assertEqual((technical / "history.json").read_text(), "unchanged")
         self.assertEqual(PUBLISHER["update_suite"](latest.parent), stats)
 
-    def test_tas_history_index_includes_complete_runs_newest_first(self):
-        """List complete TAS reports newest-first without deleting prior runs."""
-        root = Path("public/TAS")
-        now = datetime.now().replace(microsecond=0)
-        older_name = (now - timedelta(days=1)).strftime("%d-%m-%Y_%H:%M:%S")
-        newer_name = now.strftime("%d-%m-%Y_%H:%M:%S")
-        incomplete_name = (now + timedelta(seconds=1)).strftime("%d-%m-%Y_%H:%M:%S")
-        backing_dirs = {
-            older_name: root / "older-run",
-            newer_name: root / "newer-run",
-            incomplete_name: root / "incomplete-run",
-            "last-history": root / "history-run",
-        }
+    def build_tas_index(self, root, run_names):
+        """Build the TAS index over virtual folders (':' is invalid on Windows).
+
+        `run_names` maps a TAS folder name to its backing directory name; the
+        backing directories hold the files, the mocks only expose the names.
+        """
+        backing_dirs = {name: root / backing for name, backing in run_names.items()}
         for backing_dir in backing_dirs.values():
             backing_dir.mkdir(parents=True)
-        (backing_dirs[older_name] / "index.html").write_text("Older report")
-        (backing_dirs[newer_name] / "index.html").write_text("Newer report")
-        analysis_dir = backing_dirs[newer_name] / "analysis"
-        analysis_dir.mkdir()
-        (analysis_dir / "index.html").write_text("AI analysis")
-        (backing_dirs[incomplete_name] / "index.html").write_text("")
-        (backing_dirs["last-history"] / "index.html").write_text("Not a timestamped run")
-
         report_dirs = []
         for name, backing_dir in backing_dirs.items():
             report_dir = mock.MagicMock()
@@ -121,7 +107,26 @@ class PublisherTests(unittest.TestCase):
                 return iter(report_dirs)
             return original_iterdir(path)
 
-        with mock.patch.object(Path, "iterdir", iterdir):
+        return backing_dirs, report_dirs, mock.patch.object(Path, "iterdir", iterdir)
+
+    def check_tas_history_index(self, older_name, newer_name, incomplete_name):
+        """List complete TAS reports newest-first without deleting prior runs."""
+        root = Path("public/TAS")
+        backing_dirs, _, patcher = self.build_tas_index(root, {
+            older_name: "older-run",
+            newer_name: "newer-run",
+            incomplete_name: "incomplete-run",
+            "last-history": "history-run",
+        })
+        (backing_dirs[older_name] / "index.html").write_text("Older report")
+        (backing_dirs[newer_name] / "index.html").write_text("Newer report")
+        analysis_dir = backing_dirs[newer_name] / "analysis"
+        analysis_dir.mkdir()
+        (analysis_dir / "index.html").write_text("AI analysis")
+        (backing_dirs[incomplete_name] / "index.html").write_text("")
+        (backing_dirs["last-history"] / "index.html").write_text("Not a timestamped run")
+
+        with patcher:
             build_tas_index_page(root)
 
         index = (root / "index.html").read_text(encoding="utf-8")
@@ -136,6 +141,50 @@ class PublisherTests(unittest.TestCase):
         self.assertEqual(index.count("Apri analisi AI"), 1)
         self.assertTrue((backing_dirs[older_name] / "index.html").is_file())
         self.assertTrue((backing_dirs[newer_name] / "index.html").is_file())
+
+    def test_tas_history_index_includes_complete_runs_newest_first(self):
+        """Handle ISO (current) TAS folder names."""
+        now = datetime.now().replace(microsecond=0)
+        fmt = "%Y-%m-%d_%H:%M:%S"
+        self.check_tas_history_index(
+            (now - timedelta(days=1)).strftime(fmt),
+            now.strftime(fmt),
+            (now + timedelta(seconds=1)).strftime(fmt),
+        )
+
+    def test_tas_history_index_supports_legacy_folder_names(self):
+        """Keep historical dd-mm-YYYY TAS folders in the index."""
+        now = datetime.now().replace(microsecond=0)
+        fmt = "%d-%m-%Y_%H:%M:%S"
+        self.check_tas_history_index(
+            (now - timedelta(days=1)).strftime(fmt),
+            now.strftime(fmt),
+            (now + timedelta(seconds=1)).strftime(fmt),
+        )
+
+    def test_tas_history_index_orders_mixed_formats_by_real_datetime(self):
+        """Sort legacy and ISO folders chronologically, not alphabetically."""
+        root = Path("public/TAS")
+        legacy = "05-03-2026_10:00:00"
+        iso_older = "2026-03-04_10:00:00"
+        iso_newer = "2026-03-06_10:00:00"
+        backing_dirs, _, patcher = self.build_tas_index(root, {
+            iso_older: "iso-older", legacy: "legacy", iso_newer: "iso-newer",
+            "not-a-timestamp": "other",
+        })
+        for name, backing_dir in backing_dirs.items():
+            (backing_dir / "index.html").write_text(f"Report {name}")
+
+        with patcher:
+            build_tas_index_page(root)
+
+        index = (root / "index.html").read_text(encoding="utf-8")
+        positions = [index.index(f"./{name}/index.html") for name in (iso_newer, legacy, iso_older)]
+        self.assertEqual(positions, sorted(positions))
+        self.assertNotIn("./not-a-timestamp/index.html", index)
+        self.assertIn("05-03-2026 10:00:00", index)
+        self.assertIn("06-03-2026 10:00:00", index)
+        self.assertIn("04-03-2026 10:00:00", index)
 
     def test_tas_history_index_shows_empty_state_without_reports(self):
         """Render an empty state when no complete TAS reports are available."""
