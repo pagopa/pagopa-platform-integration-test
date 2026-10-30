@@ -119,7 +119,7 @@ same tag.
 | `mode` | `sync` | — | Invocation mode: `sync`, `async` or `raw` |
 | `ref` | `main` | — | TAS repo branch/tag to run the tests from |
 | `tags` | `""` | — | Behave tag expression (e.g. `@runnable`, `@e2e`, `@a,@b`). Empty = workflow default (`@runnable`) |
-| `allure` | `"false"` | — | Also produce an Allure HTML report. TAS publishes reports under `TAS/<timestamp>`; failed runs also include AI analysis at `analysis/index.html` when the Gemini secret is available |
+| `allure` | `"false"` | — | Also produce an Allure HTML report. TAS publishes reports under `TAS/<timestamp>` (`YYYY-MM-DD_HH:mm:ss`, UTC, Allure run start); failed runs also include AI analysis at `analysis/index.html` when the Gemini secret is available |
 | `github_token` | — | ✅ | GitHub PAT (scopes `public_repo` + `actions:read`). Must be passed explicitly (composite actions cannot read caller secrets). |
 | `caller_id` | `${{ github.repository }}/${{ github.run_id }}` | — | Identifier of the calling system (traceability) |
 | `correlation_id` | `${{ github.run_id }}-${{ github.run_attempt }}` | — | Unique ID to correlate the run with the caller |

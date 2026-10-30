@@ -492,7 +492,8 @@ are developing in parallel on separate feature branches, this option is not suit
 that branch has been merged into `main`.
 
 The called workflow publishes test results to the TAS repository's GitHub Pages site under
-`TAS/<timestamp>` (`dd-MM-yyyy_HH:mm:ss`). Failed runs also receive an AI analysis rendered at
+`TAS/<timestamp>` (`YYYY-MM-DD_HH:mm:ss`, UTC, taken from the Allure run start with the job start time as
+fallback; older runs use `dd-MM-yyyy_HH:mm:ss`). Failed runs also receive an AI analysis rendered at
 `TAS/<timestamp>/analysis/index.html` with the Markdown beside it at `analysis/analysis.md`.
 The analysis is best-effort and does not change the Behave outcome; the prompt includes the
 failure names, messages, and traces from Allure/JUnit. It is not linked from the Allure root

@@ -149,6 +149,20 @@ def build_index_page(root_dir):
         f.write(template.render(reports=reports))
     print(f"[INFO][build_index_page] written index page to {output_path}")
 
+# TAS report folder names: ISO UTC (current, same as NRT) and dd-mm-YYYY (legacy).
+TAS_FOLDER_TIMESTAMP_FORMATS = ("%Y-%m-%d_%H:%M:%S", "%d-%m-%Y_%H:%M:%S")
+
+
+def parse_tas_folder_timestamp(folder_name):
+    """Return the datetime encoded in a TAS report folder name, or None."""
+    for timestamp_format in TAS_FOLDER_TIMESTAMP_FORMATS:
+        try:
+            return datetime.strptime(folder_name, timestamp_format)
+        except ValueError:
+            continue
+    return None
+
+
 def build_tas_index_page(root_dir):
     """Build the TAS history index from complete timestamped reports."""
     root_path = Path(root_dir)
@@ -156,9 +170,8 @@ def build_tas_index_page(root_dir):
     for report_dir in root_path.iterdir():
         if not report_dir.is_dir():
             continue
-        try:
-            timestamp = datetime.strptime(report_dir.name, "%d-%m-%Y_%H:%M:%S")
-        except ValueError:
+        timestamp = parse_tas_folder_timestamp(report_dir.name)
+        if timestamp is None:
             continue
         report_index = report_dir / "index.html"
         if not report_index.is_file() or report_index.stat().st_size == 0:
