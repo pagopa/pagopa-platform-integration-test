@@ -164,57 +164,77 @@ def parse_tas_folder_timestamp(folder_name):
 
 
 def build_tas_index_page(root_dir):
-    """Build a TAS history index for flat and suite-scoped timestamped reports."""
+    """Build or update a report-card index inside each TAS suite directory."""
     root_path = Path(root_dir)
-    reports = []
-    for group_dir in root_path.iterdir():
-        if not group_dir.is_dir():
-            continue
-        group_timestamp = parse_tas_folder_timestamp(group_dir.name)
-        if group_timestamp is not None:
-            report_dirs = [(group_dir, group_timestamp, None)]
-        else:
-            report_dirs = [
-                (report_dir, parse_tas_folder_timestamp(report_dir.name), group_dir.name)
-                for report_dir in group_dir.iterdir()
-                if report_dir.is_dir()
-                and parse_tas_folder_timestamp(report_dir.name) is not None
-            ]
-
-        for report_dir, timestamp, suite_name in report_dirs:
-            report_index = report_dir / "index.html"
-            if not report_index.is_file() or report_index.stat().st_size == 0:
-                continue
-            analysis_index = report_dir / "analysis" / "index.html"
-            has_analysis = analysis_index.is_file()
-            relative_report_path = (
-                f"{suite_name}/{report_dir.name}" if suite_name else report_dir.name
-            )
-            timestamp_label = timestamp.strftime("%d-%m-%Y %H:%M:%S")
-            if suite_name:
-                timestamp_label = f"{suite_name} - {timestamp_label}"
-            reports.append({
-                "timestamp": timestamp_label,
-                "link": f"./{relative_report_path}/index.html",
-                "has_analysis": has_analysis,
-                "analysis_link": (
-                    f"./{relative_report_path}/analysis/index.html" if has_analysis else None
-                ),
-                "sort_key": (timestamp, suite_name or ""),
-            })
-
-    reports.sort(key=lambda report: report["sort_key"], reverse=True)
-    for report in reports:
-        del report["sort_key"]
-
     environment = Environment(
         loader=FileSystemLoader(".github/templates"),
         autoescape=select_autoescape(["html", "xml"]),
     )
     template = environment.get_template("tas-history-index-template.html")
-    (root_path / "index.html").write_text(
-        template.render(reports=reports), encoding="utf-8"
-    )
+
+    for suite_dir in root_path.iterdir():
+        if not suite_dir.is_dir() or parse_tas_folder_timestamp(suite_dir.name):
+            continue
+
+        reports = []
+        for report_dir in suite_dir.iterdir():
+            if not report_dir.is_dir():
+                continue
+            timestamp = parse_tas_folder_timestamp(report_dir.name)
+            if timestamp is None:
+                continue
+            report_index = report_dir / "index.html"
+            if not report_index.is_file() or report_index.stat().st_size == 0:
+                continue
+            analysis_index = report_dir / "analysis" / "index.html"
+            has_analysis = analysis_index.is_file()
+
+            passed = "N/D"
+            failed = "N/D"
+            summary_path = report_dir / "widgets" / "summary.json"
+            try:
+                summary = json.loads(summary_path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                summary = {}
+            statistic = summary.get("statistic", {}) if isinstance(summary, dict) else {}
+            if isinstance(statistic, list):
+                statistic = statistic[0] if statistic else {}
+            if isinstance(statistic, dict):
+                passed_value = statistic.get("passed")
+                failed_value = statistic.get("failed", 0)
+                broken_value = statistic.get("broken", 0)
+                if isinstance(passed_value, int) and not isinstance(passed_value, bool):
+                    passed = passed_value
+                if (
+                    ("failed" in statistic or "broken" in statistic)
+                    and
+                    isinstance(failed_value, int)
+                    and not isinstance(failed_value, bool)
+                    and isinstance(broken_value, int)
+                    and not isinstance(broken_value, bool)
+                ):
+                    failed = failed_value + broken_value
+
+            reports.append({
+                "timestamp": report_dir.name,
+                "passed": passed,
+                "failed": failed,
+                "link": f"./{report_dir.name}/index.html",
+                "has_analysis": has_analysis,
+                "analysis_link": (
+                    f"./{report_dir.name}/analysis/index.html" if has_analysis else None
+                ),
+                "sort_key": timestamp,
+            })
+
+        reports.sort(key=lambda report: report["sort_key"], reverse=True)
+        for report in reports:
+            del report["sort_key"]
+
+        (suite_dir / "index.html").write_text(
+            template.render(reports=reports, suite_name=suite_dir.name),
+            encoding="utf-8",
+        )
 
 def deploy_ai_analysis(
     artifact_dir,

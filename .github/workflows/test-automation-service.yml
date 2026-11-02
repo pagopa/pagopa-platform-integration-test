@@ -528,7 +528,9 @@ jobs:
             exit 1
           fi
 
-          DEST="public/TAS/${TEST_SUITE}/${PUBLISH_TIMESTAMP}"
+          suite_dir="public/TAS/${TEST_SUITE}"
+          mkdir -p "$suite_dir"
+          DEST="${suite_dir}/${PUBLISH_TIMESTAMP}"
           mkdir -p "$DEST"
 
           REPORT_SOURCE="artifacts/test-results/${REPORT_DIR}"
@@ -542,7 +544,6 @@ jobs:
           done
 
           cutoff_epoch=$(date -u -d '30 days ago' +%s)
-          suite_dir="public/TAS/${TEST_SUITE}"
           while IFS= read -r -d '' old_dir; do
             folder_name=${old_dir##*/}
             if [[ "$folder_name" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}:[0-9]{2}:[0-9]{2}$ ]]; then
@@ -594,7 +595,7 @@ jobs:
           PY
           fi
 
-      - name: Generate TAS report history index
+      - name: Generate TAS suite run indexes
         run: |
           python - <<'PY'
           import os
