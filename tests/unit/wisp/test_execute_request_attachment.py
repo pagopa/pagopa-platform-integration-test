@@ -65,7 +65,7 @@ def test_non_xml_error_body_is_attached_before_the_parser_fails(monkeypatch, att
     apim = '{ "statusCode": 500, "message": "Internal server error", "activityId": "c42b" }'
     _respond_with(monkeypatch, _FakeResponse(500, apim))
 
-    with pytest.raises(ElementTree.ParseError):
+    with pytest.raises(AssertionError, match="HTTP status: 500.*activityId"):
         utils.execute_request(URL, "post", {}, "<req/>", constants.ResponseType.XML, description="step")
 
     received = [text for name, text in attachments if name == "step - Received response"]

@@ -1,10 +1,12 @@
 import json
 import logging
+import os
 import time
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 from allure_commons._allure import attach
+from allure_commons.types import AttachmentType
 from src.utility.assertions import assert_show_message
 from src.utility.datetime_utils import get_current_date
 from src.utility.indexing import get_index_from_cardinal
@@ -14,6 +16,18 @@ from . import request_generator as requestgen
 from . import constants
 from . import routes as router
 from . import utils
+
+
+CHECK_FIELD_ENFORCE_ENV = 'WISP_CHECK_FIELD_ENFORCE'
+
+
+def is_check_field_enforced():
+    """Return True when XML value mismatches in `check_field` must fail the step.
+
+    Enforcement is enabled by setting the environment variable `WISP_CHECK_FIELD_ENFORCE` to one of
+    `1`, `true`, `yes`, `on` (case-insensitive); by default mismatches are only logged and attached.
+    """
+    return os.environ.get(CHECK_FIELD_ENFORCE_ENV, '').strip().lower() in ('1', 'true', 'yes', 'on')
 
 
 def check_status_code(context, actor, expected_status_code):
@@ -56,6 +70,11 @@ def send_primitive(context, actor, primitive):
 
 # @then('the response contains the field {field_name} with value {field_value}')
 def check_field(context, field_name, field_value):
+    """Check that the response contains a field with the expected value.
+
+    JSON responses are always asserted. XML responses compare the text of the first matching element: a
+    mismatch is logged and attached to Allure without failing, unless `WISP_CHECK_FIELD_ENFORCE` is enabled.
+    """
     # skipping this step if its execution is not required
     if session.skip_tests(context):
         logging.debug('Skipping check_field step')
@@ -73,6 +92,14 @@ def check_field(context, field_name, field_value):
 
         assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
         field_value_in_object = field_value_in_object.text
+        # XML values are compared in observation mode by default: a mismatch is reported, not asserted
+        if field_value_in_object != field_value:
+            message = (f'The field [{field_name}] is not equals to {field_value}. '
+                       f'Current value: {field_value_in_object}.')
+            if is_check_field_enforced():
+                assert_show_message(False, message)
+            logging.warning(f'[check_field observation] {message}')
+            attach(message, name=f'check_field mismatch - {field_name}', attachment_type=AttachmentType.TEXT)
     elif content_type == constants.ResponseType.JSON:
         field_value_in_object = utils.get_nested_field(response, field_name)
         assert_show_message(field_value_in_object is not None, f'The field [{field_name}] does not exists.')
