@@ -94,6 +94,10 @@ include at least:
 `on_dependency_failure`, `provides`, `consumes`, and `resource_group` establish an
 extensible dependency contract; independent suites use the defaults shown above.
 
+`ai_soap_evidence` is optional (default `false`). When `true`, the suite's AI prompt also
+carries the error details found inside the HTTP responses captured by its scenarios (see
+section 8). Only `wisp` enables it today.
+
 Test data ingestion also reads the registry: it maps each `report_artifact` back to the
 suite `id` (stored as the QA Hub `test_object`) and records `version` as the run's test
 version. When `test_type` is not configured in `.github/<env>.yaml`, it is derived from
@@ -282,9 +286,31 @@ current workflow run and publishes the suite reports and updated Allure history.
 history is separated by both suite and environment.
 
 AI analysis runs once after suite execution and consumes an aggregate prompt built from
-the suite outcomes and relevant failures. If the input exceeds the model context limit,
-the prompt is reduced to failed scenarios and diagnostics. The analysis is supplemental:
-it does not replace the authoritative test outcome.
+the suite outcomes and relevant failures. The analysis is supplemental: it does not
+replace the authoritative test outcome.
+
+Each suite builds its own prompt section with `.github/scripts/build_ai_prompt.py` and
+keeps it inside a character budget (`MAX_PROMPT_CHARS`, 16000 by default; the aggregate is
+therefore bounded by the number of suites). When a section is too large, traces and
+evidence are shortened level by level and trailing failures are omitted only as a last
+resort, with an explicit note in the prompt. A failure reported by both Allure and JUnit
+appears once, with the Allure entry kept.
+
+A SOAP call answers HTTP 200 even when its body reports `outcome=KO` and a `faultCode`, so
+the scenario can fail steps later with an unrelated message. For suites with
+`ai_soap_evidence: true` in the registry (currently `wisp`), each failure therefore also
+lists the error-bearing responses found in its Allure attachments: SOAP KO outcomes and
+faults, JSON bodies with an error status or outcome, and non-XML error bodies such as an
+APIM 500 (attachments carry the HTTP status, written by the suite's `execute_request`).
+Healthy responses are not included, and the evidence has its own cap (`MAX_EVIDENCE_*`).
+
+The inference step (`.github/workflows/ai-report-analysis.yml`) protects the run against
+token limits. It requests a low `thinkingLevel`, because thinking tokens count toward
+`max_tokens`; it clamps the output cap to each model's `outputTokenLimit` and skips models
+whose `inputTokenLimit` the prompt exceeds, using the model catalog it already reads; it
+retries a rate-limited call once after the API's `retryDelay` (a per-day quota moves on to
+the next model at once); and it marks an analysis cut at the output limit with a visible
+notice and a workflow warning. The real token usage is logged and added to the job summary.
 
 Publication follows suite execution, aggregate prompt generation, and AI analysis, as in
 the legacy dispatch flow. The deployment job waits for `ai_analysis` and downloads

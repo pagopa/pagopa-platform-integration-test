@@ -27,6 +27,11 @@ on:
       target_env:
         required: true
         type: string
+      ai_soap_evidence:
+        description: "'true' adds the error details found inside HTTP responses (e.g. SOAP KO/fault returned with 200) to the suite AI prompt"
+        required: false
+        type: string
+        default: 'false'
 
 permissions:
   contents: read
@@ -122,6 +127,7 @@ jobs:
           JUNIT_RESULTS_DIR: junit
           PROMPT_OUTPUT: ai-analysis-input/prompt.txt
           SUITE_LABEL: ${{ inputs.suite_label }}
+          AI_PROMPT_SOAP_EVIDENCE: ${{ inputs.ai_soap_evidence }}
         run: python3 .github/scripts/build_ai_prompt.py
 
       - name: Name suite AI prompt

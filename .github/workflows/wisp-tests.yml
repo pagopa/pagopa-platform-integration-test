@@ -55,6 +55,8 @@ jobs:
           ALLURE_RESULTS_DIR: allure-results
           PROMPT_OUTPUT: ai-analysis-input/prompt.txt
           SUITE_LABEL: WISP
+          # SOAP calls answer HTTP 200 even on KO/fault: give the analysis those responses.
+          AI_PROMPT_SOAP_EVIDENCE: 'true'
         run: python3 .github/scripts/build_ai_prompt.py
 
       - name: Upload AI prompt artifact
