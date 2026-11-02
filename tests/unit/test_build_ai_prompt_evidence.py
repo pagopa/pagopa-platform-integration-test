@@ -287,3 +287,68 @@ def test_budget_always_keeps_one_failure() -> None:
     prompt = build_prompt(_long_failures(3), "WISP", 20, 1500, max_prompt_chars=10)
 
     assert "# 1. Scenario 0" in prompt
+
+
+def _traceback(frames: int = 30) -> str:
+    """Build a behave-like traceback: boilerplate frames first, the culprit and the assertion last."""
+    boilerplate = "".join(
+        f'  File "/opt/site-packages/behave/model.py", line {n}, in run\n    match.run(runner.context)\n'
+        for n in range(frames)
+    )
+    culprit = (
+        '  File "src/integration/wisp/utility/utils.py", line 33, in execute_request\n'
+        "    object_response = xmlutils.fromstring(formatted_response)\n"
+        "xml.etree.ElementTree.ParseError: not well-formed (invalid token): line 1, column 0"
+    )
+    return boilerplate + culprit
+
+
+def _single_failure(trace: str) -> list:
+    """Wrap a traceback into one failure entry."""
+    return [{"name": "S", "fullName": "F: S", "status": "broken", "message": "m", "trace": trace}]
+
+
+def test_long_trace_keeps_its_final_frames_and_marks_the_cut() -> None:
+    """The cut is taken from the head: the culprit frame and the exception stay, a marker says so."""
+    trace = _traceback()
+    assert len(trace) > 1500
+
+    prompt = build_prompt(_single_failure(trace), "WISP", 20, 1500)
+
+    assert "execute_request" in prompt
+    assert "xml.etree.ElementTree.ParseError: not well-formed" in prompt
+    assert "[... earlier frames omitted ...]" in prompt
+    assert prompt.count("match.run(runner.context)") < 30
+
+
+def test_trace_is_cut_on_a_line_boundary() -> None:
+    """The line the cut lands in is dropped, so no half frame is shown."""
+    trace = "\n".join(f"frame-number-{n:03d} " + "x" * 20 for n in range(100))
+
+    prompt = build_prompt(_single_failure(trace), "WISP", 20, 200)
+
+    shown = [line for line in prompt.splitlines() if line.startswith("frame-number-")]
+    assert shown
+    assert all(line.endswith("x" * 20) for line in shown)
+    assert shown[-1].startswith("frame-number-099")
+
+
+def test_short_trace_is_untouched_and_zero_limit_drops_it() -> None:
+    """A trace within the cap has no marker; a zero cap leaves no trace text at all."""
+    short = build_prompt(_single_failure("one\ntwo"), "WISP", 20, 1500)
+    assert "one\ntwo" in short
+    assert "earlier frames omitted" not in short
+
+    none = build_prompt(_single_failure(_traceback()), "WISP", 20, 0)
+    assert "execute_request" not in none
+    assert "earlier frames omitted" not in none
+
+
+def test_tight_budget_still_shows_the_assertion() -> None:
+    """Even the narrow budget levels keep the exception line, which is what the analysis needs most."""
+    full = build_prompt(_single_failure(_traceback()), "WISP", 20, 1500)
+
+    prompt = build_prompt(_single_failure(_traceback()), "WISP", 20, 1500, max_prompt_chars=len(full) - 600)
+
+    assert len(prompt) <= len(full) - 600
+    assert "xml.etree.ElementTree.ParseError: not well-formed" in prompt

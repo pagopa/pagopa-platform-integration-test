@@ -293,7 +293,8 @@ Each suite builds its own prompt section with `.github/scripts/build_ai_prompt.p
 keeps it inside a character budget (`MAX_PROMPT_CHARS`, 16000 by default; the aggregate is
 therefore bounded by the number of suites). When a section is too large, traces and
 evidence are shortened level by level and trailing failures are omitted only as a last
-resort, with an explicit note in the prompt. A failure reported by both Allure and JUnit
+resort, with an explicit note in the prompt. A shortened trace keeps its final frames
+(the failing step helper and the exception) and drops the framework frames at its head. A failure reported by both Allure and JUnit
 appears once, with the Allure entry kept.
 
 A SOAP call answers HTTP 200 even when its body reports `outcome=KO` and a `faultCode`, so

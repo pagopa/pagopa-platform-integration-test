@@ -19,7 +19,7 @@ Environment variables:
     PROMPT_OUTPUT             Destination path for the generated prompt (default: ai-analysis-input/prompt.txt).
     SUITE_LABEL               Human-readable suite name used in the prompt header (default: WISP).
     MAX_FAILURES              Cap on number of failures included (default: 20).
-    MAX_TRACE_CHARS           Cap on trace length per failure (default: 1500).
+    MAX_TRACE_CHARS           Cap on trace length per failure, the final frames are kept (default: 1500).
     MAX_PROMPT_CHARS          Soft cap on the whole prompt length, 0 disables it (default: 16000).
     AI_PROMPT_SOAP_EVIDENCE   "true" to add response evidence to every failure (default: false).
     MAX_EVIDENCE_ITEMS        Cap on evidence items per failure (default: 3).
@@ -53,6 +53,7 @@ _EXCEPTION_PREFIX_RE = re.compile(r"^[\w.]*(?:Error|Exception):\s*")
 _VERSION_SEGMENT_RE = re.compile(r"v\d+")
 _MAX_FAULTS_PER_RESPONSE = 3
 _STEP_NAME_CHARS = 50
+_TRACE_CUT_MARKER = "[... earlier frames omitted ...]\n"
 
 
 def _clean(value: Any) -> str:
@@ -70,6 +71,22 @@ def _shorten(text: str, limit: int) -> str:
     if len(flat) <= limit:
         return flat
     return flat[: max(limit - 1, 0)].rstrip() + "…"
+
+
+def _tail_trace(trace: str, limit: int) -> str:
+    """Keep the last `limit` characters of a traceback, cut on a line boundary and marked as shortened.
+
+    A traceback ends with the frames that matter (the failing step helper and the assertion), while its
+    head is mostly framework boilerplate, so the cut is taken from the head.
+    """
+    if limit <= 0:
+        return ""
+    if len(trace) <= limit:
+        return trace
+    tail = trace[-limit:]
+    if trace[-limit - 1] != "\n" and "\n" in tail:
+        tail = tail.split("\n", 1)[1]  # drop the line the cut landed in
+    return _TRACE_CUT_MARKER + tail
 
 
 def _local_name(tag: Any) -> str:
@@ -404,7 +421,7 @@ def _render_prompt(
 
     parts: List[str] = [header]
     for idx, failure in enumerate(failures, start=1):
-        trace = failure["trace"][:trace_chars]
+        trace = _tail_trace(failure["trace"], trace_chars)
         block = (
             f"# {idx}. {failure['name']}\n"
             f"- **status**: {failure['status']}\n"
