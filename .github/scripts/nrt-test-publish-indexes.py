@@ -12,8 +12,7 @@ import tempfile
 import unittest
 from unittest import mock
 
-from process_reports import build_tas_index_page
-
+from process_reports import build_tas_index_page, update_tas_main_index
 
 SOURCE_ROOT = Path(__file__).resolve().parents[2]
 PUBLISHER = runpy.run_path(str(Path(__file__).with_name("nrt-publish-indexes.py")))
@@ -134,7 +133,7 @@ class PublisherTests(unittest.TestCase):
         (backing_dirs["last-history"] / "index.html").write_text("Not a timestamped run")
 
         with patcher:
-            build_tas_index_page(root)
+            build_tas_index_page(root, "checkout")
 
         index = (suite_path / "index.html").read_text(encoding="utf-8")
         self.assertLess(
@@ -199,7 +198,7 @@ class PublisherTests(unittest.TestCase):
         analysis_dir.mkdir()
         (analysis_dir / "index.html").write_text("AI analysis")
         with patcher:
-            build_tas_index_page(root)
+            build_tas_index_page(root, "checkout")
 
         index = (suite_path / "index.html").read_text(encoding="utf-8")
         older_link = "./2026-03-05_10:00:00/index.html"
@@ -227,7 +226,7 @@ class PublisherTests(unittest.TestCase):
             (backing_dir / "index.html").write_text(f"Report {name}")
 
         with patcher:
-            build_tas_index_page(root)
+            build_tas_index_page(root, "checkout")
 
         index = (suite_path / "index.html").read_text(encoding="utf-8")
         positions = [index.index(f"./{name}/index.html") for name in (iso_newer, legacy, iso_older)]
@@ -246,12 +245,30 @@ class PublisherTests(unittest.TestCase):
         suite = root / "empty-suite"
         suite.mkdir()
 
-        build_tas_index_page(root)
+        build_tas_index_page(root, "empty-suite")
 
         index = (suite / "index.html").read_text(encoding="utf-8")
         self.assertIn("Nessun report disponibile.", index)
         self.assertNotIn('href="./', index)
         self.assertEqual(landing.read_text(encoding="utf-8"), "Manually maintained TAS landing page")
+
+    def test_update_tas_main_index_uses_suite_objects(self):
+        """Render suite buttons and ignore timestamp or unpublished folders."""
+        root = Path("public/TAS")
+        root.mkdir()
+        for suite_name in ("tas_pass", "wisp"):
+            suite_dir = root / suite_name
+            suite_dir.mkdir()
+            (suite_dir / "index.html").write_text("Suite history")
+        (root / "not-ready").mkdir()
+
+        update_tas_main_index(root)
+
+        index = (root / "index.html").read_text(encoding="utf-8")
+        self.assertIn('href="./tas_pass/index.html"', index)
+        self.assertIn('href="./wisp/index.html"', index)
+        self.assertLess(index.index("tas_pass"), index.index("wisp"))
+        self.assertNotIn("not-ready", index)
 
     def test_dashboard_includes_registry_and_unavailable_suites(self):
         """Render real counters and mark unpublished suites without broken links."""

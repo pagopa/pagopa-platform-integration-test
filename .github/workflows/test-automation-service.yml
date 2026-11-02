@@ -523,15 +523,13 @@ jobs:
           echo "PUBLISH_TIMESTAMP=${PUBLISH_TIMESTAMP}" >> "$GITHUB_ENV"
           export PUBLISH_TIMESTAMP
 
-          if [[ ! "$TEST_SUITE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
-            echo "::error::Invalid test_suite '$TEST_SUITE' (expected a safe path component)"
-            exit 1
-          fi
-
-          suite_dir="public/TAS/${TEST_SUITE}"
-          mkdir -p "$suite_dir"
-          DEST="${suite_dir}/${PUBLISH_TIMESTAMP}"
+          DEST="public/TAS/${TEST_SUITE}/${PUBLISH_TIMESTAMP}"
           mkdir -p "$DEST"
+
+          INDEX_FILE="$DEST/index.html"
+          if [ ! -a "$INDEX_FILE" ]; then
+            touch "$INDEX_FILE"
+          fi
 
           REPORT_SOURCE="artifacts/test-results/${REPORT_DIR}"
           if [ -d "$REPORT_SOURCE" ]; then
@@ -542,29 +540,6 @@ jobs:
               cp -a "artifacts/test-results/$result" "$DEST"/
             fi
           done
-
-          cutoff_epoch=$(date -u -d '30 days ago' +%s)
-          while IFS= read -r -d '' old_dir; do
-            folder_name=${old_dir##*/}
-            if [[ "$folder_name" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}:[0-9]{2}:[0-9]{2}$ ]]; then
-              date_input="${folder_name/_/ }"
-              date_format='+%Y-%m-%d_%H:%M:%S'
-            elif [[ "$folder_name" =~ ^[0-9]{2}-[0-9]{2}-[0-9]{4}_[0-9]{2}:[0-9]{2}:[0-9]{2}$ ]]; then
-              date_input="${folder_name:6:4}-${folder_name:3:2}-${folder_name:0:2} ${folder_name:11}"
-              date_format='+%d-%m-%Y_%H:%M:%S'
-            else
-              continue
-            fi
-
-            parsed_timestamp=$(date -u -d "$date_input" "$date_format" 2>/dev/null) || continue
-            if [ "$parsed_timestamp" != "$folder_name" ]; then
-              continue
-            fi
-            folder_epoch=$(date -u -d "$date_input" +%s)
-            if [ "$folder_epoch" -lt "$cutoff_epoch" ]; then
-              rm -rf -- "$old_dir"
-            fi
-          done < <(find "$suite_dir" -mindepth 1 -maxdepth 1 -type d -print0)
 
           if [ -f artifacts/tas-ai-analysis/analysis.md ]; then
             python - <<'PY'
@@ -579,13 +554,7 @@ jobs:
 
           deploy_ai_analysis(
               artifact_dir=os.path.join(workspace, "artifacts"),
-              run_dir=os.path.join(
-                workspace,
-                "public",
-                "TAS",
-                os.environ["TEST_SUITE"],
-                os.environ["PUBLISH_TIMESTAMP"],
-              ),
+              run_dir=os.path.join(workspace, "public", "TAS", os.environ["TEST_SUITE"], os.environ["PUBLISH_TIMESTAMP"]),
               last_history_dir=None,
               analysis_artifact_name="tas-ai-analysis",
               suite_label=f"{os.environ['TEST_SUITE']} {os.environ['TEST_TYPE']}",
@@ -595,7 +564,9 @@ jobs:
           PY
           fi
 
-      - name: Generate TAS suite run indexes
+      - name: Generate TAS report history index
+        env:
+          TEST_SUITE: ${{ inputs.test_suite }}
         run: |
           python - <<'PY'
           import os
@@ -607,9 +578,10 @@ jobs:
           tas_source = os.path.join(workspace, "tas-source")
           sys.path.insert(0, os.path.join(tas_source, ".github", "scripts"))
           os.chdir(tas_source)
-          from process_reports import build_tas_index_page
+          from process_reports import build_tas_index_page, update_tas_main_index
 
-          build_tas_index_page(os.path.join(workspace, "public", "TAS"))
+          tas_root = Path(workspace) / "public" / "TAS"
+          build_tas_index_page(tas_root, os.environ["TEST_SUITE"])
           public_link = Path("public")
           if public_link.exists() or public_link.is_symlink():
               raise FileExistsError(f"Unexpected path in TAS source checkout: {public_link}")
@@ -621,6 +593,7 @@ jobs:
               )
           finally:
               public_link.unlink()
+            update_tas_main_index(tas_root)
           PY
 
       - name: Publish TAS results to gh-pages
@@ -648,4 +621,3 @@ jobs:
       origin: TAS
 
      
-
