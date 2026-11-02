@@ -523,7 +523,7 @@ jobs:
           echo "PUBLISH_TIMESTAMP=${PUBLISH_TIMESTAMP}" >> "$GITHUB_ENV"
           export PUBLISH_TIMESTAMP
 
-          DEST="public/TAS/${PUBLISH_TIMESTAMP}"
+          DEST="public/TAS/${TEST_SUITE}/{PUBLISH_TIMESTAMP}"
           mkdir -p "$DEST"
 
           REPORT_SOURCE="artifacts/test-results/${REPORT_DIR}"

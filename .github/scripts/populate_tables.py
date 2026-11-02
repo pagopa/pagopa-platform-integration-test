@@ -65,7 +65,7 @@ def populate_test_run(test_run: Test_runs, summary_path: str, version: str, test
 
         subfolder = ""
         if test_run.test_origin == "TAS":
-            subfolder = "TAS"
+            subfolder = f"TAS/{test_object}"
         if allure_subfolder is not None:
             subfolder = allure_subfolder
         if subfolder != "":
