@@ -164,29 +164,44 @@ def parse_tas_folder_timestamp(folder_name):
 
 
 def build_tas_index_page(root_dir):
-    """Build the TAS history index from complete timestamped reports."""
+    """Build a TAS history index for flat and suite-scoped timestamped reports."""
     root_path = Path(root_dir)
     reports = []
-    for report_dir in root_path.iterdir():
-        if not report_dir.is_dir():
+    for group_dir in root_path.iterdir():
+        if not group_dir.is_dir():
             continue
-        timestamp = parse_tas_folder_timestamp(report_dir.name)
-        if timestamp is None:
-            continue
-        report_index = report_dir / "index.html"
-        if not report_index.is_file() or report_index.stat().st_size == 0:
-            continue
-        analysis_index = report_dir / "analysis" / "index.html"
-        has_analysis = analysis_index.is_file()
-        reports.append({
-            "timestamp": timestamp.strftime("%d-%m-%Y %H:%M:%S"),
-            "link": f"./{report_dir.name}/index.html",
-            "has_analysis": has_analysis,
-            "analysis_link": (
-                f"./{report_dir.name}/analysis/index.html" if has_analysis else None
-            ),
-            "sort_key": timestamp,
-        })
+        group_timestamp = parse_tas_folder_timestamp(group_dir.name)
+        if group_timestamp is not None:
+            report_dirs = [(group_dir, group_timestamp, None)]
+        else:
+            report_dirs = [
+                (report_dir, parse_tas_folder_timestamp(report_dir.name), group_dir.name)
+                for report_dir in group_dir.iterdir()
+                if report_dir.is_dir()
+                and parse_tas_folder_timestamp(report_dir.name) is not None
+            ]
+
+        for report_dir, timestamp, suite_name in report_dirs:
+            report_index = report_dir / "index.html"
+            if not report_index.is_file() or report_index.stat().st_size == 0:
+                continue
+            analysis_index = report_dir / "analysis" / "index.html"
+            has_analysis = analysis_index.is_file()
+            relative_report_path = (
+                f"{suite_name}/{report_dir.name}" if suite_name else report_dir.name
+            )
+            timestamp_label = timestamp.strftime("%d-%m-%Y %H:%M:%S")
+            if suite_name:
+                timestamp_label = f"{suite_name} - {timestamp_label}"
+            reports.append({
+                "timestamp": timestamp_label,
+                "link": f"./{relative_report_path}/index.html",
+                "has_analysis": has_analysis,
+                "analysis_link": (
+                    f"./{relative_report_path}/analysis/index.html" if has_analysis else None
+                ),
+                "sort_key": (timestamp, suite_name or ""),
+            })
 
     reports.sort(key=lambda report: report["sort_key"], reverse=True)
     for report in reports:

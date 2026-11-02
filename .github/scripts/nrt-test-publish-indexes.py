@@ -162,6 +162,57 @@ class PublisherTests(unittest.TestCase):
             (now + timedelta(seconds=1)).strftime(fmt),
         )
 
+    def test_tas_history_index_supports_suite_scoped_reports(self):
+        """Index suite-scoped reports with correct links and AI analysis links."""
+        root = Path("public/TAS")
+        root.mkdir()
+        suite_dir = mock.MagicMock()
+        suite_dir.name = "checkout"
+        suite_dir.is_dir.return_value = True
+
+        report_names = ["2026-03-05_10:00:00", "2026-03-06_10:00:00"]
+        backing_dirs = {
+            name: root / f"backing-{index}"
+            for index, name in enumerate(report_names)
+        }
+        report_dirs = []
+        for name, backing_dir in backing_dirs.items():
+            backing_dir.mkdir()
+            (backing_dir / "index.html").write_text(f"Report {name}")
+            report_dir = mock.MagicMock()
+            report_dir.name = name
+            report_dir.is_dir.return_value = True
+            report_dir.__truediv__.side_effect = (
+                lambda child, path=backing_dir: path / child
+            )
+            report_dirs.append(report_dir)
+        suite_dir.iterdir.return_value = iter(report_dirs)
+
+        analysis_dir = backing_dirs[report_names[1]] / "analysis"
+        analysis_dir.mkdir()
+        (analysis_dir / "index.html").write_text("AI analysis")
+
+        original_iterdir = Path.iterdir
+
+        def iterdir(path):
+            """Expose the virtual suite directory at the TAS index root."""
+            if path == root:
+                return iter([suite_dir])
+            return original_iterdir(path)
+
+        with mock.patch.object(Path, "iterdir", iterdir):
+            build_tas_index_page(root)
+
+        index = (root / "index.html").read_text(encoding="utf-8")
+        older_link = "./checkout/2026-03-05_10:00:00/index.html"
+        newer_link = "./checkout/2026-03-06_10:00:00/index.html"
+        self.assertLess(index.index(newer_link), index.index(older_link))
+        self.assertIn("checkout - 06-03-2026 10:00:00", index)
+        self.assertIn(
+            'href="./checkout/2026-03-06_10:00:00/analysis/index.html"',
+            index,
+        )
+
     def test_tas_history_index_orders_mixed_formats_by_real_datetime(self):
         """Sort legacy and ISO folders chronologically, not alphabetically."""
         root = Path("public/TAS")
