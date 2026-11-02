@@ -1,0 +1,453 @@
+<testsuite name="features.psp_sorting_npg.Ordinamento lista PSP in Checkout" tests="6" errors="6" failures="0" skipped="0" time="61.698125" timestamp="2026-11-02T14:38:46.883706" hostname="runnervm48cm3"><testcase classname="features.psp_sorting_npg.Ordinamento lista PSP in Checkout" name="La lista PSP è ordinata per commissione in ordine crescente nella pagina di riepilogo" status="failed" time="10.405193"><error type="RuntimeError" message="Timeout on locator '#psp-radio-BCITITMM' after 5000 ms (url: https://dev.checkout.pagopa.it/lista-psp)">
+<![CDATA[
+Failing step: E L'utente seleziona il PSP con id radio "BCITITMM" ... failed in 5.006s
+Location: src/e2e/checkout/features/psp_sorting_npg.feature:30
+Traceback (most recent call last):
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 93, in locate_and_click
+    to_click.wait_for(state="visible", timeout=timeout)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/sync_api/_generated.py", line 17975, in wait_for
+    self._sync(self._impl_obj.wait_for(timeout=timeout, state=state))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_locator.py", line 692, in wait_for
+    await self._frame.wait_for_selector(
+        self._selector, strict=True, timeout=timeout, state=state
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 369, in wait_for_selector
+    await self._channel.send(
+        "waitForSelector", self._timeout, locals_to_params(locals())
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 558, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.wait_for: Timeout 5000ms exceeded.
+Call log:
+  - waiting for locator("#psp-radio-BCITITMM") to be visible
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/e2e/checkout/steps/psp_sorting_npg.py", line 117, in step_select_psp_radio
+    locate_and_click(page, f"#psp-radio-{psp_radio_id}")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 129, in locate_and_click
+    raise RuntimeError(
+        f"Timeout on locator '{locator}' after {timeout} ms (url: {current_url})"
+    ) from exc
+RuntimeError: Timeout on locator '#psp-radio-BCITITMM' after 5000 ms (url: https://dev.checkout.pagopa.it/lista-psp)
+
+Captured logging:
+ERROR:src.e2e.checkout.helper:Timeout waiting for #psp-radio-BCITITMM after 5000 ms at page https://dev.checkout.pagopa.it/lista-psp]]>
+</error><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_005_Checkout_scenario_01
+  Scenario: La lista PSP è ordinata per commissione in ordine crescente nella pagina di riepilogo
+    Dato La pagina di checkout è aperta ... passed in 0.357s
+    E La lingua è impostata su "it" ... passed in 0.873s
+    E L'utente inserisce un codice avviso valido con prefisso "30202" ... passed in 0.000s
+    E L'utente inserisce un codice fiscale valido del pagatore ... passed in 0.000s
+    Quando L'utente inserisce le informazioni dell'avviso ... passed in 1.148s
+    E L'utente clicca il pulsante verifica ... passed in 0.179s
+    E L'utente clicca il pulsante paga nella pagina di riepilogo ... passed in 0.888s
+    E L'utente inserisce e conferma l'email ... passed in 1.088s
+    E L'utente seleziona il metodo di pagamento "PPAL" ... passed in 0.866s
+    E L'utente seleziona il PSP con id radio "BCITITMM" ... failed in 5.006s
+    E L'utente clicca il pulsante continua della lista PSP ... skipped in 0.000s
+    E L'utente clicca il pulsante modifica PSP nella pagina di riepilogo ... skipped in 0.000s
+    E L'utente clicca il pulsante "ordina per commissione" ... skipped in 0.000s
+    E L'utente clicca il pulsante "ordina per commissione" ... skipped in 0.000s
+    Allora La lista delle commissioni PSP è ordinata in ordine crescente ... skipped in 0.000s
+    E L'utente annulla il pagamento ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.psp_sorting_npg.Ordinamento lista PSP in Checkout" name="La lista PSP è ordinata per commissione in ordine decrescente nella pagina di riepilogo" status="failed" time="10.128112"><error type="RuntimeError" message="Timeout on locator '#psp-radio-BCITITMM' after 5000 ms (url: https://dev.checkout.pagopa.it/lista-psp)">
+<![CDATA[
+Failing step: E L'utente seleziona il PSP con id radio "BCITITMM" ... failed in 5.008s
+Location: src/e2e/checkout/features/psp_sorting_npg.feature:47
+Traceback (most recent call last):
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 93, in locate_and_click
+    to_click.wait_for(state="visible", timeout=timeout)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/sync_api/_generated.py", line 17975, in wait_for
+    self._sync(self._impl_obj.wait_for(timeout=timeout, state=state))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_locator.py", line 692, in wait_for
+    await self._frame.wait_for_selector(
+        self._selector, strict=True, timeout=timeout, state=state
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 369, in wait_for_selector
+    await self._channel.send(
+        "waitForSelector", self._timeout, locals_to_params(locals())
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 558, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.wait_for: Timeout 5000ms exceeded.
+Call log:
+  - waiting for locator("#psp-radio-BCITITMM") to be visible
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/e2e/checkout/steps/psp_sorting_npg.py", line 117, in step_select_psp_radio
+    locate_and_click(page, f"#psp-radio-{psp_radio_id}")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 129, in locate_and_click
+    raise RuntimeError(
+        f"Timeout on locator '{locator}' after {timeout} ms (url: {current_url})"
+    ) from exc
+RuntimeError: Timeout on locator '#psp-radio-BCITITMM' after 5000 ms (url: https://dev.checkout.pagopa.it/lista-psp)
+
+Captured logging:
+ERROR:src.e2e.checkout.helper:Timeout waiting for #psp-radio-BCITITMM after 5000 ms at page https://dev.checkout.pagopa.it/lista-psp]]>
+</error><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_005_Checkout_scenario_02
+  Scenario: La lista PSP è ordinata per commissione in ordine decrescente nella pagina di riepilogo
+    Dato La pagina di checkout è aperta ... passed in 0.317s
+    E La lingua è impostata su "it" ... passed in 0.891s
+    E L'utente inserisce un codice avviso valido con prefisso "30202" ... passed in 0.000s
+    E L'utente inserisce un codice fiscale valido del pagatore ... passed in 0.000s
+    Quando L'utente inserisce le informazioni dell'avviso ... passed in 1.239s
+    E L'utente clicca il pulsante verifica ... passed in 0.171s
+    E L'utente clicca il pulsante paga nella pagina di riepilogo ... passed in 0.868s
+    E L'utente inserisce e conferma l'email ... passed in 1.155s
+    E L'utente seleziona il metodo di pagamento "PPAL" ... passed in 0.480s
+    E L'utente seleziona il PSP con id radio "BCITITMM" ... failed in 5.008s
+    E L'utente clicca il pulsante continua della lista PSP ... skipped in 0.000s
+    E L'utente clicca il pulsante modifica PSP nella pagina di riepilogo ... skipped in 0.000s
+    E L'utente clicca il pulsante "ordina per commissione" ... skipped in 0.000s
+    Allora La lista delle commissioni PSP è ordinata in ordine decrescente ... skipped in 0.000s
+    E L'utente annulla il pagamento ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.psp_sorting_npg.Ordinamento lista PSP in Checkout" name="La lista PSP è ordinata per nome in ordine decrescente nella pagina di riepilogo" status="failed" time="11.062496"><error type="RuntimeError" message="Timeout on locator '#psp-radio-BCITITMM' after 5000 ms (url: https://dev.checkout.pagopa.it/lista-psp)">
+<![CDATA[
+Failing step: E L'utente seleziona il PSP con id radio "BCITITMM" ... failed in 5.005s
+Location: src/e2e/checkout/features/psp_sorting_npg.feature:63
+Traceback (most recent call last):
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 93, in locate_and_click
+    to_click.wait_for(state="visible", timeout=timeout)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/sync_api/_generated.py", line 17975, in wait_for
+    self._sync(self._impl_obj.wait_for(timeout=timeout, state=state))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_locator.py", line 692, in wait_for
+    await self._frame.wait_for_selector(
+        self._selector, strict=True, timeout=timeout, state=state
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 369, in wait_for_selector
+    await self._channel.send(
+        "waitForSelector", self._timeout, locals_to_params(locals())
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 558, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.wait_for: Timeout 5000ms exceeded.
+Call log:
+  - waiting for locator("#psp-radio-BCITITMM") to be visible
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/e2e/checkout/steps/psp_sorting_npg.py", line 117, in step_select_psp_radio
+    locate_and_click(page, f"#psp-radio-{psp_radio_id}")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 129, in locate_and_click
+    raise RuntimeError(
+        f"Timeout on locator '{locator}' after {timeout} ms (url: {current_url})"
+    ) from exc
+RuntimeError: Timeout on locator '#psp-radio-BCITITMM' after 5000 ms (url: https://dev.checkout.pagopa.it/lista-psp)
+
+Captured logging:
+ERROR:src.e2e.checkout.helper:Timeout waiting for #psp-radio-BCITITMM after 5000 ms at page https://dev.checkout.pagopa.it/lista-psp]]>
+</error><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_005_Checkout_scenario_03
+  Scenario: La lista PSP è ordinata per nome in ordine decrescente nella pagina di riepilogo
+    Dato La pagina di checkout è aperta ... passed in 0.329s
+    E La lingua è impostata su "it" ... passed in 0.866s
+    E L'utente inserisce un codice avviso valido con prefisso "30202" ... passed in 0.000s
+    E L'utente inserisce un codice fiscale valido del pagatore ... passed in 0.000s
+    Quando L'utente inserisce le informazioni dell'avviso ... passed in 1.222s
+    E L'utente clicca il pulsante verifica ... passed in 0.216s
+    E L'utente clicca il pulsante paga nella pagina di riepilogo ... passed in 0.887s
+    E L'utente inserisce e conferma l'email ... passed in 1.173s
+    E L'utente seleziona il metodo di pagamento "PPAL" ... passed in 1.365s
+    E L'utente seleziona il PSP con id radio "BCITITMM" ... failed in 5.005s
+    E L'utente clicca il pulsante continua della lista PSP ... skipped in 0.000s
+    E L'utente clicca il pulsante modifica PSP nella pagina di riepilogo ... skipped in 0.000s
+    E L'utente clicca il pulsante "ordina per nome" ... skipped in 0.000s
+    Allora La lista dei nomi PSP è ordinata in ordine alfabetico decrescente ... skipped in 0.000s
+    E L'utente annulla il pagamento ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.psp_sorting_npg.Ordinamento lista PSP in Checkout" name="La lista PSP è ordinata per nome in ordine crescente nella pagina di riepilogo" status="failed" time="10.714437"><error type="RuntimeError" message="Timeout on locator '#psp-radio-BCITITMM' after 5000 ms (url: https://dev.checkout.pagopa.it/lista-psp)">
+<![CDATA[
+Failing step: E L'utente seleziona il PSP con id radio "BCITITMM" ... failed in 5.003s
+Location: src/e2e/checkout/features/psp_sorting_npg.feature:79
+Traceback (most recent call last):
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 93, in locate_and_click
+    to_click.wait_for(state="visible", timeout=timeout)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/sync_api/_generated.py", line 17975, in wait_for
+    self._sync(self._impl_obj.wait_for(timeout=timeout, state=state))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_locator.py", line 692, in wait_for
+    await self._frame.wait_for_selector(
+        self._selector, strict=True, timeout=timeout, state=state
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 369, in wait_for_selector
+    await self._channel.send(
+        "waitForSelector", self._timeout, locals_to_params(locals())
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 558, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.wait_for: Timeout 5000ms exceeded.
+Call log:
+  - waiting for locator("#psp-radio-BCITITMM") to be visible
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/e2e/checkout/steps/psp_sorting_npg.py", line 117, in step_select_psp_radio
+    locate_and_click(page, f"#psp-radio-{psp_radio_id}")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 129, in locate_and_click
+    raise RuntimeError(
+        f"Timeout on locator '{locator}' after {timeout} ms (url: {current_url})"
+    ) from exc
+RuntimeError: Timeout on locator '#psp-radio-BCITITMM' after 5000 ms (url: https://dev.checkout.pagopa.it/lista-psp)
+
+Captured logging:
+ERROR:src.e2e.checkout.helper:Timeout waiting for #psp-radio-BCITITMM after 5000 ms at page https://dev.checkout.pagopa.it/lista-psp]]>
+</error><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_005_Checkout_scenario_04
+  Scenario: La lista PSP è ordinata per nome in ordine crescente nella pagina di riepilogo
+    Dato La pagina di checkout è aperta ... passed in 0.325s
+    E La lingua è impostata su "it" ... passed in 0.857s
+    E L'utente inserisce un codice avviso valido con prefisso "30202" ... passed in 0.000s
+    E L'utente inserisce un codice fiscale valido del pagatore ... passed in 0.000s
+    Quando L'utente inserisce le informazioni dell'avviso ... passed in 1.097s
+    E L'utente clicca il pulsante verifica ... passed in 0.216s
+    E L'utente clicca il pulsante paga nella pagina di riepilogo ... passed in 0.888s
+    E L'utente inserisce e conferma l'email ... passed in 0.968s
+    E L'utente seleziona il metodo di pagamento "PPAL" ... passed in 1.361s
+    E L'utente seleziona il PSP con id radio "BCITITMM" ... failed in 5.003s
+    E L'utente clicca il pulsante continua della lista PSP ... skipped in 0.000s
+    E L'utente clicca il pulsante modifica PSP nella pagina di riepilogo ... skipped in 0.000s
+    E L'utente clicca il pulsante "ordina per nome" ... skipped in 0.000s
+    E L'utente clicca il pulsante "ordina per nome" ... skipped in 0.000s
+    Allora La lista dei nomi PSP è ordinata in ordine alfabetico crescente ... skipped in 0.000s
+    E L'utente annulla il pagamento ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.psp_sorting_npg.Ordinamento lista PSP in Checkout" name="La lista PSP è ordinata per nome nella pagina di selezione PSP" status="failed" time="9.688476"><error type="TimeoutError" message="Locator.wait_for: Timeout 5000ms exceeded.&#10;Call log:&#10;  - waiting for locator(&quot;.pspFeeName&quot;).first to be visible&#10;">
+<![CDATA[
+Failing step: E La pagina di selezione PSP è caricata ... failed in 5.004s
+Location: src/e2e/checkout/features/psp_sorting_npg.feature:100
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/e2e/checkout/steps/psp_sorting_npg.py", line 167, in step_psp_selection_page_loaded
+    page.locator(".pspFeeName").first.wait_for(state="visible", timeout=5000)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/sync_api/_generated.py", line 17975, in wait_for
+    self._sync(self._impl_obj.wait_for(timeout=timeout, state=state))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_locator.py", line 692, in wait_for
+    await self._frame.wait_for_selector(
+        self._selector, strict=True, timeout=timeout, state=state
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 369, in wait_for_selector
+    await self._channel.send(
+        "waitForSelector", self._timeout, locals_to_params(locals())
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 558, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.wait_for: Timeout 5000ms exceeded.
+Call log:
+  - waiting for locator(".pspFeeName").first to be visible
+
+]]>
+</error><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_005_Checkout_scenario_05
+  Scenario: La lista PSP è ordinata per nome nella pagina di selezione PSP
+    Dato La pagina di checkout è aperta ... passed in 0.304s
+    E La lingua è impostata su "it" ... passed in 0.858s
+    E L'utente inserisce un codice avviso valido con prefisso "30202" ... passed in 0.000s
+    E L'utente inserisce un codice fiscale valido del pagatore ... passed in 0.000s
+    Quando L'utente inserisce le informazioni dell'avviso ... passed in 0.991s
+    E L'utente clicca il pulsante verifica ... passed in 0.235s
+    E L'utente clicca il pulsante paga nella pagina di riepilogo ... passed in 0.867s
+    E L'utente inserisce e conferma l'email ... passed in 1.018s
+    E L'utente seleziona il metodo di pagamento "PPAL" ... passed in 0.410s
+    E La pagina di selezione PSP è caricata ... failed in 5.004s
+    E L'utente clicca il pulsante ordina lista PSP ... skipped in 0.000s
+    E L'utente seleziona l'opzione radio "ordina per nome" ... skipped in 0.000s
+    E L'utente clicca il pulsante mostra risultati ... skipped in 0.000s
+    Allora La lista dei nomi PSP è ordinata in ordine alfabetico crescente ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.psp_sorting_npg.Ordinamento lista PSP in Checkout" name="La lista PSP è ordinata per commissione nella pagina di selezione PSP" status="failed" time="9.699411"><error type="TimeoutError" message="Locator.wait_for: Timeout 5000ms exceeded.&#10;Call log:&#10;  - waiting for locator(&quot;.pspFeeName&quot;).first to be visible&#10;">
+<![CDATA[
+Failing step: E La pagina di selezione PSP è caricata ... failed in 5.005s
+Location: src/e2e/checkout/features/psp_sorting_npg.feature:115
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/e2e/checkout/steps/psp_sorting_npg.py", line 167, in step_psp_selection_page_loaded
+    page.locator(".pspFeeName").first.wait_for(state="visible", timeout=5000)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/sync_api/_generated.py", line 17975, in wait_for
+    self._sync(self._impl_obj.wait_for(timeout=timeout, state=state))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_locator.py", line 692, in wait_for
+    await self._frame.wait_for_selector(
+        self._selector, strict=True, timeout=timeout, state=state
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 369, in wait_for_selector
+    await self._channel.send(
+        "waitForSelector", self._timeout, locals_to_params(locals())
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 558, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.wait_for: Timeout 5000ms exceeded.
+Call log:
+  - waiting for locator(".pspFeeName").first to be visible
+
+]]>
+</error><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_005_Checkout_scenario_06
+  Scenario: La lista PSP è ordinata per commissione nella pagina di selezione PSP
+    Dato La pagina di checkout è aperta ... passed in 0.288s
+    E La lingua è impostata su "it" ... passed in 0.879s
+    E L'utente inserisce un codice avviso valido con prefisso "30202" ... passed in 0.000s
+    E L'utente inserisce un codice fiscale valido del pagatore ... passed in 0.000s
+    Quando L'utente inserisce le informazioni dell'avviso ... passed in 1.016s
+    E L'utente clicca il pulsante verifica ... passed in 0.257s
+    E L'utente clicca il pulsante paga nella pagina di riepilogo ... passed in 0.870s
+    E L'utente inserisce e conferma l'email ... passed in 0.958s
+    E L'utente seleziona il metodo di pagamento "PPAL" ... passed in 0.427s
+    E La pagina di selezione PSP è caricata ... failed in 5.005s
+    E L'utente clicca il pulsante ordina lista PSP ... skipped in 0.000s
+    E L'utente seleziona l'opzione radio "ordina per importo" ... skipped in 0.000s
+    E L'utente clicca il pulsante mostra risultati ... skipped in 0.000s
+    Allora La lista delle commissioni PSP è ordinata in ordine crescente ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
