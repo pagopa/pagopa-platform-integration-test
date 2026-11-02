@@ -1,34 +1,6 @@
 ## Suite: checkout
 
-# 1. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
-- **status**: broken
-- **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta "Postepay" viene completato con successo`
-- **message**: RuntimeError: Timeout on locator '#psp-radio-PPAYITR1XXX' after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)
-- **trace**:
-```
-File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
-    match.run(runner.context)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
-    self.func(context, *args, **kwargs)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 188, in step_select_psp
-    locate_and_click(page, f"#psp-radio-{psp_id}")
-    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 129, in locate_and_click
-```
-### Root cause
-The locator `#psp-radio-PPAYITR1XXX` timed out after 5 seconds on the PSP selection page, indicating that Postepay PSP was not present or visible in the list.
-
-### Category
-environment
-
-### Recommended action
-Verify if the PSP `PPAYITR1XXX` is active and configured in the UAT environment dataset and check if UI render latency exceeds 5 seconds.
-
----
-
-# 2. Viene mostrato l'errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell'intervallo 302400000000000000-302409999999999999 -- @1.1
+# 1. Viene mostrato l'errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell'intervallo 302400000000000000-302409999999999999 -- @1.1
 - **status**: failed
 - **fullName**: `Attivazione pagamento Checkout: Viene mostrato l'errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell'intervallo 302400000000000000-302409999999999999`
 - **message**: AssertionError: Expected modal header to contain 'Non riusciamo a trovare l’avviso', but got: 'L’Ente Creditore sta avendo problemi nella risposta'
@@ -45,44 +17,17 @@ File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ```
 ### Root cause
-The application returned an Creditor Entity response error instead of the specific unknown payment error modal header (`PAA_PAGAMENTO_SCONOSCIUTO`).
+The error modal displayed a generic Creditor Institution error instead of the expected unknown payment notice error (`PAA_PAGAMENTO_SCONOSCIUTO`).
 
 ### Category
 application bug
 
 ### Recommended action
-Investigate mock/backend response mapping for `PAA_PAGAMENTO_SCONOSCIUTO` to ensure the correct user-facing error message is rendered.
+Verify backend error mapping for notice codes in the range 302400000000000000-302409999999999999 to ensure `PAA_PAGAMENTO_SCONOSCIUTO` is correctly returned.
 
 ---
 
-# 3. Un pagamento con configurazione carta "Wordline" viene completato con successo -- @1.2
-- **status**: failed
-- **fullName**: `Attivazione pagamento Checkout: Un pagamento con configurazione carta "Wordline" viene completato con successo`
-- **message**: AssertionError: Expected 'Hai pagato' in result message, but got: 'Attendi la conferma del pagamento'
-- **trace**:
-```
-File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
-    match.run(runner.context)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
-    self.func(context, *args, **kwargs)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 309, in step_check_payment_success
-    assert "Hai pagato" in message_text, (
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-```
-### Root cause
-Payment transaction remained in an asynchronous pending state ("Attendi la conferma del pagamento") without completing within the expected execution window.
-
-### Category
-flaky
-
-### Recommended action
-Increase polling wait time for payment status resolution or inspect Wordline gateway callback delays in UAT.
-
----
-
-# 4. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
+# 2. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
 - **status**: broken
 - **fullName**: `Attivazione pagamento Checkout: Un pagamento con configurazione carta "Postepay" viene completato con successo`
 - **message**: RuntimeError: Timeout on locator '#psp-radio-PPAYITR1XXX' after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)
@@ -98,25 +43,59 @@ File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave
     locate_and_click(page, f"#psp-radio-{psp_id}")
     ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 129, in locate_and_click
+    raise RuntimeError(
+        f"Timeout on locator '{locator}' after {timeout} ms (url: {current_url})"
+    ) from exc
 ```
 ### Root cause
-Element `#psp-radio-PPAYITR1XXX` was not visible on the PSP selection screen within 5000 ms.
+Element locator `#psp-radio-PPAYITR1XXX` timed out waiting to become visible on the PSP selection page.
 
 ### Category
 environment
 
 ### Recommended action
-Check whether PSP list rendering is delayed or if `PPAYITR1XXX` service is unavailable in UAT.
+Check if PSP ID `PPAYITR1XXX` is active and configured properly in the UAT environment dataset.
 
 ---
 
-# 5. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
+# 3. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
+- **status**: broken
+- **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta "Postepay" viene completato con successo`
+- **message**: RuntimeError: Timeout on locator '#psp-radio-PPAYITR1XXX' after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)
+- **trace**:
+```
+File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 188, in step_select_psp
+    locate_and_click(page, f"#psp-radio-{psp_id}")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 129, in locate_and_click
+    raise RuntimeError(
+        f"Timeout on locator '{locator}' after {timeout} ms (url: {current_url})"
+    ) from exc
+```
+### Root cause
+Element locator `#psp-radio-PPAYITR1XXX` timed out waiting to become visible on the PSP selection page during authenticated checkout.
+
+### Category
+environment
+
+### Recommended action
+Ensure PSP ID `PPAYITR1XXX` is loaded in UAT during authenticated payment flows.
+
+---
+
+# 4. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
 - **status**: broken
 - **fullName**: `features.checkout_npg.Attivazione pagamento Checkout.Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1`
 - **message**: Timeout on locator '#psp-radio-PPAYITR1XXX' after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)
 - **trace**:
 ```
-Failing step: E L'utente seleziona il PSP con id "PPAYITR1XXX" ... failed in 5.066s
+Failing step: E L'utente seleziona il PSP con id "PPAYITR1XXX" ... failed in 5.067s
 Location: src/e2e/checkout/features/checkout_npg.feature:35
 Traceback (most recent call last):
   File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 93, in locate_and_click
@@ -127,67 +106,56 @@ Traceback (most recent call last):
     ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
     return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_locator.py", line 692, in wait_for
+    await self._frame.wait_for_selector(
+        self._selector, strict=True, timeout=timeout, state=state
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 369, in wait_for_selector
+    await self._channel.send(
+        "waitForSelector", self._timeout, locals_to_params(locals())
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 69, in 
 ```
 ### Root cause
-Playwright timed out waiting for element visibility of `#psp-radio-PPAYITR1XXX`.
+Playwright timed out waiting for PSP option `#psp-radio-PPAYITR1XXX` to appear in the UI.
 
 ### Category
 environment
 
 ### Recommended action
-Ensure the PSP selection endpoint returns consistent data for Postepay in test environments.
+Verify UAT backend availability/data for Postepay PSP `PPAYITR1XXX`.
 
 ---
 
-# 6. Un pagamento con configurazione carta "Wordline" viene completato con successo -- @1.2
-- **status**: failed
-- **fullName**: `features.checkout_npg.Attivazione pagamento Checkout.Un pagamento con configurazione carta "Wordline" viene completato con successo -- @1.2`
-- **message**: Expected 'Hai pagato' in result message, but got: 'Attendi la conferma del pagamento'
-- **trace**:
-```
-Failing step: Allora Viene mostrato un messaggio di pagamento completato con successo ... failed in 91.547s
-Location: src/e2e/checkout/features/checkout_npg.feature:38
-Assertion Failed: Expected 'Hai pagato' in result message, but got: 'Attendi la conferma del pagamento'
-```
-### Root cause
-Payment outcome was stuck in pending state after 91 seconds during Wordline card payment confirmation.
-
-### Category
-flaky
-
-### Recommended action
-Investigate Wordline async callback handling and extend explicit wait conditions for terminal status update.
-
----
-
-# 7. Viene mostrato l'errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell'intervallo 302400000000000000-302409999999999999 -- @1.1
+# 5. Viene mostrato l'errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell'intervallo 302400000000000000-302409999999999999 -- @1.1
 - **status**: failed
 - **fullName**: `features.checkout_npg.Attivazione pagamento Checkout.Viene mostrato l'errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell'intervallo 302400000000000000-302409999999999999 -- @1.1`
 - **message**: Expected modal header to contain 'Non riusciamo a trovare l’avviso', but got: 'L’Ente Creditore sta avendo problemi nella risposta'
 - **trace**:
 ```
-Failing step: E L'intestazione della modale di errore contiene "Non riusciamo a trovare l’avviso" ... failed in 0.016s
+Failing step: E L'intestazione della modale di errore contiene "Non riusciamo a trovare l’avviso" ... failed in 0.019s
 Location: src/e2e/checkout/features/checkout_npg.feature:57
 Assertion Failed: Expected modal header to contain 'Non riusciamo a trovare l’avviso', but got: 'L’Ente Creditore sta avendo problemi nella risposta'
 ```
 ### Root cause
-Incorrect error modal content displayed when testing invalid notice code range `302400000000000000-302409999999999999`.
+Modal header text mismatch due to incorrect error handling logic for invalid notice ranges.
 
 ### Category
 application bug
 
 ### Recommended action
-Fix backend error handling logic for invalid notice code lookup to return `PAA_PAGAMENTO_SCONOSCIUTO` instead of generic EC failure.
+Fix application modal error mapping logic so that `PAA_PAGAMENTO_SCONOSCIUTO` maps to the "Non riusciamo a trovare l’avviso" header message.
 
 ---
 
-# 8. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
+# 6. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
 - **status**: broken
 - **fullName**: `features.checkout_npg_auth.Attivazione pagamento Checkout autenticato.Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1`
 - **message**: Timeout on locator '#psp-radio-PPAYITR1XXX' after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)
 - **trace**:
 ```
-Failing step: E L'utente seleziona il PSP con id "PPAYITR1XXX" ... failed in 5.060s
+Failing step: E L'utente seleziona il PSP con id "PPAYITR1XXX" ... failed in 5.066s
 Location: src/e2e/checkout/features/checkout_npg_auth.feature:36
 Traceback (most recent call last):
   File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 93, in locate_and_click
@@ -198,34 +166,79 @@ Traceback (most recent call last):
     ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
     return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_locator.py", line 692, in wait_for
+    await self._frame.wait_for_selector(
+        self._selector, strict=True, timeout=timeout, state=state
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 369, in wait_for_selector
+    await self._channel.send(
+        "waitForSelector", self._timeout, locals_to_params(locals())
+    )
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 69
 ```
 ### Root cause
-Timeout locating element `#psp-radio-PPAYITR1XXX` on the authenticated checkout flow.
+Playwright timed out waiting for PSP radio selector `#psp-radio-PPAYITR1XXX` on the PSP list page.
 
 ### Category
 environment
 
 ### Recommended action
-Verify UAT PSP availability service and ensure `#psp-radio-PPAYITR1XXX` is populated in the DOM.
+Verify whether PSP `PPAYITR1XXX` is currently returned by the backend API in UAT.
 
 ---
 
 ## Common patterns
-- **Missing/Unavailable PSP Element (4 failures)**: All Postepay test variants failed due to timeout locating `#psp-radio-PPAYITR1XXX` on `https://uat.checkout.pagopa.it/lista-psp`.
-- **Unexpected Error Modal Text (2 failures)**: Invalid notice range scenarios consistently received generic Creditor Entity failure modal instead of unknown notice modal.
-- **Asynchronous Payment Settlement Delay (2 failures)**: Wordline card payments remained stuck at "Attendi la conferma del pagamento" state.
+- **Missing PSP Option on UAT (`PPAYITR1XXX`)**: 4 test failures were caused by locator timeouts for `#psp-radio-PPAYITR1XXX` on `https://uat.checkout.pagopa.it/lista-psp`, indicating that Postepay PSP configuration is either missing or failing to render in UAT.
+- **Incorrect Modal Error Message**: 2 test failures occurred because payment notice activation for invalid ranges (302400000000000000-302409999999999999) returned a generic Creditor Institution error instead of the expected unknown payment notice message.
 
 
 ## Suite: fdr3
 
-Execution of the FDR-3 suite was completed with zero test failures, and all configured tests ran to completion without being skipped.
+No test failures were found in the 'FDR-3' suite execution; please confirm that the execution ran to completion without unintentionally skipping tests.
 
 
 ## Suite: wisp
 
-# 1. L'utente paga un carrello con singola RPT senza marca da bollo gia esistente in GPD
+# 1. L'utente paga un carrello con singola RPT con una marca da bollo gia esistente in GPD
+- **status**: broken
+- **fullName**: `L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L'utente paga un carrello con singola RPT con una marca da bollo gia esistente in GPD`
+- **message**: xml.etree.ElementTree.ParseError: not well-formed (invalid token): line 1, column 0
+- **trace**:
+```
+File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/integration/wisp/steps/steps.py", line 169, in user_redirected_to_checkout
+    steputils.send_index_activatePaymentNoticeV2_request(context, 5)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 862, in send_index_activatePaymentNoticeV2_request
+    send_primitive(context, 'creditor istitution', 'activatePaymentNoticeV2')
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 45, in send_primitive
+    status_code, body_response, _ = utils.execute_request(url, 'post', headers, request, content_type,
+                                    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                                          description=req_description)
+                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/run
+```
+### Root cause
+The response from the `activatePaymentNoticeV2` primitive could not be parsed as XML, likely due to an empty body or HTML error response returned by the server.
+
+### Category
+environment
+
+### Recommended action
+Inspect the endpoint response payload for `activatePaymentNoticeV2` during SOAP execution to check for non-XML error responses or gateway failures.
+
+---
+
+# 2. Utente paga un pagamento singolo con un versamento semplice e una marca da bollo
 - **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L'utente paga un carrello con singola RPT senza marca da bollo gia esistente in GPD`
+- **fullName**: `Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con un versamento semplice e una marca da bollo`
 - **message**: AssertionError: There are not events with business process receipt-ok.
 - **trace**:
 ```
@@ -241,103 +254,96 @@ File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave
   File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 898, in check_wisp_session_timers_del_and_rts_were_sent
     check_event(context, 'receipt-ok', 'status', 'RT_SEND_SUCCESS')
     ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 403, in check_event
+    assert_show_message(len(needed_process_events) > 0,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        f'There are not events with business process {business_process}.')
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.p
 ```
 ### Root cause
-Nodo Event Hub/RE events missing business process `receipt-ok` with status `RT_SEND_SUCCESS` after payment completion.
+No event with business process `receipt-ok` and status `RT_SEND_SUCCESS` was published or found in event logs after payment completion.
 
 ### Category
 application bug
 
 ### Recommended action
-Verify asynchronous receipt generation service (Nodo/GPD) and ensure RE event writer publishes `receipt-ok` events.
+Investigate why receipt generation/sending (`RT_SEND_SUCCESS`) failed or was delayed for payments including stamp duties (`marca da bollo`).
 
 ---
 
-# 2. Utente paga un pagamento singolo con un versamento e nessuna marca da bollo
-- **status**: failed
-- **fullName**: `Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con un versamento e nessuna marca da bollo`
-- **message**: AssertionError: There are not events with business process receipt-ok.
+# 3. L'utente paga un carrello con singola RPT con una marca da bollo gia esistente in GPD
+- **status**: broken
+- **fullName**: `features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT.L'utente paga un carrello con singola RPT con una marca da bollo gia esistente in GPD`
+- **message**: not well-formed (invalid token): line 1, column 0
 - **trace**:
 ```
-File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.464s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_existingPaymentPosition.feature:45
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
     match.run(runner.context)
     ~~~~~~~~~^^^^^^^^^^^^^^^^
   File "/opt/hostedtoolcache/Python/3.15.1/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
     self.func(context, *args, **kwargs)
     ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "src/integration/wisp/steps/steps.py", line 172, in user_redirected_to_checkout
-    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 898, in check_wisp_session_timers_del_and_rts_were_sent
-    check_event(context, 'receipt-ok', 'status', 'RT_SEND_SUCCESS')
-    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/integration/wisp/steps/steps.py", line 169, in user_redirected_to_checkout
+    steputils.send_index_activatePaymentNoticeV2_request(context, 5)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 862, in send_index_activatePaymentNoticeV2_request
+    send_primitive(context, 'creditor istitution', 'activatePaymentNoticeV2')
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 45, in send_primitive
+    status_code, body_response, _ = utils.execute_request(url, 'post', headers, request, content_type,
 ```
 ### Root cause
-Missing `receipt-ok` event in event store for single payment flow via `nodoInviaRPT`.
+`ElementTree.ParseError` raised while attempting to parse malformed or non-XML server response from `activatePaymentNoticeV2`.
 
 ### Category
-application bug
+environment
 
 ### Recommended action
-Check RT transmission flow in Nodo to confirm why `RT_SEND_SUCCESS` status events were not registered.
+Verify network traffic and server responses for `activatePaymentNoticeV2` endpoint in the WISP test setup.
 
 ---
 
-# 3. L'utente paga un carrello con singola RPT senza marca da bollo gia esistente in GPD
+# 4. Utente paga un pagamento singolo con un versamento semplice e una marca da bollo
 - **status**: failed
-- **fullName**: `features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT.L'utente paga un carrello con singola RPT senza marca da bollo gia esistente in GPD`
+- **fullName**: `features.nodoInviaRPT.nodoInviaRPT_withStamp.Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT.Utente paga un pagamento singolo con un versamento semplice e una marca da bollo`
 - **message**: There are not events with business process receipt-ok.
 - **trace**:
 ```
-Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 41.358s
-Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_existingPaymentPosition.feature:19
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 38.121s
+Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_withStamp.feature:27
 Assertion Failed: There are not events with business process receipt-ok.
 Captured logging:
 INFO:root:Response status code: 200
-INFO:root:Response body: <Element 'Envelope' at 0x7f58533e1260>
+INFO:root:Response body: <Element 'Envelope' at 0x7fcf071f4130>
 INFO:root:Waiting [2] secondto wait for Nodo to write RE events
 INFO:root:Wait time ended
 INFO:root:Response status code: 200
-INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '348179351457034728', 'state': 'OK'}]}
+INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '351179360345820936', 'state': 'OK'}]}
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fcf071f68e0>
+INFO:root:Waiting [10] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 200
+INFO:root:Response body: {'outcome': 'OK'}
+INFO:root:Waiting [20] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+ERROR:root:[Assert Error] There are not events with business process receipt-ok.
 ```
 ### Root cause
-Event verification failed after 20-second wait period because no `receipt-ok` event was produced.
+Event tracking assertion failed because `receipt-ok` event was not emitted within the 32-second polling window.
 
 ### Category
 application bug
 
 ### Recommended action
-Investigate event ingestion pipeline for `nodoInviaCarrelloRPT` execution path.
-
----
-
-# 4. Utente paga un pagamento singolo con un versamento e nessuna marca da bollo
-- **status**: failed
-- **fullName**: `features.nodoInviaRPT.nodoInviaRPT_noStamp.Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT.Utente paga un pagamento singolo con un versamento e nessuna marca da bollo`
-- **message**: There are not events with business process receipt-ok.
-- **trace**:
-```
-Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 39.051s
-Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_noStamp.feature:17
-Assertion Failed: There are not events with business process receipt-ok.
-Captured logging:
-INFO:root:Response status code: 200
-INFO:root:Response body: <Element 'Envelope' at 0x7f58534a6b10>
-INFO:root:Waiting [2] secondto wait for Nodo to write RE events
-INFO:root:Wait time ended
-INFO:root:Response status code: 200
-INFO:root:Response body: {'outcome': 'OK', 'positionslist': [{'fiscalCode': '15376371009', 'noticeNumber': '351179351625680380', 'state': 'OK'}]}
-```
-### Root cause
-Event store check failed to find `receipt-ok` event following `nodoInviaRPT` payment execution.
-
-### Category
-application bug
-
-### Recommended action
-Inspect downstream receipt generation and RE log emission for single RPT payments.
+Verify event generation pipeline for single payments involving stamp duties (`nodoInviaRPT_withStamp`).
 
 ---
 
 ## Common patterns
-- **Missing RE Receipt Event (`receipt-ok`)**: 100% of failures in the WISP suite failed on the assertion `There are not events with business process receipt-ok.` during the receipt verification step across both `nodoInviaCarrelloRPT` and `nodoInviaRPT` features.
+- **Malformed Response in `activatePaymentNoticeV2`**: 2 failures occurred due to `xml.etree.ElementTree.ParseError`, indicating that the endpoint returned invalid XML or HTTP error status pages instead of a valid SOAP payload.
+- **Missing `receipt-ok` Events**: 2 failures were caused by missing receipt confirmation events after completing payment scenarios involving stamp duties (`marca da bollo`).
