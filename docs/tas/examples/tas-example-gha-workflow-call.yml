@@ -16,6 +16,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      isQualityGateRun:
+        description: "Classify this run as Quality Gate (QG) instead of TAS"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -35,6 +41,7 @@ jobs:
       test_type:      integration   # integration | e2e | api
       test_suite:     tas_pass      
       environment:    uat
+      isQualityGateRun: ${{ inputs.isQualityGateRun || false }}
       caller_id:      ${{ github.repository }}
       # Unique correlation_id for this run: useful for retrieving the TAS
       # artifact later (see documentation "Downloading the full report artifact").
