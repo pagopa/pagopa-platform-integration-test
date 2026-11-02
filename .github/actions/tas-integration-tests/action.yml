@@ -84,6 +84,10 @@ inputs:
     description: "TAS repository (rarely overridden)"
     required: false
     default: "pagopa/pagopa-platform-integration-test"
+  isQualityGateRun:
+    description: "Classify this run as Quality Gate (QG) instead of TAS. 'true' | 'false'."
+    required: false
+    default: "false"
   workflow_file:
     description: "TAS workflow file (rarely overridden)"
     required: false
@@ -210,6 +214,7 @@ runs:
         TAS_CORRELATION_ID: ${{ inputs.correlation_id != '' && inputs.correlation_id || format('{0}-{1}', github.run_id, github.run_attempt) }}
         TAS_TAGS: ${{ inputs.tags }}
         TAS_ALLURE: ${{ inputs.allure }}
+        TAS_IS_QUALITY_GATE_RUN: ${{ inputs.isQualityGateRun }}
       run: |
         # `pipefail` only — we want to capture orchestrator exit codes AND
         # publish outputs before propagating the failure to the step.
@@ -226,6 +231,11 @@ runs:
           ALLURE_ARG=(--allure)
         fi
 
+        QUALITY_GATE_ARG=()
+        if [ "$TAS_IS_QUALITY_GATE_RUN" = "true" ]; then
+          QUALITY_GATE_ARG=(--is-quality-gate-run)
+        fi
+
         case "$TAS_MODE" in
           sync)
             python tas_orchestrator.py \
@@ -239,6 +249,7 @@ runs:
               --correlation-id "$TAS_CORRELATION_ID" \
               --tags "$TAS_TAGS" \
               "${ALLURE_ARG[@]}" \
+              "${QUALITY_GATE_ARG[@]}" \
               --sync \
               | tee tas_output.txt
             EXIT_CODE=${PIPESTATUS[0]}
@@ -268,6 +279,7 @@ runs:
               --correlation-id "$TAS_CORRELATION_ID" \
               --tags "$TAS_TAGS" \
               "${ALLURE_ARG[@]}" \
+              "${QUALITY_GATE_ARG[@]}" \
               | tee tas_output.txt
 
             CID="$(grep -E '^CORRELATION_ID=' tas_output.txt | tail -n1 | cut -d= -f2-)"
@@ -304,6 +316,11 @@ runs:
               ALLURE_JSON=", \"allure\": \"true\""
             fi
 
+            QUALITY_GATE_JSON=""
+            if [ "${TAS_IS_QUALITY_GATE_RUN}" = "true" ]; then
+              QUALITY_GATE_JSON=", \"isQualityGateRun\": \"true\""
+            fi
+
             HTTP=$(curl -s -o /dev/null -w "%{http_code}" \
               -X POST \
               -H "Accept: application/vnd.github+json" \
@@ -317,7 +334,7 @@ runs:
                   \"test_suite\": \"${TAS_SUITE}\",
                   \"environment\": \"${TAS_ENV}\",
                   \"caller_id\": \"${TAS_CALLER_ID}\",
-                  \"correlation_id\": \"${CID}\"${TAGS_JSON}${ALLURE_JSON}
+                  \"correlation_id\": \"${CID}\"${TAGS_JSON}${ALLURE_JSON}${QUALITY_GATE_JSON}
                 }
               }")
 

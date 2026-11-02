@@ -92,6 +92,7 @@ The central GHA workflow that runs the test suites. It supports two trigger mech
 | `correlation_id` | string | ❌ | Unique ID to correlate the run with the caller |
 | `tags` | string | ❌ | Behave tag expression to filter scenarios (e.g. `@runnable`, `@e2e`). Default: `@runnable` |
 | `allure` | boolean | ❌ | Also produce an Allure results directory (`allure-results/`) inside the artifact. Default: `true` |
+| `isQualityGateRun` | boolean | ❌ | Classify as Quality Gate (`QG`) instead of `TAS`. Default: `false` for both triggers |
 
 **Outputs** (available only via `workflow_call`):
 
@@ -111,15 +112,25 @@ The central GHA workflow that runs the test suites. It supports two trigger mech
 - `allure-results/` — Allure result files, only when the `allure` input is `true` (render to HTML with the Allure CLI)
 
 **Published report:** the workflow publishes the test artifact contents under
-`TAS/<timestamp>/` on `gh-pages`, where the timestamp is the Allure run start (`time.start` of
+`TAS/<suite>/<timestamp>/` on `gh-pages` by default, or `QG/<suite>-<test_type>/<timestamp>/` when
+`isQualityGateRun` is `true`, where the timestamp is the Allure run start (`time.start` of
 `widgets/summary.json`) in UTC, formatted `YYYY-MM-DD_HH:mm:ss` like the NRT report folders, so that
 the QA Hub can derive the report link from the Allure start time. When the Allure summary is missing
 or invalid (failed run, `allure` disabled) the job start time (UTC, same format) is used instead.
 The history index also lists legacy folders named `dd-MM-yyyy_HH:mm:ss`.
 When failures are present, the existing AI report workflow analyzes the Allure/JUnit failure
 names, messages, and traces. Its best-effort HTML and Markdown outputs are published under
-`TAS/<timestamp>/analysis/`; they do not affect the test outcome and are not linked from the
+the run's `analysis/` subfolder; they do not affect the test outcome and are not linked from the
 Allure report root.
+
+TAS keeps one history index per suite (`TAS/<suite>/index.html`). `QG/index.html` lists suites, each with a history at
+`QG/<suite>-<test_type>/index.html`; existing flat `QG/<timestamp>/` reports remain linked
+from the QG root and are not moved. The dashboard links to QG once its history
+index exists. Logs, the job summary, JSON summary and Allure environment metadata carry
+the classification. Data ingestion stores `test_origin` and Allure links under the same
+report root (`TAS` or `QG/<suite>-<test_type>`), taking precedence over NRT suite folders.
+QG ingestion requires the test object and category to build the matching URL. Scenario selection,
+success criteria, artifact names and the `tas-<correlation_id>` run name are unchanged.
 
 For `workflow_call`, callers must grant `contents: write` and `actions: write`, and pass
 `REPORT_ANALYSIS_GEMINI_API_KEY` with `secrets: inherit`. External callers must also pass
@@ -232,6 +243,8 @@ invocation modes.
   "test_type":      "integration",
   "suite":          "wisp",
   "environment":    "uat",
+  "origin":         "TAS",
+  "isQualityGateRun": false,
   "ref":            "refs/heads/main",
   "sha":            "a1b2c3d4e5f6...",
   "passed":         42,

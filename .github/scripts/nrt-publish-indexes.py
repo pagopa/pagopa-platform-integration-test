@@ -123,6 +123,7 @@ def main():
     (public_dir / "index.html").write_text(
         template.render(
             suites=suites,
+            qg_available=(public_dir / "QG" / "index.html").is_file(),
             updated_at=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
         ),
         encoding="utf-8",

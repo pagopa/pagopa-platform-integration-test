@@ -121,6 +121,7 @@ publishing step, whose name is configurable via `stepName`.
 | `ref` | string | `main` | TAS repo branch/tag to run the tests from |
 | `tags` | string | `""` | Behave tag expression (e.g. `@runnable`, `@e2e`, `@a,@b`). Empty = workflow default (`@runnable`) |
 | `allure` | boolean | `false` | Also produce an Allure results directory (`allure-results/`) inside the artifact (extracted under `ARTIFACT_DIR` in sync mode). Render/host is left to the caller |
+| `isQualityGateRun` | boolean | `false` | Set to `true` to classify the run as Quality Gate, publish reports and AI analysis under `QG/<suite>-<testType>/<timestamp>/` with a separate suite history, and ingest with origin `QG`. Applies to sync, async and raw modes; omitted/false preserves TAS behaviour |
 | `githubToken` | string | — (required) | GitHub PAT (`public_repo` + `actions:read`) forwarded to the orchestrator as `TAS_GITHUB_TOKEN`. Source it from a secret pipeline variable / Key Vault–linked group |
 | `pythonVersion` | string | `3.11` | Python version (orchestrator-based modes only) |
 | `tasRepo` | string | `pagopa/pagopa-platform-integration-test` | TAS repository |

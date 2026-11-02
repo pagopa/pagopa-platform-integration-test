@@ -13,6 +13,7 @@ import unittest
 from unittest import mock
 
 from process_reports import (
+    build_qg_index_page,
     build_tas_index_page,
     clean_tas_history,
     update_tas_main_index,
@@ -332,6 +333,67 @@ class PublisherTests(unittest.TestCase):
         self.assertTrue((suite_dir / old_name).is_symlink())
         self.assertEqual(marker.read_text(), "preserve")
 
+    def make_qg_run(self, parent, name, content, analysis=False):
+        """Create a published QG run folder, optionally with an AI analysis page."""
+        run_dir = parent / name
+        run_dir.mkdir(parents=True)
+        (run_dir / "index.html").write_text(content)
+        if analysis:
+            (run_dir / "analysis").mkdir()
+            (run_dir / "analysis/index.html").write_text("AI analysis")
+        return run_dir
+
+    def test_qg_suite_history_is_separate_from_tas(self):
+        """Render a QG suite history with AI links without touching TAS history."""
+        if os.name == "nt":
+            self.skipTest("Windows does not allow colons in timestamp directory names")
+        root = Path("public/QG")
+        timestamp = "2026-11-02_10:00:00"
+        self.make_qg_run(root / "checkout-integration", timestamp, "QG report", analysis=True)
+        tas_root = Path("public/TAS")
+        tas_root.mkdir()
+        (tas_root / "index.html").write_text("Existing TAS history")
+
+        build_tas_index_page(root, "checkout-integration")
+
+        index = (root / "checkout-integration/index.html").read_text(encoding="utf-8")
+        self.assertIn("Report Quality Gate - checkout-integration", index)
+        self.assertIn(f"./{timestamp}/index.html", index)
+        self.assertIn(f"./{timestamp}/analysis/index.html", index)
+        self.assertIn("Torna alle suite QG", index)
+        self.assertNotIn("Storico Test Report", index)
+        self.assertEqual((tas_root / "index.html").read_text(), "Existing TAS history")
+
+    def test_qg_root_lists_suites_and_preserves_legacy_runs(self):
+        """List QG suites and keep old flat QG runs reachable from the QG root."""
+        if os.name == "nt":
+            self.skipTest("Windows does not allow colons in timestamp directory names")
+        root = Path("public/QG")
+        legacy = "2026-11-01_10:00:00"
+        timestamp = "2026-11-02_10:00:00"
+        legacy_dir = self.make_qg_run(root, legacy, "Legacy QG report")
+        for suite in ("checkout-integration", "checkout-e2e"):
+            self.make_qg_run(root / suite, timestamp, suite, analysis=True)
+            build_tas_index_page(root, suite)
+        (root / "empty-api").mkdir()
+
+        build_qg_index_page(root)
+
+        index = (root / "index.html").read_text(encoding="utf-8")
+        self.assertIn("Report Quality Gate", index)
+        self.assertIn(f"./{legacy}/index.html", index)
+        self.assertNotIn("empty-api", index)
+        self.assertLess(index.index("checkout-e2e"), index.index("checkout-integration"))
+        for suite in ("checkout-e2e", "checkout-integration"):
+            self.assertIn(f"./{suite}/index.html", index)
+            history = (root / suite / "index.html").read_text(encoding="utf-8")
+            self.assertIn(f"Report Quality Gate - {suite}", history)
+            self.assertIn(f"./{timestamp}/index.html", history)
+            self.assertIn(f"./{timestamp}/analysis/index.html", history)
+            self.assertIn("Torna alle suite QG", history)
+            self.assertNotIn(legacy, history)
+        self.assertEqual((legacy_dir / "index.html").read_text(), "Legacy QG report")
+
     def test_dashboard_includes_registry_and_unavailable_suites(self):
         """Render real counters and mark unpublished suites without broken links."""
         self.write_report("32", 1000)
@@ -352,8 +414,16 @@ class PublisherTests(unittest.TestCase):
         self.assertIn("Report non ancora disponibile", dashboard)
         self.assertNotIn("./fdr3-tests/index.html", dashboard)
         self.assertIn("./TAS/index.html", dashboard)
+        self.assertNotIn("./QG/index.html", dashboard)
         self.assertIn("UTC", dashboard)
         self.assertTrue(Path("public/.nojekyll").exists())
+
+        Path("public/QG").mkdir()
+        Path("public/QG/index.html").write_text("QG history")
+        PUBLISHER["main"]()
+        dashboard = Path("public/index.html").read_text(encoding="utf-8")
+        self.assertIn("./QG/index.html", dashboard)
+        self.assertIn("./TAS/index.html", dashboard)
 
     def test_invalid_summary_fails_without_overwriting_index(self):
         """Reject missing counters instead of publishing success-shaped defaults."""

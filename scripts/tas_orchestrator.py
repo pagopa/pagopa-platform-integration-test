@@ -231,6 +231,7 @@ def print_summary(summary: dict) -> None:
 # ── Main orchestration logic ────────────────────────────────────────────────────
 
 def run(args: argparse.Namespace) -> int:
+    """Dispatch a TAS or Quality Gate run and optionally wait for its results."""
     # Token validation. Prefer the TAS-scoped name to avoid clashing with a
     # generic GITHUB_TOKEN that may already exist in the caller's environment;
     # fall back to GITHUB_TOKEN for backward compatibility with older callers.
@@ -271,9 +272,13 @@ def run(args: argparse.Namespace) -> int:
     if args.allure:
         inputs["allure"] = "true"
 
+    if args.is_quality_gate_run:
+        inputs["isQualityGateRun"] = "true"
+
     log.info("Sending dispatch to '%s' (workflow: %s, ref: %s)", repo, workflow_file, args.ref)
     log.info("Type: %s | Suite: %s | Env: %s | Caller: %s | Correlation ID: %s",
              args.type, args.suite, args.env, args.caller_id, correlation_id)
+    log.info("Origin: %s", "QG" if args.is_quality_gate_run else "TAS")
 
     client.trigger_workflow(workflow_file=workflow_file, ref=args.ref, inputs=inputs)
     log.info("Dispatch sent successfully (HTTP 204).")
@@ -381,6 +386,7 @@ def run(args: argparse.Namespace) -> int:
 # ── CLI arguments ────────────────────────────────────────────────────────────────
 
 def build_parser() -> argparse.ArgumentParser:
+    """Build the CLI contract, defaulting optional Quality Gate runs to false."""
     parser = argparse.ArgumentParser(
         description="Test Automation Service — CLI Bridge",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -423,6 +429,10 @@ def build_parser() -> argparse.ArgumentParser:
             "Ask the TAS workflow to also produce an Allure results directory "
             "(allure-results/) inside the test-results artifact."
         )
+    )
+    parser.add_argument(
+        "--is-quality-gate-run", action="store_true",
+        help="Classify the run as Quality Gate (QG) instead of TAS (default: false)"
     )
     parser.add_argument(
         "--sync", action="store_true",
