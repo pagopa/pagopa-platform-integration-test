@@ -509,8 +509,8 @@ jobs:
               exit 1
               ;;
           esac
-          if [[ "$TEST_SUITE" == *"../"* ]] || [[ ! "$TEST_SUITE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
-            echo "::error::Invalid test_suite '$TEST_SUITE' (expected a safe path component without ../)"
+          if [[ ! "$TEST_SUITE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
+            echo "::error::Invalid test_suite '$TEST_SUITE' (expected a safe path component)"
             exit 1
           fi
 
@@ -537,6 +537,10 @@ jobs:
 
           DEST="public/TAS/${TEST_SUITE}/${PUBLISH_TIMESTAMP}"
           mkdir -p "$DEST"
+          INDEX_FILE="$DEST/index.html"
+          if [ ! -e "$INDEX_FILE" ]; then
+            touch "$INDEX_FILE"
+          fi
 
           REPORT_SOURCE="artifacts/test-results/${REPORT_DIR}"
           if [ -d "$REPORT_SOURCE" ]; then
@@ -585,16 +589,16 @@ jobs:
           tas_source = os.path.join(workspace, "tas-source")
           sys.path.insert(0, os.path.join(tas_source, ".github", "scripts"))
           os.chdir(tas_source)
-            from process_reports import (
+          from process_reports import (
               build_tas_index_page,
               clean_tas_history,
               update_tas_main_index,
-            )
+          )
 
           tas_root = Path(workspace) / "public" / "TAS"
-            test_suite = os.environ["TEST_SUITE"]
-            clean_tas_history(tas_root / test_suite)
-            build_tas_index_page(tas_root, test_suite)
+          test_suite = os.environ["TEST_SUITE"]
+          clean_tas_history(tas_root, test_suite)
+          build_tas_index_page(tas_root, test_suite)
           public_link = Path("public")
           if public_link.exists() or public_link.is_symlink():
               raise FileExistsError(f"Unexpected path in TAS source checkout: {public_link}")

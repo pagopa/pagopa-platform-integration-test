@@ -176,6 +176,7 @@ def build_index_page(root_dir):
 
 # TAS report folder names: ISO UTC (current, same as NRT) and dd-mm-YYYY (legacy).
 TAS_FOLDER_TIMESTAMP_FORMATS = ("%Y-%m-%d_%H:%M:%S", "%d-%m-%Y_%H:%M:%S")
+TAS_SUITE_NAME_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
 
 
 def parse_tas_folder_timestamp(folder_name):
@@ -188,9 +189,18 @@ def parse_tas_folder_timestamp(folder_name):
     return None
 
 
-def clean_tas_history(suite_dir):
-    """Remove timestamped TAS runs older than 30 days, interpreting names as UTC."""
-    suite_path = Path(suite_dir)
+def _validate_tas_suite_name(test_suite: object) -> str:
+    """Return a safe TAS suite path component or raise ValueError."""
+    if not isinstance(test_suite, str) or TAS_SUITE_NAME_PATTERN.fullmatch(test_suite) is None:
+        raise ValueError("Invalid TAS test_suite; expected a safe path component")
+    return test_suite
+
+
+def clean_tas_history(root_dir: str | Path, test_suite: object) -> None:
+    """Remove expired timestamped runs from a validated suite directory, if present."""
+    suite_path = Path(root_dir) / _validate_tas_suite_name(test_suite)
+    if suite_path.is_symlink() or not suite_path.is_dir():
+        return
     cutoff = datetime.now(timezone.utc) - timedelta(days=30)
     for report_dir in suite_path.iterdir():
         if report_dir.is_symlink() or not report_dir.is_dir():
@@ -202,12 +212,7 @@ def clean_tas_history(suite_dir):
 
 def build_tas_index_page(root_dir, test_suite):
     """Build the TAS history index from complete timestamped reports."""
-    if (
-        not isinstance(test_suite, str)
-        or "../" in test_suite
-        or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", test_suite) is None
-    ):
-        raise ValueError("Invalid TAS test_suite; expected a safe path component")
+    test_suite = _validate_tas_suite_name(test_suite)
 
     root_path = Path(root_dir) / test_suite
     root_path.mkdir(parents=True, exist_ok=True)

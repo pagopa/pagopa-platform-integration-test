@@ -281,33 +281,56 @@ class PublisherTests(unittest.TestCase):
             build_tas_index_page(root, "../outside")
         self.assertFalse(Path("public/outside").exists())
 
-    def test_clean_tas_history_removes_only_runs_older_than_30_days(self):
-        """Delete expired timestamped runs while preserving recent and other folders."""
+    def test_clean_tas_history_removes_expired_iso_and_legacy_runs(self):
+        """Delete expired ISO and legacy runs while preserving recent and unrelated entries."""
+        if os.name == "nt":
+            self.skipTest("Windows does not allow colons in timestamp directory names")
         suite_dir = Path("public/TAS/checkout")
         suite_dir.mkdir(parents=True)
         now = datetime.now(timezone.utc).replace(microsecond=0)
-        old_name = (now - timedelta(days=31)).strftime("%Y-%m-%d_%H:%M:%S")
+        old_iso_name = (now - timedelta(days=31)).strftime("%Y-%m-%d_%H:%M:%S")
+        old_legacy_name = (now - timedelta(days=31)).strftime("%d-%m-%Y_%H:%M:%S")
         recent_name = (now - timedelta(days=29)).strftime("%Y-%m-%d_%H:%M:%S")
-        report_dirs = []
-        for name in (old_name, recent_name, "not-a-timestamp"):
-            report_dir = mock.MagicMock()
-            report_dir.name = name
-            report_dir.is_dir.return_value = True
-            report_dir.is_symlink.return_value = False
-            report_dirs.append(report_dir)
-        original_iterdir = Path.iterdir
+        for name in (old_iso_name, old_legacy_name, recent_name, "not-a-timestamp"):
+            (suite_dir / name).mkdir()
+        (suite_dir / "ordinary-file").write_text("preserve")
 
-        def iterdir(path):
-            """Expose virtual run folders for retention testing."""
-            if path == suite_dir:
-                return iter(report_dirs)
-            return original_iterdir(path)
+        clean_tas_history(Path("public/TAS"), "checkout")
 
-        with mock.patch.object(Path, "iterdir", iterdir):
-            with mock.patch("process_reports.shutil.rmtree") as remove:
-                clean_tas_history(suite_dir)
+        self.assertFalse((suite_dir / old_iso_name).exists())
+        self.assertFalse((suite_dir / old_legacy_name).exists())
+        self.assertTrue((suite_dir / recent_name).is_dir())
+        self.assertTrue((suite_dir / "not-a-timestamp").is_dir())
+        self.assertEqual((suite_dir / "ordinary-file").read_text(), "preserve")
 
-        remove.assert_called_once_with(report_dirs[0])
+    def test_clean_tas_history_handles_missing_and_unsafe_suites(self):
+        """Ignore a missing suite and reject traversal before inspecting a path."""
+        root = Path("public/TAS")
+        root.mkdir()
+
+        clean_tas_history(root, "missing-suite")
+
+        with self.assertRaisesRegex(ValueError, "safe path component"):
+            clean_tas_history(root, "../outside")
+        self.assertFalse(Path("public/outside").exists())
+
+    def test_clean_tas_history_does_not_follow_symlinked_runs(self):
+        """Preserve an expired-looking symlink and the directory it points to."""
+        if os.name == "nt":
+            self.skipTest("Directory symlinks are not available in all Windows environments")
+        suite_dir = Path("public/TAS/checkout")
+        suite_dir.mkdir(parents=True)
+        target = Path("public/TAS/target")
+        target.mkdir()
+        marker = target / "preserved.txt"
+        marker.write_text("preserve")
+        old_name = (datetime.now(timezone.utc) - timedelta(days=31)).strftime("%Y-%m-%d_%H:%M:%S")
+        (suite_dir / old_name).symlink_to(target.resolve(), target_is_directory=True)
+
+        clean_tas_history(Path("public/TAS"), "checkout")
+
+        self.assertTrue((suite_dir / old_name).is_symlink())
+        self.assertEqual(marker.read_text(), "preserve")
 
     def test_dashboard_includes_registry_and_unavailable_suites(self):
         """Render real counters and mark unpublished suites without broken links."""
