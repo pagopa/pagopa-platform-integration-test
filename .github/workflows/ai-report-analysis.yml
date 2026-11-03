@@ -16,9 +16,13 @@ on:
         required: false
         default: ''
       max_tokens:
-        description: 'Max output tokens'
+        description: 'Max output tokens (thinking tokens included)'
         required: false
         default: '32'
+      thinking_level:
+        description: 'Gemini thinkingLevel (low keeps thinking from eating the output budget; empty = model default)'
+        required: false
+        default: 'low'
       best_effort:
         description: 'Keep the workflow successful when analysis fails'
         required: false
@@ -42,10 +46,15 @@ on:
         type: string
         default: ''
       max_tokens:
-        description: 'Max output tokens'
+        description: 'Max output tokens (thinking tokens included)'
         required: false
         type: string
         default: '32'
+      thinking_level:
+        description: 'Gemini thinkingLevel (low keeps thinking from eating the output budget; empty = model default)'
+        required: false
+        type: string
+        default: 'low'
       best_effort:
         description: 'Keep the workflow successful when analysis fails'
         required: false
@@ -66,6 +75,7 @@ jobs:
     continue-on-error: ${{ inputs.best_effort }}
     outputs:
       available_models: ${{ steps.check.outputs.available_models }}
+      model_limits: ${{ steps.check.outputs.model_limits }}
     steps:
       - name: Check fallback model availability
         id: check
@@ -106,8 +116,18 @@ jobs:
             exit 1
           fi
 
+          # Per-model token limits straight from the catalog already fetched above: the inference step
+          # clamps maxOutputTokens to outputTokenLimit and skips models whose inputTokenLimit is too small.
+          MODEL_LIMITS=$(echo "$RESPONSE" | jq -c '
+            [.models[]
+              | {key: (.name | sub("^models/"; "")),
+                 value: {input: (.inputTokenLimit // 0), output: (.outputTokenLimit // 0)}}
+            ] | from_entries
+          ')
+
           echo "Available fallback models: $AVAILABLE_MODELS"
           echo "available_models=$AVAILABLE_MODELS" >> "$GITHUB_OUTPUT"
+          echo "model_limits=$MODEL_LIMITS" >> "$GITHUB_OUTPUT"
 
   call-inference:
     name: "Call Gemini inference endpoint"
@@ -152,12 +172,15 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.REPORT_ANALYSIS_GEMINI_API_KEY }}
           AVAILABLE_MODELS: ${{ needs.check-model-catalog.outputs.available_models }}
+          MODEL_LIMITS: ${{ needs.check-model-catalog.outputs.model_limits }}
           MAX_TOKENS: ${{ inputs.max_tokens || '32' }}
+          THINKING_LEVEL: ${{ inputs.thinking_level }}
         run: |
           python3 .github/scripts/gemini_analysis.py \
             --prompt-file ai-analysis-output/prompt.txt \
             --output-dir ai-analysis-output \
-            --max-output-tokens "$MAX_TOKENS"
+            --max-output-tokens "$MAX_TOKENS" \
+            --thinking-level "$THINKING_LEVEL"
 
       - name: Upload analysis artifact
         if: ${{ inputs.analysis_artifact_name != '' }}

@@ -90,6 +90,7 @@ jobs:
       report_artifact: ${{ matrix.report_artifact }}
       needs_playwright: ${{ matrix.needs_playwright }}
       target_env: ${{ needs.prepare.outputs.target_env }}
+      ai_soap_evidence: ${{ matrix.ai_soap_evidence && 'true' || 'false' }}
     secrets: inherit
 
   publish_allure_reports:
