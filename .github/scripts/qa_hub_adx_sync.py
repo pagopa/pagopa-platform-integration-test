@@ -91,7 +91,7 @@ SUITES = TableSpec(
         ("suite_version", "string"),
         ("owner_team", "string"),
     ),
-    select_list="s.id, s.test_object, s.test_type, s.suite_version, s.owner_team",
+    select_list="s.id, s.test_object, s.test_type, s.test_object_version, s.owner_team",
     windowed=False,
 )
 

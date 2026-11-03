@@ -2,7 +2,7 @@ import json
 import os
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import shutil
 from pathlib import Path
 
@@ -188,8 +188,27 @@ def parse_tas_folder_timestamp(folder_name):
     return None
 
 
+def clean_tas_history(suite_dir):
+    """Remove timestamped TAS runs older than 30 days, interpreting names as UTC."""
+    suite_path = Path(suite_dir)
+    cutoff = datetime.now(timezone.utc) - timedelta(days=30)
+    for report_dir in suite_path.iterdir():
+        if report_dir.is_symlink() or not report_dir.is_dir():
+            continue
+        timestamp = parse_tas_folder_timestamp(report_dir.name)
+        if timestamp is not None and timestamp.replace(tzinfo=timezone.utc) < cutoff:
+            shutil.rmtree(report_dir)
+
+
 def build_tas_index_page(root_dir, test_suite):
     """Build the TAS history index from complete timestamped reports."""
+    if (
+        not isinstance(test_suite, str)
+        or "../" in test_suite
+        or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", test_suite) is None
+    ):
+        raise ValueError("Invalid TAS test_suite; expected a safe path component")
+
     root_path = Path(root_dir) / test_suite
     root_path.mkdir(parents=True, exist_ok=True)
 

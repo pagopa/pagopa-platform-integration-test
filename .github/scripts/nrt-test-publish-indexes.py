@@ -1,7 +1,7 @@
 """Local regression tests for NRT GitHub Pages indexes."""
 
 import contextlib
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import io
 import json
 import os
@@ -12,7 +12,11 @@ import tempfile
 import unittest
 from unittest import mock
 
-from process_reports import build_tas_index_page, update_tas_main_index
+from process_reports import (
+    build_tas_index_page,
+    clean_tas_history,
+    update_tas_main_index,
+)
 
 SOURCE_ROOT = Path(__file__).resolve().parents[2]
 PUBLISHER = runpy.run_path(str(Path(__file__).with_name("nrt-publish-indexes.py")))
@@ -269,6 +273,41 @@ class PublisherTests(unittest.TestCase):
         self.assertIn('href="./wisp/index.html"', index)
         self.assertLess(index.index("tas_pass"), index.index("wisp"))
         self.assertNotIn("not-ready", index)
+
+    def test_tas_suite_path_rejects_parent_traversal(self):
+        """Reject a suite name containing a parent-directory path component."""
+        root = Path("public/TAS")
+        with self.assertRaisesRegex(ValueError, "safe path component"):
+            build_tas_index_page(root, "../outside")
+        self.assertFalse(Path("public/outside").exists())
+
+    def test_clean_tas_history_removes_only_runs_older_than_30_days(self):
+        """Delete expired timestamped runs while preserving recent and other folders."""
+        suite_dir = Path("public/TAS/checkout")
+        suite_dir.mkdir(parents=True)
+        now = datetime.now(timezone.utc).replace(microsecond=0)
+        old_name = (now - timedelta(days=31)).strftime("%Y-%m-%d_%H:%M:%S")
+        recent_name = (now - timedelta(days=29)).strftime("%Y-%m-%d_%H:%M:%S")
+        report_dirs = []
+        for name in (old_name, recent_name, "not-a-timestamp"):
+            report_dir = mock.MagicMock()
+            report_dir.name = name
+            report_dir.is_dir.return_value = True
+            report_dir.is_symlink.return_value = False
+            report_dirs.append(report_dir)
+        original_iterdir = Path.iterdir
+
+        def iterdir(path):
+            """Expose virtual run folders for retention testing."""
+            if path == suite_dir:
+                return iter(report_dirs)
+            return original_iterdir(path)
+
+        with mock.patch.object(Path, "iterdir", iterdir):
+            with mock.patch("process_reports.shutil.rmtree") as remove:
+                clean_tas_history(suite_dir)
+
+        remove.assert_called_once_with(report_dirs[0])
 
     def test_dashboard_includes_registry_and_unavailable_suites(self):
         """Render real counters and mark unpublished suites without broken links."""
