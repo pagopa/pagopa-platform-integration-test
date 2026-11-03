@@ -64,6 +64,9 @@
 <header class="hero">
   <h1 class="display-6">🤖 AI Analysis · {{ suite_label }}</h1>
   <p class="lead mb-1">Run: <code>{{ timestamp }}</code></p>
+  {% if full_analysis_url %}
+  <p class="mb-0"><a class="link-light" href="{{ full_analysis_url }}">Analisi completa di tutte le suite</a></p>
+  {% endif %}
 </header>
 
 <div class="container">
