@@ -9,13 +9,17 @@ from allure_commons._allure import attach
 from . import constants
 
 
+NON_XML_BODY_MAX_CHARS = 500
+
+
 def execute_request(url, method, headers, payload=None, type=constants.ResponseType.XML, allow_redirect=True,
                     description=None):
     """Execute an HTTP call, attach the exchange to the Allure report and return the parsed response.
 
     The received response is attached with its URL and HTTP status (an empty error body is attached as
     `<empty body>`). Returns `(status_code, parsed_body, headers)`; a body that does not match `type`
-    (e.g. a JSON 500 for an XML call) raises the parser's exception after the response was attached.
+    (e.g. a JSON 500 for an XML call) raises an AssertionError carrying the status and a truncated body after the
+    response was attached, so Allure reports a failed (not broken) step.
     """
     if description is None:
         description = url
@@ -40,7 +44,11 @@ def execute_request(url, method, headers, payload=None, type=constants.ResponseT
             attach(obfuscate_secrets(response_header + formatted_response),
                    name=f'{description} - Received response', attachment_type=attachment_type.TEXT)
             if formatted_response is not None:
-                object_response = xmlutils.fromstring(formatted_response)
+                try:
+                    object_response = xmlutils.fromstring(formatted_response)
+                except xmlutils.ParseError as error:
+                    raise AssertionError(f'Response is not valid XML. HTTP status: {response.status_code}. '
+                                         f'Body: {response.text[:NON_XML_BODY_MAX_CHARS]}') from error
         elif type == constants.ResponseType.JSON:
             object_response = response.json()
             attach(obfuscate_secrets(response_header + json.dumps(object_response, indent=2)),
