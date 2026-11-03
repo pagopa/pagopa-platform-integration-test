@@ -159,6 +159,24 @@ jobs:
               destination="public/${subfolder}/${timestamp}"
               mkdir -p "$destination"
               cp -r "$report_dir/." "$destination/"
+
+              cutoff_epoch=$(date -u -d '30 days ago' +%s)
+              suite_dir="public/${subfolder}"
+              while IFS= read -r -d '' old_dir; do
+                folder_name=${old_dir##*/}
+                if [[ ! "$folder_name" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}:[0-9]{2}:[0-9]{2}$ ]]; then
+                  continue
+                fi
+
+                parsed_timestamp=$(date -u -d "${folder_name/_/ }" '+%Y-%m-%d_%H:%M:%S' 2>/dev/null) || continue
+                if [ "$parsed_timestamp" != "$folder_name" ]; then
+                  continue
+                fi
+                folder_epoch=$(date -u -d "${folder_name/_/ }" +%s)
+                if [ "$folder_epoch" -lt "$cutoff_epoch" ]; then
+                  rm -rf -- "$old_dir"
+                fi
+              done < <(find "$suite_dir" -mindepth 1 -maxdepth 1 -type d -print0)
             done
           else
             echo "No Allure history artifacts were produced."

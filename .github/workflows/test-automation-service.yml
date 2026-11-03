@@ -523,8 +523,13 @@ jobs:
           echo "PUBLISH_TIMESTAMP=${PUBLISH_TIMESTAMP}" >> "$GITHUB_ENV"
           export PUBLISH_TIMESTAMP
 
-          DEST="public/TAS/${PUBLISH_TIMESTAMP}"
+          DEST="public/TAS/${TEST_SUITE}/${PUBLISH_TIMESTAMP}"
           mkdir -p "$DEST"
+
+          INDEX_FILE="$DEST/index.html"
+          if [ ! -a "$INDEX_FILE" ]; then
+            touch "$INDEX_FILE"
+          fi
 
           REPORT_SOURCE="artifacts/test-results/${REPORT_DIR}"
           if [ -d "$REPORT_SOURCE" ]; then
@@ -549,7 +554,7 @@ jobs:
 
           deploy_ai_analysis(
               artifact_dir=os.path.join(workspace, "artifacts"),
-              run_dir=os.path.join(workspace, "public", "TAS", os.environ["PUBLISH_TIMESTAMP"]),
+              run_dir=os.path.join(workspace, "public", "TAS", os.environ["TEST_SUITE"], os.environ["PUBLISH_TIMESTAMP"]),
               last_history_dir=None,
               analysis_artifact_name="tas-ai-analysis",
               suite_label=f"{os.environ['TEST_SUITE']} {os.environ['TEST_TYPE']}",
@@ -560,6 +565,8 @@ jobs:
           fi
 
       - name: Generate TAS report history index
+        env:
+          TEST_SUITE: ${{ inputs.test_suite }}
         run: |
           python - <<'PY'
           import os
@@ -571,9 +578,10 @@ jobs:
           tas_source = os.path.join(workspace, "tas-source")
           sys.path.insert(0, os.path.join(tas_source, ".github", "scripts"))
           os.chdir(tas_source)
-          from process_reports import build_tas_index_page
+          from process_reports import build_tas_index_page, update_tas_main_index
 
-          build_tas_index_page(os.path.join(workspace, "public", "TAS"))
+          tas_root = Path(workspace) / "public" / "TAS"
+          build_tas_index_page(tas_root, os.environ["TEST_SUITE"])
           public_link = Path("public")
           if public_link.exists() or public_link.is_symlink():
               raise FileExistsError(f"Unexpected path in TAS source checkout: {public_link}")
@@ -585,6 +593,7 @@ jobs:
               )
           finally:
               public_link.unlink()
+              update_tas_main_index(tas_root)
           PY
 
       - name: Publish TAS results to gh-pages
@@ -612,4 +621,3 @@ jobs:
       origin: TAS
 
      
-

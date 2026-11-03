@@ -12,8 +12,7 @@ import tempfile
 import unittest
 from unittest import mock
 
-from process_reports import build_tas_index_page
-
+from process_reports import build_tas_index_page, update_tas_main_index
 
 SOURCE_ROOT = Path(__file__).resolve().parents[2]
 PUBLISHER = runpy.run_path(str(Path(__file__).with_name("nrt-publish-indexes.py")))
@@ -84,12 +83,16 @@ class PublisherTests(unittest.TestCase):
         self.assertEqual(PUBLISHER["update_suite"](latest.parent), stats)
 
     def build_tas_index(self, root, run_names):
-        """Build the TAS index over virtual folders (':' is invalid on Windows).
+        """Build a suite index over virtual run folders (':' is invalid on Windows).
 
-        `run_names` maps a TAS folder name to its backing directory name; the
-        backing directories hold the files, the mocks only expose the names.
+        `run_names` maps a run folder name to its backing directory; mocks expose
+        the timestamped names while backing directories hold the report files.
         """
-        backing_dirs = {name: root / backing for name, backing in run_names.items()}
+        suite_path = root / "checkout"
+        suite_path.mkdir(parents=True)
+        backing_dirs = {
+            name: suite_path / backing for name, backing in run_names.items()
+        }
         for backing_dir in backing_dirs.values():
             backing_dir.mkdir(parents=True)
         report_dirs = []
@@ -102,17 +105,20 @@ class PublisherTests(unittest.TestCase):
         original_iterdir = Path.iterdir
 
         def iterdir(path):
-            """Return virtual timestamped folders for the TAS root fixture."""
-            if path == root:
+            """Return virtual timestamped folders for the suite fixture."""
+            if path == suite_path:
                 return iter(report_dirs)
             return original_iterdir(path)
 
-        return backing_dirs, report_dirs, mock.patch.object(Path, "iterdir", iterdir)
+        return suite_path, backing_dirs, mock.patch.object(Path, "iterdir", iterdir)
 
     def check_tas_history_index(self, older_name, newer_name, incomplete_name):
         """List complete TAS reports newest-first without deleting prior runs."""
         root = Path("public/TAS")
-        backing_dirs, _, patcher = self.build_tas_index(root, {
+        root.mkdir(parents=True)
+        landing = root / "index.html"
+        landing.write_text("Manually maintained TAS landing page")
+        suite_path, backing_dirs, patcher = self.build_tas_index(root, {
             older_name: "older-run",
             newer_name: "newer-run",
             incomplete_name: "incomplete-run",
@@ -127,9 +133,9 @@ class PublisherTests(unittest.TestCase):
         (backing_dirs["last-history"] / "index.html").write_text("Not a timestamped run")
 
         with patcher:
-            build_tas_index_page(root)
+            build_tas_index_page(root, "checkout")
 
-        index = (root / "index.html").read_text(encoding="utf-8")
+        index = (suite_path / "index.html").read_text(encoding="utf-8")
         self.assertLess(
             index.index(f"./{newer_name}/index.html"),
             index.index(f"./{older_name}/index.html"),
@@ -138,7 +144,11 @@ class PublisherTests(unittest.TestCase):
         self.assertNotIn("./last-history/index.html", index)
         self.assertIn(f' href="./{newer_name}/analysis/index.html"', index)
         self.assertNotIn(f' href="./{older_name}/analysis/index.html"', index)
-        self.assertEqual(index.count("Apri analisi AI"), 1)
+        self.assertEqual(index.count("View Analysis"), 1)
+        self.assertIn("Storico Test Report - checkout", index)
+        self.assertIn('href="../index.html"', index)
+        self.assertIn("Passed: N/D | ❌ Failed: N/D", index)
+        self.assertEqual(landing.read_text(encoding="utf-8"), "Manually maintained TAS landing page")
         self.assertTrue((backing_dirs[older_name] / "index.html").is_file())
         self.assertTrue((backing_dirs[newer_name] / "index.html").is_file())
 
@@ -162,13 +172,53 @@ class PublisherTests(unittest.TestCase):
             (now + timedelta(seconds=1)).strftime(fmt),
         )
 
+    def test_tas_history_index_supports_suite_scoped_reports(self):
+        """Render a card per suite run with report and AI analysis links."""
+        root = Path("public/TAS")
+        root.mkdir()
+        report_names = ["2026-03-05_10:00:00", "2026-03-06_10:00:00"]
+        suite_path, backing_dirs, patcher = self.build_tas_index(root, {
+            report_names[0]: "older-run",
+            report_names[1]: "newer-run",
+        })
+        for name, backing_dir in backing_dirs.items():
+            (backing_dir / "index.html").write_text(f"Report {name}")
+            widgets_dir = backing_dir / "widgets"
+            widgets_dir.mkdir()
+            summary = {
+                "statistic": {
+                    "passed": 7 if name == report_names[1] else 5,
+                    "failed": 1,
+                    "broken": 2 if name == report_names[1] else 0,
+                }
+            }
+            (widgets_dir / "summary.json").write_text(json.dumps(summary))
+
+        analysis_dir = backing_dirs[report_names[1]] / "analysis"
+        analysis_dir.mkdir()
+        (analysis_dir / "index.html").write_text("AI analysis")
+        with patcher:
+            build_tas_index_page(root, "checkout")
+
+        index = (suite_path / "index.html").read_text(encoding="utf-8")
+        older_link = "./2026-03-05_10:00:00/index.html"
+        newer_link = "./2026-03-06_10:00:00/index.html"
+        self.assertLess(index.index(newer_link), index.index(older_link))
+        self.assertEqual(index.count('class="card"'), 2)
+        self.assertIn("Passed: 7 | ❌ Failed: 3", index)
+        self.assertIn("Passed: 5 | ❌ Failed: 1", index)
+        self.assertIn(
+            'href="./2026-03-06_10:00:00/analysis/index.html"',
+            index,
+        )
+
     def test_tas_history_index_orders_mixed_formats_by_real_datetime(self):
         """Sort legacy and ISO folders chronologically, not alphabetically."""
         root = Path("public/TAS")
         legacy = "05-03-2026_10:00:00"
         iso_older = "2026-03-04_10:00:00"
         iso_newer = "2026-03-06_10:00:00"
-        backing_dirs, _, patcher = self.build_tas_index(root, {
+        suite_path, backing_dirs, patcher = self.build_tas_index(root, {
             iso_older: "iso-older", legacy: "legacy", iso_newer: "iso-newer",
             "not-a-timestamp": "other",
         })
@@ -176,26 +226,49 @@ class PublisherTests(unittest.TestCase):
             (backing_dir / "index.html").write_text(f"Report {name}")
 
         with patcher:
-            build_tas_index_page(root)
+            build_tas_index_page(root, "checkout")
 
-        index = (root / "index.html").read_text(encoding="utf-8")
+        index = (suite_path / "index.html").read_text(encoding="utf-8")
         positions = [index.index(f"./{name}/index.html") for name in (iso_newer, legacy, iso_older)]
         self.assertEqual(positions, sorted(positions))
         self.assertNotIn("./not-a-timestamp/index.html", index)
-        self.assertIn("05-03-2026 10:00:00", index)
-        self.assertIn("06-03-2026 10:00:00", index)
-        self.assertIn("04-03-2026 10:00:00", index)
+        self.assertIn("05-03-2026_10:00:00", index)
+        self.assertIn("2026-03-06_10:00:00", index)
+        self.assertIn("2026-03-04_10:00:00", index)
 
     def test_tas_history_index_shows_empty_state_without_reports(self):
-        """Render an empty state when no complete TAS reports are available."""
+        """Create an empty suite index without replacing the TAS landing page."""
         root = Path("public/TAS")
         root.mkdir()
+        landing = root / "index.html"
+        landing.write_text("Manually maintained TAS landing page")
+        suite = root / "empty-suite"
+        suite.mkdir()
 
-        build_tas_index_page(root)
+        build_tas_index_page(root, "empty-suite")
 
-        index = (root / "index.html").read_text(encoding="utf-8")
+        index = (suite / "index.html").read_text(encoding="utf-8")
         self.assertIn("Nessun report disponibile.", index)
         self.assertNotIn('href="./', index)
+        self.assertEqual(landing.read_text(encoding="utf-8"), "Manually maintained TAS landing page")
+
+    def test_update_tas_main_index_uses_suite_objects(self):
+        """Render suite buttons and ignore timestamp or unpublished folders."""
+        root = Path("public/TAS")
+        root.mkdir()
+        for suite_name in ("tas_pass", "wisp"):
+            suite_dir = root / suite_name
+            suite_dir.mkdir()
+            (suite_dir / "index.html").write_text("Suite history")
+        (root / "not-ready").mkdir()
+
+        update_tas_main_index(root)
+
+        index = (root / "index.html").read_text(encoding="utf-8")
+        self.assertIn('href="./tas_pass/index.html"', index)
+        self.assertIn('href="./wisp/index.html"', index)
+        self.assertLess(index.index("tas_pass"), index.index("wisp"))
+        self.assertNotIn("not-ready", index)
 
     def test_dashboard_includes_registry_and_unavailable_suites(self):
         """Render real counters and mark unpublished suites without broken links."""
