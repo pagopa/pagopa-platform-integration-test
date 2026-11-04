@@ -1,7 +1,7 @@
 """Local regression tests for NRT GitHub Pages indexes."""
 
 import contextlib
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import io
 import json
 import os
@@ -12,7 +12,11 @@ import tempfile
 import unittest
 from unittest import mock
 
-from process_reports import build_tas_index_page, update_tas_main_index
+from process_reports import (
+    build_tas_index_page,
+    clean_tas_history,
+    update_tas_main_index,
+)
 
 SOURCE_ROOT = Path(__file__).resolve().parents[2]
 PUBLISHER = runpy.run_path(str(Path(__file__).with_name("nrt-publish-indexes.py")))
@@ -269,6 +273,64 @@ class PublisherTests(unittest.TestCase):
         self.assertIn('href="./wisp/index.html"', index)
         self.assertLess(index.index("tas_pass"), index.index("wisp"))
         self.assertNotIn("not-ready", index)
+
+    def test_tas_suite_path_rejects_parent_traversal(self):
+        """Reject a suite name containing a parent-directory path component."""
+        root = Path("public/TAS")
+        with self.assertRaisesRegex(ValueError, "safe path component"):
+            build_tas_index_page(root, "../outside")
+        self.assertFalse(Path("public/outside").exists())
+
+    def test_clean_tas_history_removes_expired_iso_and_legacy_runs(self):
+        """Delete expired ISO and legacy runs while preserving recent and unrelated entries."""
+        if os.name == "nt":
+            self.skipTest("Windows does not allow colons in timestamp directory names")
+        suite_dir = Path("public/TAS/checkout")
+        suite_dir.mkdir(parents=True)
+        now = datetime.now(timezone.utc).replace(microsecond=0)
+        old_iso_name = (now - timedelta(days=31)).strftime("%Y-%m-%d_%H:%M:%S")
+        old_legacy_name = (now - timedelta(days=31)).strftime("%d-%m-%Y_%H:%M:%S")
+        recent_name = (now - timedelta(days=29)).strftime("%Y-%m-%d_%H:%M:%S")
+        for name in (old_iso_name, old_legacy_name, recent_name, "not-a-timestamp"):
+            (suite_dir / name).mkdir()
+        (suite_dir / "ordinary-file").write_text("preserve")
+
+        clean_tas_history(Path("public/TAS"), "checkout")
+
+        self.assertFalse((suite_dir / old_iso_name).exists())
+        self.assertFalse((suite_dir / old_legacy_name).exists())
+        self.assertTrue((suite_dir / recent_name).is_dir())
+        self.assertTrue((suite_dir / "not-a-timestamp").is_dir())
+        self.assertEqual((suite_dir / "ordinary-file").read_text(), "preserve")
+
+    def test_clean_tas_history_handles_missing_and_unsafe_suites(self):
+        """Ignore a missing suite and reject traversal before inspecting a path."""
+        root = Path("public/TAS")
+        root.mkdir()
+
+        clean_tas_history(root, "missing-suite")
+
+        with self.assertRaisesRegex(ValueError, "safe path component"):
+            clean_tas_history(root, "../outside")
+        self.assertFalse(Path("public/outside").exists())
+
+    def test_clean_tas_history_does_not_follow_symlinked_runs(self):
+        """Preserve an expired-looking symlink and the directory it points to."""
+        if os.name == "nt":
+            self.skipTest("Directory symlinks are not available in all Windows environments")
+        suite_dir = Path("public/TAS/checkout")
+        suite_dir.mkdir(parents=True)
+        target = Path("public/TAS/target")
+        target.mkdir()
+        marker = target / "preserved.txt"
+        marker.write_text("preserve")
+        old_name = (datetime.now(timezone.utc) - timedelta(days=31)).strftime("%Y-%m-%d_%H:%M:%S")
+        (suite_dir / old_name).symlink_to(target.resolve(), target_is_directory=True)
+
+        clean_tas_history(Path("public/TAS"), "checkout")
+
+        self.assertTrue((suite_dir / old_name).is_symlink())
+        self.assertEqual(marker.read_text(), "preserve")
 
     def test_dashboard_includes_registry_and_unavailable_suites(self):
         """Render real counters and mark unpublished suites without broken links."""

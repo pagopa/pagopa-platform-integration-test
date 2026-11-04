@@ -13,7 +13,7 @@ class Test_suites:
     id: uuid.UUID = field(default_factory=uuid.uuid4)
     test_object: str = ""
     test_type: str = ""
-    suite_version: str = ""
+    test_object_version: str = ""
     owner_team: Optional[str] = None
     runs: list["Test_runs"] = field(default_factory=list)
 

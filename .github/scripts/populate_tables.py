@@ -303,9 +303,9 @@ def main():
 
             # if latest_version is not None and is smaller than the current version of the test, then fully populate the suite 
             # object and use the proper API to insert a new record in the DB.
-            if (latest_suite_version_obj is None) or (latest_suite_version_obj is not None and latest_suite_version_obj.suite_version < current_product_version):
+            if (latest_suite_version_obj is None) or (latest_suite_version_obj is not None and latest_suite_version_obj.test_object_version < current_product_version):
                 print(f"[INFO][main] No suite found for test_object {test_suite.test_object} or the latest version is outdated. Creating and saving a new suite version.")
-                test_suite.suite_version = current_product_version
+                test_suite.test_object_version = current_product_version
                 test_suite = populate_test_suite( full_config, test_suite)
                 if not test_suite.test_type and nrt_suite is not None:
                     test_suite.test_type = get_test_type_from_behave_path(nrt_suite.get('behave_path'))
