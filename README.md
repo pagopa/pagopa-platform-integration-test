@@ -903,6 +903,7 @@ Input:
 | `environment` | `dev`, `uat` | ambiente target |
 | `caller_id` | stringa libera | sistema chiamante |
 | `correlation_id` | stringa libera | identificativo per tracciare la run |
+| `failure_mode` | `blocking`, `advisory` | default `blocking`; in `advisory` il workflow resta green anche con scenari falliti ma conserva `outcome`, conteggi e report |
 
 Output:
 
@@ -914,10 +915,15 @@ Output:
 | `total` | totale scenari |
 | `duration` | durata in secondi |
 | `outcome` | `success` o `failure` |
+| `execution_status` | `completed` o `error` |
+| `coverage` | `complete`, `partial` o `empty` |
+| `failure_mode` | policy effettiva del workflow |
 
 Il workflow carica i segreti dall'environment `integration-tests`, produce `behave-results.json`,
-`test-summary.json`, `junit/`, pubblica l'artefatto `test-results` e fallisce il job quando
-uno o piu scenari falliscono.
+`test-summary.json`, `junit/`, pubblica l'artefatto `test-results` e fallisce il job solo
+quando la policy selezionata lo richiede oppure l'esecuzione è operativamente invalida. In modo
+`advisory` i risultati degli scenari vengono mantenuti come metadata e report, ma la run non viene
+bloccata dal solo esito delle suite.
 
 Nota di allineamento: il workflow riusabile storico risolve il path `src/bdd/<suite>` per
 wisp e `all`. Prima di usarlo come gate per la struttura attuale del repository, verificare

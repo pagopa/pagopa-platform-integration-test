@@ -80,6 +80,12 @@ inputs:
       test-results artifact. 'true' | 'false'.
     required: false
     default: "false"
+  failure_mode:
+    description: >-
+      Policy for non-positive scenario outcomes: 'blocking' fails the job,
+      'advisory' keeps the workflow successful while preserving result data.
+    required: false
+    default: "blocking"
   tas_repo:
     description: "TAS repository (rarely overridden)"
     required: false
@@ -128,6 +134,15 @@ outputs:
   outcome:
     description: "'success' or 'failure' (sync mode only, empty otherwise)"
     value: ${{ steps.tas.outputs.outcome }}
+  execution_status:
+    description: "'completed' or 'error' (sync mode only, empty otherwise)"
+    value: ${{ steps.tas.outputs.execution_status }}
+  coverage:
+    description: "Coverage state: 'complete', 'partial' or 'empty' (sync mode only)"
+    value: ${{ steps.tas.outputs.coverage }}
+  failure_mode:
+    description: "Effective failure policy for the run: 'blocking' or 'advisory'"
+    value: ${{ steps.tas.outputs.failure_mode }}
   passed:
     description: "Number of passed scenarios (sync mode only)"
     value: ${{ steps.tas.outputs.passed }}
@@ -210,6 +225,7 @@ runs:
         TAS_CORRELATION_ID: ${{ inputs.correlation_id != '' && inputs.correlation_id || format('{0}-{1}', github.run_id, github.run_attempt) }}
         TAS_TAGS: ${{ inputs.tags }}
         TAS_ALLURE: ${{ inputs.allure }}
+        TAS_FAILURE_MODE: ${{ inputs.failure_mode }}
       run: |
         # `pipefail` only — we want to capture orchestrator exit codes AND
         # publish outputs before propagating the failure to the step.
@@ -238,6 +254,7 @@ runs:
               --caller-id "$TAS_CALLER_ID" \
               --correlation-id "$TAS_CORRELATION_ID" \
               --tags "$TAS_TAGS" \
+              --failure-mode "$TAS_FAILURE_MODE" \
               "${ALLURE_ARG[@]}" \
               --sync \
               | tee tas_output.txt
@@ -247,6 +264,9 @@ runs:
             emit run_id         "$(grep -E '^RUN_ID='         tas_output.txt | tail -n1 | cut -d= -f2-)"
             emit run_url        "$(grep -E '^RUN_URL='        tas_output.txt | tail -n1 | cut -d= -f2-)"
             emit outcome        "$(grep -E '^OUTCOME='        tas_output.txt | tail -n1 | cut -d= -f2-)"
+            emit execution_status "$(grep -E '^EXECUTION_STATUS=' tas_output.txt | tail -n1 | cut -d= -f2-)"
+            emit coverage       "$(grep -E '^COVERAGE='       tas_output.txt | tail -n1 | cut -d= -f2-)"
+            emit failure_mode   "$(grep -E '^FAILURE_MODE='   tas_output.txt | tail -n1 | cut -d= -f2-)"
             emit passed         "$(grep -E '^PASSED='         tas_output.txt | tail -n1 | cut -d= -f2-)"
             emit failed         "$(grep -E '^FAILED='         tas_output.txt | tail -n1 | cut -d= -f2-)"
             emit skipped        "$(grep -E '^SKIPPED='        tas_output.txt | tail -n1 | cut -d= -f2-)"
@@ -267,6 +287,7 @@ runs:
               --caller-id "$TAS_CALLER_ID" \
               --correlation-id "$TAS_CORRELATION_ID" \
               --tags "$TAS_TAGS" \
+              --failure-mode "$TAS_FAILURE_MODE" \
               "${ALLURE_ARG[@]}" \
               | tee tas_output.txt
 
@@ -299,6 +320,8 @@ runs:
               TAGS_JSON=", \"tags\": \"${TAS_TAGS}\""
             fi
 
+            FAILURE_MODE_JSON=", \"failure_mode\": \"${TAS_FAILURE_MODE}\""
+
             ALLURE_JSON=""
             if [ "${TAS_ALLURE}" = "true" ]; then
               ALLURE_JSON=", \"allure\": \"true\""
@@ -317,7 +340,8 @@ runs:
                   \"test_suite\": \"${TAS_SUITE}\",
                   \"environment\": \"${TAS_ENV}\",
                   \"caller_id\": \"${TAS_CALLER_ID}\",
-                  \"correlation_id\": \"${CID}\"${TAGS_JSON}${ALLURE_JSON}
+                  \"correlation_id\": \"${CID}\",
+                  \"failure_mode\": \"${TAS_FAILURE_MODE}\"${TAGS_JSON}${ALLURE_JSON}
                 }
               }")
 
@@ -359,6 +383,9 @@ runs:
         echo "  Run ID         : ${{ steps.tas.outputs.run_id }}"
         echo "  Run URL        : ${{ steps.tas.outputs.run_url }}"
         echo "  Outcome        : ${{ steps.tas.outputs.outcome }}"
+        echo "  Coverage       : ${{ steps.tas.outputs.coverage }}"
+        echo "  Execution      : ${{ steps.tas.outputs.execution_status }}"
+        echo "  Failure mode   : ${{ steps.tas.outputs.failure_mode }}"
         echo "  Passed         : ${{ steps.tas.outputs.passed }}"
         echo "  Failed         : ${{ steps.tas.outputs.failed }}"
         echo "  Skipped        : ${{ steps.tas.outputs.skipped }}"
