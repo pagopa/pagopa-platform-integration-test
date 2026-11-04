@@ -40,6 +40,11 @@ on:
         required: false
         type: boolean
         default: true
+      failure_mode:
+        description: "Policy for non-positive scenario outcomes: blocking fails the workflow; advisory keeps it successful while preserving the result metadata"
+        required: false
+        type: string
+        default: "blocking"
     secrets:
       NRT_SECRETS_BUNDLE:
         description: "Environment secret bundle for NRT suites that require it"
@@ -66,6 +71,15 @@ on:
       outcome:
         description: "Overall outcome: 'success' or 'failure'"
         value: ${{ jobs.run_tests.outputs.outcome }}
+      execution_status:
+        description: "Execution status: 'completed' or 'error'"
+        value: ${{ jobs.run_tests.outputs.execution_status }}
+      coverage:
+        description: "Coverage state: 'complete', 'partial' or 'empty'"
+        value: ${{ jobs.run_tests.outputs.coverage }}
+      failure_mode:
+        description: "Effective TAS failure policy ('blocking' or 'advisory')"
+        value: ${{ jobs.run_tests.outputs.failure_mode }}
 
   workflow_dispatch:
     inputs:
@@ -107,6 +121,14 @@ on:
         required: false
         type: boolean
         default: true
+      failure_mode:
+        description: "Policy for non-positive scenario outcomes"
+        required: false
+        type: choice
+        options:
+          - blocking
+          - advisory
+        default: blocking
 
 # The run-name includes the correlation_id so the CLI bridge can reliably locate
 # this run via the API without depending on timestamps.
@@ -126,18 +148,22 @@ jobs:
       TARGET_ENV: ${{ inputs.environment }}
       SECRETS_RESOLVER: dict
     outputs:
-      passed:   ${{ steps.summary.outputs.passed }}
-      failed:   ${{ steps.summary.outputs.failed }}
-      skipped:  ${{ steps.summary.outputs.skipped }}
-      total:    ${{ steps.summary.outputs.total }}
-      duration: ${{ steps.summary.outputs.duration }}
-      outcome:  ${{ steps.summary.outputs.outcome }}
+      passed:            ${{ steps.summary.outputs.passed }}
+      failed:            ${{ steps.summary.outputs.failed }}
+      skipped:           ${{ steps.summary.outputs.skipped }}
+      total:             ${{ steps.summary.outputs.total }}
+      duration:          ${{ steps.summary.outputs.duration }}
+      outcome:           ${{ steps.summary.outputs.outcome }}
+      execution_status:  ${{ steps.summary.outputs.execution_status }}
+      coverage:          ${{ steps.summary.outputs.coverage }}
+      failure_mode:      ${{ steps.summary.outputs.failure_mode }}
       publish_timestamp: ${{ steps.publish_timestamp.outputs.timestamp }}
     steps:
       - name: Log invocation metadata
         run: |
           echo "::notice title=Caller::${{ inputs.caller_id }}"
           echo "::notice title=Correlation ID::${{ inputs.correlation_id }}"
+          echo "::notice title=Failure mode::${{ inputs.failure_mode || 'blocking' }}"
           echo "::notice title=Type/Suite::${{ inputs.test_type }} / ${{ inputs.test_suite }} | Env: ${{ inputs.environment }}"
           # The ref is a top-level workflow_dispatch parameter (not a workflow input):
           # callers select it via the GitHub API payload ('ref' field) or via the
@@ -210,6 +236,19 @@ jobs:
             echo "path=src/${TEST_TYPE}/${{ inputs.test_suite }}" >> $GITHUB_OUTPUT
           fi
 
+      - name: Validate failure_mode input
+        env:
+          FAILURE_MODE: ${{ inputs.failure_mode }}
+        run: |
+          case "$FAILURE_MODE" in
+            blocking|advisory)
+              ;;
+            *)
+              echo "::error::Invalid failure_mode '$FAILURE_MODE' (expected: blocking | advisory)"
+              exit 1
+              ;;
+          esac
+
       - name: Validate and load environment secrets
         env:
           NRT_SECRETS_BUNDLE: ${{ secrets.NRT_SECRETS_BUNDLE }}
@@ -274,43 +313,81 @@ jobs:
           TARGET_ENV: ${{ inputs.environment }}
           BEHAVE_TAGS: ${{ inputs.tags }}
           ALLURE: ${{ inputs.allure }}
+          FAILURE_MODE: ${{ inputs.failure_mode }}
 
       - name: Parse results and generate summary artifact
         id: summary
+        env:
+          FAILURE_MODE: ${{ inputs.failure_mode }}
         run: |
           python - <<'EOF'
           import json, os, sys
 
+          def build_summary(features):
+              passed = failed = skipped = 0
+              total_duration = 0.0
+              scenario_count = 0
+
+              for feature in features:
+                  for element in feature.get("elements", []):
+                      if element.get("type") != "scenario":
+                          continue
+                      scenario_count += 1
+                      status = element.get("status", "skipped")
+                      duration = sum(
+                          step.get("result", {}).get("duration", 0)
+                          for step in element.get("steps", [])
+                      )
+                      total_duration += duration
+                      if status == "passed":
+                          passed += 1
+                      elif status == "failed":
+                          failed += 1
+                      else:
+                          skipped += 1
+
+              total = passed + failed + skipped
+              if scenario_count == 0:
+                  outcome = "failure"
+                  coverage = "empty"
+              elif failed > 0:
+                  outcome = "failure"
+                  coverage = "partial" if skipped > 0 else "complete"
+              else:
+                  outcome = "success"
+                  coverage = "partial" if skipped > 0 else "complete"
+
+              return {
+                  "passed": passed,
+                  "failed": failed,
+                  "skipped": skipped,
+                  "total": total,
+                  "duration_seconds": round(total_duration, 2),
+                  "outcome": outcome,
+                  "coverage": coverage,
+                  "execution_status": "completed",
+              }
+
           try:
-              with open("behave-results.json") as f:
-                  features = json.load(f)
-          except (FileNotFoundError, json.JSONDecodeError) as e:
+              with open("behave-results.json", encoding="utf-8") as f:
+                  raw = json.load(f)
+              if not isinstance(raw, list):
+                  raise ValueError("behave-results.json is not a JSON array")
+              summary = build_summary(raw)
+          except (FileNotFoundError, json.JSONDecodeError, ValueError, TypeError) as e:
               print(f"[ERROR] Cannot read behave-results.json: {e}", file=sys.stderr)
-              # Produce a failure summary so the artifact is always present
-              features = []
+              summary = {
+                  "passed": 0,
+                  "failed": 0,
+                  "skipped": 0,
+                  "total": 0,
+                  "duration_seconds": 0.0,
+                  "outcome": "failure",
+                  "coverage": "unknown",
+                  "execution_status": "error",
+              }
 
-          passed = failed = skipped = 0
-          total_duration = 0.0
-
-          for feature in features:
-              for element in feature.get("elements", []):
-                  if element.get("type") != "scenario":
-                      continue
-                  status = element.get("status", "skipped")
-                  duration = sum(
-                      step.get("result", {}).get("duration", 0)
-                      for step in element.get("steps", [])
-                  )
-                  total_duration += duration
-                  if status == "passed":
-                      passed += 1
-                  elif status == "failed":
-                      failed += 1
-                  else:
-                      skipped += 1
-
-          outcome = "success" if failed == 0 else "failure"
-          summary = {
+          summary.update({
               "correlation_id": "${{ inputs.correlation_id }}",
               "caller_id":      "${{ inputs.caller_id }}",
               "test_type":      "${{ inputs.test_type }}",
@@ -318,27 +395,24 @@ jobs:
               "environment":    "${{ inputs.environment }}",
               "ref":            "${{ github.ref }}",
               "sha":            "${{ github.sha }}",
-              "passed":         passed,
-              "failed":         failed,
-              "skipped":        skipped,
-              "total":          passed + failed + skipped,
-              "duration_seconds": round(total_duration, 2),
-              "outcome":        outcome,
-          }
+              "failure_mode":   os.environ.get("FAILURE_MODE", "blocking"),
+          })
 
-          with open("test-summary.json", "w") as f:
+          with open("test-summary.json", "w", encoding="utf-8") as f:
               json.dump(summary, f, indent=2)
 
-          # Write outputs for downstream steps
-          with open(os.environ["GITHUB_OUTPUT"], "a") as gho:
-              gho.write(f"passed={passed}\n")
-              gho.write(f"failed={failed}\n")
-              gho.write(f"skipped={skipped}\n")
-              gho.write(f"total={passed + failed + skipped}\n")
-              gho.write(f"duration={round(total_duration, 2)}\n")
-              gho.write(f"outcome={outcome}\n")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as gho:
+              gho.write(f"passed={summary['passed']}\n")
+              gho.write(f"failed={summary['failed']}\n")
+              gho.write(f"skipped={summary['skipped']}\n")
+              gho.write(f"total={summary['total']}\n")
+              gho.write(f"duration={summary['duration_seconds']}\n")
+              gho.write(f"outcome={summary['outcome']}\n")
+              gho.write(f"execution_status={summary['execution_status']}\n")
+              gho.write(f"coverage={summary['coverage']}\n")
+              gho.write(f"failure_mode={summary['failure_mode']}\n")
 
-          print(f"Parsed: {passed} passed | {failed} failed | {skipped} skipped | {round(total_duration,2)}s")
+          print(f"Parsed: {summary['passed']} passed | {summary['failed']} failed | {summary['skipped']} skipped | {summary['duration_seconds']}s | coverage={summary['coverage']} | status={summary['execution_status']}")
           EOF
 
 
@@ -359,11 +433,14 @@ jobs:
           echo "| **Suite** | ${{ inputs.test_suite }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Environment** | ${{ inputs.environment }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Ref** | \`${{ github.ref }}\` (sha \`${{ github.sha }}\`) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Failure mode** | ${{ inputs.failure_mode }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Passed** | ${{ steps.summary.outputs.passed }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Failed** | ${{ steps.summary.outputs.failed }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Skipped** | ${{ steps.summary.outputs.skipped }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Total** | ${{ steps.summary.outputs.total }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Duration** | ${{ steps.summary.outputs.duration }}s |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Coverage** | ${{ steps.summary.outputs.coverage }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Execution status** | ${{ steps.summary.outputs.execution_status }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Outcome** | ${{ steps.summary.outputs.outcome == 'success' && '✅ PASSED' || '❌ FAILED' }} |" >> $GITHUB_STEP_SUMMARY
 
       - name: Build ${{ inputs.test_suite }} E2E Allure report
@@ -413,17 +490,22 @@ jobs:
         if: always()
         run: rm -f config/.secrets.yaml
 
-      # This step fails the job when scenarios have failed, ensuring that
-      # workflow_call callers receive the correct exit code.
-      - name: Fail job if tests failed
-        if: steps.summary.outputs.outcome == 'failure'
+      # This step fails the job only when the selected policy requires it or the
+      # execution is operationally invalid. Advisory mode keeps scenario failures as
+      # structured data while still surfacing the issue in the summary and artifacts.
+      - name: Fail job if policy requires it
+        if: ${{ always() && (steps.summary.outputs.execution_status == 'error' || (inputs.failure_mode == 'blocking' && steps.summary.outputs.outcome == 'failure')) }}
         run: |
-          echo "::error::${{ steps.summary.outputs.failed }} scenario(s) failed out of ${{ steps.summary.outputs.total }} total."
+          if [ "${{ steps.summary.outputs.execution_status }}" = "error" ]; then
+            echo "::error::TAS execution failed operationally; report was missing, malformed or not interpretable."
+            exit 1
+          fi
+          echo "::error::${{ steps.summary.outputs.failed }} scenario(s) failed out of ${{ steps.summary.outputs.total }} total in blocking mode."
           exit 1
 
   ai_analysis:
     name: TAS - AI failure analysis
-    if: always() && needs.run_tests.outputs.failed != '' && needs.run_tests.outputs.failed != '0'
+    if: always() && needs.run_tests.outputs.execution_status != 'error' && needs.run_tests.outputs.failed != '' && needs.run_tests.outputs.failed != '0'
     needs: [run_tests]
     permissions:
       contents: read

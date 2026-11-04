@@ -144,31 +144,83 @@ def parse_summary_from_zip(zip_content: bytes) -> dict:
     Extracts and parses test-summary.json from the artifact zip.
     Falls back to parsing behave-results.json directly if needed.
     """
-    with zipfile.ZipFile(BytesIO(zip_content)) as zf:
-        names = zf.namelist()
+    try:
+        with zipfile.ZipFile(BytesIO(zip_content)) as zf:
+            names = zf.namelist()
 
-        if "test-summary.json" in names:
-            with zf.open("test-summary.json") as f:
-                return json.load(f)
+            if "test-summary.json" in names:
+                with zf.open("test-summary.json") as f:
+                    summary = json.load(f)
+                    summary.setdefault("execution_status", "completed")
+                    summary.setdefault("coverage", "complete")
+                    return summary
 
-        # Fallback: the workflow only uploaded the raw Behave JSON
-        if "behave-results.json" in names:
-            log.warning("test-summary.json not found, computing summary from behave-results.json")
-            with zf.open("behave-results.json") as f:
-                return _parse_behave_json(json.load(f))
+            if "behave-results.json" in names:
+                log.warning("test-summary.json not found, computing summary from behave-results.json")
+                with zf.open("behave-results.json") as f:
+                    return summarize_behave_results(json.load(f), source="behave-results.json")
 
-    raise RuntimeError("No result file found in artifact (test-summary.json / behave-results.json)")
+        return {
+            "execution_status": "error",
+            "outcome": "failure",
+            "coverage": "unknown",
+            "passed": 0,
+            "failed": 0,
+            "skipped": 0,
+            "total": 0,
+            "duration_seconds": 0.0,
+        }
+    except (json.JSONDecodeError, TypeError, ValueError, zipfile.BadZipFile):
+        log.warning("Result artifact is missing or malformed; returning operational error summary.")
+        return {
+            "execution_status": "error",
+            "outcome": "failure",
+            "coverage": "unknown",
+            "passed": 0,
+            "failed": 0,
+            "skipped": 0,
+            "total": 0,
+            "duration_seconds": 0.0,
+        }
 
 
-def _parse_behave_json(features: list) -> dict:
-    """Computes the summary by counting scenarios per status from raw Behave JSON output."""
+def summarize_behave_results(features: list, *, source: str | None = None) -> dict:
+    """Classify a Behave JSON payload into scenario counts, coverage and execution state."""
+    if source in {"missing", "bad", "malformed", "error"}:
+        return {
+            "execution_status": "error",
+            "outcome": "failure",
+            "coverage": "unknown",
+            "passed": 0,
+            "failed": 0,
+            "skipped": 0,
+            "total": 0,
+            "duration_seconds": 0.0,
+        }
+
+    if not isinstance(features, list):
+        return {
+            "execution_status": "error",
+            "outcome": "failure",
+            "coverage": "unknown",
+            "passed": 0,
+            "failed": 0,
+            "skipped": 0,
+            "total": 0,
+            "duration_seconds": 0.0,
+        }
+
     passed = failed = skipped = 0
     total_duration = 0.0
+    scenario_count = 0
 
     for feature in features:
+        if not isinstance(feature, dict):
+            continue
         for element in feature.get("elements", []):
             if element.get("type") != "scenario":
                 continue
+            scenario_count += 1
             status = element.get("status", "skipped")
             duration = sum(
                 step.get("result", {}).get("duration", 0)
@@ -182,13 +234,26 @@ def _parse_behave_json(features: list) -> dict:
             else:
                 skipped += 1
 
+    total = passed + failed + skipped
+    if scenario_count == 0:
+        outcome = "failure"
+        coverage = "empty"
+    elif failed > 0:
+        outcome = "failure"
+        coverage = "partial" if skipped > 0 else "complete"
+    else:
+        outcome = "success"
+        coverage = "partial" if skipped > 0 else "complete"
+
     return {
         "passed": passed,
         "failed": failed,
         "skipped": skipped,
-        "total": passed + failed + skipped,
+        "total": total,
         "duration_seconds": round(total_duration, 2),
-        "outcome": "success" if failed == 0 else "failure",
+        "outcome": outcome,
+        "coverage": coverage,
+        "execution_status": "completed",
     }
 
 
@@ -255,6 +320,7 @@ def run(args: argparse.Namespace) -> int:
         "environment":    args.env,
         "caller_id":      args.caller_id,
         "correlation_id": correlation_id,
+        "failure_mode":   args.failure_mode,
     }
 
     # Forward an explicit Behave tag expression only when provided. When
@@ -366,15 +432,22 @@ def run(args: argparse.Namespace) -> int:
     # Emit machine-readable key=value lines BEFORE the formatted summary so
     # callers (composite actions, ADO templates, shell scripts) can capture
     # them with a simple grep, regardless of locale or terminal width.
+    print(f"FAILURE_MODE={args.failure_mode}")
     print(f"OUTCOME={summary['outcome']}")
     print(f"PASSED={summary['passed']}")
     print(f"FAILED={summary['failed']}")
     print(f"SKIPPED={summary['skipped']}")
     print(f"TOTAL={summary['total']}")
     print(f"DURATION={summary['duration_seconds']}")
+    print(f"EXECUTION_STATUS={summary.get('execution_status', 'completed')}")
+    print(f"COVERAGE={summary.get('coverage', 'unknown')}")
 
     print_summary(summary)
 
+    if summary.get("execution_status") == "error":
+        return 2
+    if args.failure_mode == "advisory":
+        return 0
     return 0 if summary["outcome"] == "success" else 1
 
 
@@ -439,6 +512,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--ref", default=DEFAULT_REF,
         help=f"Git branch or ref to run the workflow on (default: {DEFAULT_REF})"
+    )
+    parser.add_argument(
+        "--failure-mode",
+        choices=["blocking", "advisory"],
+        default="blocking",
+        help="How TAS treats non-positive scenarios in the calling workflow: blocking fails the job; advisory keeps the workflow successful while retaining the result metadata."
     )
     parser.add_argument(
         "--artifact-dir", default="",
