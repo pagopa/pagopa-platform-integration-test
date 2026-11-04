@@ -47,7 +47,7 @@ parameters:
   - name: ref
     displayName: "TAS repo branch/tag"
     type: string
-    default: PQ-766-tas-add-quality-gate
+    default: main
   - name: tags
     displayName: "Behave tag expression (e.g. @runnable, @e2e); empty = workflow default (@runnable)"
     type: string
@@ -88,8 +88,8 @@ resources:
   repositories:
     - repository: tas
       type: github
-      name: pagopa/pagopa-platform-integration-test
-      ref: refs/heads/PQ-766-tas-add-quality-gate
+      name: pagopa/azure-pipeline-templates
+      ref: refs/tags/tas-integration-tests/v1
       endpoint: pagoPA-projects   # ← GitHub service connection name (Project settings → Service connections)
 
 stages:
@@ -125,7 +125,7 @@ stages:
         pool:
           vmImage: ubuntu-latest
         steps:
-          - template: .azuredevops/templates/tas-integration-tests.yml@tas
+          - template: templates/qa-tas/tas-integration-test.yml@tas
             parameters:
               testType:           ${{ parameters.testType }}
               suite:              ${{ parameters.suite }}
