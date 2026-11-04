@@ -10,6 +10,13 @@ OPENAPI_TEST_DIR = 'openapi-fdr-tests'
 PROCESSED_REPORTS_DIR = 'tmp_processed_reports'
 OPENAPI_FDR_TESTS = 'openapi-fdr'
 
+# Headings of the aggregate NRT analysis: one `## Suite: <id>` section per suite, optionally
+# followed by a `## Cross-suite ...` section that belongs to no single suite.
+_SUITE_HEADING_RE = re.compile(r"^##[ \t]+Suite:[ \t]*(?P<id>[\w.-]+).*$", re.IGNORECASE)
+_CROSS_SUITE_HEADING_RE = re.compile(r"^##[ \t]+Cross-suite\b", re.IGNORECASE)
+_FENCE_RE = re.compile(r"^ {0,3}(?P<marker>`{3,}|~{3,})(?P<info>.*)$")
+_FULL_ANALYSIS_PAGE = "full.html"
+
 
 def update_tas_main_index(root_path):
     """Render suite buttons for suite indexes present under the TAS root."""
@@ -279,6 +286,62 @@ def build_tas_index_page(root_dir, test_suite):
         template.render(reports=reports, suite_name=test_suite), encoding="utf-8"
     )
 
+
+def _suite_key(suite_id: str) -> str:
+    """Normalise a suite id for comparison, so `FDR-3` written by the model matches `fdr3`."""
+    return re.sub(r"[^a-z0-9]", "", suite_id.lower())
+
+
+def _fenced_line_indexes(lines: list[str]) -> set[int]:
+    """Return the indexes of the lines that belong to a closed fenced code block, fences included.
+
+    A fence is closed only by a bare fence of the same character and at least the same length. A fence
+    that is never closed does not hide the text after it, because a stray fence is likelier than a
+    code block running to the end of the analysis.
+    """
+    fenced: set[int] = set()
+    opening: tuple[int, str] | None = None
+    for index, line in enumerate(lines):
+        match = _FENCE_RE.match(line)
+        if match is None:
+            continue
+        marker = match.group("marker")
+        if opening is None:
+            opening = (index, marker)
+        elif (
+            marker[0] == opening[1][0]
+            and len(marker) >= len(opening[1])
+            and not match.group("info").strip()
+        ):
+            fenced.update(range(opening[0], index + 1))
+            opening = None
+    return fenced
+
+
+def split_suite_sections(markdown: str) -> dict[str, str]:
+    """Split an aggregate analysis into its `## Suite: <id>` sections, keyed by normalised suite id.
+
+    A section runs from its heading to the next suite heading or `## Cross-suite` heading, so text
+    that concerns several suites never leaks into the last suite. Headings inside fenced code blocks
+    are ignored and text before the first suite heading is dropped. A suite heading repeated by the
+    model is merged into the first section of that suite. Keys are built by `_suite_key`.
+    """
+    lines = markdown.splitlines()
+    fenced = _fenced_line_indexes(lines)
+    sections: dict[str, list[str]] = {}
+    current: list[str] | None = None
+    for index, line in enumerate(lines):
+        if index not in fenced:
+            suite = _SUITE_HEADING_RE.match(line)
+            if suite:
+                current = sections.setdefault(_suite_key(suite.group("id")), [])
+            elif _CROSS_SUITE_HEADING_RE.match(line):
+                current = None
+        if current is not None:
+            current.append(line)
+    return {suite_key: "\n".join(body).strip() for suite_key, body in sections.items()}
+
+
 def deploy_ai_analysis(
     artifact_dir,
     run_dir,
@@ -287,11 +350,20 @@ def deploy_ai_analysis(
     suite_label,
     timestamp,
     history_url="../../index.html",
+    suite_id=None,
+    scoped_suite_label=None,
 ):
     """Render the AI analysis HTML page inside run_dir and last_history_dir.
 
     Reads the analysis markdown from the named artifact directory.
     Silently skips when the artifact is missing (e.g., first run before the change).
+
+    With `suite_id` the analysis is an aggregate over several suites: `analysis/index.html` then
+    shows only that suite's section (titled `scoped_suite_label`, default `suite_label`) and links
+    to `analysis/full.html`, which holds the whole analysis. When the analysis has no section for
+    the suite, `index.html` falls back to the whole analysis, no `full.html` is written (a stale one
+    is removed) and a `::warning::` is emitted. The suite id is matched ignoring case and
+    punctuation. `analysis/analysis.md` always keeps the whole markdown.
     """
     analysis_artifact_dir = Path(artifact_dir) / analysis_artifact_name
     analysis_md = analysis_artifact_dir / "analysis.md"
@@ -319,13 +391,30 @@ def deploy_ai_analysis(
         autoescape=select_autoescape(["html", "xml"]),
     )
     template = env.get_template("analysis-template.html")
-    rendered = template.render(
-        suite_label=suite_label.upper(),
-        timestamp=timestamp or "unknown",
-        model=model,
-        analysis_markdown=analysis_text,
-        history_url=history_url,
-    )
+
+    def render(label, markdown, full_analysis_url=None):
+        """Render the analysis template for one page."""
+        return template.render(
+            suite_label=label.upper(),
+            timestamp=timestamp or "unknown",
+            model=model,
+            analysis_markdown=markdown,
+            history_url=history_url,
+            full_analysis_url=full_analysis_url,
+        )
+
+    rendered = render(suite_label, analysis_text)
+    full_rendered = None
+    if suite_id:
+        suite_section = split_suite_sections(analysis_text).get(_suite_key(suite_id))
+        if suite_section:
+            full_rendered = rendered
+            rendered = render(scoped_suite_label or suite_label, suite_section, _FULL_ANALYSIS_PAGE)
+        else:
+            print(
+                f"::warning::The AI analysis has no '## Suite: {suite_id}' section; "
+                "publishing the whole analysis for this suite"
+            )
 
     report_dirs = [Path(run_dir)]
     if last_history_dir is not None:
@@ -335,6 +424,11 @@ def deploy_ai_analysis(
         analysis_dir = base / "analysis"
         analysis_dir.mkdir(parents=True, exist_ok=True)
         (analysis_dir / "index.html").write_text(rendered, encoding="utf-8")
+        if full_rendered is not None:
+            (analysis_dir / _FULL_ANALYSIS_PAGE).write_text(full_rendered, encoding="utf-8")
+        elif suite_id:
+            # a page left by a previous run must not outlive the link that pointed to it
+            (analysis_dir / _FULL_ANALYSIS_PAGE).unlink(missing_ok=True)
         # keep the raw markdown next to the page for auditability
         (analysis_dir / "analysis.md").write_text(analysis_text, encoding="utf-8")
         print(f"[INFO][deploy_ai_analysis] wrote analysis page in {analysis_dir}")

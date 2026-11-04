@@ -317,9 +317,20 @@ Publication follows suite execution, aggregate prompt generation, and AI analysi
 the legacy dispatch flow. The deployment job waits for `ai_analysis` and downloads
 `nrt-ai-analysis` when that job succeeds. It reuses the legacy analysis renderer to place
 `analysis/index.html` and `analysis/analysis.md` inside each selected suite's current
-timestamped report folder. The page is explicitly labelled as aggregate NRT analysis,
-not a suite-specific response. The suite history index exposes the existing **View
-Analysis** link, and `last-history` includes the analysis of the latest report.
+timestamped report folder. The aggregate prompt asks for one `## Suite: <id>` section per
+suite (ids from `.github/nrt-suites.json`) and for cross-suite findings in a final
+`## Cross-suite correlation` section. Publication splits the analysis on those headings
+(`split_suite_sections` in `.github/scripts/process_reports.py`): each suite's
+`analysis/index.html` shows only its own section and links to `analysis/full.html`, which
+holds the whole analysis and is labelled as aggregate NRT analysis; `analysis/analysis.md`
+always keeps the whole Markdown. The cross-suite section therefore appears only in
+`full.html`. Headings are matched ignoring case and punctuation (`FDR-3` is `fdr3`).
+When the model omits a suite's heading, `index.html` falls back to the whole analysis and
+the publish step emits a `::warning::`. Reports published before this split keep showing
+the whole analysis until they age out of the 30-day retention. The Frontend's
+**AI Analysis** button keeps pointing at `analysis/index.html`, so it needs no change. The
+suite history index exposes the existing **View Analysis** link, and `last-history`
+includes the analysis of the latest report.
 Older runs and unselected suites are not assigned the current analysis. A suite without
 a current Allure report is skipped with a warning. If AI analysis fails or is skipped,
 Allure publication still runs and emits a warning; a successful AI job with a missing

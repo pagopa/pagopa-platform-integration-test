@@ -454,6 +454,42 @@ class PublisherTests(unittest.TestCase):
             rendered,
         )
 
+    def test_suite_report_shows_only_its_section_of_the_aggregate_analysis(self):
+        """Publish the suite's own section as index.html and the whole analysis as full.html."""
+        current = self.write_report("current-run", 2000)
+        matrix = {"include": [
+            {"id": "checkout", "label": "Checkout", "allure_subfolder": "checkout-e2e-tests"},
+        ]}
+        source = Path("nrt-allure-history/checkout-e2e-tests-uat/42/widgets")
+        source.mkdir(parents=True)
+        shutil.copyfile(current / "widgets/summary.json", source / "summary.json")
+        analysis = Path("artifacts/nrt-ai-analysis")
+        analysis.mkdir(parents=True)
+        (analysis / "analysis.md").write_text(
+            "## Suite: checkout\nCheckout cause\n\n"
+            "## Suite: wisp\nWisp cause\n\n"
+            "## Cross-suite correlation\nShared cause\n",
+            encoding="utf-8",
+        )
+
+        clock = mock.Mock(wraps=PUBLISHER["datetime"])
+        clock.fromtimestamp = mock.Mock()
+        clock.fromtimestamp.return_value.strftime.return_value = current.name
+        with mock.patch.dict(PUBLISHER["publish_ai_analysis"].__globals__, datetime=clock):
+            PUBLISHER["publish_ai_analysis"](matrix, "uat", "42")
+
+        for base in (current, current.parent / "last-history"):
+            suite_page = (base / "analysis/index.html").read_text(encoding="utf-8")
+            self.assertIn("Checkout cause", suite_page)
+            self.assertNotIn("Wisp cause", suite_page)
+            self.assertNotIn("Shared cause", suite_page)
+            self.assertIn("CHECKOUT - NRT ANALYSIS", suite_page)
+            self.assertIn('href="full.html"', suite_page)
+            full_page = (base / "analysis/full.html").read_text(encoding="utf-8")
+            for text in ("Checkout cause", "Wisp cause", "Shared cause", "AGGREGATE NRT ANALYSIS"):
+                self.assertIn(text, full_page)
+            self.assertIn("Wisp cause", (base / "analysis/analysis.md").read_text(encoding="utf-8"))
+
     def test_missing_or_empty_successful_analysis_fails(self):
         """Reject a successful AI job that did not produce a usable response."""
         matrix = {"include": []}

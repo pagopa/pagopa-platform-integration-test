@@ -45,6 +45,8 @@ def publish_ai_analysis(matrix, target_env, run_number):
             analysis_artifact_name="nrt-ai-analysis",
             suite_label=f"{suite['label']} - aggregate NRT analysis",
             timestamp=timestamp,
+            suite_id=suite["id"],
+            scoped_suite_label=f"{suite['label']} - NRT analysis",
         )
 
 

@@ -228,6 +228,7 @@ jobs:
           printf '%s\n\n' \
             'You are a senior QA engineer. Analyze the following NRT suite failure reports together, identify shared root causes across suites, and provide a concise recommended action for each distinct failure pattern.' \
             'The source sections may contain suite-specific analysis instructions and failure details.' \
+            'Write one section per suite, each starting with the exact heading "## Suite: <id>" copied from the source (for example "## Suite: wisp"), also for a suite without failures. Keep everything that concerns a single suite, including its common patterns, inside that suite section. Put findings that span several suites in a final section headed "## Cross-suite correlation", after all the suite sections.' \
             >> ai-analysis-input/prompt.txt
           prompt_count=0
           while IFS= read -r -d '' prompt; do
