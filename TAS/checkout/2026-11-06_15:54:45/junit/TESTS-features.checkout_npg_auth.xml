@@ -1,0 +1,142 @@
+<testsuite name="features.checkout_npg_auth.Attivazione pagamento Checkout autenticato" tests="3" errors="1" failures="0" skipped="0" time="118.146266" timestamp="2026-11-06T16:03:52.000307" hostname="runnervm7aw5e"><testcase classname="features.checkout_npg_auth.Attivazione pagamento Checkout autenticato" name="Un pagamento con configurazione carta &quot;Postepay&quot; viene completato con successo -- @1.1 " status="failed" time="21.348454"><error type="RuntimeError" message="Timeout on locator '#psp-radio-PPAYITR1XXX' after 5000 ms (url: https://dev.checkout.pagopa.it/lista-psp)">
+<![CDATA[
+Failing step: E L'utente seleziona il PSP con id "PPAYITR1XXX" ... failed in 5.056s
+Location: src/e2e/checkout/features/checkout_npg_auth.feature:36
+Traceback (most recent call last):
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 93, in locate_and_click
+    to_click.wait_for(state="visible", timeout=timeout)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/sync_api/_generated.py", line 17975, in wait_for
+    self._sync(self._impl_obj.wait_for(timeout=timeout, state=state))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_locator.py", line 692, in wait_for
+    await self._frame.wait_for_selector(
+        self._selector, strict=True, timeout=timeout, state=state
+    )
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 369, in wait_for_selector
+    await self._channel.send(
+        "waitForSelector", self._timeout, locals_to_params(locals())
+    )
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py", line 558, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.wait_for: Timeout 5000ms exceeded.
+Call log:
+  - waiting for locator("#psp-radio-PPAYITR1XXX") to be visible
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 188, in step_select_psp
+    locate_and_click(page, f"#psp-radio-{psp_id}")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 129, in locate_and_click
+    raise RuntimeError(
+        f"Timeout on locator '{locator}' after {timeout} ms (url: {current_url})"
+    ) from exc
+RuntimeError: Timeout on locator '#psp-radio-PPAYITR1XXX' after 5000 ms (url: https://dev.checkout.pagopa.it/lista-psp)
+
+Captured logging:
+INFO:src.e2e.checkout.helper:Performing mock login
+INFO:src.e2e.checkout.helper:Login successful
+ERROR:src.e2e.checkout.helper:Timeout waiting for #psp-radio-PPAYITR1XXX after 5000 ms at page https://dev.checkout.pagopa.it/lista-psp]]>
+</error><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_004_Checkout_scenario_01
+  Schema dello scenario: Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1 
+    Dato La pagina di checkout è aperta ... passed in 0.243s
+    E La lingua è impostata su "it" ... passed in 0.391s
+    E L'utente è autenticato ... passed in 8.246s
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso con prefisso "30200" ... passed in 0.506s
+    E L'utente inserisce il codice fiscale del pagatore "77777777777" ... passed in 0.332s
+    E L'utente clicca il pulsante verifica ... passed in 0.066s
+    E L'utente clicca il pulsante paga ... passed in 0.830s
+    E L'utente inserisce l'email "ecommerce-test-mailgroup@pagopa.it" ... passed in 0.361s
+    E L'utente conferma l'email "ecommerce-test-mailgroup@pagopa.it" ... passed in 0.442s
+    E L'utente seleziona il metodo di pagamento "CP" ... passed in 0.871s
+    E L'utente inserisce il numero carta "5255000260000014" ... passed in 3.563s
+    E L'utente inserisce la data di scadenza "12/30" ... passed in 0.148s
+    E L'utente inserisce il codice di sicurezza "123" ... passed in 0.127s
+    E L'utente inserisce il nome dell'intestatario carta "Test test" ... passed in 0.165s
+    E L'utente seleziona il PSP con id "PPAYITR1XXX" ... failed in 5.056s
+    E L'utente conferma la selezione del PSP ... skipped in 0.000s
+    E L'utente clicca il pulsante paga finale ... skipped in 0.000s
+    Allora Viene mostrato un messaggio di pagamento completato con successo ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.checkout_npg_auth.Attivazione pagamento Checkout autenticato" name="Un pagamento con configurazione carta &quot;Wordline&quot; viene completato con successo -- @1.2 " status="passed" time="59.827336"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_004_Checkout_scenario_01
+  Schema dello scenario: Un pagamento con configurazione carta "Wordline" viene completato con successo -- @1.2 
+    Dato La pagina di checkout è aperta ... passed in 0.249s
+    E La lingua è impostata su "it" ... passed in 0.397s
+    E L'utente è autenticato ... passed in 7.516s
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso con prefisso "30201" ... passed in 0.571s
+    E L'utente inserisce il codice fiscale del pagatore "77777777777" ... passed in 0.416s
+    E L'utente clicca il pulsante verifica ... passed in 0.145s
+    E L'utente clicca il pulsante paga ... passed in 0.870s
+    E L'utente inserisce l'email "ecommerce-test-mailgroup@pagopa.it" ... passed in 0.386s
+    E L'utente conferma l'email "ecommerce-test-mailgroup@pagopa.it" ... passed in 0.472s
+    E L'utente seleziona il metodo di pagamento "CP" ... passed in 0.483s
+    E L'utente inserisce il numero carta "5255000260000014" ... passed in 3.379s
+    E L'utente inserisce la data di scadenza "12/30" ... passed in 0.176s
+    E L'utente inserisce il codice di sicurezza "123" ... passed in 0.144s
+    E L'utente inserisce il nome dell'intestatario carta "Test test" ... passed in 0.150s
+    E L'utente seleziona il PSP con id "BNLIITRR" ... passed in 3.476s
+    E L'utente conferma la selezione del PSP ... passed in 0.107s
+    E L'utente clicca il pulsante paga finale ... passed in 0.055s
+    Allora Viene mostrato un messaggio di pagamento completato con successo ... passed in 40.835s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.checkout_npg_auth.Attivazione pagamento Checkout autenticato" name="Un pagamento con configurazione carta &quot;Worldpay&quot; viene completato con successo -- @1.3 " status="passed" time="36.970477"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_004_Checkout_scenario_01
+  Schema dello scenario: Un pagamento con configurazione carta "Worldpay" viene completato con successo -- @1.3 
+    Dato La pagina di checkout è aperta ... passed in 0.252s
+    E La lingua è impostata su "it" ... passed in 0.401s
+    E L'utente è autenticato ... passed in 7.640s
+    Quando L'utente inserisce i dati dell'avviso con un codice avviso con prefisso "30201" ... passed in 0.542s
+    E L'utente inserisce il codice fiscale del pagatore "77777777777" ... passed in 0.479s
+    E L'utente clicca il pulsante verifica ... passed in 0.099s
+    E L'utente clicca il pulsante paga ... passed in 0.841s
+    E L'utente inserisce l'email "ecommerce-test-mailgroup@pagopa.it" ... passed in 0.344s
+    E L'utente conferma l'email "ecommerce-test-mailgroup@pagopa.it" ... passed in 0.446s
+    E L'utente seleziona il metodo di pagamento "CP" ... passed in 0.455s
+    E L'utente inserisce il numero carta "4242424242424242" ... passed in 3.043s
+    E L'utente inserisce la data di scadenza "12/30" ... passed in 0.181s
+    E L'utente inserisce il codice di sicurezza "123" ... passed in 0.120s
+    E L'utente inserisce il nome dell'intestatario carta "Test test" ... passed in 0.158s
+    E L'utente seleziona il PSP con id "WOLLNLB1" ... passed in 3.464s
+    E L'utente conferma la selezione del PSP ... passed in 0.091s
+    E L'utente clicca il pulsante paga finale ... passed in 0.045s
+    Allora Viene mostrato un messaggio di pagamento completato con successo ... passed in 18.370s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
