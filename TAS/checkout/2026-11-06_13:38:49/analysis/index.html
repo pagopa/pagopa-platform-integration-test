@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>🤖 AI Analysis · CHECKOUT E2E · 2026-11-06_13:38:49</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body { background-color: #f5f8fa; padding: 2rem; }
+    .hero {
+      background-color: #6f42c1;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      border-radius: 0.5rem;
+    }
+    .content-card {
+      background: white;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    }
+    .content-card h2 { margin-top: 1.5rem; color: #6f42c1; }
+    .content-card h3 { color: #495057; }
+    .content-card pre {
+      background: #f1f3f5;
+      padding: 0.75rem;
+      border-radius: 0.35rem;
+      overflow-x: auto;
+      font-size: 0.9rem;
+    }
+    .hero code {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      padding: 0.15rem 0.4rem;
+      border-radius: 0.35rem;
+    }
+    .content-card code {
+      color: #ff61b0;
+      background: #fff0f7;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    footer code {
+      color: #6f42c1;
+      background: #f3ebff;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    .btn-secondary { background-color: #6c757d; border: none; }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <h1 class="display-6">🤖 AI Analysis · CHECKOUT E2E</h1>
+  <p class="lead mb-1">Run: <code>2026-11-06_13:38:49</code></p>
+  
+</header>
+
+<div class="container">
+  <div class="content-card">
+    <div id="analysis-content">
+      <div class="text-center text-muted">Rendering in corso...</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Powered by GitHub Models · Model: <code>gemini-3.6-flash</code></p>
+</footer>
+
+<script>
+  const markdown = "# 1. Viene mostrato l\u0027errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell\u0027intervallo 302400000000000000-302409999999999999 -- @1.1\n- **status**: failed\n- **fullName**: `Attivazione pagamento Checkout: Viene mostrato l\u0027errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell\u0027intervallo 302400000000000000-302409999999999999`\n- **message**: AssertionError: Expected modal header to contain \u0027Non riusciamo a trovare l\u2019avviso\u0027, but got: \u0027L\u2019Ente Creditore sta avendo problemi nella risposta\u0027\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n```\n### Root cause\nThe application returned a generic creditor response error modal instead of the expected specific notice-not-found message for code PAA_PAGAMENTO_SCONOSCIUTO.\n\n### Category\napplication bug\n\n### Recommended action\nVerify backend mapping for `PAA_PAGAMENTO_SCONOSCIUTO` error codes to ensure the correct user-facing modal header is rendered.\n\n---\n\n# 2. Un pagamento con configurazione carta \"Wordline\" viene completato con successo -- @1.2\n- **status**: broken\n- **fullName**: `Attivazione pagamento Checkout: Un pagamento con configurazione carta \"Wordline\" viene completato con successo`\n- **message**: playwright._impl._errors.TimeoutError: Locator.wait_for: Timeout 120000ms exceeded.\nCall log:\n  - waiting for locator(\"#responsePageMessageTitle\") to be visible\n- **trace**:\n```\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py\", line 369, in wait_for_selector\n    await self._channel.send(\n        \"waitForSelector\", self._timeout, locals_to_params(locals())\n    )\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py\", line 69, in send\n    return await self._connection.wrap_api_call(\n```\n### Root cause\nPayment completion timed out waiting for the final response page title element (`#responsePageMessageTitle`) after 120 seconds, likely due to slow or unhandled third-party gateway responses from Worldline.\n\n### Category\nenvironment\n\n### Recommended action\nCheck backend logs and Worldline payment gateway integration/mock environment availability for hanging payment authorizations.\n\n---\n\n# 3. Flusso lista PSP - indietro da /inserisci-carta (flusso carta con enablePspPage=true)\n- **status**: broken\n- **fullName**: `Navigazione Lineare per il flusso di Pagamento: Flusso lista PSP - indietro da /inserisci-carta (flusso carta con enablePspPage=true)`\n- **message**: RuntimeError: Timeout on locator \u0027button:has-text(\u0027Indietro\u0027)\u0027 after 5000 ms (url: https://dev.checkout.pagopa.it/)\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n```\n### Root cause\nThe test attempted to click the \"Indietro\" button while still on the root URL (`https://dev.checkout.pagopa.it/`) instead of the expected `/inserisci-carta` page, causing the locator to fail.\n\n### Category\nflaky\n\n### Recommended action\nEnsure proper page navigation waits/assertions exist before trying to click elements on sub-routes.\n\n---\n\n# 4. Un pagamento con configurazione carta \"Postepay\" viene completato con successo -- @1.1\n- **status**: broken\n- **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta \"Postepay\" viene completato con successo`\n- **message**: RuntimeError: Timeout on locator \u0027#psp-radio-PPAYITR1XXX\u0027 after 5000 ms (url: https://dev.checkout.pagopa.it/lista-psp)\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n```\n### Root cause\nThe expected PSP option (`#psp-radio-PPAYITR1XXX`) was not present or visible on the `/lista-psp` page within the 5-second timeout.\n\n### Category\ntest data\n\n### Recommended action\nVerify if `PPAYITR1XXX` is active and returned by the PSP configuration API for the test environment.\n\n---\n\n# 5. Un pagamento con configurazione carta \"Worldpay\" viene completato con successo -- @1.3\n- **status**: broken\n- **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta \"Worldpay\" viene completato con successo`\n- **message**: playwright._impl._errors.TimeoutError: Locator.wait_for: Timeout 120000ms exceeded.\nCall log:\n  - waiting for locator(\"#responsePageMessageTitle\") to be visible\n- **trace**:\n```\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py\", line 369, in wait_for_selector\n    await self._channel.send(\n        \"waitForSelector\", self._timeout, locals_to_params(locals())\n    )\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py\", line 69, in send\n    return await self._connection.wrap_api_call(\n```\n### Root cause\nPayment transaction did not complete within 120 seconds waiting for `#responsePageMessageTitle` during a Worldpay test flow.\n\n### Category\nenvironment\n\n### Recommended action\nInspect payment gateway downstream communication with Worldpay sandbox environments.\n\n---\n\n# 6. Flusso lista PSP - indietro da /scegli-metodo (wallet salvato con enablePspPage=true)\n- **status**: broken\n- **fullName**: `Navigazione Lineare per il flusso di Pagamento: Flusso lista PSP - indietro da /scegli-metodo (wallet salvato con enablePspPage=true)`\n- **message**: RuntimeError: Timeout on locator \u0027button:has-text(\u0027Indietro\u0027)\u0027 after 5000 ms (url: https://dev.checkout.pagopa.it/)\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n```\n### Root cause\nThe test attempted to locate the back button before navigating away from the base checkout landing page.\n\n### Category\nflaky\n\n### Recommended action\nAdd explicit assertions ensuring navigation to `/scegli-metodo` has completed prior to triggering back navigation actions.\n\n---\n\n# 7. Un pagamento con configurazione carta \"Worldpay\" viene completato con successo -- @1.3\n- **status**: broken\n- **fullName**: `Attivazione pagamento Checkout: Un pagamento con configurazione carta \"Worldpay\" viene completato con successo`\n- **message**: playwright._impl._errors.TimeoutError: Locator.wait_for: Timeout 120000ms exceeded.\nCall log:\n  - waiting for locator(\"#responsePageMessageTitle\") to be visible\n- **trace**:\n```\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py\", line 369, in wait_for_selector\n    await self._channel.send(\n        \"waitForSelector\", self._timeout, locals_to_params(locals())\n    )\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py\", line 69, in send\n    return await self._connection.wrap_api_call(\n```\n### Root cause\nPayment completion timed out waiting for `#responsePageMessageTitle` on non-authenticated Worldpay checkout.\n\n### Category\nenvironment\n\n### Recommended action\nInvestigate connectivity issues and latency between Checkout backend services and Worldpay.\n\n---\n\n# 8. Un pagamento con configurazione carta \"Postepay\" viene completato con successo -- @1.1\n- **status**: broken\n- **fullName**: `Attivazione pagamento Checkout: Un pagamento con configurazione carta \"Postepay\" viene completato con successo`\n- **message**: RuntimeError: Timeout on locator \u0027#psp-radio-PPAYITR1XXX\u0027 after 5000 ms (url: https://dev.checkout.pagopa.it/lista-psp)\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n```\n### Root cause\nThe element `#psp-radio-PPAYITR1XXX` was missing from the `/lista-psp` page within 5000 ms.\n\n### Category\ntest data\n\n### Recommended action\nEnsure the test environment seed data includes `PPAYITR1XXX` in the available PSP list for card payments.\n\n---\n\n# 9. Un pagamento con configurazione carta \"Wordline\" viene completato con successo -- @1.2\n- **status**: broken\n- **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta \"Wordline\" viene completato con successo`\n- **message**: playwright._impl._errors.TimeoutError: Locator.wait_for: Timeout 120000ms exceeded.\nCall log:\n  - waiting for locator(\"#responsePageMessageTitle\") to be visible\n- **trace**:\n```\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py\", line 369, in wait_for_selector\n    await self._channel.send(\n        \"waitForSelector\", self._timeout, locals_to_params(locals())\n    )\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_connection.py\", line 69, in send\n    return await self._connection.wrap_api_call(\n```\n### Root cause\nPayment flow timed out after 120 seconds waiting for the confirmation title element (`#responsePageMessageTitle`).\n\n### Category\nenvironment\n\n### Recommended action\nVerify Wordline payment gateway mock/sandbox reliability in the dev environment.\n\n---\n\n## Common patterns\n\n- **Payment Gateway Timed Out (Environment)**: Tests 2, 5, 7, and 9 all failed with a 120-second timeout waiting for `#responsePageMessageTitle` across Worldline and Worldpay gateways, pointing to backend processing or third-party integration hangs in the `dev` environment.\n- **Missing Test Data (Test Data)**: Tests 4 and 8 both failed with a 5-second timeout on locator `#psp-radio-PPAYITR1XXX` at `/lista-psp`, indicating that the Postepay PSP ID is missing from active environment configuration data.\n- **Unsynchronised Back Navigation (Flaky)**: Tests 3 and 6 failed attempting to click the `Indietro` button while the browser was still at the landing page URL (`https://dev.checkout.pagopa.it/`), indicating race conditions in step navigation setup.";
+  const target = document.getElementById('analysis-content');
+  if (markdown && markdown.trim().length > 0) {
+    target.innerHTML = marked.parse(markdown);
+  } else {
+    target.innerHTML = '<div class="alert alert-warning">Nessuna analisi disponibile per questa run.</div>';
+  }
+</script>
+
+</body>
+</html>
