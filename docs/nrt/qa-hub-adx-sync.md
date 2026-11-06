@@ -9,11 +9,13 @@ QA Hub PostgreSQL tables into their Azure Data Explorer (ADX) mirrors. The logic
 | `qachub.test_suites` | `QA_NRT_TEST_SUITES` |
 | `qachub.test_runs` | `QA_NRT_TEST_RUNS` |
 | `qachub.test_executions` | `QA_NRT_TEST_EXECUTIONS` |
+| `qachub.flaky_scenarios` | `QA_NRT_FLAKY_SCENARIOS` |
 
 ## Modes
 
 All windows are UTC days and apply to `test_runs.timestamp_start`. Executions follow their
-run. Suites are always reloaded in full because they are small and have no timestamp.
+run. Suites and flaky scenarios are always reloaded in full: suites have no timestamp, and
+flaky status can change for scenarios inserted before the selected run window.
 
 | Mode | Window | Trigger |
 |---|---|---|
@@ -33,14 +35,14 @@ pull requests do not trigger synchronization.
 
 1. Reads `qa-centralhub-database-url` from `pagopa-<d|u|p>-itn-qa-kv` with the runner's
    managed identity.
-2. Exports the three tables in one read-only `REPEATABLE READ` transaction to gzip
+2. Exports the four tables in one read-only `REPEATABLE READ` transaction to gzip
    JSON-lines files.
-3. Checks that all six target and staging tables already exist, then ingests each
+3. Checks that all eight target and staging tables already exist, then ingests each
    file with queued ingestion into its `<TABLE>_STAGING` table and waits until the
    staged row count matches. The script does not create or alter table schemas.
 4. Publishes:
-   - `snapshot` mode and suites use `.replace extents`, an atomic swap per table,
-     not a transaction across the three tables.
+   - `snapshot` mode, suites, and flaky scenarios use `.replace extents`, an atomic
+     swap per table, not a transaction across the four tables.
    - The windowed modes soft-delete the rows in the window from the target tables
      (`.delete ... records`), then `.move extents` from staging. Rerunning the same
      window is idempotent.
@@ -54,12 +56,33 @@ pull requests do not trigger synchronization.
   `ManagedIdentityCredential()` with the Container Apps Job's system-assigned identity.
   They do not fall back to Azure CLI, OIDC deployment credentials, or client secrets.
   Key Vault authentication continues using the existing repository resolver.
-- **Tables**: infrastructure must precreate the three target tables and their matching
-  staging tables in each enabled environment, with identical columns, types, and order:
-  - `QA_NRT_TEST_SUITES_STAGING`
-  - `QA_NRT_TEST_RUNS_STAGING`
-  - `QA_NRT_TEST_EXECUTIONS_STAGING`
-  Missing tables cause an explicit failure before staging data is cleared.
+- **Tables and schemas**: infrastructure must precreate the four target tables and their
+  matching staging tables in each enabled environment:
+  - `QA_NRT_TEST_SUITES` and `QA_NRT_TEST_SUITES_STAGING`
+  - `QA_NRT_TEST_RUNS` and `QA_NRT_TEST_RUNS_STAGING`
+  - `QA_NRT_TEST_EXECUTIONS` and `QA_NRT_TEST_EXECUTIONS_STAGING`
+  - `QA_NRT_FLAKY_SCENARIOS` and `QA_NRT_FLAKY_SCENARIOS_STAGING`
+  - Each target and staging table must have the same exported columns, in the same
+    order and with the matching ADX types.
+  - In addition to their pre-existing columns, `QA_NRT_TEST_RUNS` and its staging table
+    require:
+    - `revisioned: bool`
+    - `revision_date: datetime`
+    - `revisioned_by: string`
+    - `revision_result: string`
+    - `allure_url: string`
+    - `product_issue: string`
+    - `product_issue_status: string`
+    - `qa_issue: string`
+    - `qa_issue_status: string`
+  - `QA_NRT_TEST_EXECUTIONS` and its staging table require the additional columns
+    `revision_note: string` and `allure_url: string`.
+  - `QA_NRT_FLAKY_SCENARIOS` and its staging table must contain `id: guid`,
+    `suite_id: guid`, `test_object: string`, `scenario_name: string`,
+    `test_object_version: string`, `test_version: string`, `inserted_at: datetime`,
+    and `is_flaky: bool`.
+  The script does not create or alter target or staging schemas; a missing table or
+  incompatible schema prevents synchronization.
 - **GitHub Environment variables** (`dev`, `uat`):
   - `ADX_CLUSTER_URI`, e.g. `https://<cluster>.<region>.kusto.windows.net`.
   - `ADX_DATABASE`.

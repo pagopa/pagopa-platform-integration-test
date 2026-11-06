@@ -207,6 +207,55 @@ def test_suites_query_is_never_windowed():
     assert "WHERE" not in sql and params == {}
 
 
+@pytest.mark.parametrize("mode", sync.MODES)
+def test_flaky_scenarios_query_is_always_full(mode):
+    """Export all flaky statuses even when inserted before the selected runs window."""
+    window = sync.compute_window(mode, date(2026, 9, 1), date(2026, 9, 30), TODAY)
+    sql, params = sync.build_select_query(sync.FLAKY_SCENARIOS, window)
+    assert sql == f"SELECT {sync.FLAKY_SCENARIOS.select_list} FROM qachub.flaky_scenarios f"
+    assert params == {}
+
+
+def test_added_columns_have_expected_adx_types():
+    """Map new PostgreSQL fields to the corresponding ADX scalar types."""
+    assert sync.RUNS.columns[-9:] == (
+        ("revisioned", "bool"), ("revision_date", "datetime"),
+        ("revisioned_by", "string"), ("revision_result", "string"),
+        ("allure_url", "string"), ("product_issue", "string"),
+        ("product_issue_status", "string"), ("qa_issue", "string"),
+        ("qa_issue_status", "string"),
+    )
+    assert sync.EXECUTIONS.columns[-2:] == (("revision_note", "string"), ("allure_url", "string"))
+    assert sync.FLAKY_SCENARIOS.columns == (
+        ("id", "guid"), ("suite_id", "guid"), ("test_object", "string"),
+        ("scenario_name", "string"), ("test_object_version", "string"),
+        ("test_version", "string"), ("inserted_at", "datetime"), ("is_flaky", "bool"),
+    )
+
+
+@pytest.mark.parametrize("mode", sync.MODES)
+def test_publish_stages_all_tables_and_replaces_flaky_status(mode):
+    """Stage four tables before publishing, fully replacing even an empty flaky export."""
+    window = sync.compute_window(mode, date(2026, 9, 1), date(2026, 9, 30), TODAY)
+    exports = {spec.adx_table: sync.ExportResult(spec) for spec in sync.TABLES}
+    publisher = MagicMock()
+    sync.publish(publisher, exports, window, 60)
+    expected = MagicMock()
+    expected.ensure_tables()
+    for spec in sync.TABLES:
+        expected.stage(exports[spec.adx_table], 60)
+    expected.replace_all(sync.SUITES)
+    expected.replace_all(sync.FLAKY_SCENARIOS)
+    if window.is_snapshot:
+        expected.replace_all(sync.RUNS)
+        expected.replace_all(sync.EXECUTIONS)
+    else:
+        expected.delete_window(window, [])
+        expected.move_staged(sync.RUNS)
+        expected.move_staged(sync.EXECUTIONS)
+    assert publisher.mock_calls == expected.mock_calls
+
+
 def test_select_lists_match_adx_columns():
     """Each exported column list matches the ADX table schema order."""
     for spec in sync.TABLES:
@@ -224,6 +273,19 @@ def test_serialize_row_converts_driver_types():
     assert json.loads(line) == {"id": str(row_id), "ts": "2026-10-14T12:00:00+00:00", "qty": 3, "report": {"a": [1]}}
 
 
+@pytest.mark.parametrize("flag", [True, False, None])
+def test_serialize_revision_fields_preserves_boolean_and_null(flag):
+    """Serialize revision fields without losing false flags or nullable values."""
+    line = sync.serialize_row(
+        ["revisioned", "revision_date", "revision_note", "allure_url"],
+        [flag, _utc(2026, 10, 14), None, "https://allure.example/report"],
+    )
+    assert json.loads(line) == {
+        "revisioned": flag, "revision_date": "2026-10-14T00:00:00+00:00",
+        "revision_note": None, "allure_url": "https://allure.example/report",
+    }
+
+
 def test_kusto_window_predicate_and_literals():
     """Kusto predicates use UTC datetime literals and validated guid literals."""
     predicate = sync.kusto_window_predicate("timestamp_start", sync.SyncWindow(_utc(2026, 10, 14), _utc(2026, 10, 15)))
@@ -236,7 +298,7 @@ def test_kusto_window_predicate_and_literals():
 
 @pytest.mark.parametrize("missing_kind", [None, "target", "staging"])
 def test_ensure_tables_only_checks_precreated_tables(missing_kind):
-    """Check all six tables without creating or changing any table."""
+    """Check all target and staging tables without creating or changing any table."""
     tables = [name for spec in sync.TABLES for name in (spec.adx_table, spec.staging_table)]
     missing = None
     if missing_kind is not None:

@@ -3,7 +3,8 @@
 Data is first ingested into ADX staging tables and verified, then published into the
 target tables:
 
-- ``QA_NRT_TEST_SUITES`` is always fully replaced (it has no time dimension).
+- ``QA_NRT_TEST_SUITES`` and ``QA_NRT_FLAKY_SCENARIOS`` are always fully replaced
+    (suite metadata and mutable flaky status must stay current).
 - ``snapshot`` mode atomically replaces the extents of every target table.
 - Windowed modes (``yesterday``, ``since``, ``range``) soft-delete the window from the
   target tables and move the staged extents in, so reruns are idempotent.
@@ -113,12 +114,23 @@ RUNS = TableSpec(
         ("trigger_type", "string"),
         ("test_version", "string"),
         ("test_origin", "string"),
+        ("revisioned", "bool"),
+        ("revision_date", "datetime"),
+        ("revisioned_by", "string"),
+        ("revision_result", "string"),
+        ("allure_url", "string"),
+        ("product_issue", "string"),
+        ("product_issue_status", "string"),
+        ("qa_issue", "string"),
+        ("qa_issue_status", "string"),
     ),
     select_list=(
         "r.id, r.suite_id, r.scenario_qty, r.passed_scenario, r.failed_scenario, "
         "r.broken_scenario, r.skipped_scenario, r.timestamp_start, r.timestamp_end, "
         "r.duration_ms, r.env::text AS env, r.trigger_type::text AS trigger_type, "
-        "r.test_version, r.test_origin"
+        "r.test_version, r.test_origin, r.revisioned, r.revision_date, r.revisioned_by, "
+        "r.revision_result, r.allure_url, r.product_issue, r.product_issue_status, "
+        "r.qa_issue, r.qa_issue_status"
     ),
     windowed=True,
 )
@@ -136,15 +148,37 @@ EXECUTIONS = TableSpec(
         ("duration_ms", "long"),
         ("error_message", "string"),
         ("retries", "int"),
+        ("revision_note", "string"),
+        ("allure_url", "string"),
     ),
     select_list=(
         "e.id, e.run_id, e.allure_id, e.status::text AS status, e.scenario_name, "
-        "e.allure_report, e.duration_ms, e.error_message, e.retries"
+        "e.allure_report, e.duration_ms, e.error_message, e.retries, e.revision_note, e.allure_url"
     ),
     windowed=True,
 )
 
-TABLES = (SUITES, RUNS, EXECUTIONS)
+FLAKY_SCENARIOS = TableSpec(
+    pg_table="flaky_scenarios",
+    adx_table="QA_NRT_FLAKY_SCENARIOS",
+    columns=(
+        ("id", "guid"),
+        ("suite_id", "guid"),
+        ("test_object", "string"),
+        ("scenario_name", "string"),
+        ("test_object_version", "string"),
+        ("test_version", "string"),
+        ("inserted_at", "datetime"),
+        ("is_flaky", "bool"),
+    ),
+    select_list=(
+        "f.id, f.suite_id, f.test_object, f.scenario_name, f.test_object_version, "
+        "f.test_version, f.inserted_at, f.is_flaky"
+    ),
+    windowed=False,
+)
+
+TABLES = (SUITES, RUNS, EXECUTIONS, FLAKY_SCENARIOS)
 
 
 @dataclass
@@ -216,6 +250,8 @@ def build_select_query(spec: TableSpec, window: SyncWindow) -> tuple[str, dict[s
     """Build the parametrized SELECT used to export one table for the given window."""
     if spec is SUITES:
         sql = f"SELECT {spec.select_list} FROM {PG_SCHEMA}.test_suites s"
+    elif spec is FLAKY_SCENARIOS:
+        sql = f"SELECT {spec.select_list} FROM {PG_SCHEMA}.flaky_scenarios f"
     elif spec is RUNS:
         sql = f"SELECT {spec.select_list} FROM {PG_SCHEMA}.test_runs r"
     elif window.is_snapshot:
@@ -541,12 +577,13 @@ class AdxPublisher:
 
 
 def publish(publisher: AdxPublisher, exports: dict[str, ExportResult], window: SyncWindow, timeout_seconds: int) -> None:
-    """Stage every table, then publish the staged data into the target tables."""
+    """Stage all tables, fully replace metadata, and publish runs/executions by window."""
     publisher.ensure_tables()
     for spec in TABLES:
         publisher.stage(exports[spec.adx_table], timeout_seconds)
 
     publisher.replace_all(SUITES)
+    publisher.replace_all(FLAKY_SCENARIOS)
     if window.is_snapshot:
         publisher.replace_all(RUNS)
         publisher.replace_all(EXECUTIONS)
