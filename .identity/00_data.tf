@@ -67,3 +67,8 @@ data "azurerm_key_vault_secret" "key_vault_report_slack_webhook" {
   key_vault_id = data.azurerm_key_vault.domain_key_vault.id
 }
 
+data "azurerm_key_vault_secret" "key_vault_tas_github_token" {
+  name         = "pagopa-platform-tas-github-bot-pat"
+  key_vault_id = data.azurerm_key_vault.domain_key_vault.id
+}
+

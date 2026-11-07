@@ -44,6 +44,7 @@ locals {
     "CUCUMBER_PUBLISH_TOKEN" : data.azurerm_key_vault_secret.key_vault_cucumber_token.value,
     "SLACK_WEBHOOK_URL_DEPLOY" : data.azurerm_key_vault_secret.key_vault_deploy_slack_webhook.value,
     "SLACK_WEBHOOK_URL_REPORT" : data.azurerm_key_vault_secret.key_vault_report_slack_webhook.value,
+    "TAS_GITHUB_TOKEN" : data.azurerm_key_vault_secret.key_vault_tas_github_token.value,
   }
 }
 
