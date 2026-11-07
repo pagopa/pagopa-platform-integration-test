@@ -1,0 +1,16 @@
+<testsuite name="feature.FEAT_003_FdR3_Cancella_flusso.Cancellazione di un flusso di rendicontazione" tests="1" errors="0" failures="0" skipped="0" time="0.823514" timestamp="2026-11-07T21:09:07.379461" hostname="runnervm7aw5e"><testcase classname="feature.FEAT_003_FdR3_Cancella_flusso.Cancellazione di un flusso di rendicontazione" name="Verifica cancellazione del flusso" status="passed" time="0.823514"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @fdr3_003_04
+  Scenario: Verifica cancellazione del flusso
+    Dato che i sistemi sono operativi ... passed in 0.000s
+    Dato che lo scenario "Cancellazione del flusso" è stato eseguito con successo ... passed in 0.368s
+    Quando il PSP invia la richiesta di "Recupero di tutti i FdR pubblicati dal PSP" con il payload "None" ... passed in 0.455s
+    Allora il PSP riceve il codice di stato HTTP 200 ... passed in 0.000s
+    E la lista dei flussi restituita non contiene il flusso con fdr = "flow_name" ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
