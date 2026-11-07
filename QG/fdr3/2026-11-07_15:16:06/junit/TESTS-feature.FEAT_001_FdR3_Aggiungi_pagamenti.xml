@@ -1,0 +1,65 @@
+<testsuite name="feature.FEAT_001_FdR3_Aggiungi_pagamenti.Aggiunta di pagamenti a un flusso di rendicontazione" tests="3" errors="0" failures="0" skipped="0" time="1.678198" timestamp="2026-11-07T15:16:08.004506" hostname="runnervm7aw5e"><testcase classname="feature.FEAT_001_FdR3_Aggiungi_pagamenti.Aggiunta di pagamenti a un flusso di rendicontazione" name="Aggiunta di pagamenti al flusso -- @1.1 " status="passed" time="0.789696"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @fdr3_001_02
+  Schema dello scenario: Aggiunta di pagamenti al flusso -- @1.1 
+    Dato che i sistemi sono operativi ... passed in 0.009s
+    Dato che il PSP deve inviare 1 pagamenti al flusso ... passed in 0.000s
+    E che la somma totale dei pagamenti da inviare è 3 ... passed in 0.000s
+    E che lo scenario "Creazione del flusso di rendicontazione per il test di aggiunta pagamenti" è stato eseguito con successo ... passed in 0.658s
+    Quando il PSP aggiunge 1 pagamenti la cui somma è 3 al flusso di rendicontazione flow_name come payments_payload ... passed in 0.000s
+    E il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "payments_payload" ... passed in 0.122s
+    Allora il PSP riceve il codice di stato HTTP 200 ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out><system-err>
+<![CDATA[
+Captured stderr:
+src/integration/fdr3/steps/feat_001_common_steps.py:30: ContextMaskWarning: user code is masking context attribute 'response'; see the tutorial for what this means
+  context.response = None
+src/integration/fdr3/steps/feat_001_common_steps.py:106: ContextMaskWarning: user code is masking context attribute 'tot_payments'; see the tutorial for what this means
+  context.tot_payments = n
+src/integration/fdr3/steps/feat_001_common_steps.py:113: ContextMaskWarning: user code is masking context attribute 'sum_payments'; see the tutorial for what this means
+  context.sum_payments = amount
+/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/fdr3/helper.py:268: ContextMaskWarning: user code is masking context attribute 'response'; see the tutorial for what this means
+  context.response = response
+
+]]>
+</system-err></testcase><testcase classname="feature.FEAT_001_FdR3_Aggiungi_pagamenti.Aggiunta di pagamenti a un flusso di rendicontazione" name="Aggiunta di pagamenti al flusso -- @1.2 " status="passed" time="0.633041"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @fdr3_001_02
+  Schema dello scenario: Aggiunta di pagamenti al flusso -- @1.2 
+    Dato che i sistemi sono operativi ... passed in 0.000s
+    Dato che il PSP deve inviare 1000 pagamenti al flusso ... passed in 0.000s
+    E che la somma totale dei pagamenti da inviare è 29999 ... passed in 0.000s
+    E che lo scenario "Creazione del flusso di rendicontazione per il test di aggiunta pagamenti" è stato eseguito con successo ... passed in 0.118s
+    Quando il PSP aggiunge 1000 pagamenti la cui somma è 29999 al flusso di rendicontazione flow_name come payments_payload ... passed in 0.007s
+    E il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "payments_payload" ... passed in 0.508s
+    Allora il PSP riceve il codice di stato HTTP 200 ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="feature.FEAT_001_FdR3_Aggiungi_pagamenti.Aggiunta di pagamenti a un flusso di rendicontazione" name="Aggiunta di pagamenti al flusso -- @1.3 " status="passed" time="0.25546"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @fdr3_001_02
+  Schema dello scenario: Aggiunta di pagamenti al flusso -- @1.3 
+    Dato che i sistemi sono operativi ... passed in 0.000s
+    Dato che il PSP deve inviare 1001 pagamenti al flusso ... passed in 0.000s
+    E che la somma totale dei pagamenti da inviare è 30000 ... passed in 0.000s
+    E che lo scenario "Creazione del flusso di rendicontazione per il test di aggiunta pagamenti" è stato eseguito con successo ... passed in 0.119s
+    Quando il PSP aggiunge 1001 pagamenti la cui somma è 30000 al flusso di rendicontazione flow_name come payments_payload ... passed in 0.007s
+    E il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "payments_payload" ... passed in 0.129s
+    Allora il PSP riceve il codice di stato HTTP 400 ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
