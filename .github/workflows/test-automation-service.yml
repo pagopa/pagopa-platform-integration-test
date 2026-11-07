@@ -557,10 +557,7 @@ jobs:
           echo "PUBLISH_TIMESTAMP=${PUBLISH_TIMESTAMP}" >> "$GITHUB_ENV"
           export PUBLISH_TIMESTAMP
 
-          REPORT_SUBFOLDER="TAS/${TEST_SUITE}"
-          if [ "$TEST_ORIGIN" = "QG" ]; then
-            REPORT_SUBFOLDER="QG/${REPORT_DIR}"
-          fi
+          REPORT_SUBFOLDER="${TEST_ORIGIN}/${TEST_SUITE}"
           echo "REPORT_SUBFOLDER=${REPORT_SUBFOLDER}" >> "$GITHUB_ENV"
           export REPORT_SUBFOLDER
 
@@ -607,7 +604,6 @@ jobs:
       - name: Generate TAS report history index
         env:
           TEST_SUITE: ${{ inputs.test_suite }}
-          TEST_TYPE: ${{ inputs.test_type }}
         run: |
           python - <<'PY'
           import os
@@ -626,17 +622,14 @@ jobs:
               update_tas_main_index,
           )
 
-          public_root = Path(workspace) / "public"
+          test_origin = os.environ["TEST_ORIGIN"]
           test_suite = os.environ["TEST_SUITE"]
-          if os.environ["TEST_ORIGIN"] == "QG":
-              qg_root = public_root / "QG"
-              build_tas_index_page(qg_root, f"{test_suite}-{os.environ['TEST_TYPE']}")
-              build_qg_index_page(qg_root)
-              origin_root = qg_root
-          else:
-              origin_root = public_root / "TAS"
+          origin_root = Path(workspace) / "public" / test_origin
+          if test_origin == "TAS":
               clean_tas_history(origin_root, test_suite)
-              build_tas_index_page(origin_root, test_suite)
+          build_tas_index_page(origin_root, test_suite)
+          if test_origin == "QG":
+              build_qg_index_page(origin_root)
           public_link = Path("public")
           if public_link.exists() or public_link.is_symlink():
               raise FileExistsError(f"Unexpected path in TAS source checkout: {public_link}")
@@ -648,7 +641,7 @@ jobs:
               )
           finally:
               public_link.unlink()
-              if os.environ["TEST_ORIGIN"] != "QG":
+              if test_origin == "TAS":
                   update_tas_main_index(origin_root)
           PY
 

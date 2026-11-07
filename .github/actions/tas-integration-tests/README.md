@@ -119,8 +119,8 @@ same tag.
 | `mode` | `sync` | — | Invocation mode: `sync`, `async` or `raw` |
 | `ref` | `main` | — | TAS repo branch/tag to run the tests from |
 | `tags` | `""` | — | Behave tag expression (e.g. `@runnable`, `@e2e`, `@a,@b`). Empty = workflow default (`@runnable`) |
-| `allure` | `"false"` | — | Also produce an Allure HTML report. TAS publishes reports under `TAS/<suite>/<timestamp>`, or under `QG/<suite>-<test_type>/<timestamp>` when `isQualityGateRun` is `"true"` (`YYYY-MM-DD_HH:mm:ss`, UTC, Allure run start); when a TAS suite runs, its report folders older than 30 days are removed (Quality Gate reports are not cleaned). Failed runs also include AI analysis at `analysis/index.html` when the Gemini secret is available |
-| `isQualityGateRun` | `"false"` | — | Set to `"true"` to classify the run as Quality Gate, publish under `QG/<suite>-<test_type>/` with a separate suite history and ingest with origin `QG`. Supported in sync, async and raw modes; omitted/false preserves TAS behaviour |
+| `allure` | `"false"` | — | Also produce an Allure HTML report. TAS publishes reports under `TAS/<suite>/<timestamp>`, or under `QG/<suite>/<timestamp>` when `isQualityGateRun` is `"true"` (`YYYY-MM-DD_HH:mm:ss`, UTC, Allure run start); when a TAS suite runs, its report folders older than 30 days are removed (Quality Gate reports are not cleaned). Failed runs also include AI analysis at `analysis/index.html` when the Gemini secret is available |
+| `isQualityGateRun` | `"false"` | — | Set to `"true"` to classify the run as Quality Gate, publish under `QG/<suite>/` with a separate suite history and ingest with origin `QG`. Supported in sync, async and raw modes; omitted/false preserves TAS behaviour |
 | `github_token` | — | ✅ | GitHub PAT (scopes `public_repo` + `actions:read`). Must be passed explicitly (composite actions cannot read caller secrets). |
 | `caller_id` | `${{ github.repository }}/${{ github.run_id }}` | — | Identifier of the calling system (traceability) |
 | `correlation_id` | `${{ github.run_id }}-${{ github.run_attempt }}` | — | Unique ID to correlate the run with the caller |

@@ -219,7 +219,7 @@ documented in
 | `ref` | string | `main` | TAS repo branch/tag to run the tests from |
 | `tags` | string | `""` | Behave tag expression to filter scenarios (e.g. `@runnable`, `@e2e`, `@a,@b`). Empty = workflow default (`@runnable`) |
 | `allure` | boolean | `false` | Also produce an Allure results directory (`allure-results/`) inside the artifact (extracted under `ARTIFACT_DIR` in sync mode) |
-| `isQualityGateRun` | boolean | `false` | Classify as Quality Gate: publish under `QG/<suite>-<testType>/` and ingest with origin `QG` in all modes |
+| `isQualityGateRun` | boolean | `false` | Classify as Quality Gate: publish under `QG/<suite>/` and ingest with origin `QG` in all modes |
 | `githubToken` | string | — | GitHub PAT (`public_repo` + `actions:read`) forwarded to the orchestrator as `TAS_GITHUB_TOKEN`. Source it from a secret pipeline variable / Key Vault–linked group |
 | `pythonVersion` | string | `3.11` | Python version used for orchestrator-based modes |
 | `tasRepo` | string | `pagopa/pagopa-platform-integration-test` | TAS repository (rarely overridden) |
@@ -422,7 +422,7 @@ documented in
 | `ref` | `main` | — | TAS repo branch/tag to run the tests from |
 | `tags` | `""` | — | Behave tag expression (e.g. `@runnable`, `@e2e`, `@a,@b`). Empty = workflow default (`@runnable`) |
 | `allure` | `"false"` | — | Also produce an Allure results directory (`allure-results/`) inside the `test-results` artifact |
-| `isQualityGateRun` | `"false"` | — | Set to `"true"` to publish under `QG/<suite>-<test_type>/` and ingest with origin `QG` in all modes |
+| `isQualityGateRun` | `"false"` | — | Set to `"true"` to publish under `QG/<suite>/` and ingest with origin `QG` in all modes |
 | `github_token` | — | ✅ | GitHub PAT (`public_repo` + `actions:read`) |
 | `caller_id` | `${{ github.repository }}/${{ github.run_id }}` | — | Identifier of the calling system |
 | `correlation_id` | `${{ github.run_id }}-${{ github.run_attempt }}` | — | Unique ID to correlate the run |
@@ -494,17 +494,17 @@ are developing in parallel on separate feature branches, this option is not suit
 that branch has been merged into `main`.
 
 The called workflow publishes test results to the TAS repository's GitHub Pages site under
-`TAS/<suite>/<timestamp>` by default, or `QG/<suite>-<test_type>/<timestamp>` when the optional boolean input
+`TAS/<suite>/<timestamp>` by default, or `QG/<suite>/<timestamp>` when the optional boolean input
 `isQualityGateRun` is `true` (default: `false`). The timestamp format is
 `YYYY-MM-DD_HH:mm:ss` (UTC, taken from the Allure run start with the job start time as
 fallback; older runs use `dd-MM-yyyy_HH:mm:ss`). Failed runs also receive an AI analysis rendered at
 the run's `analysis/index.html` with the Markdown beside it at `analysis/analysis.md`.
-TAS keeps one history index per suite (`TAS/<suite>/index.html`). `QG/index.html` lists suites; each suite/category
-has a separate history at `QG/<suite>-<test_type>/index.html`. Existing flat
+TAS keeps one history index per suite (`TAS/<suite>/index.html`). `QG/index.html` lists suites; each suite
+has a separate history at `QG/<suite>/index.html`. Existing flat
 `QG/<timestamp>` runs remain accessible from the QG root without being moved.
 The flag and origin are recorded in logs, the job
 summary, `test-summary.json` and Allure environment metadata; ingestion stores origin `QG`
-and matching suite/category Allure URLs for new Quality Gate runs. The flag does not change scenario selection
+and matching per-suite Allure URLs for new Quality Gate runs. The flag does not change scenario selection
 or success criteria. Run names remain `tas-<correlation_id>` for both origins.
 
 For native `workflow_call` or API `workflow_dispatch`, pass `isQualityGateRun: true` in

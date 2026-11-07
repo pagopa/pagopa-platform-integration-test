@@ -349,15 +349,15 @@ class PublisherTests(unittest.TestCase):
             self.skipTest("Windows does not allow colons in timestamp directory names")
         root = Path("public/QG")
         timestamp = "2026-11-02_10:00:00"
-        self.make_qg_run(root / "checkout-integration", timestamp, "QG report", analysis=True)
+        self.make_qg_run(root / "checkout", timestamp, "QG report", analysis=True)
         tas_root = Path("public/TAS")
         tas_root.mkdir()
         (tas_root / "index.html").write_text("Existing TAS history")
 
-        build_tas_index_page(root, "checkout-integration")
+        build_tas_index_page(root, "checkout")
 
-        index = (root / "checkout-integration/index.html").read_text(encoding="utf-8")
-        self.assertIn("Report Quality Gate - checkout-integration", index)
+        index = (root / "checkout/index.html").read_text(encoding="utf-8")
+        self.assertIn("Report Quality Gate - checkout", index)
         self.assertIn(f"./{timestamp}/index.html", index)
         self.assertIn(f"./{timestamp}/analysis/index.html", index)
         self.assertIn("Torna alle suite QG", index)
@@ -372,7 +372,7 @@ class PublisherTests(unittest.TestCase):
         legacy = "2026-11-01_10:00:00"
         timestamp = "2026-11-02_10:00:00"
         legacy_dir = self.make_qg_run(root, legacy, "Legacy QG report")
-        for suite in ("checkout-integration", "checkout-e2e"):
+        for suite in ("wisp", "checkout"):
             self.make_qg_run(root / suite, timestamp, suite, analysis=True)
             build_tas_index_page(root, suite)
         (root / "empty-api").mkdir()
@@ -383,8 +383,8 @@ class PublisherTests(unittest.TestCase):
         self.assertIn("Report Quality Gate", index)
         self.assertIn(f"./{legacy}/index.html", index)
         self.assertNotIn("empty-api", index)
-        self.assertLess(index.index("checkout-e2e"), index.index("checkout-integration"))
-        for suite in ("checkout-e2e", "checkout-integration"):
+        self.assertLess(index.index("./checkout/index.html"), index.index("./wisp/index.html"))
+        for suite in ("checkout", "wisp"):
             self.assertIn(f"./{suite}/index.html", index)
             history = (root / suite / "index.html").read_text(encoding="utf-8")
             self.assertIn(f"Report Quality Gate - {suite}", history)

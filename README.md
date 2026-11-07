@@ -922,12 +922,12 @@ uno o piu scenari falliscono.
 
 Le run ordinarie pubblicano report e analisi AI sotto `TAS/<suite>/<timestamp>/` su
 `gh-pages`; con `isQualityGateRun: true` usano
-`QG/<suite>-<test_type>/<timestamp>/`, con lo stesso formato UTC.
+`QG/<suite>/<timestamp>/`, con lo stesso formato UTC.
 `QG/index.html` elenca le suite, ciascuna con il proprio storico; le vecchie run
 direttamente sotto `QG/<timestamp>/` restano accessibili senza essere spostate.
 Origine e flag sono inclusi nei log, nel job
 summary, in `test-summary.json` e nei metadati Allure. L'ingestion salva
-`test_origin: QG` e URL Allure sotto `QG/<suite>-<test_type>/` per le run Quality Gate.
+`test_origin: QG` e URL Allure sotto `QG/<suite>/` per le run Quality Gate.
 Il flag non modifica selezione dei test o criteri di successo.
 
 Nota di allineamento: il workflow riusabile storico risolve il path `src/bdd/<suite>` per

@@ -48,7 +48,7 @@ class QualityGateTests(unittest.TestCase):
                     self.assertNotIn("isQualityGateRun", inputs)
 
     def test_ingestion_links_follow_origin_instead_of_nrt_suite_folder(self):
-        """Group QG by suite/category while preserving flat TAS and NRT URLs."""
+        """Group QG by suite while keeping TAS per suite and NRT URLs untouched."""
         start = 1793613600000
         timestamp = datetime.fromtimestamp(start / 1000).strftime("%Y-%m-%d_%H:%M:%S")
         summary = {
@@ -58,37 +58,29 @@ class QualityGateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary_dir:
             summary_path = Path(temporary_dir) / "summary.json"
             summary_path.write_text(json.dumps(summary), encoding="utf-8")
-            for origin, test_type, nrt_folder, expected in (
-                ("TAS", None, None, "TAS"),
-                ("QG", "e2e", None, "QG/checkout-e2e"),
-                ("QG", "integration", None, "QG/checkout-integration"),
-                ("QG", "api", None, "QG/checkout-api"),
-                ("TAS", None, "checkout-e2e-tests", "TAS"),
-                ("QG", "e2e", "checkout-e2e-tests", "QG/checkout-e2e"),
-                ("NRT", None, "checkout-e2e-tests", "checkout-e2e-tests"),
+            for origin, nrt_folder, expected in (
+                ("TAS", None, "TAS/checkout"),
+                ("QG", None, "QG/checkout"),
+                ("TAS", "checkout-e2e-tests", "TAS/checkout"),
+                ("QG", "checkout-e2e-tests", "QG/checkout"),
+                ("NRT", "checkout-e2e-tests", "checkout-e2e-tests"),
             ):
-                with self.subTest(origin=origin, test_type=test_type, nrt_folder=nrt_folder):
+                with self.subTest(origin=origin, nrt_folder=nrt_folder):
                     test_run = RunModel(test_origin=origin)
                     result = INGESTION["populate_test_run"](
                         test_run, str(summary_path), None, "checkout", nrt_folder,
-                        test_type=test_type,
                     )
                     self.assertEqual(result.test_origin, origin)
                     self.assertEqual(
                         result.allure_url, f"{ALLURE_BASE_URL}{expected}/{timestamp}/index.html",
                     )
 
-    def test_qg_ingestion_rejects_missing_or_invalid_suite_category(self):
+    def test_qg_ingestion_rejects_missing_suite(self):
         """Fail before reading artifacts when QG cannot identify its history folder."""
-        for test_object, test_type in (
-            ("checkout", None), ("checkout", ""), ("checkout", "invalid"), ("", "e2e"),
-        ):
-            with self.subTest(test_object=test_object, test_type=test_type):
-                with self.assertRaisesRegex(ValueError, "QG report links require"):
-                    INGESTION["populate_test_run"](
-                        RunModel(test_origin="QG"), "unused", None, test_object, None,
-                        test_type=test_type,
-                    )
+        with self.assertRaisesRegex(ValueError, "QG report links require"):
+            INGESTION["populate_test_run"](
+                RunModel(test_origin="QG"), "unused", None, "", None,
+            )
 
 
 if __name__ == "__main__":

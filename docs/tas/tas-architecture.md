@@ -112,7 +112,7 @@ The central GHA workflow that runs the test suites. It supports two trigger mech
 - `allure-results/` — Allure result files, only when the `allure` input is `true` (render to HTML with the Allure CLI)
 
 **Published report:** the workflow publishes the test artifact contents under
-`TAS/<suite>/<timestamp>/` on `gh-pages` by default, or `QG/<suite>-<test_type>/<timestamp>/` when
+`TAS/<suite>/<timestamp>/` on `gh-pages` by default, or `QG/<suite>/<timestamp>/` when
 `isQualityGateRun` is `true`, where the timestamp is the Allure run start (`time.start` of
 `widgets/summary.json`) in UTC, formatted `YYYY-MM-DD_HH:mm:ss` like the NRT report folders, so that
 the QA Hub can derive the report link from the Allure start time. When the Allure summary is missing
@@ -124,12 +124,12 @@ the run's `analysis/` subfolder; they do not affect the test outcome and are not
 Allure report root.
 
 TAS keeps one history index per suite (`TAS/<suite>/index.html`). `QG/index.html` lists suites, each with a history at
-`QG/<suite>-<test_type>/index.html`; existing flat `QG/<timestamp>/` reports remain linked
+`QG/<suite>/index.html`; existing flat `QG/<timestamp>/` reports remain linked
 from the QG root and are not moved. The dashboard links to QG once its history
 index exists. Logs, the job summary, JSON summary and Allure environment metadata carry
 the classification. Data ingestion stores `test_origin` and Allure links under the same
-report root (`TAS` or `QG/<suite>-<test_type>`), taking precedence over NRT suite folders.
-QG ingestion requires the test object and category to build the matching URL. Scenario selection,
+report root (`TAS` or `QG/<suite>`), taking precedence over NRT suite folders.
+QG ingestion requires the test object to build the matching URL. Scenario selection,
 success criteria, artifact names and the `tas-<correlation_id>` run name are unchanged.
 
 For `workflow_call`, callers must grant `contents: write` and `actions: write`, and pass

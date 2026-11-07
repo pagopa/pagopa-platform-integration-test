@@ -32,22 +32,20 @@ def calculate_total_failures(test_run: Test_runs) -> int:
     return (test_run.failed_scenario or 0) + (test_run.broken_scenario or 0) + (test_run.skipped_scenario or 0)
 
 
-def populate_test_run(test_run: Test_runs, summary_path: str, version: str | None, test_object: str, allure_subfolder: str | None, test_type: str | None = None) -> Test_runs:
+def populate_test_run(test_run: Test_runs, summary_path: str, version: str | None, test_object: str, allure_subfolder: str | None) -> Test_runs:
     '''
-    Populate statistics and report links, requiring suite/category for QG URLs.
+    Populate statistics and report links, requiring the test object for QG URLs.
 
     Args:
         test_run (Test_runs): The test run object to populate.
         summary_path (str): The path to the summary.json file.
-        test_type (str): Required for QG suite history routing.
+        test_object (str): Suite name; required for QG, whose history is grouped by suite.
 
     Returns:
         The populated test_run object.
     '''
-    if test_run.test_origin == "QG" and (
-        not test_object or test_type not in ("integration", "e2e", "api")
-    ):
-        raise ValueError("QG report links require a test object and a valid test_type")
+    if test_run.test_origin == "QG" and not test_object:
+        raise ValueError("QG report links require a test object")
     with open(summary_path, 'r', encoding="utf-8") as f:
         summary_data = json.load(f)
         statistics = summary_data.get("statistic") or {}
@@ -70,7 +68,7 @@ def populate_test_run(test_run: Test_runs, summary_path: str, version: str | Non
 
         subfolder = ""
         if test_run.test_origin == "QG":
-            subfolder = f"QG/{test_object}-{test_type}"
+            subfolder = f"QG/{test_object}"
         elif test_run.test_origin == "TAS":
             subfolder = f"TAS/{test_object}"
         elif allure_subfolder is not None:
@@ -324,7 +322,7 @@ def main():
             # Populate the test run object based on the summary.json file 
             test_run.suite_id = latest_suite_version_obj.id
             test_version = (nrt_suite or find_nrt_suite(test_suite.test_object.lower(), suites) or {}).get('version')
-            test_run = populate_test_run(test_run, os.path.join(run_dir, SUMMARY_FILE_PATH), test_version, test_suite.test_object, nrt_suite.get('allure_subfolder') if nrt_suite else None, test_type=test_suite.test_type)
+            test_run = populate_test_run(test_run, os.path.join(run_dir, SUMMARY_FILE_PATH), test_version, test_suite.test_object, nrt_suite.get('allure_subfolder') if nrt_suite else None)
             # Populating test executions based on the test cases JSON files
             if os.path.exists(os.path.join(run_dir, TEST_CASES_PATH)):
                 test_executions = populate_test_executions(os.path.join(run_dir, TEST_CASES_PATH), test_run.allure_url)
