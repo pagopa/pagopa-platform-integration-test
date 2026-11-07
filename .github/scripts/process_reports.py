@@ -18,9 +18,8 @@ _FENCE_RE = re.compile(r"^ {0,3}(?P<marker>`{3,}|~{3,})(?P<info>.*)$")
 _FULL_ANALYSIS_PAGE = "full.html"
 
 
-def update_tas_main_index(root_path):
-    """Render suite buttons for suite indexes present under the TAS root."""
-    root_path = Path(root_path)
+def _list_published_suites(root_path):
+    """Return links to suite folders that already have a history index, sorted by name."""
     suites = []
     for suite_dir in root_path.iterdir():
         if not suite_dir.is_dir() or parse_tas_folder_timestamp(suite_dir.name):
@@ -32,6 +31,13 @@ def update_tas_main_index(root_path):
             "link": f"./{suite_dir.name}/index.html",
         })
     suites.sort(key=lambda suite: suite["name"].casefold())
+    return suites
+
+
+def update_tas_main_index(root_path):
+    """Render suite buttons for suite indexes present under the TAS root."""
+    root_path = Path(root_path)
+    suites = _list_published_suites(root_path)
 
     environment = Environment(
         loader=FileSystemLoader(".github/templates"),
@@ -217,13 +223,8 @@ def clean_tas_history(root_dir: str | Path, test_suite: object) -> None:
             shutil.rmtree(report_dir)
 
 
-def build_tas_index_page(root_dir, test_suite):
-    """Build the TAS history index from complete timestamped reports."""
-    test_suite = _validate_tas_suite_name(test_suite)
-
-    root_path = Path(root_dir) / test_suite
-    root_path.mkdir(parents=True, exist_ok=True)
-
+def _collect_tas_reports(root_path):
+    """Return complete timestamped reports found directly under root_path, newest first."""
     reports = []
     for report_dir in root_path.iterdir():
         if not report_dir.is_dir():
@@ -275,15 +276,51 @@ def build_tas_index_page(root_dir, test_suite):
     reports.sort(key=lambda report: report["sort_key"], reverse=True)
     for report in reports:
         del report["sort_key"]
+    return reports
 
+
+def _render_tas_history(root_path, **context):
+    """Render the shared history template into root_path/index.html."""
     environment = Environment(
         loader=FileSystemLoader(".github/templates"),
         autoescape=select_autoescape(["html", "xml"]),
     )
     template = environment.get_template("tas-history-index-template.html")
-    index_path = root_path / "index.html"
-    index_path.write_text(
-        template.render(reports=reports, suite_name=test_suite), encoding="utf-8"
+    (root_path / "index.html").write_text(template.render(**context), encoding="utf-8")
+
+
+def build_tas_index_page(root_dir, test_suite):
+    """Build a suite history index (TAS or QG) from complete timestamped reports."""
+    test_suite = _validate_tas_suite_name(test_suite)
+
+    root_path = Path(root_dir) / test_suite
+    root_path.mkdir(parents=True, exist_ok=True)
+
+    if Path(root_dir).name == "QG":
+        report_title = f"Report Quality Gate - {test_suite}"
+        back_label = "Torna alle suite QG"
+    else:
+        report_title = f"Storico Test Report - {test_suite}"
+        back_label = "Torna alla dashboard TAS"
+    _render_tas_history(
+        root_path,
+        report_title=report_title,
+        back_label=back_label,
+        suites=[],
+        reports=_collect_tas_reports(root_path),
+    )
+
+
+def build_qg_index_page(root_dir):
+    """Build the QG landing page: suite links plus legacy runs published directly under QG/."""
+    root_path = Path(root_dir)
+    root_path.mkdir(parents=True, exist_ok=True)
+    _render_tas_history(
+        root_path,
+        report_title="Report Quality Gate",
+        back_label="Torna alla dashboard",
+        suites=_list_published_suites(root_path),
+        reports=_collect_tas_reports(root_path),
     )
 
 

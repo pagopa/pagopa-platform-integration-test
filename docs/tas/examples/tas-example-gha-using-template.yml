@@ -55,6 +55,11 @@ on:
         description: "Also produce Allure results (allure-results/) in the artifact"
         type: boolean
         default: false
+      isQualityGateRun:
+        description: "Classify this run as Quality Gate (QG) instead of TAS"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -90,6 +95,7 @@ jobs:
           # Also emit an Allure results directory (allure-results/) inside the
           # test-results artifact; render it to HTML yourself (allure generate).
           allure:       ${{ inputs.allure || 'false' }}
+          isQualityGateRun: ${{ inputs.isQualityGateRun && 'true' || 'false' }}
           # Optional overrides (defaults shown for reference):
           # python_version: "3.11"
           # tas_repo: "pagopa/pagopa-platform-integration-test"

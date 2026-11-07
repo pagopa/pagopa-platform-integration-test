@@ -903,6 +903,7 @@ Input:
 | `environment` | `dev`, `uat` | ambiente target |
 | `caller_id` | stringa libera | sistema chiamante |
 | `correlation_id` | stringa libera | identificativo per tracciare la run |
+| `isQualityGateRun` | booleano opzionale | default `false`: origine `TAS`; `true`: origine `QG` |
 
 Output:
 
@@ -918,6 +919,16 @@ Output:
 Il workflow carica i segreti dall'environment `integration-tests`, produce `behave-results.json`,
 `test-summary.json`, `junit/`, pubblica l'artefatto `test-results` e fallisce il job quando
 uno o piu scenari falliscono.
+
+Le run ordinarie pubblicano report e analisi AI sotto `TAS/<suite>/<timestamp>/` su
+`gh-pages`; con `isQualityGateRun: true` usano
+`QG/<suite>/<timestamp>/`, con lo stesso formato UTC.
+`QG/index.html` elenca le suite, ciascuna con il proprio storico; le vecchie run
+direttamente sotto `QG/<timestamp>/` restano accessibili senza essere spostate.
+Origine e flag sono inclusi nei log, nel job
+summary, in `test-summary.json` e nei metadati Allure. L'ingestion salva
+`test_origin: QG` e URL Allure sotto `QG/<suite>/` per le run Quality Gate.
+Il flag non modifica selezione dei test o criteri di successo.
 
 Nota di allineamento: il workflow riusabile storico risolve il path `src/bdd/<suite>` per
 wisp e `all`. Prima di usarlo come gate per la struttura attuale del repository, verificare
@@ -947,6 +958,11 @@ python scripts/tas_orchestrator.py \
 
 Per selezionare una categoria diversa da `integration` aggiungere `--type {integration|e2e|api}`
 (default: `integration`, mappa su `src/<type>/<suite>`).
+
+Per classificare una run come Quality Gate aggiungere `--is-quality-gate-run`.
+I wrapper GitHub Actions e Azure DevOps espongono lo stesso input
+`isQualityGateRun`, opzionale con default `false`; vale in tutte le modalita.
+Contratto ed esempi: [guida TAS](docs/tas/tas-developer-guide.md).
 
 Esecuzione sincrona:
 

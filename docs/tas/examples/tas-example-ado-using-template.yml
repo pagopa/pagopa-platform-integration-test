@@ -56,6 +56,10 @@ parameters:
     displayName: "Also produce Allure results (allure-results/) in the artifact"
     type: boolean
     default: false
+  - name: isQualityGateRun
+    displayName: "Classify this run as Quality Gate (QG) instead of TAS"
+    type: boolean
+    default: false
   - name: verifyOrchestrator
     displayName: "Verify tas_orchestrator.py SHA-256 integrity (recommended)"
     type: boolean
@@ -85,7 +89,7 @@ resources:
     - repository: tas
       type: github
       name: pagopa/azure-pipeline-templates
-      ref: refs/tags/tas-integration-tests/v1   # template repo branch (→ refs/tags/tas-integration-test/v1 or refs/heads/main)
+      ref: refs/tags/tas-integration-tests/v1
       endpoint: pagoPA-projects   # ← GitHub service connection name (Project settings → Service connections)
 
 stages:
@@ -138,6 +142,7 @@ stages:
               # the artifact. In sync mode it is extracted under ARTIFACT_DIR;
               # rendering it to HTML is left to the caller (allure generate).
               allure:             ${{ parameters.allure }}
+              isQualityGateRun:    ${{ parameters.isQualityGateRun }}
               # GitHub PAT forwarded to the orchestrator as TAS_GITHUB_TOKEN.
               # Source it from a SECRET pipeline variable (here
               # 'INTEGRATION_TEST_PAT') so it is masked in the logs — do not

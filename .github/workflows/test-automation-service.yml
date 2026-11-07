@@ -40,6 +40,11 @@ on:
         required: false
         type: boolean
         default: true
+      isQualityGateRun:
+        description: "Classify this run as Quality Gate (QG) instead of TAS"
+        required: false
+        type: boolean
+        default: false
     secrets:
       NRT_SECRETS_BUNDLE:
         description: "Environment secret bundle for NRT suites that require it"
@@ -107,6 +112,11 @@ on:
         required: false
         type: boolean
         default: true
+      isQualityGateRun:
+        description: "Classify this run as Quality Gate (QG) instead of TAS"
+        required: false
+        type: boolean
+        default: false
 
 # The run-name includes the correlation_id so the CLI bridge can reliably locate
 # this run via the API without depending on timestamps.
@@ -125,6 +135,8 @@ jobs:
     env:
       TARGET_ENV: ${{ inputs.environment }}
       SECRETS_RESOLVER: dict
+      TEST_ORIGIN: ${{ inputs.isQualityGateRun && 'QG' || 'TAS' }}
+      IS_QUALITY_GATE_RUN: ${{ inputs.isQualityGateRun }}
     outputs:
       passed:   ${{ steps.summary.outputs.passed }}
       failed:   ${{ steps.summary.outputs.failed }}
@@ -138,6 +150,7 @@ jobs:
         run: |
           echo "::notice title=Caller::${{ inputs.caller_id }}"
           echo "::notice title=Correlation ID::${{ inputs.correlation_id }}"
+          echo "::notice title=Origin::${TEST_ORIGIN} (isQualityGateRun=${IS_QUALITY_GATE_RUN})"
           echo "::notice title=Type/Suite::${{ inputs.test_type }} / ${{ inputs.test_suite }} | Env: ${{ inputs.environment }}"
           # The ref is a top-level workflow_dispatch parameter (not a workflow input):
           # callers select it via the GitHub API payload ('ref' field) or via the
@@ -316,6 +329,8 @@ jobs:
               "test_type":      "${{ inputs.test_type }}",
               "suite":          "${{ inputs.test_suite }}",
               "environment":    "${{ inputs.environment }}",
+              "origin":         os.environ["TEST_ORIGIN"],
+              "isQualityGateRun": os.environ["IS_QUALITY_GATE_RUN"] == "true",
               "ref":            "${{ github.ref }}",
               "sha":            "${{ github.sha }}",
               "passed":         passed,
@@ -358,6 +373,8 @@ jobs:
           echo "| **Test type** | ${{ inputs.test_type }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Suite** | ${{ inputs.test_suite }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Environment** | ${{ inputs.environment }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Origin** | ${TEST_ORIGIN} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **isQualityGateRun** | ${IS_QUALITY_GATE_RUN} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Ref** | \`${{ github.ref }}\` (sha \`${{ github.sha }}\`) |" >> $GITHUB_STEP_SUMMARY
           echo "| **Passed** | ${{ steps.summary.outputs.passed }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Failed** | ${{ steps.summary.outputs.failed }} |" >> $GITHUB_STEP_SUMMARY
@@ -372,6 +389,9 @@ jobs:
         env:
           REPORT_DIR: ${{ inputs.test_suite }}-${{ inputs.test_type }}
         run: |
+          if [ -d allure-results ]; then
+            printf 'Origin=%s\nisQualityGateRun=%s\n' "$TEST_ORIGIN" "$IS_QUALITY_GATE_RUN" >> allure-results/environment.properties
+          fi
           # Generate the HTML report.
           allure generate allure-results --clean -o "$REPORT_DIR"
 
@@ -398,7 +418,7 @@ jobs:
           ALLURE_RESULTS_DIR: allure-results
           JUNIT_RESULTS_DIR: junit
           PROMPT_OUTPUT: ai-analysis-input/prompt.txt
-          SUITE_LABEL: ${{ inputs.test_suite }} ${{ inputs.test_type }}
+          SUITE_LABEL: ${{ inputs.isQualityGateRun && 'QG' || 'TAS' }} - ${{ inputs.test_suite }} ${{ inputs.test_type }}
         run: python .github/scripts/build_ai_prompt.py
 
       - name: Upload TAS AI prompt
@@ -444,6 +464,8 @@ jobs:
     permissions:
       contents: write
       actions: read
+    env:
+      TEST_ORIGIN: ${{ inputs.isQualityGateRun && 'QG' || 'TAS' }}
     steps:
       - name: Checkout TAS publishing sources
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -535,7 +557,11 @@ jobs:
           echo "PUBLISH_TIMESTAMP=${PUBLISH_TIMESTAMP}" >> "$GITHUB_ENV"
           export PUBLISH_TIMESTAMP
 
-          DEST="public/TAS/${TEST_SUITE}/${PUBLISH_TIMESTAMP}"
+          REPORT_SUBFOLDER="${TEST_ORIGIN}/${TEST_SUITE}"
+          echo "REPORT_SUBFOLDER=${REPORT_SUBFOLDER}" >> "$GITHUB_ENV"
+          export REPORT_SUBFOLDER
+
+          DEST="public/${REPORT_SUBFOLDER}/${PUBLISH_TIMESTAMP}"
           mkdir -p "$DEST"
           INDEX_FILE="$DEST/index.html"
           if [ ! -e "$INDEX_FILE" ]; then
@@ -565,10 +591,10 @@ jobs:
 
           deploy_ai_analysis(
               artifact_dir=os.path.join(workspace, "artifacts"),
-              run_dir=os.path.join(workspace, "public", "TAS", os.environ["TEST_SUITE"], os.environ["PUBLISH_TIMESTAMP"]),
+              run_dir=os.path.join(workspace, "public", os.environ["REPORT_SUBFOLDER"], os.environ["PUBLISH_TIMESTAMP"]),
               last_history_dir=None,
               analysis_artifact_name="tas-ai-analysis",
-              suite_label=f"{os.environ['TEST_SUITE']} {os.environ['TEST_TYPE']}",
+              suite_label=f"{os.environ['TEST_ORIGIN']} - {os.environ['TEST_SUITE']} {os.environ['TEST_TYPE']}",
               timestamp=os.environ["PUBLISH_TIMESTAMP"],
               history_url=None,
           )
@@ -590,15 +616,20 @@ jobs:
           sys.path.insert(0, os.path.join(tas_source, ".github", "scripts"))
           os.chdir(tas_source)
           from process_reports import (
+              build_qg_index_page,
               build_tas_index_page,
               clean_tas_history,
               update_tas_main_index,
           )
 
-          tas_root = Path(workspace) / "public" / "TAS"
+          test_origin = os.environ["TEST_ORIGIN"]
           test_suite = os.environ["TEST_SUITE"]
-          clean_tas_history(tas_root, test_suite)
-          build_tas_index_page(tas_root, test_suite)
+          origin_root = Path(workspace) / "public" / test_origin
+          if test_origin == "TAS":
+              clean_tas_history(origin_root, test_suite)
+          build_tas_index_page(origin_root, test_suite)
+          if test_origin == "QG":
+              build_qg_index_page(origin_root)
           public_link = Path("public")
           if public_link.exists() or public_link.is_symlink():
               raise FileExistsError(f"Unexpected path in TAS source checkout: {public_link}")
@@ -610,7 +641,8 @@ jobs:
               )
           finally:
               public_link.unlink()
-              update_tas_main_index(tas_root)
+              if test_origin == "TAS":
+                  update_tas_main_index(origin_root)
           PY
 
       - name: Publish TAS results to gh-pages
@@ -635,6 +667,6 @@ jobs:
       suite: ${{ inputs.test_suite }}
       test_type: ${{ inputs.test_type }}
       artifact_name: test-results
-      origin: TAS
+      origin: ${{ inputs.isQualityGateRun && 'QG' || 'TAS' }}
 
      
