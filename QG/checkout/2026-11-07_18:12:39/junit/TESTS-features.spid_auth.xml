@@ -1,0 +1,32 @@
+<testsuite name="features.spid_auth.Flusso di accesso con SPID" tests="2" errors="0" failures="0" skipped="0" time="17.830094" timestamp="2026-11-07T18:19:13.175233" hostname="runnervm7aw5e"><testcase classname="features.spid_auth.Flusso di accesso con SPID" name="Accesso SPID completato con successo" status="passed" time="9.143198"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_002_Checkout_scenario_01
+  Scenario: Accesso SPID completato con successo
+    Dato La pagina di checkout è aperta ... passed in 0.208s
+    E La lingua è impostata su "it" ... passed in 0.827s
+    Quando L'utente clicca sul pulsante di login ... passed in 5.967s
+    Allora L'utente ha effettuato l'accesso ... passed in 2.142s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.spid_auth.Flusso di accesso con SPID" name="Logout SPID completato con successo" status="passed" time="8.686895"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_002_Checkout_scenario_02
+  Scenario: Logout SPID completato con successo
+    Dato La pagina di checkout è aperta ... passed in 0.216s
+    E La lingua è impostata su "it" ... passed in 0.828s
+    Dato L'utente ha effettuato l'accesso con SPID ... passed in 7.551s
+    Quando L'utente clicca sul pulsante utente ... passed in 0.017s
+    E L'utente clicca sul sottomenu esci ... passed in 0.015s
+    E L'utente conferma l'azione di logout ... passed in 0.051s
+    Allora L'utente ha effettuato correttamente il logout ... passed in 0.008s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
