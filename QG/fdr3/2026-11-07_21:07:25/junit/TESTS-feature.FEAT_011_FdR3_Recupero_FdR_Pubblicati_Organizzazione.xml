@@ -1,0 +1,46 @@
+<testsuite name="feature.FEAT_011_FdR3_Recupero_FdR_Pubblicati_Organizzazione.Recupero FdR pubblicati per organizzazione" tests="3" errors="0" failures="0" skipped="0" time="0.724135" timestamp="2026-11-07T21:07:40.944873" hostname="runnervm7aw5e"><testcase classname="feature.FEAT_011_FdR3_Recupero_FdR_Pubblicati_Organizzazione.Recupero FdR pubblicati per organizzazione" name="Recupero di tutti i FdR pubblicati" status="passed" time="0.35112"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @fdr3_011_01
+  Scenario: Recupero di tutti i FdR pubblicati
+    Dato che i sistemi sono operativi ... passed in 0.000s
+    Quando l'organizzazione invia la richiesta di "recupero di tutti i fdr pubblicati dall'organizzazione" con il payload "None" ... passed in 0.351s
+    Allora l'organizzazione riceve il codice di stato HTTP 200 ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="feature.FEAT_011_FdR3_Recupero_FdR_Pubblicati_Organizzazione.Recupero FdR pubblicati per organizzazione" name="Recupero di tutti i FdR pubblicati filtrati per PSP" status="passed" time="0.247616"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @fdr3_011_02
+  Scenario: Recupero di tutti i FdR pubblicati filtrati per PSP
+    Dato che i sistemi sono operativi ... passed in 0.000s
+    Dato la configurazione psp è valorizzata come pspId nei parametri di query ... passed in 0.000s
+    Quando l'organizzazione invia la richiesta di "recupero di tutti i fdr pubblicati dall'organizzazione" con il payload "None" ... passed in 0.247s
+    Allora l'organizzazione riceve il codice di stato HTTP 200 ... passed in 0.000s
+    E l'organizzazione riceve tutti i FdR con lo stesso pspId ... passed in 0.001s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="feature.FEAT_011_FdR3_Recupero_FdR_Pubblicati_Organizzazione.Recupero FdR pubblicati per organizzazione" name="Recupero di tutti i FdR pubblicati da ieri" status="passed" time="0.125399"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @fdr3_011_03
+  Scenario: Recupero di tutti i FdR pubblicati da ieri
+    Dato che i sistemi sono operativi ... passed in 0.000s
+    Dato la configurazione psp è valorizzata come pspId nei parametri di query ... passed in 0.000s
+    E l'organizzazione aggiunge ieri come publishedGt nei parametri di query ... passed in 0.000s
+    Quando l'organizzazione invia la richiesta di "recupero di tutti i fdr pubblicati dall'organizzazione" con il payload "None" ... passed in 0.125s
+    Allora l'organizzazione riceve il codice di stato HTTP 200 ... passed in 0.000s
+    E l'organizzazione riceve tutti i FdR con pspId uguale al valore di pspId nei parametri di query ... passed in 0.000s
+    E l'organizzazione riceve tutti i FdR con published > publishedGt ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
