@@ -21,13 +21,13 @@ File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave
     ) from exc
 ```
 ### Root cause
-The PSP selection radio element `#psp-radio-PPAYITR1XXX` did not render or become clickable within the 5-second timeout on the UAT PSP list page.
+The PSP radio button (`#psp-radio-PPAYITR1XXX`) failed to render or appear within 5000ms on the PSP list page, causing a UI timeout.
 
 ### Category
 flaky
 
 ### Recommended action
-Increase the explicit wait timeout for PSP loading or verify if Postepay PSP availability in UAT experiences latency under load.
+Verify if the target PSP availability dynamically changes in UAT or if explicit waiting/retry logic is needed before interacting with the PSP radio element.
 
 ---
 
@@ -48,13 +48,13 @@ File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ```
 ### Root cause
-The application returned a Creditor Institution response error modal ('L’Ente Creditore...') instead of the expected unknown notice modal ('Non riusciamo a trovare...').
+The application returned a generic Creditor Entity error modal instead of the expected invalid payment notice modal (`PAA_PAGAMENTO_SCONOSCIUTO`).
 
 ### Category
 application bug
 
 ### Recommended action
-Investigate backend error handling mapping for invalid notice codes in the specified range to ensure correct error codes and user messaging are produced.
+Investigate backend mapping for `PAA_PAGAMENTO_SCONOSCIUTO` to ensure invalid notice ranges trigger the specific user-facing error message.
 
 ---
 
@@ -79,30 +79,32 @@ File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave
     ) from exc
 ```
 ### Root cause
-The PSP selection element `#psp-radio-PPAYITR1XXX` timed out after 5000ms during the authenticated checkout flow.
+The PSP radio button (`#psp-radio-PPAYITR1XXX`) failed to render within 5000ms on the PSP list page during authenticated checkout flow.
 
 ### Category
 flaky
 
 ### Recommended action
-Implement retry mechanisms or extend locator timeout when fetching PSP options on the checkout frontend.
+Check UAT environment latency when rendering PSP list options and increase element wait timeout if necessary.
 
 ---
 
 ## Common patterns
-- **PSP Selection Timeout**: Tests 1 and 3 both timed out waiting for the Postepay PSP radio option (`#psp-radio-PPAYITR1XXX`) on the UAT PSP list page.
+- **PSP Selection UI Timeouts**: Multiple tests failed due to `Timeout on locator '#psp-radio-PPAYITR1XXX' after 5000 ms` on the Checkout PSP selection page (`lista-psp`), indicating either slow API response times for loading PSPs or DOM render latency.
 
+---
 
 ## Suite: fdr3
 
-All execution completed successfully with 0 failures; no tests were skipped or interrupted.
+Execution completed with 0 failures; please confirm that all tests ran as expected and none were unintentionally skipped.
 
+---
 
 ## Suite: wisp
 
-# 1. L'utente paga un carrello multibeneficiario con due RPT con un totale di cinque versamenti
+# 1. L'utente paga un carrello con singola RPT con quattro versamenti
 - **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT: L'utente paga un carrello multibeneficiario con due RPT con un totale di cinque versamenti`
+- **fullName**: `L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con singola RPT con quattro versamenti`
 - **message**: AssertionError: There are not events with business process receipt-ok.
 - **trace**:
 ```
@@ -112,7 +114,7 @@ All execution completed successfully with 0 failures; no tests were skipped or i
   File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
     self.func(context, *args, **kwargs)
     ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "src/integration/wisp/steps/steps.py", line 197, in user_redirected_to_checkout
+  File "src/integration/wisp/steps/steps.py", line 172, in user_redirected_to_checkout
     steputils.check_wisp_session_timers_del_and_rts_were_sent(context)
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
   File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 925, in check_wisp_session_timers_del_and_rts_were_sent
@@ -128,13 +130,13 @@ All execution completed successfully with 0 failures; no tests were skipped or i
            ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-The expected `receipt-ok` business process event with status `RT_SEND_SUCCESS` was not registered/emitted during cart payment processing.
+Expected asynchronous event with business process `receipt-ok` and status `RT_SEND_SUCCESS` was not found during session check.
 
 ### Category
 application bug
 
 ### Recommended action
-Inspect event streaming/processing service (e.g., event dispatcher/broker) to verify why receipt confirmation events (`RT_SEND_SUCCESS`) are missing.
+Inspect event store/event streaming pipeline to determine why `receipt-ok` events are not generated or recorded after payment processing.
 
 ---
 
@@ -166,19 +168,57 @@ Inspect event streaming/processing service (e.g., event dispatcher/broker) to ve
            ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-The expected `receipt-ok` event with status `RT_SEND_SUCCESS` was not found for single payment with duty stamp.
+Expected event with business process `receipt-ok` (`RT_SEND_SUCCESS`) was missing during validation of WISP session timers and RT sending.
 
 ### Category
 application bug
 
 ### Recommended action
-Verify RT (Ricevuta Telematica) generation and delivery pipelines for single payments containing digital stamps (`marca da bollo`).
+Verify receipts processing service and event bus delivery for payments involving stamp duty (marca da bollo).
 
 ---
 
-# 3. L'utente paga un carrello con singola RPT con due versamenti semplici e una marca da bollo
+# 3. L'utente paga un carrello multibeneficiario con due RPT con un totale di due versamenti
 - **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con singola RPT con due versamenti semplici e una marca da bollo`
+- **fullName**: `L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT: L'utente paga un carrello multibeneficiario con due RPT con un totale di due versamenti`
+- **message**: AssertionError: There are not events with business process receipt-ok.
+- **trace**:
+```
+[... earlier frames omitted ...]
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/integration/wisp/steps/steps.py", line 197, in user_redirected_to_checkout
+    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 925, in check_wisp_session_timers_del_and_rts_were_sent
+    check_event(context, 'receipt-ok', 'status', 'RT_SEND_SUCCESS')
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 430, in check_event
+    assert_show_message(len(needed_process_events) > 0,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        f'There are not events with business process {business_process}.')
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.py", line 7, in assert_show_message
+    assert assertion_value, message
+           ^^^^^^^^^^^^^^^
+```
+### Root cause
+Verification failed because no event with business process `receipt-ok` was logged for multi-beneficiary cart payment.
+
+### Category
+application bug
+
+### Recommended action
+Check backend receipt delivery logs for multi-beneficiary payment carts to ensure receipt generation completes successfully.
+
+---
+
+# 4. L'utente paga un carrello con due RPT, con quantita diverse di versamenti semplici e marche da bollo
+- **status**: failed
+- **fullName**: `L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con due RPT, con quantita diverse di versamenti semplici e marche da bollo`
 - **message**: AssertionError: There are not events with business process receipt-ok.
 - **trace**:
 ```
@@ -204,28 +244,30 @@ Verify RT (Ricevuta Telematica) generation and delivery pipelines for single pay
            ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-`RT_SEND_SUCCESS` receipt event was missing in the event log when verifying single RPT cart completion.
+System failed to issue or track `receipt-ok` event with `RT_SEND_SUCCESS` status for multi-RPT payment cart with mixed payments and stamp duties.
 
 ### Category
 application bug
 
 ### Recommended action
-Check backend notification logs and event publishing services for RT transmission failure across cart operations.
+Investigate RT (Ricevuta Telematica) transmission service failures across complex RPT/cart scenarios.
 
 ---
 
 ## Common patterns
-- **Missing RT Receipt Events (`receipt-ok`)**: Across all WISP suite failures, the step `check_wisp_session_timers_del_and_rts_were_sent` consistently fails due to missing `receipt-ok` events with status `RT_SEND_SUCCESS`.
+- **Missing `receipt-ok` Event Across Flows**: 100% of failures in the WISP suite stem from `AssertionError: There are not events with business process receipt-ok.` during `check_wisp_session_timers_del_and_rts_were_sent`. This indicates a downstream issue in emitting or storing successful RT transmission events (`RT_SEND_SUCCESS`).
 
+---
 
 ## Cross-suite correlation
 
-Analyzing the failure patterns across **checkout**, **fdr3**, and **wisp**:
+Analyzing failures across the test suites reveals two isolated root cause clusters:
 
-1. **Frontend vs. Backend Integration Disconnect**:
-   - **Checkout** failures stem from UI interaction timeouts (`#psp-radio-PPAYITR1XXX`) and unexpected modal error responses from backend/creditor entity integrations.
-   - **WISP** failures point to a systemic backend issue where RT receipts (`RT_SEND_SUCCESS` / `receipt-ok`) fail to emit or record properly following payment flows.
-2. **Impact on Payment Finalization**:
-   - Both failing suites encounter issues at the final stage of payment processing (PSP selection/checkout flow in Checkout, and RT receipt confirmation in WISP).
-3. **FDR3 Stability**:
-   - **FDR3** executed cleanly without failures, indicating issues are isolated to payment flow completion and event propagation components rather than reporting/FDR subsystems.
+1. **WISP Suite - Event Notification/Receipt Pipeline Breakdown**: 
+   - All failures in `wisp` fail uniformly at the receipt validation step (`check_wisp_session_timers_del_and_rts_were_sent`), expecting a `receipt-ok` event with status `RT_SEND_SUCCESS`. 
+   - **Recommended Action**: Inspect the asynchronous receipt service (RT processor / event hub) in the test environment to resolve missing receipt event propagation.
+
+2. **Checkout Suite - UI & Error Handling Issues**: 
+   - Two tests timed out waiting for PSP selection (`#psp-radio-PPAYITR1XXX`), pointing to frontend latency or dynamic PSP loading issues.
+   - One test failed assertion on error modal copy (`PAA_PAGAMENTO_SCONOSCIUTO`), returning generic creditor error text instead.
+   - **Recommended Action**: Address the frontend error modal routing bug for invalid notices, and adjust explicit waits/polling on the Checkout PSP selection UI.
