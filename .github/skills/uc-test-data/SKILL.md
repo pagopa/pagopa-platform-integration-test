@@ -73,6 +73,14 @@ profile. Do not duplicate their language, indentation, tag or outline rules.
    when no supported independent preparation or observation is documented;
    do not prescribe a Given that assumes it or a preliminary payment to
    establish it. Return any required context clarification to its owner.
+   Use the context's justification for each literal parameter at Gherkin level.
+   Do not add a field merely because an implementation API requires it, then
+   create a placeholder to fill that unnecessary parameter. Keep actual setup
+   and implementation data requirements in the report and engineer handoff;
+   this does not resolve their fitness, availability or readiness.
+   Classify a value by its role in the operation, not by its type or appearance.
+   Input values use D requirements; expected results and timing rules use
+   context evidence/oracles; profile identifiers use their authoritative inputs.
 2. Read supplied sources; map documented concrete values, ranges or generation
    rules to the requirements. Apply the resolution completeness gate below
    before declaring a value missing. A range is not a particular available entity.
@@ -92,6 +100,12 @@ profile. Do not duplicate their language, indentation, tag or outline rules.
    needed; Combinations selects the values. Each resolution retains its own
    provenance, admission and fitness. Do not overwrite one value with another
    or allocate a new D merely because a value varies.
+   A supplied example remains provided evidence, but its presence does not
+   establish that its values are required literals or usable fixtures.
+   Assess documented applicability, relationships and any synthetic permission.
+   Do not reject all examples automatically or equate uncertain live state with
+   a missing documented value. Apply the existing unverified-value and TODO
+   rules to the precise unresolved requirement.
 3. For unresolved values, search repository documentation/data records as
    candidates under the shared policy, starting with the documented test-data
    directory when accessible. Do not skip this search just because generating

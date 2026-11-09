@@ -39,6 +39,10 @@ skill and the inputs below; do not translate the UC directly.
 - Target suite and feature path, and the profile values that the
   conventions require from the user (for example the tracking comment). When
   the path is not given, ask for it; do not derive it from existing files.
+- Functional focus and boundaries from the UC and explicit scoped human
+  clarifications. Record them in the existing registry; ask only when material
+  scope or conflicting requirements remain unclear. Supplying broad technical
+  documentation does not authorize translating all of its behaviours.
 
 ## Automatic workflow and report inputs
 
@@ -195,6 +199,12 @@ Build the mapping before writing any step. It is interpretive, not mechanical:
 a UC step is not a Gherkin step, and an AC is not a scenario. Use the table as
 the default reading of each section; record every deviation and its reason.
 
+Choose the operation under test and authorized functional goal before refining
+steps. Preserve every explicit UC flow and criterion in coverage; a narrow focus
+does not silently remove them. Keep supporting setup and unrelated document
+behaviours distinct from the behaviour being demonstrated. Apply the shared
+source policy to scoped notes and conflicting claims.
+
 One functional UC step may correspond to one or more Gherkin steps. Choose
 the granularity primarily from the UC and the referenced or provided functional
 specifications, considering the actions, rules, and outcomes that the scenario
@@ -277,16 +287,16 @@ clarify material uncertainty instead.
 | `UC-…` id and title | `Feature` title and traceability | The title describes the capability; the id is traced as described in step 4. |
 | `JTBD di riferimento` | Traceability only | It is a reference, not a goal statement: do not derive a narrative ("in order to…") from it. Add a `Feature` description only with content stated in the UC. |
 | Attore principale | Subject of actor steps | Use the role named by the UC, in the grammatical form required by the instructions. |
-| Attori secondari | Subject of system responses | Typically the subject of `Then` steps. A secondary actor is never an extra test precondition by itself. |
+| Attori secondari | Subjects of interactions and responses; choose keywords by functional role under the Gherkin instructions, not actor classification | A secondary actor is never an extra test precondition by itself. |
 | Precondizioni | `Given` (or `Background` when shared by every scenario of the file), subject to supported preparation or observation | Classify each one: system/environment availability, state of a business entity, or actor configuration/authorization. Entity states and configurations also become data requirements, not automatically guaranteed Given statements. Apply the instructions' initial-state rule using context evidence; unresolved preparation stays an explicit requirement in the report. Preconditions do not become scenarios with their own `When`/`Then`, nor dependencies on the execution of other scenarios. A configuration precondition that determines expected values (for example the language of displayed texts) is linked to the oracles that depend on it. A precondition does not define the behaviour when it is not satisfied: derive no negative scenario from it unless an AF, EF, or AC defines that behaviour. |
 | Flusso principale — actor actions | `When` / `And` | All actions of the actor in the main flow, data entry included, up to the action that produces the verified outcome. `Given` is reserved for the state before the flow. Add an intermediate `Then` when the scenario's specified behaviour requires verifying an observable intermediate response, supported by the UC or admitted documentation, including ACs and postconditions. Cite the evidence; implementation convenience or an internal check alone never justifies it. |
 | Interaction steps not stated in the UC | No step | Do not add actions the UC does not state (confirmations, intermediate controls, navigation). If an outcome cannot be reached without them, take them from referenced or provided documentation or from the user; otherwise report a gap. |
 | Flusso principale — internal system checks | No dedicated step | Verification performed internally by the system is observed through its outcome, not described as a step. |
-| Flusso principale — system response | `Then` | Only observable outcomes. |
+| Flusso principale — system response | `Then` | Only observable outcomes; an incoming event that triggers the operation belongs to trigger mapping, not this category. |
 | AF-NN | Distinct scenario, never an `Examples` row of the main flow | The main-flow steps up to the divergence, the AF prescription replacing the steps it names, then the remaining main-flow steps if the AF rejoins. Verify the AF-specific outcome and, after a rejoin, the final outcome; if the AF ends the flow, only its outcome. The AF scenario may be an outline for data variants derived from admitted material, not specified as further AFs. A legacy AF that changes only values is a misclassified data variant: preserve its coverage reference and apply the row on variations, without inventing an alternative path. |
 | EF-NN | Negative scenario | The main flow up to the step where the anomaly occurs, with the anomaly in that step; `Then` verifies the stated reaction; the scenario ends there unless the EF states a return. Apply the profile label for negative scenarios. |
-| Postcondizioni | `Then` checks of final state | Verify them when observable through an interface named by the UC or by referenced or provided documentation. When observable only indirectly (for example through a displayed message), mark the coverage as partial. Otherwise report them as a verification requirement instead of inventing a check. |
-| AC-NN | Oracle of one or more scenarios | Resolve verbal flow references under ac-flow-references.md. Many ACs may target one flow and one Gherkin scenario, for FP, AF and EF/negative cases alike. Collect all applicable compatible criteria as `Then`/`And` checks in that scenario; never create one scenario per AC or keep only one AC per flow. An AC scoped to a flow applies to its supported data variants unless the criterion restricts applicability; the reference alone defines no values or variants. Every AC must be satisfied by at least one `Then` (with its `Given`/`When` context), and one AC may require several scenarios. Preserve each AC separately in Coverage even when scenario and Examples row are shared. |
+| Postcondizioni | `Then` checks of final state | Verify UC postconditions in every positive FP/AF scenario, independently of similar checks in EF ACs and regardless of optional positive tags. Apply the source-prescribed property and flow scope in ac-flow-references.md. Verify them when observable through an interface named by the UC or by referenced or provided documentation. When observable only indirectly (for example through a displayed message), mark the coverage as partial. Otherwise report them as a verification requirement instead of inventing a check. |
+| AC-NN | Oracle of one or more scenarios | Resolve verbal flow references under ac-flow-references.md. Many ACs may target one flow and one Gherkin scenario, for FP, AF and EF/negative cases alike. Collect all applicable compatible criteria as `Then`/`And` checks in that scenario; never create one scenario per AC or keep only one AC per flow. An AC scoped to a flow applies to its supported data variants unless the criterion restricts applicability; the reference alone defines no values or variants. Apply ac-flow-references.md for source-prescribed verification and flow scope. Every AC must be satisfied by at least one `Then` (with its `Given`/`When` context), and one AC may require several scenarios. Preserve each AC separately in Coverage even when scenario and Examples row are shared. |
 | Cases that differ only in values | `Scenario Outline` + `Examples` | Derive relevant data sets through the support skills from admitted documentation and material; no AF is required to specify them. Main flow, AF, or EF cases with the same behaviour and the same verifications become one outline with one row per supported case. Cases with different behaviour, or with different or additional verifications, get separate scenarios/outlines even if their steps look similar. A catalogue size or range alone does not determine the rows; do not invent a Cartesian product. Apply the instructions' rules on outlines. |
 | Values fixed by the UC (quantities, outcomes, status codes, enumerations) | Literal step parameters or `Examples` values | When the behaviour or an outcome depends on them, they are functional rules: keep them unchanged. A value on which nothing depends (changing it would change no outcome) is probably test data written in the UC: ask whether it is a rule or data, keep it unchanged meanwhile, and keep the feature a `bozza`. |
 | Expected values defined outside the UC (texts, times, codes) | `Then` parameters or `Examples` columns | Oracle values, not input data: take them only from referenced or provided documentation, never from the suite or the observed system. A technical code is verified only when the UC or the source states that it is part of the outcome. When missing, they are a functional gap. |
@@ -338,6 +348,14 @@ using it in data combinations. Reuse existing F/O/D ids when their meaning is
 unchanged; new constraints or a different oracle need functional evidence.
 Apply normal revisions and downstream invalidation.
 
+Context may also register a distinct documented path not named as a UC AF/EF
+when it is anchored to a UC operation or step, serves the authorized goal, and
+its trigger, required sequence and outcome are supported by admitted evidence.
+Record that anchor, source and reason in the existing inventory and Mapping.
+Do not invent UC flow or AC identifiers. Different paths are not data variants.
+Unrelated paths require a scope decision; conflicting or incomplete paths
+remain questions, not silently added or silently treated as covered.
+
 Intermediate checks need not have an invented AC: cite the actual FP/AF/EF
 element or admitted passage. In the context template's `AC or postcondition`
 cell, record that functional reference explicitly when no AC/postcondition
@@ -380,6 +398,10 @@ behaviour or oracle values; report those coverage gaps separately.
 
 Before persisting the feature, perform a semantic structure check:
 
+- Scoped clarifications and each additional documented path are reconciled
+  with the authorized goal, UC coverage and current context evidence.
+- Literal parameters have a justified functional role; implementation inputs
+  are not automatically promoted to Gherkin parameters.
 - Every mapped UC action remains an action, unless its treatment as
   independent preparation is explicitly justified in Mapping.
 - Given and Background contain genuine prerequisites, not operational

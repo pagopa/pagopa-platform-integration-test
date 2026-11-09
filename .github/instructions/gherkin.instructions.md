@@ -157,6 +157,16 @@ structure, brevity or reuse desired for the scenario.
   perform further business actions to obtain that result. Technical
   observation, including bounded waiting for an asynchronous result, does
   not itself constitute a new business action.
+- An incoming event or expiry may be the functional trigger and therefore a
+  When, even when another system produces it. A response observed from the
+  operation under test is a Then. Choose by causal role, not by component name.
+  Keep distinct events, acknowledgements and business completion separate;
+  preserve source-required direction, correlation and observation order.
+  These distinctions do not authorize additional checks or stronger outcomes.
+  Preserve every prescribed AC verification, including intermediate checks.
+  Non-arrival is observed against a supported boundary, not assumed instantly.
+  Keep timing formulas, phases and units as stated; do not replace them with
+  example configuration values or invent a missing clock boundary.
 - And and But continue the semantic role of the preceding Given, When or
   Then block. Use an explicit keyword when that role changes.
 - Background follows the same rules as Given and applies to every scenario

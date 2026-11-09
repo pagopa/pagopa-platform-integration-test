@@ -1039,6 +1039,11 @@ Indici degli asset AI: [agenti](.github/agents/README.md),
 [skill](.github/skills/README.md), [istruzioni](.github/instructions/README.md)
 e [profili](.github/profiles/README.md), con scope, modalita d'uso ed esempi.
 
+Per tradurre uno Use Case (UC) in feature, seguire il
+[workflow UC](docs/use-cases/uc-workflow.md): esplicitare il focus funzionale,
+riconciliare i percorsi documentati pertinenti e coprire flussi e criteri con
+evidenze ammesse.
+
 ### Convenzioni Gherkin
 
 - Usare un solo `Feature` per file.

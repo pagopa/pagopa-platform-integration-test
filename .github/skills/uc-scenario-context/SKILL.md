@@ -64,6 +64,9 @@ profile; granularity and UC mapping remain in
    Resolve AC flow references using
    [ac-flow-references.md](../uc-to-feature/ac-flow-references.md); retain
    target flow and applicability conditions in the oracle evidence.
+   Read the authorized functional goal and boundaries recorded in Agreed inputs.
+   Use the companion to identify every AC verification, including intermediate
+   checks, and postconditions for all positive FP/AF scenarios.
    Distinguish deployment locators from functional requirements: keep source
    URLs and environment applicability in Sources, but propose environment-
    independent page/domain wording for steps under the Gherkin instructions.
@@ -94,16 +97,29 @@ profile; granularity and UC mapping remain in
    functional rule. Preserve an explicit UC precondition as an unresolved
    requirement when its preparation is unknown; do not silently drop it or
    label the functional document defective for that reason alone.
+   In Mapping, distinguish initial state, incoming event, observable response,
+   acceptance and completion; record relevant conditions, correlation, phase
+   and timing formula. Register additional documented paths under the UC
+   inventory rule, with their anchor, source and reason, distinct from data
+   sets. Keep these distinctions in the existing Functional evidence, Mapping,
+   Oracles, Data requirements and Questions columns; add no schema, artifact,
+   state or event dictionary.
 4. Ask the user for missing information or a source. For independently
    discovered information, get explicit approval before using it. When the UC
    and a source disagree, expose the conflict and ask which requirement
    governs; do not rewrite the UC or silently choose a source.
+   Apply the shared source policy's distinctions among scope restrictions,
+   requirement clarifications and conflict-resolving decisions; reuse only
+   decisions that actually settle this conflict and its scope.
 5. Classify exact expected texts, status/error codes and timing requirements
    as **oracle values**, not input data. Preserve whether a time is a maximum,
    a minimum or exact; ask if unspecified. Hand input data requirements to
    [uc-test-data](../uc-test-data/SKILL.md), with their constraints,
    field meanings, combinations and scenario links. The same source may
    contribute to both skills, without reading it twice unnecessarily.
+   Before allocating D ids, justify each literal's functional role as a
+   Gherkin parameter; requirements needed only for implementation remain in
+   the report and engineer handoff.
    Register newly supported cases with stable SC-NNN ids under the UC skill's
    inventory rule; data resolution will establish their concrete combinations.
    Define D ids for requirements, not every concrete value. Reuse a D across

@@ -48,6 +48,27 @@ proposed use. Ask for approval with the dedicated question tool, for one
 coherent set of candidates at a time. Rejection means do not use those facts or
 values. If approval cannot be obtained, leave them pending and preserve the gap.
 
+## Evidence meaning and scoped clarifications
+
+Admission permits use of a source; it does not make every passage normative.
+Distinguish stated requirements, illustrative examples and tentative design
+options in the existing evidence cells. An example is not proof of a required
+literal or a usable test fixture. If a relevant example contradicts a stated
+rule, expose the conflict; do not choose either merely from its presentation.
+Unrelated imperfections in a source do not block supported scenario evidence.
+
+Treat explicit human clarifications for the current task as provided evidence.
+Distinguish a scope restriction, a requirement clarification and a decision
+resolving conflicting requirements. Excluding a property from the test focus
+does not prove that the property cannot affect product behaviour.
+An instruction to include alternatives supplies scope, not missing outcomes.
+
+Use a prior explicit decision only for the conflict and scope it actually
+settles. Otherwise present the incompatible claims, affected cases and proposed
+interpretation through the question tool. Do not assign automatic precedence
+to notes, examples, newer documents or filenames. Keep unresolved conflicts
+visible and block only their dependent checks under the owning workflow.
+
 ## Reading tools and failures
 
 - URLs: use `web_fetch` or the host's equivalent fetch tool (`web/fetch` in
