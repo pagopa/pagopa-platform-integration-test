@@ -123,6 +123,11 @@ names, messages, and traces. Its best-effort HTML and Markdown outputs are publi
 the run's `analysis/` subfolder; they do not affect the test outcome and are not linked from the
 Allure report root.
 
+When the run stops before behave starts (for example the `src/<test_type>/<suite>` folder does not
+exist, or the secrets validation fails), `run_tests` does not set its `tests_started` output: the Allure
+report step is skipped and neither the Pages publication nor the data ingestion runs, so no empty report
+or error-only ingestion is produced. The failure stays visible on `run_tests`.
+
 TAS keeps one history index per suite (`TAS/<suite>/index.html`). `QG/index.html` lists suites, each with a history at
 `QG/<suite>/index.html`; existing flat `QG/<timestamp>/` reports remain linked
 from the QG root and are not moved. The dashboard links to QG once its history
