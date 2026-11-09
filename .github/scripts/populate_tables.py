@@ -19,6 +19,21 @@ from src.conf.configuration import load_configurations
 ALLURE_RESULT_PATH = "allure-results"
 
 
+def get_gha_run_url() -> str | None:
+    """Return the URL of the GitHub Actions run executing this script, if available.
+
+    Reusable workflows share the run of their caller, so for the TAS workflow this is the
+    run that executed the tests. Returns None outside GitHub Actions (for example locally)
+    or when any of the GitHub variables is missing.
+    """
+    server = os.environ.get("GITHUB_SERVER_URL")
+    repository = os.environ.get("GITHUB_REPOSITORY")
+    run_id = os.environ.get("GITHUB_RUN_ID")
+    if not (server and repository and run_id):
+        return None
+    return f"{server}/{repository}/actions/runs/{run_id}"
+
+
 def calculate_total_failures(test_run: Test_runs) -> int:
     """
     Calculate the total number of failed scenarios for a given test run.
@@ -288,6 +303,7 @@ def main():
             test_run.env = str(args.env).upper()
             test_run.trigger_type = str(args.run_type).upper()
             test_run.test_origin = str(args.origin).upper()
+            test_run.gha_run_url = get_gha_run_url()
 
 
             nrt_suite = find_nrt_suite(dir, suites)
