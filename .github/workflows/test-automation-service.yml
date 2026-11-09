@@ -145,6 +145,9 @@ jobs:
       duration: ${{ steps.summary.outputs.duration }}
       outcome:  ${{ steps.summary.outputs.outcome }}
       publish_timestamp: ${{ steps.publish_timestamp.outputs.timestamp }}
+      # "true" only when the run got past test-path and secrets validation and behave was started.
+      # Without it nothing was executed: ingestion and publishing have nothing to work on.
+      tests_started: ${{ steps.tests_ready.outputs.ready }}
     steps:
       - name: Log invocation metadata
         run: |
@@ -228,6 +231,11 @@ jobs:
           NRT_SECRETS_BUNDLE: ${{ secrets.NRT_SECRETS_BUNDLE }}
           TEST_PATH: ${{ steps.test_path.outputs.path }}
         run: python .github/scripts/nrt-prepare-secrets.py "$TEST_PATH"
+
+      # Reached only when the suite path and the secrets are valid (a failed step above skips it).
+      - name: Mark tests as started
+        id: tests_ready
+        run: echo "ready=true" >> "$GITHUB_OUTPUT"
 
       # continue-on-error=true: the workflow must not stop on test failures;
       # artifact upload and result parsing must always run.
@@ -384,7 +392,7 @@ jobs:
           echo "| **Outcome** | ${{ steps.summary.outputs.outcome == 'success' && '✅ PASSED' || '❌ FAILED' }} |" >> $GITHUB_STEP_SUMMARY
 
       - name: Build ${{ inputs.test_suite }} E2E Allure report
-        if: always() && inputs.allure
+        if: always() && inputs.allure && steps.tests_ready.outputs.ready == 'true'
         continue-on-error: true
         env:
           REPORT_DIR: ${{ inputs.test_suite }}-${{ inputs.test_type }}
@@ -458,7 +466,7 @@ jobs:
 
   publish_results:
     name: TAS - Publish test results
-    if: always() && needs.run_tests.outputs.publish_timestamp != ''
+    if: always() && needs.run_tests.outputs.publish_timestamp != '' && needs.run_tests.outputs.tests_started == 'true'
     needs: [run_tests, ai_analysis]
     runs-on: ubuntu-latest
     permissions:
@@ -654,7 +662,7 @@ jobs:
           publish_branch: gh-pages
 
   save_test_data:
-    if: always()
+    if: always() && needs.run_tests.outputs.tests_started == 'true'
     needs: [run_tests]
     permissions:
       contents: read
