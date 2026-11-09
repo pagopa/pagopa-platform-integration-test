@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>🤖 AI Analysis · TAS - CHECKOUT E2E · 2026-11-09_12:05:33</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body { background-color: #f5f8fa; padding: 2rem; }
+    .hero {
+      background-color: #6f42c1;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      border-radius: 0.5rem;
+    }
+    .content-card {
+      background: white;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    }
+    .content-card h2 { margin-top: 1.5rem; color: #6f42c1; }
+    .content-card h3 { color: #495057; }
+    .content-card pre {
+      background: #f1f3f5;
+      padding: 0.75rem;
+      border-radius: 0.35rem;
+      overflow-x: auto;
+      font-size: 0.9rem;
+    }
+    .hero code {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      padding: 0.15rem 0.4rem;
+      border-radius: 0.35rem;
+    }
+    .content-card code {
+      color: #ff61b0;
+      background: #fff0f7;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    footer code {
+      color: #6f42c1;
+      background: #f3ebff;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    .btn-secondary { background-color: #6c757d; border: none; }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <h1 class="display-6">🤖 AI Analysis · TAS - CHECKOUT E2E</h1>
+  <p class="lead mb-1">Run: <code>2026-11-09_12:05:33</code></p>
+  
+</header>
+
+<div class="container">
+  <div class="content-card">
+    <div id="analysis-content">
+      <div class="text-center text-muted">Rendering in corso...</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Powered by GitHub Models · Model: <code>gemini-3.6-flash</code></p>
+</footer>
+
+<script>
+  const markdown = "# 1. Un pagamento con configurazione carta \"Wordline\" viene completato con successo -- @1.2\n- **status**: failed\n- **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta \"Wordline\" viene completato con successo`\n- **message**: AssertionError: Expected \u0027Hai pagato\u0027 in result message, but got: \u0027Il pagamento non \u00e8 andato a buon fine\u0027\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py\", line 309, in step_check_payment_success\n    assert \"Hai pagato\" in message_text, (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n```\n### Root cause\nThe payment transaction via the Wordline gateway failed unexpectedly, resulting in an error message instead of payment completion.\n\n### Category\napplication bug\n\n### Recommended action\nInvestigate the payment processing flow and API logs for Wordline gateway integrations to determine why the transaction was rejected.\n\n---\n\n# 2. Un pagamento con configurazione carta \"Postepay\" viene completato con successo -- @1.1\n- **status**: broken\n- **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta \"Postepay\" viene completato con successo`\n- **message**: RuntimeError: Timeout on locator \u0027#psp-radio-PPAYITR1XXX\u0027 after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py\", line 188, in step_select_psp\n    locate_and_click(page, f\"#psp-radio-{psp_id}\")\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py\", line 129, in locate_and_click\n    raise RuntimeError(\n        f\"Timeout on locator \u0027{locator}\u0027 after {timeout} ms (url: {current_url})\"\n    ) from exc\n```\n### Root cause\nElement `#psp-radio-PPAYITR1XXX` was not found on the PSP list page within the 5-second timeout, likely due to missing PSP configuration or delayed rendering.\n\n### Category\nenvironment\n\n### Recommended action\nVerify if the Postepay PSP (`PPAYITR1XXX`) is properly configured and active in the UAT environment, or increase explicit wait times if page rendering is slow.\n\n---\n\n# 3. Un pagamento con configurazione carta \"Postepay\" viene completato con successo -- @1.1\n- **status**: broken\n- **fullName**: `Attivazione pagamento Checkout: Un pagamento con configurazione carta \"Postepay\" viene completato con successo`\n- **message**: RuntimeError: Timeout on locator \u0027#psp-radio-PPAYITR1XXX\u0027 after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py\", line 188, in step_select_psp\n    locate_and_click(page, f\"#psp-radio-{psp_id}\")\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py\", line 129, in locate_and_click\n    raise RuntimeError(\n        f\"Timeout on locator \u0027{locator}\u0027 after {timeout} ms (url: {current_url})\"\n    ) from exc\n```\n### Root cause\nThe PSP radio element for Postepay (`#psp-radio-PPAYITR1XXX`) was absent or failed to load within 5000 ms on the PSP list page.\n\n### Category\nenvironment\n\n### Recommended action\nCheck UAT environment availability of the Postepay PSP option and ensure the PSP list API returns valid options during test execution.\n\n---\n\n# 4. Flusso lista PSP - indietro da /inserisci-carta (flusso carta con enablePspPage=true)\n- **status**: broken\n- **fullName**: `Navigazione Lineare per il flusso di Pagamento: Flusso lista PSP - indietro da /inserisci-carta (flusso carta con enablePspPage=true)`\n- **message**: RuntimeError: Timeout on locator \u0027button:has-text(\u0027Indietro\u0027)\u0027 after 5000 ms (url: https://uat.checkout.pagopa.it/)\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/e2e/checkout/steps/back_navigation.py\", line 88, in step_click_button\n    locate_and_click(page, BUTTON_SELECTORS[button_text])\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py\", line 129, in locate_and_click\n    raise RuntimeError(\n        f\"Timeout on locator \u0027{locator}\u0027 after {timeout} ms (url: {current_url})\"\n    ) from exc\n```\n### Root cause\nThe test attempted to click the \u0027Indietro\u0027 button while the browser was stuck on the root URL (`https://uat.checkout.pagopa.it/`) instead of the expected `/inserisci-carta` page.\n\n### Category\napplication bug\n\n### Recommended action\nCheck navigation routing when `enablePspPage=true` is enabled to ensure users are correctly redirected to `/inserisci-carta`.\n\n---\n\n# 5. Viene mostrato l\u0027errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell\u0027intervallo 302400000000000000-302409999999999999 -- @1.1\n- **status**: failed\n- **fullName**: `Attivazione pagamento Checkout: Viene mostrato l\u0027errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell\u0027intervallo 302400000000000000-302409999999999999`\n- **message**: AssertionError: Expected modal header to contain \u0027Non riusciamo a trovare l\u2019avviso\u0027, but got: \u0027L\u2019Ente Creditore sta avendo problemi nella risposta\u0027\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py\", line 245, in step_error_modal_header\n    assert expected_header in header_text, (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n```\n### Root cause\nThe backend returned a Creditor Entity response error (\"L\u2019Ente Creditore...\") instead of the expected unknown notice error (\"Non riusciamo a trovare l\u2019avviso\").\n\n### Category\napplication bug\n\n### Recommended action\nVerify error handling and mapping logic for notice code validation failure codes (PAA_PAGAMENTO_SCONOSCIUTO) against mock/real creditor responses.\n\n---\n\n# 6. Flusso lista PSP - indietro da /scegli-metodo (wallet salvato con enablePspPage=true)\n- **status**: broken\n- **fullName**: `Navigazione Lineare per il flusso di Pagamento: Flusso lista PSP - indietro da /scegli-metodo (wallet salvato con enablePspPage=true)`\n- **message**: RuntimeError: Timeout on locator \u0027button:has-text(\u0027Indietro\u0027)\u0027 after 5000 ms (url: https://uat.checkout.pagopa.it/)\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/e2e/checkout/steps/back_navigation.py\", line 88, in step_click_button\n    locate_and_click(page, BUTTON_SELECTORS[button_text])\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py\", line 129, in locate_and_click\n    raise RuntimeError(\n        f\"Timeout on locator \u0027{locator}\u0027 after {timeout} ms (url: {current_url})\"\n    ) from exc\n```\n### Root cause\nThe page failed to navigate to `/scegli-metodo`, remaining on the root URL `https://uat.checkout.pagopa.it/` where the \u0027Indietro\u0027 button is absent.\n\n### Category\napplication bug\n\n### Recommended action\nInvestigate application routing issues for saved wallet flows when `enablePspPage=true` is enabled.\n\n---\n\n# 7. Un pagamento con configurazione carta \"Wordline\" viene completato con successo -- @1.2\n- **status**: failed\n- **fullName**: `Attivazione pagamento Checkout: Un pagamento con configurazione carta \"Wordline\" viene completato con successo`\n- **message**: AssertionError: Expected \u0027Hai pagato\u0027 in result message, but got: \u0027Il pagamento non \u00e8 andato a buon fine\u0027\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py\", line 309, in step_check_payment_success\n    assert \"Hai pagato\" in message_text, (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n```\n### Root cause\nUnauthenticated Wordline payment execution failed, returning a generic failure message instead of successful confirmation.\n\n### Category\napplication bug\n\n### Recommended action\nCheck backend transaction logs for Wordline integrations to identify why payment authorization is failing.\n\n---\n\n## Common patterns\n\n- **Wordline Payment Failures**: Both authenticated and unauthenticated scenarios for Wordline card configuration failed with \"Il pagamento non \u00e8 andato a buon fine\" (Failures #1, #7), indicating a potential integration breakdown with the Wordline gateway service.\n- **Missing Postepay PSP Option**: Multiple scenarios failed due to timeout locator errors for `#psp-radio-PPAYITR1XXX` on the `/lista-psp` page (Failures #2, #3), pointing to unavailable PSP test data or environment configuration issues in UAT.\n- **Routing/Navigation Failures on Linear Flow**: Back-navigation tests with `enablePspPage=true` timed out looking for the \u0027Indietro\u0027 button because the application remained stuck at the root landing page `https://uat.checkout.pagopa.it/` rather than navigating to the target step (Failures #4, #6).";
+  const target = document.getElementById('analysis-content');
+  if (markdown && markdown.trim().length > 0) {
+    target.innerHTML = marked.parse(markdown);
+  } else {
+    target.innerHTML = '<div class="alert alert-warning">Nessuna analisi disponibile per questa run.</div>';
+  }
+</script>
+
+</body>
+</html>
