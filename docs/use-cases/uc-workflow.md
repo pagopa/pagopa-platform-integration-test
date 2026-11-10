@@ -135,6 +135,25 @@ requisito in casi diversi, mantenendo irrisolta ciascuna C interessata.
 Per requisiti distinti usare token distinti; mai rinumerare i D esistenti
 per differenziare semplici varianti di valore.
 
+## Focus e decisioni interpretative
+
+Registrare obiettivo funzionale e confini ricavati dallo UC e dai chiarimenti
+espliciti come righe della tabella Agreed inputs, senza nuovi campi o template.
+Non chiedere una conferma aggiuntiva quando gli input forniti sono già chiari.
+Le note usate come evidenza compaiono in Sources; le decisioni che risolvono
+conflitti compaiono nelle Questions pertinenti e in History con scopo reale.
+La policy fonti distingue scoping, chiarimenti e decisioni: una nota non ha
+precedenza automatica e non elimina la copertura obbligatoria senza decisione.
+
+Il contesto registra anche percorsi documentati pertinenti secondo la regola
+d'inventario di uc-to-feature; i dati mantengono l'ownership delle sole C.
+Mapping e Coverage mappano le verifiche di ogni AC nei flussi indicati e le
+postcondizioni in tutti i positivi FP/AF; conservano la motivazione dei
+parametri. Non introdurre nuovi enum.
+Un feedback funzionale aggiorna la decisione e torna al contesto prima dei dati
+e della feature; un feedback solo dati o Gherkin segue l'invalidazione già
+definita. Non ripetere retrieval o domande sulle parti rimaste invariate.
+
 ## Varianti dati e riferimenti AC ai flussi
 
 Le AF rappresentano variazioni del percorso o dell'esito, non set di dati.
@@ -161,6 +180,10 @@ riferimenti allo stesso flusso in criteri distinti. Coverage conserva una
 voce per ogni AC anche quando scenario e riga Examples coincidono.
 Nuovi vincoli funzionali richiedono prima un aggiornamento del contesto,
 poi dei dati, con normale invalidazione a valle.
+
+Il contesto può registrare anche SC per percorsi documentati pertinenti ammessi
+dalla regola d'inventario di uc-to-feature; le differenze di percorso non
+diventano varianti dati né righe Examples.
 
 E consigliato un riferimento verbale negli AC, per esempio `(FP)` o `(AF02)`,
 ma non e un nuovo campo obbligatorio. La skill uc-to-feature definisce le
@@ -409,9 +432,11 @@ Prima di chiudere una run, verificare:
    realmente consumate; revisioni discordanti rendono l'output `stale`.
 3. Ogni azione/oracle applicato nella feature ha evidenza `supported` con
    fonte `provided` o `approved`. Evidenza non ammessa non copre un requisito.
-4. Ogni valore applicato proviene da una riga del report dati ammessa e idonea,
+4. Ogni valore di input applicato proviene da una riga del report dati ammessa e idonea,
    oppure esplicitamente autorizzata come non verificata con warning. Tutte
    le combinazioni rispettano i vincoli, senza prodotto cartesiano inventato.
+   Oracoli e metadati seguono rispettivamente il contesto e il profilo/gli
+   input autorevoli; una regola attesa non è un requisito dati da risolvere.
 5. Tutti i TODO e le incertezze hanno warning nei report per ogni scenario
    interessato; solo i TODO richiedono commenti nelle feature. La risoluzione
    dell'ultimo TODO rimuove il relativo commento, non le incertezze residue

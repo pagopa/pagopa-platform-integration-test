@@ -59,6 +59,22 @@ when it clearly identifies the criterion's target flow.
    Use their existing columns; unresolved references go to Questions and
    affected coverage remains incomplete. Do not impose new feature tags.
 
+## Verification scope and source-defined criteria
+
+Every AC requires source-supported Then/And verification in its indicated
+flows, including checks required before advancing the flow. Given context
+or a When trigger alone does not satisfy an AC. Preserve the property stated
+by the UC or admitted documentation: if the criterion is sending a message,
+verify sending; do not substitute receipt or completed processing unless those
+properties are prescribed. Keep the individual AC traceability and the
+existing many-to-one grouping.
+
+UC postconditions must be verified in every positive FP/AF scenario,
+independently of a similar check required by an EF's AC. Positive coverage
+does not depend on the optional positive tag. Verify an EF's AC in its
+indicated scope; do not use it to restrict positive postconditions or extend
+the same check to unrelated EF scenarios.
+
 ## AC cardinality and grouping
 
 The AC-to-flow and AC-to-Gherkin-scenario relationships both allow **many to

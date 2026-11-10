@@ -298,10 +298,113 @@ def test_acceptance_matrix_covers_all_contract_cases_without_claiming_runs() -> 
         '| Caso | Preparazione astratta | Risultato atteso '
         '| Evidenza da controllare nella prova agente |',
     )
-    assert [row[0] for row in rows] == [f"V-{number:02d}" for number in range(1, 37)]
+    assert [row[0] for row in rows] == [f"V-{number:02d}" for number in range(1, 47)]
     assert all(all(cell for cell in row) for row in rows)
     assert "non un motore sostitutivo che simula l'agente" in text
     assert 'non risultati osservati' in text
+
+
+def test_interpretation_focus_and_scoped_decisions() -> None:
+    """Keep the authorized goal and source-policy decisions explicit."""
+    persona = ' '.join(
+        _read(ROOT / 'docs' / 'agent-personas' / 'qa-analyst.md').split()
+    )
+    translation = ' '.join(_read(SKILLS / 'uc-to-feature' / 'SKILL.md').split())
+    policy = ' '.join(
+        _read(SKILLS / 'uc-scenario-context' / 'source-policy.md').split()
+    )
+    workflow = ' '.join(_read(DOCS / 'uc-workflow.md').split())
+    assert 'Prioritize the authorized functional goal, not the volume of source material.' in persona
+    assert 'Functional focus and boundaries from the UC and explicit scoped human clarifications.' in translation
+    assert 'a scope restriction, a requirement clarification and a decision' in policy
+    assert 'does not prove that the property cannot affect product behaviour' in policy
+    assert 'automatic precedence' in policy
+    assert 'come righe della tabella Agreed inputs, senza nuovi campi o template' in workflow
+
+
+def test_interpretation_documented_paths_preserve_inventory_ownership() -> None:
+    """Keep additional paths evidenced and registered by the context owner."""
+    translation = ' '.join(_read(SKILLS / 'uc-to-feature' / 'SKILL.md').split())
+    workflow = ' '.join(_read(DOCS / 'uc-workflow.md').split())
+    for clause in (
+        'distinct documented path',
+        'anchored to a UC operation or step',
+        'trigger, required sequence and outcome',
+        'Do not invent UC flow or AC identifiers',
+        'Different paths are not data variants',
+    ):
+        assert clause in translation
+    assert "regola d'inventario di uc-to-feature" in workflow
+    assert 'uc-to-feature (iniziale); uc-scenario-context' in workflow
+    assert 'i dati mantengono l\'ownership delle sole C' in workflow
+
+
+def test_interpretation_ac_checks_preserve_source_defined_criteria() -> None:
+    """Require source-defined Then/And checks without losing AC traceability."""
+    references = ' '.join(
+        _read(SKILLS / 'uc-to-feature' / 'ac-flow-references.md').split()
+    )
+    translation = ' '.join(_read(SKILLS / 'uc-to-feature' / 'SKILL.md').split())
+    assert 'Every AC requires source-supported Then/And verification' in references
+    assert 'including checks required before advancing the flow' in references
+    assert 'if the criterion is sending a message, verify sending' in references
+    assert 'many-to-one grouping' in references
+    assert 'Every AC must be satisfied by at least one' in translation
+    assert 'Preserve each AC separately in Coverage' in translation
+
+
+def test_interpretation_postconditions_cover_positive_flows_independently_of_ef_ac() -> None:
+    """Keep positive postconditions independent of similar EF criteria."""
+    references = ' '.join(
+        _read(SKILLS / 'uc-to-feature' / 'ac-flow-references.md').split()
+    )
+    translation = ' '.join(_read(SKILLS / 'uc-to-feature' / 'SKILL.md').split())
+    verification_scope = references.split(
+        '## Verification scope and source-defined criteria', 1
+    )[1].split('## AC cardinality and grouping', 1)[0]
+    assert 'UC postconditions must be verified in every positive FP/AF scenario' in references
+    assert 'independently of a similar check required by an EF\'s AC' in references
+    assert 'Positive coverage does not depend on the optional positive tag.' in references
+    assert 'Verify UC postconditions in every positive FP/AF scenario' in translation
+    assert '?' not in verification_scope
+
+
+def test_interpretation_events_preserve_causality_and_timing() -> None:
+    """Keep event roles, AC checks and timing evidence distinct."""
+    instructions = ' '.join(
+        _read(ROOT / '.github' / 'instructions' / 'gherkin.instructions.md').split()
+    )
+    context = ' '.join(
+        _read(SKILLS / 'uc-scenario-context' / 'SKILL.md').split()
+    )
+    assert 'An incoming event or expiry may be the functional trigger and therefore a When' in instructions
+    assert 'A response observed from the operation under test is a Then.' in instructions
+    assert 'These distinctions do not authorize additional checks or stronger outcomes.' in instructions
+    assert 'Preserve every prescribed AC verification, including intermediate checks.' in instructions
+    assert 'In Mapping, distinguish initial state, incoming event, observable response, acceptance and completion' in context
+    assert 'record relevant conditions, correlation, phase and timing formula' in context
+    assert 'existing Functional evidence, Mapping, Oracles, Data requirements and Questions columns' in context
+    assert 'add no schema, artifact, state or event dictionary' in context
+    assert 'Do not prescribe Python or search suite code to supply that evidence.' in context
+
+
+def test_interpretation_literal_roles_do_not_create_artificial_data() -> None:
+    """Separate functional inputs, implementation details and oracle evidence."""
+    data = ' '.join(_read(SKILLS / 'uc-test-data' / 'SKILL.md').split())
+    workflow = ' '.join(_read(DOCS / 'uc-workflow.md').split())
+    assert 'Use the context\'s justification for each literal parameter at Gherkin level.' in data
+    assert 'Do not add a field merely because an implementation API requires it' in data
+    assert 'Keep actual setup and implementation data requirements in the report and engineer handoff' in data
+    assert 'A supplied example remains provided evidence' in data
+    assert 'required literals or usable fixtures' in data
+    assert 'Assess documented applicability, relationships and any synthetic permission.' in data
+    assert 'Do not reject all examples automatically or equate uncertain live state with a missing documented value.' in data
+    assert 'Classify a value by its role in the operation, not by its type or appearance.' in data
+    assert 'Input values use D requirements; expected results and timing rules use context evidence/oracles' in data
+    assert 'Ogni valore di input applicato' in workflow
+    assert 'Oracoli e metadati seguono rispettivamente il contesto e il profilo/gli input autorevoli' in workflow
+    assert 'una regola attesa non è un requisito dati da risolvere' in workflow
+    assert 'Do not use data TODO markers to conceal missing functional behaviour or oracles' in data
 
 
 def test_data_comments_are_limited_to_unresolved_placeholders() -> None:
