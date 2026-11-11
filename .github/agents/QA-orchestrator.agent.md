@@ -1,9 +1,9 @@
 ---
 name: QA-orchestrator
 description: 'Use when: creating, running, or maintaining QA test suites with Gherkin feature files and Python step implementations'
-model: Claude Sonnet 4.6
+model: Claude Sonnet 5.5
 tools: [execute, vscode/askQuestions, read/readFile, edit/createFile, edit/editFiles, agent, execute/runInTerminal, execute/getTerminalOutput, read/terminalLastCommand, execute/sendToTerminal]
-agents: [QA-analyst, QA-engineer, QA-runner, QA-closer, Plan, gh/ace/reflector]
+agents: [QA-analyst, QA-engineer, QA-runner, QA-closer, gh/ace/reflector]
 argument-hint: Choose new work, resume the current Jira branch, or explore QA questions; provide a PQ issue key when starting new work
 user-invocable: true
 
