@@ -12,20 +12,35 @@ For ACE framework installation and the embedded runtime lifecycle, see the
 project documentation in [ace/README_EMBEDDED.md](../../../ace/README_EMBEDDED.md)
 (and the Italian version [ace/README_EMBEDDED_IT.md](../../../ace/README_EMBEDDED_IT.md)).
 
-## First use on each machine
+## First use on each machine (automatic)
 
-From the repository root, install Node.js 18+ and Python 3.10+, then run:
+Prerequisites: Node.js 18+, Python 3.10+, and network access to PyPI and GitHub
+releases (the spaCy models are installed from their release wheels). Nothing else
+has to be done by hand: the first `finalize-task.js <task-id>` run detects the
+missing environment, installs it and then continues. Expect a few minutes on a
+clean machine (measured about 3.5 minutes); later runs skip this step.
 
-```powershell
-node scripts\ace-addons\privacy\finalize-task.js --setup
-```
+The bootstrap:
 
-On Windows the bootstrap uses `py -3`; set `PYTHON` to a Python executable if
-that launcher is not available. On other systems it uses `python3`. The setup
-creates a local, ignored `.venv` and installs pinned Presidio/spaCy packages and
-the English/Italian small spaCy models. Requires access to PyPI and the spaCy
-model distribution; no Docker or global Python packages are needed. Re-run
-setup after changing requirements or models.
+- creates a local, ignored `.venv` (on Windows via `py -3`, elsewhere `python3`;
+  set `PYTHON` to use another interpreter);
+- installs everything listed in [requirements.txt](requirements.txt): pinned
+  Presidio/spaCy and the English/Italian small spaCy models;
+- verifies that both models load, and only then writes the marker
+  `.venv/.ace-privacy-ready`, which stores a hash of `requirements.txt`. Changing
+  the requirements invalidates the marker and triggers a reinstall on the next run.
+
+The bootstrap runs before any trace is read or modified, so a failed install
+leaves the raw traces untouched and the task unfinalized.
+
+Other options:
+
+- `node scripts\ace-addons\privacy\finalize-task.js --ensure` prepares the
+  environment without processing any task (useful to warm up a machine or CI).
+- `node scripts\ace-addons\privacy\finalize-task.js --setup` forces a reinstall.
+- `ACE_PRIVACY_NO_AUTOSETUP=1` disables the automatic install: if the
+  environment is missing or outdated, finalization stops with an error that
+  points to `--setup`.
 
 ## Per-task workflow
 

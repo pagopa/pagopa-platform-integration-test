@@ -125,7 +125,7 @@ pip install -r requirements.txt
 
 ### Privacy delle trace ACE con Presidio
 
-Il progetto include un addon project-owned per anonimizzare le trace ACE prima che vengano usate da contatori, threshold e reflector. La policy e il workflow sono documentati qui:
+Il progetto include un addon project-owned per anonimizzare le trace ACE prima che vengano usate da contatori, threshold e reflector. Non serve installare nulla a mano: al primo `node scripts\ace-addons\privacy\finalize-task.js <task-id>` l'addon crea da solo il proprio ambiente Python locale (richiede Node.js 18+, Python 3.10+ e accesso a Internet; pochi minuti la prima volta). La policy, le opzioni (`--ensure`, `--setup`, `ACE_PRIVACY_NO_AUTOSETUP`) e il workflow sono documentati qui:
 
 - [scripts/ace-addons/privacy/README.md](./scripts/ace-addons/privacy/README.md)
 

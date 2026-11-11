@@ -268,7 +268,9 @@ before retrying; do not blindly repeat a possibly completed counter/reflection
 action or overwrite finalized traces. If safe replay cannot be established,
 report the blocker and obtain a recovery decision. Amend later assessments only
 through the capture guide's separate correction-trace procedure.
-Do not change runtime/scripts/playbooks or install addon dependencies implicitly.
+Do not change runtime/scripts/playbooks or install addon dependencies yourself:
+the privacy addon's own first-use bootstrap (run by `finalize-task.js`) is the only
+authorized installation. If it fails, report the stage and stop ACE processing.
 
 The closer's trace is captured after its result: privacy-finalize
 those through the existing ACE lifecycle afterward. Never require it inside the

@@ -81,9 +81,10 @@ reflector, or committing trace files, run from the repository root:
 node scripts\ace-addons\privacy\finalize-task.js <task-id>
 ```
 
-On first use, install local dependencies with
-`node scripts\ace-addons\privacy\finalize-task.js --setup` (requires Node.js
-18+, Python 3.10+ and internet for Presidio/spaCy models). Do not invoke
+On first use the addon installs its own local dependencies automatically (requires
+Node.js 18+, Python 3.10+ and internet for Presidio/spaCy models; a few minutes on
+a clean machine). This is the only authorized implicit installation: do not
+install them any other way. Do not invoke
 `ace/scripts/finalize_task.js` directly for new captures: the project addon
 sanitizes in place and then invokes it. If the addon fails, stop and do not
 commit or consume the raw trace; repair the environment or trace and retry.
