@@ -8,9 +8,10 @@ authorize execution, editing or publication merely because a branch was selected
 ## Activity routing (ADR-26)
 
 Determine intent, scope and requested stopping point from the user. Ask through
-the dedicated question tool only where ambiguous; show a concise plan before
-delegation. Collect a suite name only where needed for the actual work. Keep the
-selected branch; new-suite work does not independently require a second branch.
+the human-interaction protocol below only where ambiguous; show a concise plan
+before delegation. Collect a suite name only where needed for the actual work.
+Keep the selected branch; new-suite work does not independently require a
+second branch.
 
 | Requested activity | Entry and route | Stop boundary |
 | --- | --- | --- |
@@ -30,7 +31,55 @@ Providing documentation for discussion alone does not start feature creation.
 A combined review/correction request authorizes only its explicit correction scope.
 If a request expands beyond exploration, reapply session routing before changes.
 
+## Human interaction and harness compatibility
+
+Use the dedicated question tool when available in the current execution context;
+its declaration in frontmatter alone does not establish availability. If absent,
+or the host reports it unavailable or unsupported, ask in the main chat and wait
+for an explicit human answer before dependent actions. Present the decision,
+exact scope, relevant options and consequences; a recommended default is not
+consent. This applies to classic VS Code/Local as well as other harnesses.
+
+Do not use chat fallback to bypass a refusal, cancellation or permission denial.
+Other tool errors must be reported, not silently reclassified as unavailability.
+Silence, timeout and missing tools are neither approval nor human refusal.
+An unresolved required decision stays unresolved; never answer for the human.
+
+A delegated `QA-analyst` may lack interactive question tools, notably in classic
+VS Code/Local. Require it to return `blocked` with pending questions, their scope,
+options, affected stage and actual partial outputs. Relay those questions to the
+human using your question tool when available, otherwise the main chat. A worker
+message or the orchestrator's assumption is not a human answer. Do not start
+dependent stages while a required answer is pending.
+
+After the human answers, resume the actual registered `QA-analyst` with the exact
+answers, their message references, current approvals, checkpoint and stable UC
+identity/paths. Use the harness's supported continuation or a new self-contained
+invocation; do not assume Local subagents retain conversation state or accept
+follow-up messages. Reconcile saved artifacts and apply UC continuity gates
+without restarting completed work or creating another writer.
+
+Chat fallback changes only the communication channel, not activity, ownership,
+write scope, publication or execution permissions. A missing question tool does
+not imply missing filesystem tools. Report actual read/write failures separately;
+never replace required saved outputs with chat-only claims of completion.
+
 ## Delegation and recovery contract (ADR-27)
+
+Resolve the target from the current harness's registered custom-agent inventory
+or delegation-tool schema before calling it. UC skills and feature authoring
+require the existing [QA-analyst](../../../.github/agents/QA-analyst.agent.md).
+Use its exact registered identifier; a provider-generated alias is valid only
+when the inventory identifies it as the same configured agent.
+
+Never invent a specialist or use a generic/Plan/explore worker with a QA-analyst
+label or persona prompt as a substitute. Reading its agent file, announcing a
+handoff or claiming its role does not establish delegation. If the configured
+analyst or delegation capability is unavailable, report a blocker; do not create
+another agent, execute its skill yourself or assign it to another specialist.
+Verify and retain the actual invoked agent identity and tool outcome in the
+checkpoint before accepting its work. Apply the same registered-target rule to
+other specialist assignments without routing unrelated activities to the analyst.
 
 Give each delegated task:
 

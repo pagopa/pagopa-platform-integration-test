@@ -19,6 +19,28 @@ alternativa chiedere esplicitamente al QA-analyst di leggere e usare la skill.
 L'instradamento al solo analista e una prescrizione, non un controllo di accesso
 garantito dal frontmatter.
 
+La delega deve invocare il `QA-analyst` realmente registrato nell'harness,
+riconducibile al [suo contratto](../../.github/agents/QA-analyst.agent.md).
+Non bastano il nome di un task, un annuncio in chat o un agente generico istruito
+a impersonarlo. Se il ruolo o la delega non sono disponibili, fermarsi con un
+blocco esplicito, senza creare agenti alternativi o tradurre nell'orchestratore.
+Le skill di supporto restano nello stesso ruolo: non sono nuovi subagent.
+
+## Interazione umana e VS Code classico
+
+Applicare il [protocollo dell'analista](../workflows/qa-analyst/activity-routing.md#human-interaction-and-harness-compatibility):
+usare il tool domande se disponibile; altrimenti scambi nella chat principale,
+mediati dall'orchestratore quando l'analista delegato non può interagire con
+l'umano. Attendere le risposte necessarie prima delle operazioni dipendenti.
+La sola assenza del tool domande non dimostra un errore di accesso al filesystem.
+
+Il fallback alla chat non equivale a una richiesta chat-only o read-only e non
+aggira la delega obbligatoria. Restano validi scope, approvazioni e output
+persistenti concordati; una richiesta esplicitamente read-only resta tale.
+Registrare le risposte reali e i riferimenti umani in Questions e History secondo
+i permessi esistenti, senza nuovi campi o stati. Assenza del tool, silenzio o
+risposta presunta dell'orchestratore non sono consenso né rifiuto umano.
+
 ## Percorsi, identita e formati
 
 Una esecuzione riguarda **un UC**; piu UC usano registri distinti. Confermare
@@ -315,7 +337,9 @@ di continuita e umana, non una certificazione automatica di integrita.
 
 Alla ripresa di una run esistente, anche tra comandi manuali o dopo
 un'interruzione, prima di riusare o sovrascrivere output chiedere conferma
-tramite lo strumento domande. Presentare un inventario esatto di input UC,
+tramite il [protocollo di interazione](#interazione-umana-e-vs-code-classico),
+con tool domande o scambio di chat secondo le capacità disponibili.
+Presentare un inventario esatto di input UC,
 fonti/passaggi usati, profilo/input concordati, report da consumare e feature
 gia registrate, con percorsi, revisioni e stati noti. Chiedere se i contenuti
 sono invariati rispetto a quelli registrati, non solo se i numeri coincidono;

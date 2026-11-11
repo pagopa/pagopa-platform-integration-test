@@ -105,6 +105,14 @@ seguenti sono risultati attesi, non prove di un'esecuzione reale dell'agente.
 | A-10 | Solo un sottoinsieme delle feature e pronto | Implementazione parziale soltanto con autorizzazione esplicita dell'umano |
 | A-11 | Nuova richiesta ACE riprende una run UC | Nuovo ACE task_id ma identita e percorsi UC invariati; nessuna migrazione dello schema |
 | A-12 | Scrittura report o registro fallita | Errore e file realmente salvati espliciti; nessun successo o stato corrente inventato |
+| A-13 | Analista diretto senza tool domande | Domanda nella chat principale, attesa della risposta umana esplicita e nessuna operazione dipendente anticipata |
+| A-14 | Analista delegato in Local senza interazione umana | Restituisce blocked con domande e checkpoint; orchestratore media e riprende il vero QA-analyst con le risposte umane |
+| A-15 | Tool domande disponibile, oppure rifiuto/cancellazione/negazione di permesso | Usa il tool disponibile; nessun fallback per aggirare una decisione o un controllo di accesso |
+| A-16 | Risposta ottenuta tramite fallback chat in una run UC | Scope e riferimento umano in Questions/History; schema v1, artefatti obbligatori e permessi invariati |
+| A-17 | Tool domande assente ma scrittura disponibile, oppure scrittura realmente fallita | Nessun falso errore filesystem dedotto dal primo caso; errore reale e stop nel secondo, senza workaround terminale |
+| A-18 | QA-analyst non registrato o delega indisponibile | Blocco esplicito; nessun agente inventato, generico o impersonato come sostituto |
+| A-19 | Task chiamato QA-analyst ma avviato con un worker diverso | Nome descrittivo non accettato come delega; verifica dell'identificativo registrato e della chiamata reale |
+| A-20 | Ripresa dopo risposte mediate dall'orchestratore | Identita UC, percorsi e output salvati conservati; conferma di continuita applicata e nessun riavvio cieco dei passaggi completati |
 
 ## Stato delle prove
 

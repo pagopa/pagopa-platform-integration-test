@@ -24,6 +24,9 @@ Gli esempi seguenti sono richieste in chat, non comandi shell.
 - Le tre skill UC passano da QA-analyst. Il loro
   [workflow persistente](../../docs/use-cases/uc-workflow.md) gestisce registro,
   revisioni e ripresa: contesto, dati, poi feature/report; niente dati inventati.
+  Serve l'agente realmente registrato, non un sostituto generico. Se manca il
+  tool domande, il workflow prevede scambi di chat con l'umano, mediati
+  dall'orchestratore quando necessario, senza cambiare approvazioni o output.
 - Le skill di review non producono copie corrette. Scrivere un report richiede
   richiesta esplicita e destinazione concordata.
 - Per PR, [il catalogo NRT](../nrt-suites.json) usa `id`, non la `label`

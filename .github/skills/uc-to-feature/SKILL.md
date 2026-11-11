@@ -23,7 +23,19 @@ Python implementation (step 3) is out of scope.
 
 This skill is used by `QA-analyst`. If you are not running as `QA-analyst`,
 delegate to [QA-analyst.agent.md](../../agents/QA-analyst.agent.md) with this
-skill and the inputs below; do not translate the UC directly.
+skill and the inputs below; do not translate the UC directly. Invoke the actual
+registered custom agent using the identifier exposed by the current harness.
+Never invent an agent, relabel a generic worker or impersonate the analyst in
+the parent chat. If the configured analyst or delegation tool is unavailable,
+report a blocker instead of substituting another agent.
+
+Follow the analyst's
+[human-interaction protocol](../../../docs/workflows/qa-analyst/activity-routing.md#human-interaction-and-harness-compatibility).
+Use the dedicated question tool when available; otherwise use main-chat
+exchanges, mediated by the orchestrator when the delegated analyst cannot
+interact directly. Wait for required human answers. This communication fallback
+does not bypass delegation, change write scope or replace persistent outputs.
+Missing question tools alone do not establish missing filesystem capabilities.
 
 ## Inputs
 
@@ -318,9 +330,11 @@ the consistency between sections. Classify each finding:
   design, but they block readiness for execution. Expected values are not data
   requirements: they belong to the oracle (see step 0).
 
-Ask the user about blocking gaps and ambiguities through the question tool.
-When questions cannot be asked, list them as open items in the output and keep
-the feature a `bozza`. Never fill them with assumptions, executable suite
+Ask the user about blocking gaps and ambiguities through that interaction
+protocol, including its chat fallback. When a required human answer cannot be
+obtained, list the open items and keep the feature a `bozza`; do not advance
+dependent actions. A delegated analyst returns the questions to the orchestrator
+with its blocked result, not a fabricated answer. Never fill gaps with assumptions, executable suite
 content, or domain knowledge not stated in the UC or in admitted documentation.
 Before writing detailed steps, require the current report from
 [uc-scenario-context](../uc-scenario-context/SKILL.md) for missing

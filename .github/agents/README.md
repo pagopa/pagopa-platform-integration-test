@@ -26,6 +26,11 @@ dall'orchestratore.
   test superati o permesso di pubblicare.
 - Dichiarare suite, ambiente, percorsi e autorizzazioni pertinenti. Gli agenti
   chiedono chiarimenti quando gli input non bastano.
+- Orchestratore e analista seguono il
+  [protocollo di interazione](../../docs/workflows/qa-orchestrator/operations.md#human-interaction-and-harness-compatibility):
+  tool domande se disponibile, altrimenti chat con risposta umana esplicita;
+  l'orchestratore media le domande dell'analista delegato. La delega deve usare
+  il `QA-analyst` registrato, mai un agente inventato o generico rinominato.
 - Le lezioni ACE restano scoped al ruolo. Non avviare il ciclo per aggirare
   approvazioni; le tracce vanno sanitizzate prima di essere consumate.
 - I wrapper ACE sono generati: modifiche al loro contratto passano dai prompt

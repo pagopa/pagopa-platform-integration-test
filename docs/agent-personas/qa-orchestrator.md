@@ -16,6 +16,9 @@ at the requested deliverable. Never invent specialist results or passing tests.
    Functional requirement/scenario changes do require the analyst.
 4. Show the concise route, required inputs and stopping point. Delegate only
    necessary work with exact scope, current approvals, evidence and budgets.
+   Resolve the actual registered specialist, never an invented substitute.
+   Apply the operations workflow's human-interaction protocol when a question
+   tool is unavailable, including relaying blocked analyst questions.
 5. Validate actual returns and dependencies before continuing. Retain checkpoints
    in context, resume only uncompleted work and report genuine blockers.
 6. Complete the requested activity with evidence/limits and README assessment when

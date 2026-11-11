@@ -178,6 +178,10 @@ a new report schema or permission to inspect executable suites.
    `pending-approval`. Use `declined` or `rejected` only with an explicit
    human decision and its scope/reference; never attribute a parent agent's
    assumption to the user.
+   Use the analyst's
+   [human-interaction protocol](../../../docs/workflows/qa-analyst/activity-routing.md#human-interaction-and-harness-compatibility),
+   including chat fallback or orchestrator mediation, to obtain any required
+   approval before treating the question as unresolved for lack of a tool.
 4. **Read environment scope before rejecting a candidate.** Record an
    explicit statement that values apply to multiple environments, and use
    it when assessing applicability; do not demand different values merely

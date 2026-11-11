@@ -1082,6 +1082,14 @@ rilevanti invalidano le evidenze dipendenti e le esecuzioni parallele richiedono
 anche isolamento dei dati/risorse esterne. Esito QA e completamento ACE sono
 distinti: un blocco del bookkeeping non autorizza a ripetere test o azioni Git.
 
+Per le skill UC, la delega usa il `QA-analyst` realmente registrato nell'harness,
+non un worker generico rinominato. Orchestratore e analista usano il tool domande
+quando disponibile; in VS Code classico o altri contesti senza quel tool passano
+a scambi di chat, mediati dall'orchestratore per l'analista delegato. Il
+[protocollo di interazione](docs/workflows/qa-orchestrator/operations.md#human-interaction-and-harness-compatibility)
+mantiene approvazioni, ownership e output persistenti: il fallback non consente
+di presumere risposte umane, sostituire l'analista o dichiarare file non salvati.
+
 Le [istruzioni Gherkin](.github/instructions/gherkin.instructions.md) e il
 [profilo associato](.github/profiles/gherkin.profile.yaml) mantengono stabili gli
 identificativi durante la manutenzione e contano il limite di 12 sulle definizioni,

@@ -44,8 +44,9 @@ user explicitly included them in the source scope.
 
 Before using a discovered candidate, present the locator, relevant finding,
 scenario or UC element it would support, applicability, uncertainty and
-proposed use. Ask for approval with the dedicated question tool, for one
-coherent set of candidates at a time. Rejection means do not use those facts or
+proposed use. Ask for approval under the analyst's
+[human-interaction protocol](../../../docs/workflows/qa-analyst/activity-routing.md#human-interaction-and-harness-compatibility),
+for one coherent set of candidates at a time. Rejection means do not use those facts or
 values. If approval cannot be obtained, leave them pending and preserve the gap.
 
 ## Evidence meaning and scoped clarifications
@@ -65,7 +66,7 @@ An instruction to include alternatives supplies scope, not missing outcomes.
 
 Use a prior explicit decision only for the conflict and scope it actually
 settles. Otherwise present the incompatible claims, affected cases and proposed
-interpretation through the question tool. Do not assign automatic precedence
+interpretation through that interaction protocol. Do not assign automatic precedence
 to notes, examples, newer documents or filenames. Keep unresolved conflicts
 visible and block only their dependent checks under the owning workflow.
 

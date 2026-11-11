@@ -562,6 +562,123 @@ def test_implementation_delegation_requires_orchestrator_readiness_gate() -> Non
     assert 'diagnostic\n  permission for existing tests' in orchestrator
 
 
+@pytest.mark.parametrize('name', ('QA-orchestrator', 'QA-analyst'))
+def test_agent_identity_and_interaction_protocol_are_explicit(name: str) -> None:
+    """Keep canonical roles discoverable without removing their existing tools."""
+    wrapper = _read(ROOT / '.github' / 'agents' / f"{name}.agent.md")
+    metadata = YAML(typ='safe').load(wrapper.split('---', 2)[1])
+    assert metadata['name'] == name
+    assert 'vscode/askQuestions' in metadata['tools']
+    assert 'human-interaction-and-harness-compatibility' in wrapper
+    if name == 'QA-orchestrator':
+        assert 'agent' in metadata['tools']
+        assert 'QA-analyst' in metadata['agents']
+    else:
+        assert 'edit' in metadata['tools']
+        assert 'Never delegate to yourself or start implementation agents' in wrapper
+
+
+def test_uc_delegation_requires_the_actual_registered_analyst() -> None:
+    """Reject invented identities and generic workers masquerading as the analyst."""
+    operations = ' '.join(_read(
+        ROOT / 'docs' / 'workflows' / 'qa-orchestrator' / 'operations.md'
+    ).split())
+    for clause in (
+        "current harness's registered custom-agent inventory",
+        'Use its exact registered identifier',
+        'the same configured agent',
+        'Never invent a specialist or use a generic/Plan/explore worker',
+        'does not establish delegation',
+        'Verify and retain the actual invoked agent identity and tool outcome',
+    ):
+        assert clause in operations
+    skill = ' '.join(_read(SKILLS / 'uc-to-feature' / 'SKILL.md').split())
+    for clause in (
+        'Invoke the actual registered custom agent',
+        'Never invent an agent, relabel a generic worker',
+        'report a blocker instead of substituting another agent',
+        'does not bypass delegation',
+    ):
+        assert clause in skill
+
+
+@pytest.mark.parametrize('role', ('qa-orchestrator', 'qa-analyst'))
+def test_chat_fallback_preserves_available_tools_and_human_decisions(role: str) -> None:
+    """Allow capability-based chat without converting denials or silence to consent."""
+    filename = 'operations.md' if role == 'qa-orchestrator' else 'activity-routing.md'
+    text = ' '.join(_read(
+        ROOT / 'docs' / 'workflows' / role / filename
+    ).split())
+    for clause in (
+        '## Human interaction and harness compatibility',
+        'dedicated question tool when available',
+        'unavailable or unsupported',
+        'main chat' if role == 'qa-orchestrator' else 'main-chat exchanges',
+        'wait for an explicit human answer before dependent actions',
+        'Do not use chat fallback to bypass a refusal, cancellation or permission denial',
+        'Silence, timeout and missing tools',
+        'Chat fallback changes only the communication channel',
+        'report actual write failures separately' if role == 'qa-analyst'
+        else 'Report actual read/write failures separately',
+    ):
+        assert clause in text
+
+
+def test_delegated_questions_return_to_orchestrator_without_impersonation() -> None:
+    """Preserve paused work and relay real human answers across stateless delegation."""
+    analyst = ' '.join(_read(
+        ROOT / 'docs' / 'workflows' / 'qa-analyst' / 'activity-routing.md'
+    ).split())
+    for clause in (
+        'return `blocked` to the orchestrator with pending questions',
+        'messages in a non-interactive worker transcript',
+        'returns actual human answers with their references',
+        'Use existing `Questions`/`History` and `open`/`pending-approval` values',
+        'missing tools are not `declined`/`rejected`',
+        'An unconfirmed output directory is not permission to create a registry',
+    ):
+        assert clause in analyst
+    orchestrator = ' '.join(_read(
+        ROOT / 'docs' / 'workflows' / 'qa-orchestrator' / 'operations.md'
+    ).split())
+    for clause in (
+        'resume the actual registered `QA-analyst` with the exact answers',
+        'their message references, current approvals, checkpoint and stable UC identity/paths',
+        'a new self-contained invocation',
+        'do not assume Local subagents retain conversation state',
+        'without restarting completed work or creating another writer',
+    ):
+        assert clause in orchestrator
+
+
+def test_uc_fallback_keeps_persistence_source_approval_and_continuity() -> None:
+    """Keep chat as a channel rather than a read-only mode or an approval shortcut."""
+    workflow = ' '.join(_read(DOCS / 'uc-workflow.md').split())
+    for clause in (
+        'Il fallback alla chat non equivale a una richiesta chat-only o read-only',
+        'Registrare le risposte reali e i riferimenti umani in Questions e History',
+        'tramite il [protocollo di interazione]',
+    ):
+        assert clause in workflow
+    policy = _read(SKILLS / 'uc-scenario-context' / 'source-policy.md')
+    assert 'human-interaction-and-harness-compatibility' in policy
+    assert 'with the dedicated question tool' not in policy
+    skill = _read(SKILLS / 'uc-to-feature' / 'SKILL.md')
+    assert 'When questions cannot be asked' not in skill
+    assert 'including its chat fallback' in skill
+    data = _read(SKILLS / 'uc-test-data' / 'SKILL.md')
+    assert 'including chat fallback or orchestrator mediation' in data
+
+
+def test_interaction_acceptance_cases_remain_expected_not_observed() -> None:
+    """Retain the classic-harness acceptance matrix without claiming agent runs."""
+    text = _read(DOCS / 'uc-workflow-validation.md')
+    rows = _table_rows(text, '| Caso | Richiesta o stato | Risultato atteso |')
+    assert [row[0] for row in rows] == [f"A-{number:02d}" for number in range(1, 21)]
+    assert all(all(cell for cell in row) for row in rows)
+    assert 'non risultati osservati' in text
+
+
 def test_uc_identity_survives_new_ace_requests_without_schema_migration() -> None:
     """Keep stable UC report identity separate from Jira and per-request traces."""
     workflow = _read(DOCS / 'uc-workflow.md')
