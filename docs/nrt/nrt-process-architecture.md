@@ -51,7 +51,7 @@ the new process is adopted.
 
 | Component | Responsibility |
 |---|---|
-| `.github/workflows/nrt-main-dispatch-tests.yml` | NRT entry point, scheduled daily at 06:17 UTC (`cron: '17 6 * * *'`, all suites on `uat`) and manually dispatchable; accepts suite selection and target environment; prepares the selected suite matrix; coordinates suite execution, test data ingestion, final status, and Slack notification. |
+| `.github/workflows/nrt-main-dispatch-tests.yml` | NRT entry point, scheduled daily at 06:17 UTC (`cron: '17 6 * * *'`, all suites on `uat`) and manually dispatchable; accepts suite selection, target environment and an optional `correlation_id` (a caller such as the QA Hub passes it so the run can be located by its `run-name`, `nrt-<correlation_id>`; runs without it keep the default title); prepares the selected suite matrix; coordinates suite execution, test data ingestion, final status, and Slack notification. |
 | `.github/nrt-suites.json` | Declarative catalog of suite IDs, labels, Behave paths/tags, environment support, setup requirements, and dependency metadata. |
 | `.github/workflows/nrt-run-suite.yml` | Reusable workflow containing the common setup, secret materialization, test execution, Allure generation, and artifact publication for one suite. |
 | `.github/workflows/nrt-sync-secrets.yml` | Runs daily or manually on self-hosted runners; reads Key Vault values, builds and validates per-environment bundles, then updates the matching GitHub Environment secret using GitHub's LibSodium-encrypted REST API. |

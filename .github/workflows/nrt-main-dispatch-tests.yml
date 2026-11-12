@@ -18,6 +18,15 @@ on:
         options:
           - dev
           - uat
+      correlation_id:
+        description: Optional id from the caller (e.g. the Central Hub) used to locate this run
+        required: false
+        type: string
+        default: ''
+
+# The caller-provided id makes the run discoverable by name; scheduled and manual runs
+# without it evaluate to an empty string and keep GitHub's default title.
+run-name: ${{ inputs.correlation_id != '' && format('nrt-{0}', inputs.correlation_id) || '' }}
 
 permissions:
   contents: read
