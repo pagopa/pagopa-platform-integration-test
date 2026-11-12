@@ -899,7 +899,10 @@ def test_runner_launch_examples_bind_interpreter_and_propagate_status() -> None:
                 r'exit \$testExit\n',
                 block,
             )
-    bash_blocks = re.findall(r'```bash\n(.*?)```', local, re.DOTALL)
+    bash_blocks = [
+        block for block in re.findall(r'```bash\n(.*?)```', local, re.DOTALL)
+        if '"$python" -m behave' in block
+    ]
     assert len(bash_blocks) == 4
     for block in bash_blocks:
         assert 'command -v "$python"' in block
@@ -1008,7 +1011,7 @@ def test_runner_error_reports_do_not_require_fixes_or_expand_write_scope() -> No
     assert 'edit/createFile' in metadata
     assert 'edit/editFiles' in metadata
     assert 'agents: [QA-engineer]' in metadata
-    assert 'model: Claude Sonnet 5\n' in metadata
+    assert 'model: Claude Sonnet 5.5\n' in metadata
     assert 'handoffs:' not in metadata
     assert 'first failure is attempt 0' in wrapper
 
@@ -1664,8 +1667,11 @@ def test_pr_labels_use_catalog_ids_accepted_by_ci_not_display_names() -> None:
     assert 'Do not hardcode a duplicate suite list' in text
     assert 'no new script' in text
     ci = _read(ROOT / '.github' / 'workflows' / 'check_pr.yml')
-    assert '[.suites[].id]' in ci
-    assert "const suites = JSON.parse(process.env.SUITE_IDS)" in ci
+    assert "require('./.github/scripts/suite-version-labels.js')" in ci
+    assert 'verifyPullRequestLabels({ github, context, core })' in ci
+    script = _read(ROOT / '.github' / 'scripts' / 'suite-version-labels.js')
+    assert "require('../nrt-suites.json')" in script
+    assert 'suites.map(suite => suite.id.toLowerCase())' in script
     catalog = json.loads(_read(ROOT / '.github' / 'nrt-suites.json'))
     suites = catalog['suites']
     assert suites
