@@ -1041,8 +1041,11 @@ e [profili](.github/profiles/README.md), con scope, modalita d'uso ed esempi.
 
 Per tradurre uno Use Case (UC) in feature, seguire il
 [workflow UC](docs/use-cases/uc-workflow.md): esplicitare il focus funzionale,
-riconciliare i percorsi documentati pertinenti e coprire flussi e criteri con
-evidenze ammesse.
+coprire flussi e criteri dello UC con evidenze ammesse. I dubbi di
+implementazione (API, URL, configurazione, componenti UI, come indurre un errore)
+non si chiedono e non bloccano la feature: finiscono, insieme alle proposte di
+scenari non coperti dallo UC, in `report_traduzione_<slug-uc>.md` nella
+directory della run.
 
 ### Convenzioni Gherkin
 

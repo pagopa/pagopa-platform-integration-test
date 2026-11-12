@@ -53,7 +53,10 @@ An explicit read-only request returns a proposal, not a completed stage.
 - Optional request to retain data in Markdown.
 
 Read [source-policy.md](../uc-scenario-context/source-policy.md) first.
-It owns source admission, reading tools, human approval and provenance. Use
+It owns source admission, reading tools, human approval and provenance. Apply
+the [triage of doubts](../../../docs/use-cases/uc-workflow.md#triage-dei-dubbi-e-report-di-traduzione):
+a missing input value is a placeholder, never a blocking question, and an
+implementation doubt is never asked. Use
 [uc-scenario-context](../uc-scenario-context/SKILL.md) for missing
 field meanings, functional sequences, constraints or expected values; never
 solve those questions by adapting the scenario to the data found.
@@ -72,12 +75,16 @@ profile. Do not duplicate their language, indentation, tag or outline rules.
    A requirement such as an unpaid, usable notice remains in Data resolution
    when no supported independent preparation or observation is documented;
    do not prescribe a Given that assumes it or a preliminary payment to
-   establish it. Return any required context clarification to its owner.
+   establish it. How to prepare or observe the state is an implementation
+   doubt: do not ask for it, do not block, return a `Rilievo implementativo:`
+   line. Return any required functional clarification to the context owner.
    Use the context's justification for each literal parameter at Gherkin level.
    Do not add a field merely because an implementation API requires it, then
    create a placeholder to fill that unnecessary parameter. Keep actual setup
    and implementation data requirements in the report and engineer handoff;
    this does not resolve their fitness, availability or readiness.
+   A fixed value that the scenario does not depend on and the Python/Behave
+   step can hard-code is not requested, not searched and gets no placeholder.
    Classify a value by its role in the operation, not by its type or appearance.
    Input values use D requirements; expected results and timing rules use
    context evidence/oracles; profile identifiers use their authoritative inputs.
@@ -114,8 +121,11 @@ profile. Do not duplicate their language, indentation, tag or outline rules.
    Records approved in an older task still require approval for this task
    unless explicitly supplied now.
 4. If there is no suitable candidate, candidates are rejected, or sources
-   cannot be read, ask the user for values or a source. If the user cannot or
-   declines to provide them, continue with the placeholder contract below.
+   cannot be read, a value absent from the supplied and admitted context
+   becomes a placeholder: do not stall the translation on it. Ask for values
+   or a source at most once, in the same batch as the candidate approvals and
+   the other questions of this stage. If the user cannot, declines or does not
+   answer, continue with the placeholder contract below.
    Do not loop on the same question or invent another candidate.
 5. Apply only admitted values whose fitness is established. If fitness is
    unresolved, use a placeholder unless the human explicitly chooses to
@@ -145,6 +155,12 @@ profile. Do not duplicate their language, indentation, tag or outline rules.
    comments for unresolved placeholders, but do not apply them to feature
    files here. Other uncertainties stay in the report.
    Changed behaviour or constraints require a functional report update.
+   Record in Readiness one `Rilievo implementativo:` line per implementation
+   doubt met (for example which entity or environment realizes a value, or how
+   to induce a negative case), and a `Proposta di scenario:` line for a case
+   suggested by the data sources that the UC does not cover. Both feed
+   `report_traduzione_<slug-uc>.md`, are not Q rows and do not change the
+   report status.
 
 ## Resolution completeness gate
 

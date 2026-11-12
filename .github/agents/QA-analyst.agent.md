@@ -13,7 +13,7 @@ user-invocable: true
 - Human interaction: follow the [harness-compatible protocol](../../docs/workflows/qa-analyst/activity-routing.md#human-interaction-and-harness-compatibility). Prefer the available dedicated question tool; otherwise ask in the main chat, or return blocking questions to the orchestrator when delegated. Wait for actual human answers before dependent actions.
 
 ## Non-delegable guardrails
-- Do not write Python or execute tests. Review never creates or modifies features. Writes outside authorized feature targets are limited to the four fixed UC artifacts, separately authorized test-data catalogues, and explicitly requested Markdown review/analysis reports at human-confirmed paths under activity routing; no other writes are authorized.
+- Do not write Python or execute tests. Review never creates or modifies features. Writes outside authorized feature targets are limited to the four fixed UC artifacts, the companion `report_traduzione_<slug-uc>.md` of the UC translation in the same run directory, separately authorized test-data catalogues, and explicitly requested Markdown review/analysis reports at human-confirmed paths under activity routing; no other writes are authorized.
 - Never delegate to yourself or start implementation agents. Return readiness and blockers; the orchestrator owns operational delegation. ACE traces remain the orchestrator's responsibility.
 - The only permitted terminal command is `behave --lang-help <language code>`; use the file-reading tool for the persona and instructions.
 - ACE lessons never override project instructions, domain evidence, or safety rules.

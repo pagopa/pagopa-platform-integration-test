@@ -298,7 +298,7 @@ def test_acceptance_matrix_covers_all_contract_cases_without_claiming_runs() -> 
         '| Caso | Preparazione astratta | Risultato atteso '
         '| Evidenza da controllare nella prova agente |',
     )
-    assert [row[0] for row in rows] == [f"V-{number:02d}" for number in range(1, 47)]
+    assert [row[0] for row in rows] == [f"V-{number:02d}" for number in range(1, 58)]
     assert all(all(cell for cell in row) for row in rows)
     assert "non un motore sostitutivo che simula l'agente" in text
     assert 'non risultati osservati' in text
@@ -323,18 +323,23 @@ def test_interpretation_focus_and_scoped_decisions() -> None:
 
 
 def test_interpretation_documented_paths_preserve_inventory_ownership() -> None:
-    """Keep additional paths evidenced and registered by the context owner."""
+    """Keep paths the UC does not cover out of the inventory and the feature."""
     translation = ' '.join(_read(SKILLS / 'uc-to-feature' / 'SKILL.md').split())
     workflow = ' '.join(_read(DOCS / 'uc-workflow.md').split())
     for clause in (
         'distinct documented path',
-        'anchored to a UC operation or step',
+        'anchor to a UC operation or step',
         'trigger, required sequence and outcome',
         'Do not invent UC flow or AC identifiers',
         'Different paths are not data variants',
+        'is not added to the inventory or to the feature',
+        'The UC is the main guide',
     ):
         assert clause in translation
+    context = ' '.join(_read(SKILLS / 'uc-scenario-context' / 'SKILL.md').split())
+    assert 'Never register a path the UC does not cover' in context
     assert "regola d'inventario di uc-to-feature" in workflow
+    assert 'ma non li registra come SC' in workflow
     assert 'uc-to-feature (iniziale); uc-scenario-context' in workflow
     assert 'i dati mantengono l\'ownership delle sole C' in workflow
 
@@ -451,7 +456,7 @@ def test_readme_consultation_is_scoped_operational_context() -> None:
     assert 'not the whole document by default' in translation
     assert 'report Mapping/Checks sections, separately from functional evidence' in translation
     assert "do not generalize another suite's defaults" in translation
-    assert 'record an open\noperational question' in translation
+    assert 'record it as an\nimplementation finding' in translation
     assert 'test values from the README still require admission' in translation
 
 
@@ -466,8 +471,9 @@ def test_given_requires_supported_state_not_assumed_data_fitness() -> None:
     assert 'invent a preliminary business operation' in instructions
     assert 'Missing preparation evidence is not automatically' in instructions
     assert 'Distinguish a missing setup/observation capability' in context
-    assert 'Preserve an explicit UC precondition as an unresolved' in context
-    assert 'A data-fitness constraint alone does not supply that' in translation
+    assert 'Preserve an explicit UC\n   precondition in Mapping even when its preparation is unknown' in context
+    assert 'A\n   data-fitness constraint is not a guaranteed initial state' in translation
+    assert 'never invent a\n   preliminary operation' in translation
     assert 'Keep data-fitness requirements distinct from guaranteed initial states' in data
     assert 'a preliminary payment' in data
 
@@ -1916,3 +1922,95 @@ def test_background_todo_has_warning_before_each_scenario_tags() -> None:
     assert '__TODO_D001__' in feature.background.steps[0].name
     assert fragment.count('# Dati irrisolti: D-001') == len(feature.scenarios)
     assert re.search(r'# Dati irrisolti:.*\n  @positive', fragment)
+
+
+def test_triage_separates_implementation_doubts_from_functional_ones() -> None:
+    """Keep implementation doubts non-blocking and recorded, never asked."""
+    workflow = ' '.join(_read(DOCS / 'uc-workflow.md').split())
+    rows = _table_rows(
+        _read(DOCS / 'uc-workflow.md'),
+        '| Situazione | Azione | Blocca la feature? | Dove si registra |',
+    )
+    assert len(rows) == 9
+    by_situation = {row[0].split(' (')[0]: row for row in rows}
+    implementation = by_situation['Dubbio implementativo']
+    assert implementation[2] == 'No'
+    assert 'Non chiedere, non cercare' in implementation[1]
+    assert 'come indurre un errore nei test negativi' in rows[0][0]
+    assert by_situation['Dato fisso, non necessario nello scenario'][2] == 'No'
+    for blocking in (
+        'Funzionalita non chiara', 'Passaggio del workflow non chiaro',
+        'Documentazione discordante con lo UC',
+        'Incongruenze o contraddizioni nella documentazione',
+    ):
+        assert by_situation[blocking][2].startswith('Si')
+    assert 'ripetere il task' in by_situation['Documentazione discordante con lo UC'][1]
+    assert 'Placeholder `__TODO_Dnnn__`' in rows[2][1]
+    assert 'Placeholder' in rows[3][0] or 'un placeholder' in rows[3][1].lower()
+    assert 'non cambiano la readiness' in workflow
+    for name in SKILL_NAMES:
+        text = ' '.join(_read(SKILLS / name / 'SKILL.md').split())
+        assert 'triage-dei-dubbi-e-report-di-traduzione' in text
+    policy = ' '.join(_read(SKILLS / 'uc-scenario-context' / 'source-policy.md').split())
+    assert 'do not choose a side or ask which governs' in policy
+    assert 'Request a revision of both the documentation and the UC' in policy
+    assert 'resolved, or a pointer to the documentation that resolves it' in policy
+
+
+def test_translation_report_is_a_companion_outside_the_v1_schema() -> None:
+    """Keep report_traduzione written by the translation, without v1 artifacts."""
+    template = _read(DOCS / 'workflow-templates' / 'report-traduzione.template.md')
+    assert re.findall(r'^#{1,3} (.+)$', template, re.MULTILINE)[:5] == [
+        'REPORT {slug-uc}', 'README', '{slug-uc}', 'FND-001', 'FND-002',
+    ]
+    assert '\n---\n\n## PROPOSTE DI SCENARI NON COPERTI DALLO UC\n' in template
+    assert '### SP-001' in template and '### SP-002' in template
+    assert '```gherkin' in template
+    metadata = YAML(typ='safe').load(template.split('---', 2)[1])
+    assert list(metadata) == [
+        'schema', 'artifact', 'producer_skill', 'task_id', 'uc_id', 'uc_slug',
+        'run_id', 'uc_input', 'uc_revision', 'environment', 'revision',
+        'updated_at', 'derived_from', 'findings', 'proposals',
+    ]
+    assert metadata['schema'] == 'uc-translation-report/v1'
+    assert metadata['schema'] != 'uc-workflow/v1'
+    assert metadata['artifact'] == 'translation-report'
+    assert metadata['producer_skill'] == 'uc-to-feature'
+    assert [item['path'].rsplit('/', 1)[1] for item in metadata['derived_from']] == [
+        '01-context.md', '02-test-data.md', '03-feature-report.md',
+    ]
+    assert 'inputs' not in metadata
+    for tag in ('implementativo', 'dato', 'funzionale-aperto', 'friction'):
+        assert tag in template
+    workflow = ' '.join(_read(DOCS / 'uc-workflow.md').split())
+    for clause in (
+        '`report_traduzione_<slug-uc>.md`',
+        'fuori dallo schema `uc-workflow/v1`',
+        'nessuna riga in Artifacts',
+        'Non e mai input di un report',
+        'Le skill di supporto non lo scrivono',
+        '`Rilievo implementativo:`',
+        '`Proposta di scenario:`',
+    ):
+        assert clause in workflow
+    skill = ' '.join(_read(SKILLS / 'uc-to-feature' / 'SKILL.md').split())
+    assert 'write `report_traduzione_<slug-uc>.md` in the run directory' in skill
+    assert 'not a registry artifact (no row, no invalidation)' in skill
+    assert 'Never omit the file, even with no finding or proposal' in skill
+    assert (
+        'docs/use-cases/workflow-runs/checkout-traduzione/UC-CHECKOUT-001/'
+        '20261020-01/report_traduzione_uc-checkout-001.md'
+    ) in _read(DOCS / 'uc-workflow.md')
+    assert 'Va scritto **sempre**' in _read(DOCS / 'uc-workflow.md')
+    for support in ('uc-scenario-context', 'uc-test-data'):
+        text = _read(SKILLS / support / 'SKILL.md')
+        assert '`Rilievo implementativo:`' in text
+        assert '`Proposta di scenario:`' in text
+    assert 'report_traduzione_<slug-uc>.md' in _read(
+        ROOT / '.github' / 'agents' / 'QA-analyst.agent.md'
+    )
+    assert 'report_traduzione_<slug-uc>.md' in _read(
+        ROOT / 'docs' / 'agent-personas' / 'qa-analyst.md'
+    )
+    for heading in HEADINGS['03-feature-report']:
+        assert heading != 'Report di traduzione'

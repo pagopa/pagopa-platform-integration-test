@@ -15,7 +15,7 @@ scope without a second generic permission question.
 | --- | --- | --- |
 | Review | Apply [review-feature-files](../../../.github/skills/review-feature-files/SKILL.md) directly when already QA-analyst; never delegate to yourself | Findings in chat; a Markdown review report only when requested at a human-confirmed path. No feature creation or modification |
 | Edit or correct | Follow [feature-editing.md](feature-editing.md) | Scoped changes to authorized features, checks, explanations and implementation impact |
-| Create from a team-template UC | Read [uc-workflow.md](../../use-cases/uc-workflow.md) and apply [uc-to-feature](../../../.github/skills/uc-to-feature/SKILL.md) | Agreed features and the fixed UC reports/registry |
+| Create from a team-template UC | Read [uc-workflow.md](../../use-cases/uc-workflow.md) and apply [uc-to-feature](../../../.github/skills/uc-to-feature/SKILL.md) | Agreed features, the fixed UC reports/registry and the translation report `report_traduzione_<slug-uc>.md` |
 | Create from other documentation or an explicitly supplied migration suite | Apply the common evidence rules below and the Gherkin conventions | Agreed features with evidence, coverage, gaps and readiness summarized in chat; no invented UC or mandatory UC registry |
 
 An explanation-only request returns an explanation without editing features or
@@ -99,8 +99,11 @@ format; use them when judging functional correctness during review as well.
 
 The UC workflow remains the authority for schema, ownership and invalidation.
 Confirm the run registry; context writes `01-context.md`, data consumes it and
-writes `02-test-data.md`, then translation consumes both and writes features
-and `03-feature-report.md`. Update `00-run.md` only for real outputs and changes.
+writes `02-test-data.md`, then translation consumes both and writes features,
+`03-feature-report.md` and the companion `report_traduzione_<slug-uc>.md`, which
+collects implementation doubts and proposals of scenarios the UC does not cover
+(see the [triage](../../use-cases/uc-workflow.md#triage-dei-dubbi-e-report-di-traduzione)).
+Update `00-run.md` only for real outputs and changes.
 
 Validate identity, producer, revisions and states before each stage. On
 resumption obtain and persist the scoped human continuity confirmation for

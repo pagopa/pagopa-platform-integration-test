@@ -11,6 +11,10 @@ il prefisso `uc-` e lavorano con il solo agente `QA-analyst`:
 | 3 | [uc-to-feature](../../.github/skills/uc-to-feature/SKILL.md) | Usare i due report per produrre Gherkin e copertura | Percorsi `.feature` concordati e `03-feature-report.md` |
 
 Non genera UC dalla documentazione, Python, test eseguiti o commit automatici.
+Il prodotto della traduzione e una feature scritta a partire dallo UC: come la
+feature sara implementata non e oggetto di questo workflow. I dubbi
+implementativi non si chiedono e non bloccano; si raccolgono in
+`report_traduzione_<slug-uc>.md` secondo il [triage dei dubbi](#triage-dei-dubbi-e-report-di-traduzione).
 I nomi precedenti `document-scenario-context` e `resolve-test-data` sono
 sostituiti dai nuovi nomi; `uc-to-feature` resta invariato. Non sono alias o skill
 duplicate. Riavviare/ricaricare la discovery delle skill nell'harness se mostra
@@ -167,14 +171,92 @@ conflitti compaiono nelle Questions pertinenti e in History con scopo reale.
 La policy fonti distingue scoping, chiarimenti e decisioni: una nota non ha
 precedenza automatica e non elimina la copertura obbligatoria senza decisione.
 
-Il contesto registra anche percorsi documentati pertinenti secondo la regola
-d'inventario di uc-to-feature; i dati mantengono l'ownership delle sole C.
+Il contesto valuta anche i percorsi documentati non coperti dallo UC secondo la
+regola d'inventario di uc-to-feature, ma non li registra come SC: restano
+proposte nel report di traduzione; i dati mantengono l'ownership delle sole C.
 Mapping e Coverage mappano le verifiche di ogni AC nei flussi indicati e le
 postcondizioni in tutti i positivi FP/AF; conservano la motivazione dei
 parametri. Non introdurre nuovi enum.
 Un feedback funzionale aggiorna la decisione e torna al contesto prima dei dati
 e della feature; un feedback solo dati o Gherkin segue l'invalidazione già
 definita. Non ripetere retrieval o domande sulle parti rimaste invariate.
+
+## Triage dei dubbi e report di traduzione
+
+Lo scopo del workflow e la **feature**: l'implementazione Python/Behave e una
+fase successiva e non si affronta qui. Prima di fare una domanda, bloccare uno
+scenario o cercare una fonte, classificare il dubbio con questo test:
+
+> Se la risposta cambia cio che la feature afferma (azioni dell'attore, esiti
+> osservabili, regole, valori di input o attesi) il dubbio e **funzionale**.
+> Se cambia solo come lo step sara realizzato o eseguito (quale chiamata, quale
+> URL, quale configurazione, quale elemento UI, quale tecnologia, come provocare
+> una condizione o preparare uno stato) e **implementativo**. Se la feature si
+> puo scrivere con parole funzionali senza la risposta, e implementativo.
+
+| Situazione | Azione | Blocca la feature? | Dove si registra |
+| --- | --- | --- | --- |
+| Dubbio implementativo (API o endpoint, URL, configurazione, componenti UI, tecnologia, come indurre un errore nei test negativi, come preparare uno stato) | Non chiedere, non cercare, non adattare lo step: scrivere lo step con le parole dello UC e della documentazione | No | Finding `FND-NNN` del report di traduzione |
+| Dato fisso, non necessario nello scenario (puo essere cablato nello step Python/Behave) | Non richiederlo, non allocare un D, non inserirlo nella feature | No | Nessuno; un finding solo se serve alla fase successiva |
+| La feature richiede un dato e il valore non e nel contesto | Placeholder `__TODO_Dnnn__` secondo la skill dati | No, scenario `bozza` | Report dati, commento nella feature, finding di tipo `dato` |
+| Uno Scenario Outline richiede piu dati e i valori non sono nel contesto | Un placeholder in ogni cella interessata | No, scenario `bozza` | Come sopra |
+| Funzionalita non chiara | Chiedere spiegazione o documentazione aggiuntiva o corretta | Si, i soli check interessati | Questions del report pertinente |
+| Passaggio del workflow non chiaro | Chiedere spiegazione o documentazione aggiuntiva o corretta | Si, i soli check interessati | Questions del report pertinente |
+| Documentazione discordante con lo UC | Non scegliere: chiedere la revisione di documentazione e UC e ripetere il task sulle versioni riviste | Si, i check interessati | Questions e History; la ripresa riparte da una nuova `uc_revision` |
+| Incongruenze o contraddizioni nella documentazione | Chiedere la risoluzione della contraddizione o il rimando alla documentazione che la risolve | Si, i check interessati | Questions del report pertinente |
+| Scenario suggerito dalla documentazione ma non coperto dallo UC | Non inserirlo nella feature | No | Proposta `SP-NNN` del report di traduzione |
+
+Lo UC e la guida principale per la creazione della feature: la feature contiene
+solo scenari coperti da suoi passi, AF, EF, AC o postcondizioni, o righe di dati
+per quei flussi. Un caso aggiuntivo dello stesso flusso, con le stesse verifiche
+e dati ammessi, resta una riga di outline; un percorso diverso e una proposta.
+Una decisione umana esplicita che risolve gia proprio quel conflitto resta
+utilizzabile; non va sollecitata in alternativa alla revisione.
+
+Un dubbio funzionale a cui l'umano non puo rispondere non diventa un'ipotesi:
+l'elemento affetto resta una copertura mancante e compare anche nel report di
+traduzione come finding `funzionale-aperto`. I dubbi implementativi non si
+trasformano in Q, non sono rifiutati da nessun umano e non cambiano la
+readiness: `pronta per lo sviluppo` dipende solo da lacune funzionali, oracle e
+dati.
+
+### Report di traduzione
+
+`uc-to-feature` scrive sempre, come ultimo passo, il file
+`report_traduzione_<slug-uc>.md` nella directory della run, seguendo il
+[template](workflow-templates/report-traduzione.template.md): README, sinossi,
+finding `FND-NNN` e, dopo `---`, proposte di scenario `SP-NNN` in Gherkin. Le
+sezioni vuote contengono `Nessuno`.
+
+- `<slug-uc>` e l'`uc_id` concordato in minuscolo (lettere, cifre e trattini).
+  Posizione: `<run-directory>/report_traduzione_<slug-uc>.md`, accanto agli
+  altri report della run. Esempio per `task-id` `checkout-traduzione`, `uc-id`
+  `UC-CHECKOUT-001`, `run-id` `20261020-01`:
+  `docs/use-cases/workflow-runs/checkout-traduzione/UC-CHECKOUT-001/20261020-01/report_traduzione_uc-checkout-001.md`.
+- Va scritto **sempre**, anche senza finding, senza proposte o con la traduzione
+  `blocked`, perche la sua assenza non sia scambiata per un errore: le sezioni
+  vuote contengono `Nessuno`. La sua mancanza a fine run e un errore di chiusura.
+- Titolo: `# REPORT <slug-uc>`, dopo il frontmatter.
+- E un file di accompagnamento, fuori dallo schema `uc-workflow/v1`: ha un suo
+  frontmatter `uc-translation-report/v1` (`schema`, `artifact`, `producer_skill`,
+  `task_id`, `uc_id`, `uc_slug`, `run_id`, `uc_input`, `uc_revision`,
+  `environment`, `revision`, `updated_at`, `derived_from`, `findings`,
+  `proposals`), ma nessuna riga in Artifacts e nessuna invalidazione.
+  `derived_from` elenca solo i report realmente letti, con la loro revisione, ed
+  e provenienza, non dipendenza: la sua modifica non invalida nulla. `revision`
+  parte da 1 e cresce a ogni riscrittura; `findings` e `proposals` contano le
+  sezioni `FND` e `SP` presenti. Non e mai input di un report ne fonte di
+  requisiti; il registro ne registra la scrittura in History.
+- Le skill di supporto non lo scrivono: riportano i propri rilievi nella sezione
+  Readiness del loro report, con le righe `Rilievo implementativo:` e
+  `Proposta di scenario:`; la traduzione li raccoglie, li deduplica e alloca gli
+  id. Alla rigenerazione conserva gli id dei finding ancora validi e non li
+  ricicla.
+- Gli id `FND-NNN` e `SP-NNN` sono locali al file: fuori da esso si citano come
+  `report_traduzione_<slug-uc>.md#FND-001`, come per le S dei report v1.
+- Una proposta `SP-NNN` indica fonte e ancoraggio nello UC, trigger, sequenza
+  richiesta ed esito; lo scenario Gherkin segue le instructions Gherkin e non
+  ha tag di tracciamento. Non e copertura dello UC.
 
 ## Varianti dati e riferimenti AC ai flussi
 
@@ -203,9 +285,10 @@ voce per ogni AC anche quando scenario e riga Examples coincidono.
 Nuovi vincoli funzionali richiedono prima un aggiornamento del contesto,
 poi dei dati, con normale invalidazione a valle.
 
-Il contesto può registrare anche SC per percorsi documentati pertinenti ammessi
-dalla regola d'inventario di uc-to-feature; le differenze di percorso non
-diventano varianti dati né righe Examples.
+Un percorso documentato che lo UC non copre (nessun passo, AF, EF o AC lo
+prevede) non diventa un SC né uno scenario della feature: e una proposta `SP-NNN`
+del report di traduzione. Le differenze di percorso non diventano varianti dati
+né righe Examples.
 
 E consigliato un riferimento verbale negli AC, per esempio `(FP)` o `(AF02)`,
 ma non e un nuovo campo obbligatorio. La skill uc-to-feature definisce le
@@ -225,7 +308,8 @@ inventario iniziale dei casi desunti dallo UC e **percorsi attesi** degli output
 
 La skill funzionale scrive solo `01-context.md`; quella dati solo
 `02-test-data.md` (oltre all'eventuale catalogo autorizzato); la traduzione scrive
-le feature concordate e `03-feature-report.md`. Il registro e condiviso con
+le feature concordate, `03-feature-report.md` e `report_traduzione_<slug-uc>.md`.
+Il registro e condiviso con
 questi permessi, non con un generico diritto di riscrittura:
 
 | Sezione o operazione | Chi puo aggiornarla | Limite |
@@ -276,8 +360,11 @@ L'analista:
 4. Legge quel file, poi invoca o applica `uc-test-data`; salva `02-test-data.md`.
 5. Rilegge registro e report dai percorsi registrati, valida identita, revisione,
    stato e riferimenti; produce feature e `03-feature-report.md`.
-6. Aggiorna il registro e restituisce i percorsi realmente prodotti, produttori,
-   stati, questioni aperte e controlli effettivamente svolti.
+6. Raccoglie i rilievi dei report e i propri nel
+   [report di traduzione](#report-di-traduzione) `report_traduzione_<slug-uc>.md`.
+7. Aggiorna il registro e restituisce i percorsi realmente prodotti, produttori,
+   stati, questioni aperte, numero di finding e proposte, e controlli
+   effettivamente svolti.
 
 Le skill di supporto non richiamano automaticamente la traduzione: le
 restituiscono gli artefatti, evitando cicli ricorsivi. La skill dati, se scopre
@@ -424,8 +511,9 @@ o input non valido produce `blocked`, non valori presunti.
 Con contesto incompleto, la traduzione puo produrre solo scenari supportati,
 segnalando tutta la copertura mancante; non inventa azioni/Then per riempire
 il file. Se nessuno scenario e supportato, non crea una feature vuota: scrive
-un report finale `blocked`, senza registrare feature inesistenti. Non consuma
-report `blocked`, `stale` o `not_created`.
+un report finale `blocked`, senza registrare feature inesistenti, e il report di
+traduzione con i finding e le proposte emersi. Non consuma report `blocked`,
+`stale` o `not_created`.
 
 La feature applica le instructions Gherkin; non eredita le tabelle Markdown.
 Placeholder e commenti seguono la skill dati: solo i placeholder irrisolti
@@ -436,11 +524,13 @@ Nella tabella Scenario warnings del report dati, Required comment contiene
 colonne esistenti e in Data resolution/Readiness, senza cambiare lo schema.
 L'ambiente resta nei metadati e nell'applicabilita delle fonti; hostname e
 base URL di deployment sono risolti dalla configurazione della run, non
-fissati negli step, salvo requisito funzionale esplicito. I Given richiedono
-evidenza di preparazione o osservazione indipendente dall'operazione testata:
-un vincolo di idoneita del dato non basta a garantirne lo stato iniziale.
-La mancanza di tale evidenza e distinta da una lacuna nella regola funzionale;
-una precondizione UC non attuabile non viene eliminata, ma resta aperta.
+fissati negli step, salvo requisito funzionale esplicito. Un Given esprime una
+precondizione dello UC: come prepararla od osservarla e un dubbio
+implementativo, che non blocca e va nel report di traduzione. Resta vietato
+presentare come Given uno stato che si determina solo attraverso l'operazione
+testata, o anticipare un'operazione di business per stabilirlo: un vincolo di
+idoneita del dato non basta a garantire lo stato iniziale e resta nei requisiti
+dati. Una precondizione UC non viene eliminata.
 Il report finale verifica anche
 coerenza dei riferimenti, combinazioni, oracle e tutti gli SC/AC/AF/EF coperti
 o esclusi con ragione. La sintassi controllata non implica disponibilita
@@ -472,6 +562,9 @@ Prima di chiudere una run, verificare:
    continuita applicabili devono essere soddisfatti. Un report finale blocked
    non riabilita le feature stale di una generazione precedente.
    Questo stato non autorizza sviluppo/esecuzione automatici.
+7. `report_traduzione_<slug-uc>.md` esiste e la sua scrittura e in History. Nessun
+   dubbio implementativo compare come Q, come commento o come warning di
+   readiness; nessuno scenario non coperto dallo UC e nella feature.
 
 ## Verifica del contratto
 

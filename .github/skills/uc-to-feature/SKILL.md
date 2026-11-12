@@ -6,6 +6,8 @@ description: >-
   lo UC", "da use case a feature", or "genera la feature dallo UC". Maps the UC
   onto Gherkin concepts, designs scenarios under the project Gherkin
   conventions, and reports coverage, data requirements, and functional gaps.
+  Implementation doubts never block the feature: they are collected, with
+  proposals of scenarios the UC does not cover, in report_traduzione_<slug-uc>.md.
   Runs only through the QA-analyst agent: any other agent must delegate to it.
   Uses uc-scenario-context and uc-test-data for missing details and
   values; never invents them. Does not author UCs or write Python.
@@ -19,7 +21,37 @@ are separate activities, performed through
 [uc-scenario-context](../uc-scenario-context/SKILL.md) and
 [uc-test-data](../uc-test-data/SKILL.md). This skill owns the scenario
 design and assembles their results; it does not invent missing information.
-Python implementation (step 3) is out of scope.
+Python implementation (step 3) is out of scope, and so are the questions it
+raises.
+
+## Doubts: what to ask, what to write down
+
+The goal is the feature. Before asking, blocking or searching, classify every
+doubt with the
+[triage](../../../docs/use-cases/uc-workflow.md#triage-dei-dubbi-e-report-di-traduzione)
+and its test: does the answer change what the feature says (functional), or
+only how a step will be realized (implementation)?
+
+- **Implementation doubts** (which API to call, which URL, which configuration,
+  which UI components, which technology, how to induce the error of a negative
+  test, how to prepare a state) are never asked, never searched and never
+  block. Write the step in the functional words of the UC and the documentation
+  and record a finding for `report_traduzione_<slug-uc>.md`.
+- A fixed value that the scenario does not depend on, which the Python/Behave
+  step can hard-code, is not requested and not put in the feature.
+- An input value the feature needs but the context lacks, for a plain scenario
+  or for the cells of a Scenario Outline, gets a `__TODO_Dnnn__` placeholder.
+- An unclear functionality or workflow step: ask for an explanation or for
+  additional or corrected documentation.
+- Documentation that disagrees with the UC: do not choose; ask for a revision
+  of both and repeat the task on the revised versions. A contradiction inside
+  the documentation: ask for its resolution or a pointer to the documentation
+  that resolves it.
+- The UC is the main guide. Never put in the feature a scenario the UC does not
+  cover; propose it as an `SP-NNN` in the translation report.
+
+Ask all the functional questions of a stage once, together; do not stop on
+questions that are not functional.
 
 This skill is used by `QA-analyst`. If you are not running as `QA-analyst`,
 delegate to [QA-analyst.agent.md](../../agents/QA-analyst.agent.md) with this
@@ -71,7 +103,9 @@ In automatic mode, execute in this order:
    identities, producers, revisions and states. Only then assemble features
    at the agreed paths and persist
    [03-feature-report.template.md](../../../docs/use-cases/workflow-templates/03-feature-report.template.md)
-   as `03-feature-report.md`. Record actual feature paths in `00-run.md`.
+   as `03-feature-report.md`; then write the companion
+   `report_traduzione_<slug-uc>.md` (output step 8). Record actual feature
+   paths in `00-run.md` and the translation report write in its History.
 
 When the reports already exist and are current, consume them without repeating
 the retrieval activities, after the workflow's human continuity confirmation
@@ -112,8 +146,9 @@ Provide those scoped constraints to support stages when needed rather than
 requiring each stage to repeat the same complete read.
 Do not infer setup capabilities, data availability or product behaviour from
 the mere use of Python/Behave, and do not generalize another suite's defaults.
-If missing or conflicting guidance affects the design, record an open
-operational question and request clarification. This consultation neither
+If missing or conflicting guidance affects the design, record it as an
+implementation finding for the translation report; do not request
+clarification and do not block. This consultation neither
 permits command execution nor expands source access; functional findings or
 test values from the README still require admission under the source policy.
 
@@ -281,12 +316,12 @@ For each proposed scenario:
 6. Record the structural choice and its evidence in the existing Mapping
    rationale. When setup replaces a preceding journey, explain why that
    journey is outside the behaviour being verified and why the proposed
-   initial state preserves the relevant conditions. For each Given, use the
-   context report's evidence for a way to verify or establish the state before
-   the tested operation. A data-fitness constraint alone does not supply that
-   evidence; keep an unsupported state requirement in the report and request
-   context clarification rather than inventing preparation or silently
-   dropping an explicit UC precondition.
+   initial state preserves the relevant conditions. Each Given states a UC
+   precondition. How to verify or establish that state is an implementation
+   doubt: it does not block the Given and is recorded as a finding. A
+   data-fitness constraint is not a guaranteed initial state: keep it in the
+   data requirements instead of asserting it in a Given, and never invent a
+   preliminary operation or silently drop an explicit UC precondition.
 
 Do not infer setup equivalence from the page URL or visible state alone:
 history, session, actor identity, entity lifecycle or previous attempts
@@ -310,10 +345,11 @@ clarify material uncertainty instead.
 | Postcondizioni | `Then` checks of final state | Verify UC postconditions in every positive FP/AF scenario, independently of similar checks in EF ACs and regardless of optional positive tags. Apply the source-prescribed property and flow scope in ac-flow-references.md. Verify them when observable through an interface named by the UC or by referenced or provided documentation. When observable only indirectly (for example through a displayed message), mark the coverage as partial. Otherwise report them as a verification requirement instead of inventing a check. |
 | AC-NN | Oracle of one or more scenarios | Resolve verbal flow references under ac-flow-references.md. Many ACs may target one flow and one Gherkin scenario, for FP, AF and EF/negative cases alike. Collect all applicable compatible criteria as `Then`/`And` checks in that scenario; never create one scenario per AC or keep only one AC per flow. An AC scoped to a flow applies to its supported data variants unless the criterion restricts applicability; the reference alone defines no values or variants. Apply ac-flow-references.md for source-prescribed verification and flow scope. Every AC must be satisfied by at least one `Then` (with its `Given`/`When` context), and one AC may require several scenarios. Preserve each AC separately in Coverage even when scenario and Examples row are shared. |
 | Cases that differ only in values | `Scenario Outline` + `Examples` | Derive relevant data sets through the support skills from admitted documentation and material; no AF is required to specify them. Main flow, AF, or EF cases with the same behaviour and the same verifications become one outline with one row per supported case. Cases with different behaviour, or with different or additional verifications, get separate scenarios/outlines even if their steps look similar. A catalogue size or range alone does not determine the rows; do not invent a Cartesian product. Apply the instructions' rules on outlines. |
-| Values fixed by the UC (quantities, outcomes, status codes, enumerations) | Literal step parameters or `Examples` values | When the behaviour or an outcome depends on them, they are functional rules: keep them unchanged. A value on which nothing depends (changing it would change no outcome) is probably test data written in the UC: ask whether it is a rule or data, keep it unchanged meanwhile, and keep the feature a `bozza`. |
+| Values fixed by the UC (quantities, outcomes, status codes, enumerations) | Literal step parameters or `Examples` values | When the behaviour or an outcome depends on them, they are functional rules: keep them unchanged. A value on which nothing depends (changing it would change no outcome) is probably test data written in the UC: keep it unchanged, do not ask and do not make the feature a `bozza`; record a `friction` finding in the translation report. |
 | Expected values defined outside the UC (texts, times, codes) | `Then` parameters or `Examples` columns | Oracle values, not input data: take them only from referenced or provided documentation, never from the suite or the observed system. A technical code is verified only when the UC or the source states that it is part of the outcome. When missing, they are a functional gap. |
-| Values that the UC only qualifies (for example "a unique name", "a valid key", "an existing entity") | Data requirement | Do not invent a concrete value. Hand the characteristic and its constraints to uc-test-data; do not turn a data-fitness requirement into a guaranteed Given without context evidence for independent preparation or observation. If the value is unresolved, use that skill's placeholder contract; missing preparation or functional evidence is reported separately, not concealed by a data placeholder. |
-| Technical details in the UC (payloads, operation names, field names) | Step argument (doc string / data table) only when needed to state the behaviour | Keep them verbatim if they define the expected behaviour; otherwise leave them to the implementation and mention them for `QA-engineer`. |
+| Values that the UC only qualifies (for example "a unique name", "a valid key", "an existing entity") | Data requirement | Do not invent a concrete value. Hand the characteristic and its constraints to uc-test-data; do not turn a data-fitness requirement into a guaranteed Given. If the value is unresolved, use that skill's placeholder contract; missing preparation is an implementation finding and missing functional evidence a gap, each reported separately, not concealed by a data placeholder. |
+| Technical details in the UC (payloads, operation names, field names) | Step argument (doc string / data table) only when needed to state the behaviour | Keep them verbatim if they define the expected behaviour; otherwise leave them to the implementation and record them as an implementation finding for `QA-engineer`. |
+| Documented behaviour that the UC does not cover (no step, AF, EF, AC or postcondition prescribes it) | No scenario | Not in the feature, not an SC, not an Examples row. Propose it as an `SP-NNN` in the translation report. |
 
 ### 1. Validate the input
 
@@ -324,21 +360,28 @@ the consistency between sections. Classify each finding:
   (for example an AC whose outcome is not stated, or an AF needing a state
   that no precondition or rule defines). They block the affected scenarios.
 - **Ambiguities and conflicts**: between sections, with referenced
-  specifications, or with the conventions.
+  specifications, or with the conventions. Apply the triage: a UC/documentation
+  disagreement is not resolved by choosing a side but by requesting a revision
+  of both and repeating the task; a contradiction inside the documentation
+  needs its resolution or a pointer to the documentation that resolves it.
 - **Data requirements**: concrete input values or states needed to run a
   scenario that the UC only characterizes. They do not block the feature
   design, but they block readiness for execution. Expected values are not data
-  requirements: they belong to the oracle (see step 0).
+  requirements: they belong to the oracle (see step 0). A fixed value that the
+  step can hard-code is not a data requirement.
+- **Implementation doubts**: not findings of this validation. They are
+  recorded for the translation report and never block (see the triage above).
 
-Ask the user about blocking gaps and ambiguities through that interaction
-protocol, including its chat fallback. When a required human answer cannot be
-obtained, list the open items and keep the feature a `bozza`; do not advance
-dependent actions. A delegated analyst returns the questions to the orchestrator
-with its blocked result, not a fabricated answer. Never fill gaps with assumptions, executable suite
-content, or domain knowledge not stated in the UC or in admitted documentation.
+Ask the user about blocking functional gaps and ambiguities through that
+interaction protocol, including its chat fallback. When a required human answer
+cannot be obtained, list the open items and keep the feature a `bozza`; do not
+advance dependent actions. A delegated analyst returns the questions to the
+orchestrator with its blocked result, not a fabricated answer. Never fill gaps
+with assumptions, executable suite content, or domain knowledge not stated in
+the UC or in admitted documentation.
 Before writing detailed steps, require the current report from
 [uc-scenario-context](../uc-scenario-context/SKILL.md) for missing
-fields, UI/API actions, sequence requirements or oracle values. If the UC
+field meanings, sequence requirements or oracle values. If the UC
 already supplies sufficient detail, do not require additional documents merely
 as a formality. Missing input values go to uc-test-data, not this
 functional-gap decision.
@@ -362,13 +405,13 @@ using it in data combinations. Reuse existing F/O/D ids when their meaning is
 unchanged; new constraints or a different oracle need functional evidence.
 Apply normal revisions and downstream invalidation.
 
-Context may also register a distinct documented path not named as a UC AF/EF
-when it is anchored to a UC operation or step, serves the authorized goal, and
-its trigger, required sequence and outcome are supported by admitted evidence.
-Record that anchor, source and reason in the existing inventory and Mapping.
-Do not invent UC flow or AC identifiers. Different paths are not data variants.
-Unrelated paths require a scope decision; conflicting or incomplete paths
-remain questions, not silently added or silently treated as covered.
+The UC is the main guide: a distinct documented path that no UC step, AF, EF,
+AC or postcondition covers is not added to the inventory or to the feature.
+Propose it as an `SP-NNN` in the translation report, with its anchor to a UC
+operation or step, its source, and its trigger, required sequence and outcome
+as the admitted evidence states them, plus the Gherkin scenario. Do not invent
+UC flow or AC identifiers. Different paths are not data variants, and are not
+Examples rows. A proposal is not UC coverage and does not change readiness.
 
 Intermediate checks need not have an invented AC: cite the actual FP/AF/EF
 element or admitted passage. In the context template's `AC or postcondition`
@@ -381,9 +424,9 @@ Group behaviours into scenarios under the mapping of step 0 and the
 conventions: shared preconditions, outlines, tags, file splitting. Write the
 steps from the UC and admitted details in `01-context.md` under the instructions.
 Do not independently retrieve missing detail while assembling. Setup is
-preparation, not a behaviour of the UC: use Given only when the context
-supports a way to establish or verify its state under the instructions.
-No scenario depends on the execution of another.
+preparation, not a behaviour of the UC: use Given for the UC's preconditions,
+leaving the way to establish or verify them to the implementation (a finding,
+not a question). No scenario depends on the execution of another.
 
 Compatible checks of the same operation's outcome may belong to the same
 scenario without expanding its behavioural scope.
@@ -412,15 +455,16 @@ behaviour or oracle values; report those coverage gaps separately.
 
 Before persisting the feature, perform a semantic structure check:
 
-- Scoped clarifications and each additional documented path are reconciled
-  with the authorized goal, UC coverage and current context evidence.
+- Scoped clarifications are reconciled with the authorized goal, UC coverage
+  and current context evidence, and every scenario is covered by the UC; any
+  other documented path is a proposal in the translation report.
 - Literal parameters have a justified functional role; implementation inputs
   are not automatically promoted to Gherkin parameters.
 - Every mapped UC action remains an action, unless its treatment as
   independent preparation is explicitly justified in Mapping.
 - Given and Background contain genuine prerequisites, not operational
-  scripts rewritten as initial states; each state has context evidence for
-  independent preparation or observation, not just a data-fitness constraint.
+  scripts rewritten as initial states; each state is a UC precondition, not
+  just a data-fitness constraint.
 - When steps do not conceal assertions, and Then steps do not conceal
   new business actions.
 - And/But retain the role of their preceding keyword block.
@@ -476,16 +520,42 @@ even when generation is blocked; never claim an unwritten feature as output.
 5. **Functional gaps, ambiguities, and conflicts** still open.
 6. **Readiness**: `pronta per lo sviluppo` only when no gap, no blocking
    ambiguity, no missing expected value, and no data requirement remains open;
-   otherwise `bozza`, with the reasons. Never present a feature with
-   unresolved prerequisites or data as ready to run. Report syntactic checks
+   otherwise `bozza`, with the reasons. Implementation findings and scenario
+   proposals neither prevent `pronta per lo sviluppo` nor justify `bozza`.
+   Never present a feature with unresolved prerequisites or data as ready to
+   run. Report syntactic checks
    actually performed separately; a valid draft with placeholders is not an
    executable test or permission for automatic implementation/execution.
 7. The scenario explanation for `QA-engineer` required by the analyst persona.
+   Implementation doubts do not belong in this section or in Readiness: they
+   go to the translation report below, which the handoff points to.
+8. **Translation report**: write `report_traduzione_<slug-uc>.md` in the run
+   directory from the
+   [template](../../../docs/use-cases/workflow-templates/report-traduzione.template.md),
+   always, with `Nessuno` in empty sections. Collect the `Rilievo implementativo:`
+   and `Proposta di scenario:` lines from the Readiness of `01-context.md` and
+   `02-test-data.md`, add those met while assembling, deduplicate, and allocate
+   `FND-NNN` and `SP-NNN` (keep the ids of findings still valid when regenerating;
+   never recycle). Each FND states `Tipo`, `Riferimento`, `Dubbio o criticita`,
+   `Fonte`, `Proposta` and `Effetto sulla feature`; include as `dato` the
+   unresolved placeholders and as `funzionale-aperto` the functional questions
+   left unanswered. Each SP states anchor in the UC, source and a Gherkin
+   scenario under the instructions, without tracking tags. Fill the template's
+   `uc-translation-report/v1` frontmatter (`derived_from` lists only the reports
+   actually read; `revision` grows at each rewrite; `findings` and `proposals`
+   count the `FND` and `SP` sections). Never omit the file, even with no
+   finding or proposal or when the translation is blocked: its absence would
+   look like an error. It is not a registry artifact (no row, no invalidation)
+   and no stage reads it as evidence; append its write to History only after it
+   is saved, and name it in the final answer with the number of findings and
+   proposals.
 
 ## Guardrails
 
 - Do not invent rules, outcomes, negative paths, concrete data, or
   environment availability.
+- Do not ask, search or block for implementation doubts, and do not insert
+  scenarios the UC does not cover; both go to the translation report.
 - Do not change UC rules to fit existing steps or available data.
 - Do not edit the UC. Propose UC corrections in chat for the UC owner.
 - Approved UC → feature examples are not available yet. Do not present any
