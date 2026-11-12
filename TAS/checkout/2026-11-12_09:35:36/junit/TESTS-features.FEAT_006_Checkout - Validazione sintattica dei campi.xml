@@ -1,0 +1,476 @@
+<testsuite name="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" tests="14" errors="6" failures="0" skipped="0" time="104.747805" timestamp="2026-11-12T09:40:37.413682" hostname="runnervm7aw5e"><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Inserimento codice avviso errato -- @1.1 " status="passed" time="0.913129"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_01 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Inserimento codice avviso errato -- @1.1 
+    Dato La pagina di checkout è aperta ... passed in 0.186s
+    E La lingua è impostata su "it" ... passed in 0.357s
+    Dato L’utente si trova sulla pagina "/inserisci-dati-avviso" ... passed in 0.069s
+    Quando L’utente Inserisce il codice avviso 12345678901234567890 all’interno della pagina ... passed in 0.252s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.039s
+    Allora Il campo "Codice Avviso" viene segnalato in rosso ... passed in 0.009s
+    E Viene mostrato il messaggio "Inserisci 18 cifre" sotto il campo "Codice Avviso" ... passed in 0.002s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Inserimento codice avviso errato -- @1.2 " status="passed" time="0.881271"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_01 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Inserimento codice avviso errato -- @1.2 
+    Dato La pagina di checkout è aperta ... passed in 0.186s
+    E La lingua è impostata su "it" ... passed in 0.367s
+    Dato L’utente si trova sulla pagina "/inserisci-dati-avviso" ... passed in 0.077s
+    Quando L’utente Inserisce il codice avviso 12345678 all’interno della pagina ... passed in 0.197s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.043s
+    Allora Il campo "Codice Avviso" viene segnalato in rosso ... passed in 0.010s
+    E Viene mostrato il messaggio "Inserisci 18 cifre" sotto il campo "Codice Avviso" ... passed in 0.002s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Inserimento codice avviso errato -- @1.3 " status="passed" time="0.92859"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_01 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Inserimento codice avviso errato -- @1.3 
+    Dato La pagina di checkout è aperta ... passed in 0.194s
+    E La lingua è impostata su "it" ... passed in 0.357s
+    Dato L’utente si trova sulla pagina "/inserisci-dati-avviso" ... passed in 0.075s
+    Quando L’utente Inserisce il codice avviso aaabbbcccdddeeefff all’interno della pagina ... passed in 0.250s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.042s
+    Allora Il campo "Codice Avviso" viene segnalato in rosso ... passed in 0.009s
+    E Viene mostrato il messaggio "Inserisci 18 cifre" sotto il campo "Codice Avviso" ... passed in 0.002s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Inserimento CF ente errato -- @1.1 " status="passed" time="0.892991"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_02 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Inserimento CF ente errato -- @1.1 
+    Dato La pagina di checkout è aperta ... passed in 0.206s
+    E La lingua è impostata su "it" ... passed in 0.361s
+    Dato L’utente si trova sulla pagina "/inserisci-dati-avviso" ... passed in 0.073s
+    Quando L’utente Inserisce il CF ente 1234567890 all’interno della pagina ... passed in 0.195s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.048s
+    Allora Il campo "Codice Fiscale Ente Creditore" viene segnalato in rosso ... passed in 0.008s
+    E Viene mostrato il messaggio "Inserisci 11 cifre" sotto il campo "Codice Fiscale Ente Creditore" ... passed in 0.002s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Inserimento CF ente errato -- @1.2 " status="passed" time="0.933519"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_02 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Inserimento CF ente errato -- @1.2 
+    Dato La pagina di checkout è aperta ... passed in 0.204s
+    E La lingua è impostata su "it" ... passed in 0.355s
+    Dato L’utente si trova sulla pagina "/inserisci-dati-avviso" ... passed in 0.073s
+    Quando L’utente Inserisce il CF ente 123456789012345 all’interno della pagina ... passed in 0.238s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.052s
+    Allora Il campo "Codice Fiscale Ente Creditore" viene segnalato in rosso ... passed in 0.010s
+    E Viene mostrato il messaggio "Inserisci 11 cifre" sotto il campo "Codice Fiscale Ente Creditore" ... passed in 0.002s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Inserimento CF ente errato -- @1.3 " status="passed" time="0.897767"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_02 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Inserimento CF ente errato -- @1.3 
+    Dato La pagina di checkout è aperta ... passed in 0.192s
+    E La lingua è impostata su "it" ... passed in 0.361s
+    Dato L’utente si trova sulla pagina "/inserisci-dati-avviso" ... passed in 0.072s
+    Quando L’utente Inserisce il CF ente aaabbbcccdd all’interno della pagina ... passed in 0.207s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.051s
+    Allora Il campo "Codice Fiscale Ente Creditore" viene segnalato in rosso ... passed in 0.011s
+    E Viene mostrato il messaggio "Inserisci 11 cifre" sotto il campo "Codice Fiscale Ente Creditore" ... passed in 0.002s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Inserimento indirizzo email non valido -- @1.1 " status="failed" time="16.81621"><error type="TimeoutError" message="Timeout 15000ms exceeded.&#10;=========================== logs ===========================&#10;waiting for navigation until 'load'&#10;============================================================">
+<![CDATA[
+Failing step: Dato L’utente si trova sulla pagina "/inserisci-email" ... failed in 15.799s
+Location: src/e2e/checkout/features/FEAT_006_Checkout - Validazione sintattica dei campi.feature:56
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 27, in step_on_page
+    navigate_to_page(context, page_url)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 160, in navigate_to_page
+    elif page_url == "/inserisci-email": naviga_inserisci_email(context)
+                                         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 188, in naviga_inserisci_email
+    naviga_dati_pagamento(context)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 181, in naviga_dati_pagamento
+    with get_page(context).expect_navigation(timeout=15000):
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 85, in __exit__
+    self._event.value
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 59, in value
+    raise exception
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 239, in continuation
+    event = await waiter.result()
+            ^^^^^^^^^^^^^^^^^^^^^
+playwright._impl._errors.TimeoutError: Timeout 15000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until 'load'
+============================================================
+
+Captured logging:
+ERROR:builtins:Navigation did not occur after clicking verify: Timeout 15000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until 'load'
+============================================================]]>
+</error><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_03 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Inserimento indirizzo email non valido -- @1.1 
+    Dato La pagina di checkout è aperta ... passed in 0.187s
+    E La lingua è impostata su "it" ... passed in 0.830s
+    Dato L’utente si trova sulla pagina "/inserisci-email" ... failed in 15.799s
+    Quando L’utente Inserisce l’indirizzo email aaaaaaaaaa in uno dei due campi email presenti nella pagina ... skipped in 0.000s
+    E L’utente clicca sul tasto "Continua" ... skipped in 0.000s
+    Allora Il campo "Indirizzo email" viene segnalato in rosso ... skipped in 0.000s
+    E Viene mostrato il messaggio "Inserisci un indirizzo email valido" sotto il campo "Indirizzo email" ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Inserimento indirizzo email non valido -- @1.2 " status="failed" time="16.026647"><error type="TimeoutError" message="Timeout 15000ms exceeded.&#10;=========================== logs ===========================&#10;waiting for navigation until 'load'&#10;============================================================">
+<![CDATA[
+Failing step: Dato L’utente si trova sulla pagina "/inserisci-email" ... failed in 15.478s
+Location: src/e2e/checkout/features/FEAT_006_Checkout - Validazione sintattica dei campi.feature:56
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 27, in step_on_page
+    navigate_to_page(context, page_url)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 160, in navigate_to_page
+    elif page_url == "/inserisci-email": naviga_inserisci_email(context)
+                                         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 188, in naviga_inserisci_email
+    naviga_dati_pagamento(context)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 181, in naviga_dati_pagamento
+    with get_page(context).expect_navigation(timeout=15000):
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 85, in __exit__
+    self._event.value
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 59, in value
+    raise exception
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 239, in continuation
+    event = await waiter.result()
+            ^^^^^^^^^^^^^^^^^^^^^
+playwright._impl._errors.TimeoutError: Timeout 15000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until 'load'
+============================================================
+
+Captured logging:
+ERROR:builtins:Navigation did not occur after clicking verify: Timeout 15000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until 'load'
+============================================================]]>
+</error><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_03 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Inserimento indirizzo email non valido -- @1.2 
+    Dato La pagina di checkout è aperta ... passed in 0.193s
+    E La lingua è impostata su "it" ... passed in 0.356s
+    Dato L’utente si trova sulla pagina "/inserisci-email" ... failed in 15.478s
+    Quando L’utente Inserisce l’indirizzo email aaaaaaaaaa@ in uno dei due campi email presenti nella pagina ... skipped in 0.000s
+    E L’utente clicca sul tasto "Continua" ... skipped in 0.000s
+    Allora Il campo "Indirizzo email" viene segnalato in rosso ... skipped in 0.000s
+    E Viene mostrato il messaggio "Inserisci un indirizzo email valido" sotto il campo "Indirizzo email" ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Inserimento indirizzo email non valido -- @1.3 " status="failed" time="16.046914"><error type="TimeoutError" message="Timeout 15000ms exceeded.&#10;=========================== logs ===========================&#10;waiting for navigation until 'load'&#10;============================================================">
+<![CDATA[
+Failing step: Dato L’utente si trova sulla pagina "/inserisci-email" ... failed in 15.487s
+Location: src/e2e/checkout/features/FEAT_006_Checkout - Validazione sintattica dei campi.feature:56
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 27, in step_on_page
+    navigate_to_page(context, page_url)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 160, in navigate_to_page
+    elif page_url == "/inserisci-email": naviga_inserisci_email(context)
+                                         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 188, in naviga_inserisci_email
+    naviga_dati_pagamento(context)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 181, in naviga_dati_pagamento
+    with get_page(context).expect_navigation(timeout=15000):
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 85, in __exit__
+    self._event.value
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 59, in value
+    raise exception
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 239, in continuation
+    event = await waiter.result()
+            ^^^^^^^^^^^^^^^^^^^^^
+playwright._impl._errors.TimeoutError: Timeout 15000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until 'load'
+============================================================
+
+Captured logging:
+ERROR:builtins:Navigation did not occur after clicking verify: Timeout 15000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until 'load'
+============================================================]]>
+</error><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_03 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Inserimento indirizzo email non valido -- @1.3 
+    Dato La pagina di checkout è aperta ... passed in 0.197s
+    E La lingua è impostata su "it" ... passed in 0.363s
+    Dato L’utente si trova sulla pagina "/inserisci-email" ... failed in 15.487s
+    Quando L’utente Inserisce l’indirizzo email mail@gmail in uno dei due campi email presenti nella pagina ... skipped in 0.000s
+    E L’utente clicca sul tasto "Continua" ... skipped in 0.000s
+    Allora Il campo "Indirizzo email" viene segnalato in rosso ... skipped in 0.000s
+    E Viene mostrato il messaggio "Inserisci un indirizzo email valido" sotto il campo "Indirizzo email" ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori - indirizzo email diverso da ripeti" status="failed" time="16.070252"><error type="TimeoutError" message="Timeout 15000ms exceeded.&#10;=========================== logs ===========================&#10;waiting for navigation until 'load'&#10;============================================================">
+<![CDATA[
+Failing step: Dato L’utente si trova sulla pagina "/inserisci-email" ... failed in 15.502s
+Location: src/e2e/checkout/features/FEAT_006_Checkout - Validazione sintattica dei campi.feature:74
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 27, in step_on_page
+    navigate_to_page(context, page_url)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 160, in navigate_to_page
+    elif page_url == "/inserisci-email": naviga_inserisci_email(context)
+                                         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 188, in naviga_inserisci_email
+    naviga_dati_pagamento(context)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 181, in naviga_dati_pagamento
+    with get_page(context).expect_navigation(timeout=15000):
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 85, in __exit__
+    self._event.value
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 59, in value
+    raise exception
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 239, in continuation
+    event = await waiter.result()
+            ^^^^^^^^^^^^^^^^^^^^^
+playwright._impl._errors.TimeoutError: Timeout 15000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until 'load'
+============================================================
+
+Captured logging:
+ERROR:builtins:Navigation did not occur after clicking verify: Timeout 15000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until 'load'
+============================================================]]>
+</error><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_04 @runnable
+  Scenario: Inserimento dati - errori - indirizzo email diverso da ripeti
+    Dato La pagina di checkout è aperta ... passed in 0.195s
+    E La lingua è impostata su "it" ... passed in 0.374s
+    Dato L’utente si trova sulla pagina "/inserisci-email" ... failed in 15.502s
+    Quando L’utente inserisce un indirizzo email valido nel campo "Indirizzo Email" ... skipped in 0.000s
+    E L’utente inserisce un indirizzo email valido ma diverso dal precedente nel campo "Ripeti di nuovo" ... skipped in 0.000s
+    E L’utente clicca sul tasto "Continua" ... skipped in 0.000s
+    Allora Il campo "Ripeti di nuovo" viene segnalato in rosso ... skipped in 0.000s
+    E Viene mostrato il messaggio "Gli indirizzi email non coincidono" sotto il campo "Ripeti di nuovo" ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Click sul tasto continua con campo non compilato -- @1.1 " status="passed" time="1.392708"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_05 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Click sul tasto continua con campo non compilato -- @1.1 
+    Dato La pagina di checkout è aperta ... passed in 0.186s
+    E La lingua è impostata su "it" ... passed in 0.861s
+    Dato L’utente si trova sulla pagina "/inserisci-dati-avviso" ... passed in 0.068s
+    Quando L’utente lascia vuoto il solo campo "Codice Avviso" ... passed in 0.220s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.055s
+    Allora Viene mostrato il messaggio "Campo obbligatorio" sotto il campo "Codice Avviso" ... passed in 0.003s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Click sul tasto continua con campo non compilato -- @1.2 " status="passed" time="0.874323"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_05 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Click sul tasto continua con campo non compilato -- @1.2 
+    Dato La pagina di checkout è aperta ... passed in 0.188s
+    E La lingua è impostata su "it" ... passed in 0.355s
+    Dato L’utente si trova sulla pagina "/inserisci-dati-avviso" ... passed in 0.074s
+    Quando L’utente lascia vuoto il solo campo "Codice Fiscale Ente Creditore" ... passed in 0.213s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.044s
+    Allora Viene mostrato il messaggio "Campo obbligatorio" sotto il campo "Codice Fiscale Ente Creditore" ... passed in 0.002s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Click sul tasto continua con campo non compilato -- @1.3 " status="failed" time="16.037137"><error type="TimeoutError" message="Timeout 15000ms exceeded.&#10;=========================== logs ===========================&#10;waiting for navigation until 'load'&#10;============================================================">
+<![CDATA[
+Failing step: Dato L’utente si trova sulla pagina "/inserisci-email" ... failed in 15.492s
+Location: src/e2e/checkout/features/FEAT_006_Checkout - Validazione sintattica dei campi.feature:87
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 27, in step_on_page
+    navigate_to_page(context, page_url)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 160, in navigate_to_page
+    elif page_url == "/inserisci-email": naviga_inserisci_email(context)
+                                         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 188, in naviga_inserisci_email
+    naviga_dati_pagamento(context)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 181, in naviga_dati_pagamento
+    with get_page(context).expect_navigation(timeout=15000):
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 85, in __exit__
+    self._event.value
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 59, in value
+    raise exception
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 239, in continuation
+    event = await waiter.result()
+            ^^^^^^^^^^^^^^^^^^^^^
+playwright._impl._errors.TimeoutError: Timeout 15000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until 'load'
+============================================================
+
+Captured logging:
+ERROR:builtins:Navigation did not occur after clicking verify: Timeout 15000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until 'load'
+============================================================]]>
+</error><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_05 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Click sul tasto continua con campo non compilato -- @1.3 
+    Dato La pagina di checkout è aperta ... passed in 0.182s
+    E La lingua è impostata su "it" ... passed in 0.363s
+    Dato L’utente si trova sulla pagina "/inserisci-email" ... failed in 15.492s
+    Quando L’utente lascia vuoto il solo campo "Indirizzo email" ... skipped in 0.000s
+    E L’utente clicca sul tasto "Continua" ... skipped in 0.000s
+    Allora Viene mostrato il messaggio "Campo obbligatorio" sotto il campo "Indirizzo email" ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Click sul tasto continua con campo non compilato -- @1.4 " status="failed" time="16.036347"><error type="TimeoutError" message="Timeout 15000ms exceeded.&#10;=========================== logs ===========================&#10;waiting for navigation until 'load'&#10;============================================================">
+<![CDATA[
+Failing step: Dato L’utente si trova sulla pagina "/inserisci-email" ... failed in 15.492s
+Location: src/e2e/checkout/features/FEAT_006_Checkout - Validazione sintattica dei campi.feature:87
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 27, in step_on_page
+    navigate_to_page(context, page_url)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 160, in navigate_to_page
+    elif page_url == "/inserisci-email": naviga_inserisci_email(context)
+                                         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 188, in naviga_inserisci_email
+    naviga_dati_pagamento(context)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "src/e2e/checkout/steps/back_navigation.py", line 181, in naviga_dati_pagamento
+    with get_page(context).expect_navigation(timeout=15000):
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 85, in __exit__
+    self._event.value
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py", line 59, in value
+    raise exception
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py", line 239, in continuation
+    event = await waiter.result()
+            ^^^^^^^^^^^^^^^^^^^^^
+playwright._impl._errors.TimeoutError: Timeout 15000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until 'load'
+============================================================
+
+Captured logging:
+ERROR:builtins:Navigation did not occur after clicking verify: Timeout 15000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until 'load'
+============================================================]]>
+</error><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_05 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Click sul tasto continua con campo non compilato -- @1.4 
+    Dato La pagina di checkout è aperta ... passed in 0.190s
+    E La lingua è impostata su "it" ... passed in 0.355s
+    Dato L’utente si trova sulla pagina "/inserisci-email" ... failed in 15.492s
+    Quando L’utente lascia vuoto il solo campo "Ripeti di nuovo" ... skipped in 0.000s
+    E L’utente clicca sul tasto "Continua" ... skipped in 0.000s
+    Allora Viene mostrato il messaggio "Campo obbligatorio" sotto il campo "Ripeti di nuovo" ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
