@@ -1,0 +1,1240 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="PagoPA">
+      
+      
+        <link rel="canonical" href="https://pagopa.github.io/pagopa-platform-integration-test/nrt/nrt-process-architecture/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>No Regression Test (NRT) Process Architecture - PagoPA platform integration test</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#no-regression-test-nrt-process-architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="PagoPA platform integration test" class="md-header__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PagoPA platform integration test
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              No Regression Test (NRT) Process Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="PagoPA platform integration test" class="md-nav__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PagoPA platform integration test
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/ebollo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ebollo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/tas_pass/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_pass
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/wisp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    wisp
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/tas_mixed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_mixed
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/fdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/fdr3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/cup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Purpose
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-architecture-at-a-glance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Architecture at a glance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-workflow-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Workflow responsibilities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-suite-registry-and-execution-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Suite registry and execution model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Suite registry and execution model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-registry-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Registry contract
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-matrix-fan-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Matrix fan-out
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-target-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Target environment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-secret-synchronization-and-consumption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Secret synchronization and consumption
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Secret synchronization and consumption">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-synchronization-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Synchronization flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-test-job-consumption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Test-job consumption
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-published-bundle-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Published bundle verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-suite-dependencies-and-resource-coordination" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Suite dependencies and resource coordination
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Suite dependencies and resource coordination">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-ordering-dependency-c1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Ordering dependency (C1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-runtime-data-handoff-c2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Runtime data handoff (C2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-shared-resource-serialization-c3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Shared-resource serialization (C3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-dependency-outcomes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 Dependency outcomes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-reporting-and-workflow-completion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Reporting and workflow completion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-operational-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Operational constraints
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-repository-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Repository references
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="no-regression-test-nrt-process-architecture">No Regression Test (NRT) Process Architecture</h1>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Status</strong></td>
+<td>Architecture baseline</td>
+</tr>
+<tr>
+<td><strong>Repository</strong></td>
+<td><code>pagopa/pagopa-platform-integration-test</code></td>
+</tr>
+<tr>
+<td><strong>Scope</strong></td>
+<td>NRT orchestration, suite execution, secrets, and reporting</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-purpose">1. Purpose</h2>
+<p>This document describes the target architecture for running No Regression Tests across
+multiple PagoPA components and target environments. It establishes the process boundaries
+and contracts between workflows, test suites, secret distribution, and reporting.</p>
+<p>The architecture is designed so that adding a suite is primarily a registry change rather
+than a copy of an existing workflow. Test suites run on GitHub-hosted runners; a separate
+scheduled self-hosted workflow accesses Azure Key Vault and refreshes encrypted GitHub
+Actions secrets.</p>
+<h2 id="2-architecture-at-a-glance">2. Architecture at a glance</h2>
+<pre><code class="language-mermaid">flowchart TD
+    KV[(Azure Key Vault)] --&gt; SY[nrt-sync-secrets.yml&lt;br/&gt;scheduled self-hosted job]
+    SY --&gt;|encrypted environment bundles| GH[(GitHub Actions secrets)]
+
+    U[Schedule or manual dispatch] --&gt; MD[nrt-main-dispatch-tests.yml]
+    MD --&gt; PREP[Prepare suite plan&lt;br/&gt;filter registry by selection and environment]
+    PREP --&gt; MAT{{Suite matrix&lt;br/&gt;fail-fast: false, bounded parallelism}}
+    GH -.-&gt; MAT
+    MAT --&gt; RUN[nrt-run-suite.yml&lt;br/&gt;GitHub-hosted runner per suite]
+    RUN --&gt; RA[Suite result and Allure artifacts]
+    RA --&gt; AI[Aggregate AI analysis]
+    RA --&gt; DEP[Deploy reports]
+    AI --&gt; DEP
+    RA --&gt; SL[Slack notification&lt;br/&gt;suite stats and run status]
+    PREP --&gt; SL
+    MAT --&gt; SL
+    DEP --&gt; CON[Confluence report]
+    RA --&gt; DATA[Test data ingestion&lt;br/&gt;allure-report-* artifacts]
+</code></pre>
+<p>The scheduled secret synchronization is independent of an NRT run. A failed refresh does
+not block test execution with the last successfully published bundle; the bundle age is
+reported so stale credentials are visible.</p>
+<h2 id="3-workflow-responsibilities">3. Workflow responsibilities</h2>
+<p>All new workflow files use the <code>nrt-</code> prefix and coexist with the current workflows until
+the new process is adopted.</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.github/workflows/nrt-main-dispatch-tests.yml</code></td>
+<td>NRT entry point, scheduled daily at 06:17 UTC (<code>cron: '17 6 * * *'</code>, all suites on <code>uat</code>) and manually dispatchable; accepts suite selection, target environment and an optional <code>correlation_id</code> (a caller such as the QA Hub passes it so the run can be located by its <code>run-name</code>, <code>nrt-&lt;correlation_id&gt;</code>; runs without it keep the default title); prepares the selected suite matrix; coordinates suite execution, test data ingestion, final status, and Slack notification.</td>
+</tr>
+<tr>
+<td><code>.github/nrt-suites.json</code></td>
+<td>Declarative catalog of suite IDs, labels, Behave paths/tags, environment support, setup requirements, and dependency metadata.</td>
+</tr>
+<tr>
+<td><code>.github/workflows/nrt-run-suite.yml</code></td>
+<td>Reusable workflow containing the common setup, secret materialization, test execution, Allure generation, and artifact publication for one suite.</td>
+</tr>
+<tr>
+<td><code>.github/workflows/nrt-sync-secrets.yml</code></td>
+<td>Runs daily or manually on self-hosted runners; reads Key Vault values, builds and validates per-environment bundles, then updates the matching GitHub Environment secret using GitHub's LibSodium-encrypted REST API.</td>
+</tr>
+<tr>
+<td><code>.github/workflows/test-data-ingestion.yml</code></td>
+<td>Reusable workflow that downloads report artifacts and runs <code>.github/scripts/populate_tables.py</code> to save suites, runs, and executions through the QA Hub APIs. NRT calls it with <code>artifact_pattern: allure-report-*</code>; the legacy dispatch keeps using the <code>tmp_processed_reports</code> artifact.</td>
+</tr>
+<tr>
+<td><code>.github/workflows/qa-hub-adx-sync.yml</code></td>
+<td>Runs nightly at 02:30 UTC in <code>yesterday</code> mode on dev and UAT, or manually on dev and UAT self-hosted runners; copies the QA Hub PostgreSQL tables (<code>test_suites</code>, <code>test_runs</code>, <code>test_executions</code>) into the matching <code>QA_NRT_*</code> Azure Data Explorer tables. See <a href="../qa-hub-adx-sync/">QA Hub ADX sync</a>.</td>
+</tr>
+<tr>
+<td>Existing report workflows</td>
+<td>Consume NRT artifacts to publish reports and create the Confluence page. They are downstream consumers, not suite definitions.</td>
+</tr>
+</tbody>
+</table>
+<p>The reusable workflow gives each suite an isolated job and runner. Shared job-level
+permissions and dependencies remain explicit in the reusable workflow; suite-specific
+values are passed as inputs from the registry.</p>
+<h2 id="4-suite-registry-and-execution-model">4. Suite registry and execution model</h2>
+<h3 id="41-registry-contract">4.1 Registry contract</h3>
+<p>The registry describes the work, not the workflow implementation. A suite entry should
+include at least:</p>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;wisp&quot;,
+  &quot;label&quot;: &quot;WISP&quot;,
+  &quot;behave_path&quot;: &quot;src/integration/wisp&quot;,
+  &quot;tags&quot;: [&quot;@runnable&quot;],
+  &quot;allure_subfolder&quot;: &quot;wisp-tests&quot;,
+  &quot;report_artifact&quot;: &quot;allure-report-wisp&quot;,
+  &quot;needs_playwright&quot;: false,
+  &quot;envs&quot;: [&quot;dev&quot;, &quot;uat&quot;],
+  &quot;depends_on&quot;: [],
+  &quot;on_dependency_failure&quot;: &quot;skip&quot;,
+  &quot;provides&quot;: [],
+  &quot;consumes&quot;: [],
+  &quot;resource_group&quot;: null,
+  &quot;version&quot;: &quot;1.0.0&quot;
+}
+</code></pre>
+<p><code>id</code>, <code>label</code>, <code>behave_path</code>, <code>tags</code>, <code>allure_subfolder</code>, <code>report_artifact</code>,
+<code>needs_playwright</code>, and <code>envs</code> define suite execution. <code>depends_on</code>,
+<code>on_dependency_failure</code>, <code>provides</code>, <code>consumes</code>, and <code>resource_group</code> establish an
+extensible dependency contract; independent suites use the defaults shown above.</p>
+<p><code>ai_soap_evidence</code> is optional (default <code>false</code>). When <code>true</code>, the suite's AI prompt also
+carries the error details found inside the HTTP responses captured by its scenarios (see
+section 8). Only <code>wisp</code> enables it today.</p>
+<p>Test data ingestion also reads the registry: it maps each <code>report_artifact</code> back to the
+suite <code>id</code> (stored as the QA Hub <code>test_object</code>) and records <code>version</code> as the run's test
+version. When <code>test_type</code> is not configured in <code>.github/&lt;env&gt;.yaml</code>, it is derived from
+the second segment of <code>behave_path</code> (for example <code>integration</code> or <code>e2e</code>).</p>
+<h3 id="42-matrix-fan-out">4.2 Matrix fan-out</h3>
+<p>A GitHub Actions matrix expands one job definition into one job for each entry in a list.
+The prepare job filters the registry by the requested suites and environment, then emits a
+JSON <code>include</code> list. Each object becomes one matrix job, with its properties available as
+<code>matrix.&lt;property&gt;</code> in the reusable workflow call.</p>
+<pre><code class="language-yaml">strategy:
+  fail-fast: false
+  max-parallel: 10
+  matrix: ${{ fromJSON(needs.prepare.outputs.suites) }}
+</code></pre>
+<p><code>fail-fast: false</code> ensures that a failure in one suite does not cancel other suites.
+<code>max-parallel</code> bounds load on both GitHub-hosted runners and shared test environments.
+The matrix is limited to 256 jobs per workflow run; effective concurrency is also subject
+to the organization's GitHub plan and current runner availability.</p>
+<h2 id="5-target-environment">5. Target environment</h2>
+<p>The entry workflow accepts <code>target_env</code> (<code>dev</code> or <code>uat</code>), defaulting to <code>uat</code> for scheduled
+runs. The prepare job excludes suites whose <code>envs</code> list does not contain the selected
+environment. The reusable workflow sets <code>TARGET_ENV</code> and selects the matching secret
+bundle.</p>
+<p>Allure history is isolated by environment, for example <code>wisp-tests-uat</code> and
+<code>wisp-tests-dev</code>, so runs against different environments do not overwrite each other's
+trend data.</p>
+<p>The publisher in <code>nrt-main-dispatch-tests.yml</code> copies each report to
+<code>&lt;allure_subfolder&gt;/YYYY-MM-DD_HH:MM:SS/</code>, for example
+<code>checkout-e2e-tests/2026-10-15_14:41:04/</code>. The timestamp is the test start time
+from Allure's <code>widgets/summary.json</code>, formatted in UTC. Only the published report
+path changes: suite artifacts retain their environment suffix and run number,
+and <code>&lt;allure_subfolder&gt;-&lt;env&gt;/last-history</code> remains available to the reusable
+workflow. Previously published report folders are not migrated or removed.</p>
+<p>Before deployment, <code>nrt-publish-indexes.py</code> reuses <code>process_reports.py</code> to generate
+<code>stats.json</code> for published runs and rebuild each suite's <code>index.html</code>. It copies
+the latest run by Allure start time to <code>&lt;allure_subfolder&gt;/last-history/</code>, including
+its statistics and summary, without changing the environment-specific trend history.
+The root dashboard is rendered from the suite registry with the latest statistics
+and a UTC update timestamp; suites without reports are marked as unavailable.
+Invalid report data fails publication instead of publishing placeholder statistics.
+Local publisher regression tests can be run from the repository root with
+<code>python .github/scripts/nrt-test-publish-indexes.py -v</code> (requires Jinja2).</p>
+<h2 id="6-secret-synchronization-and-consumption">6. Secret synchronization and consumption</h2>
+<h3 id="61-synchronization-flow">6.1 Synchronization flow</h3>
+<p><code>nrt-sync-secrets.yml</code> runs daily on a self-hosted runner for each supported environment;
+it can also be dispatched manually for one or both environments. The runner uses its
+managed identity to access <code>https://pagopa-&lt;short-env&gt;-itn-qa-kv.vault.azure.net/</code>, where
+<code>d</code> maps to <code>dev</code> and <code>u</code> maps to <code>uat</code>.</p>
+<p>The workflow recursively scans <code>&lt;env&gt;.yaml</code> and <code>&lt;env&gt;.yml</code> files under <code>src/integration/</code>,
+<code>src/e2e/</code>, and <code>src/api/</code> for the selected environment. Values starting with <code>$</code>, including
+those nested in mappings and lists, declare secret placeholders; other values are ignored.
+Placeholders are merged by name. Every placeholder must specify the actual
+Key Vault secret name; lookup normalizes it to lowercase only. No prefix is added and
+underscores are not converted to hyphens. Duplicate
+placeholders are resolved only once; invalid or unresolved values fail the sync before the
+GitHub secret is updated.</p>
+<p>The merged result is one JSON bundle per environment, shaped as <code>{"dev": {...}}</code> or
+<code>{"uat": {...}}</code>, published as <code>NRT_SECRETS_BUNDLE</code> in the matching GitHub Environment.
+The GitHub REST API encrypts the value with the target Environment's LibSodium public key;
+the workflow does not keep a separate decryption key or upload plaintext as an
+artifact/output. Checkout currently declares no secret placeholders and adds no entries.</p>
+<p>The workflow updates a bundle only after retrieval, mapping, and validation all succeed.
+If a refresh fails, the previously published bundle remains usable. A failure notification
+and a manual refresh trigger provide operational visibility and recovery.</p>
+<h3 id="62-test-job-consumption">6.2 Test-job consumption</h3>
+<p>The suite job selects the matching GitHub Environment and receives its <code>NRT_SECRETS_BUNDLE</code>
+secret. NRT, TAS, and legacy Behave test jobs set <code>SECRETS_RESOLVER=dict</code>, which overrides
+<code>AZURE_KEY_VAULT_URL</code> and prevents direct Key Vault access during test execution. TAS uses
+the requested environment instead of the previous fixed <code>integration-tests</code> Environment.
+The Environment's branch restrictions and approval policies apply to these jobs.</p>
+<p>Before Behave, <code>nrt-prepare-secrets.py</code> validates the single-environment JSON bundle,
+non-empty secret values, and the selected test path. It recursively checks the selected
+environment's YAML/YML placeholders against the bundle,
+then writes <code>config/.secrets.yaml</code> with mode <code>0600</code>. Invalid or missing credentials stop
+the job before tests start; there is no fallback to the old GitHub secret or Key Vault.</p>
+<p>The suite's environment YAML/YML files are the source of truth for synchronization and
+preflight validation. They reference secret names with a <code>$</code> prefix while retaining their
+application configuration keys; no separate <code>config/suites/</code> manifest is required. The resolver in
+<a href="../../src/conf/configuration.py"><code>src/conf/configuration.py</code></a> selects the <code>dev</code> or <code>uat</code>
+section using <code>TARGET_ENV</code>, preserving JSON secret names exactly.</p>
+<p>Outside CI test jobs, <code>SECRETS_RESOLVER</code> defaults to <code>auto</code>: an Azure URL selects the Azure
+resolver, otherwise local YAML/JSON credentials are loaded. Sync and verification keep
+their existing Azure behavior. Confluence, ingestion, and non-Behave OpenAPI workflows
+retain their own credential contracts and are not migrated by this cutover.</p>
+<p>The plaintext file is created with restrictive permissions and removed after test and
+report generation, including on failure. Secret values must not be printed, included in
+step summaries, or placed in artifacts. GitHub Environment secrets have a 48 KB limit;
+the generated bundle is checked against that limit before publication.</p>
+<p>Local cutover regression tests use synthetic credentials only and can be run from the
+repository root with <code>python .github/scripts/nrt-test-secrets.py -v</code>.</p>
+<h3 id="63-published-bundle-verification">6.3 Published bundle verification</h3>
+<p>After a successful sync, start a new manual run of <code>nrt-verify-secrets.yml</code> and select
+<code>dev</code> or <code>uat</code>. Its self-hosted job selects the matching GitHub Environment and executes
+<code>nrt-sync-secrets.py --verify</code>. It reads <code>NRT_SECRETS_BUNDLE</code>, validates its JSON structure
+and single-environment scope, then reconstructs the expected bundle from all suite
+manifests and current Key Vault values using the same resolution logic as the sync.</p>
+<p>The comparison requires identical keys and values. Only the environment, verified key
+count, and mismatch counts are reported; no values or hashes are logged. This mode does
+not update GitHub secrets, run tests, or upload artifacts. A mismatch can also indicate
+that a Key Vault secret was rotated after the last sync. Verification and synchronization
+share a per-environment concurrency group to prevent simultaneous execution.</p>
+<h2 id="7-suite-dependencies-and-resource-coordination">7. Suite dependencies and resource coordination</h2>
+<p>The initial suite set is independent and runs in one matrix. The registry contract also
+supports three future coordination cases.</p>
+<h3 id="71-ordering-dependency-c1">7.1 Ordering dependency (C1)</h3>
+<p>If suite B must start only after suite A completes, <code>depends_on</code> expresses the directed
+dependency. The prepare job validates the graph (including unknown IDs and cycles) and
+groups suites into topological waves. Each wave runs as a matrix; later waves start only
+after the preceding wave has completed.</p>
+<p>GitHub Actions does not create jobs dynamically during a run, so the workflow must define
+a bounded number of wave jobs or use a single orchestrator job for dependent suites. The
+chosen implementation must fail clearly if a dependency graph exceeds its supported
+depth. Wave boundaries are barriers: a wave waits for all jobs in the preceding wave, not
+only the suite it directly depends on.</p>
+<h3 id="72-runtime-data-handoff-c2">7.2 Runtime data handoff (C2)</h3>
+<p>Ordering alone does not transfer data between jobs. If B consumes a value created at
+runtime by A, A publishes a named JSON handoff artifact and B downloads it before running.
+The registry declares the contract with <code>provides</code> and <code>consumes</code>; the reusable workflow
+exposes the downloaded files through <code>NRT_HANDOFF_DIR</code>.</p>
+<p>The producer and consumer suites must implement the matching serialization contract.
+Handoff artifacts contain test data only, never credentials, and use unique names scoped
+to the workflow run and suite to avoid collisions.</p>
+<p>For tightly coupled suites that share non-serializable state, such as a live browser
+session, they may be represented as a sequential suite group in one job. This trades
+parallelism and independent reporting for shared process state and should remain an
+exception.</p>
+<h3 id="73-shared-resource-serialization-c3">7.3 Shared-resource serialization (C3)</h3>
+<p>If suites compete for a shared environment resource but have no data dependency, the
+registry identifies the resource with <code>resource_group</code>. The prepare/scheduling logic places
+those suites in a serialized lane while allowing unrelated suites to continue in parallel.
+This is distinct from <code>depends_on</code>: it expresses mutual exclusion, not an execution order.
+The implementation must not rely on a GitHub Actions concurrency group as a FIFO queue
+for an arbitrary number of matrix jobs.</p>
+<h3 id="74-dependency-outcomes">7.4 Dependency outcomes</h3>
+<p>Each suite publishes an outcome record alongside its report artifacts. The outcome records
+whether setup, test execution, and report generation succeeded. A downstream wave uses
+these records to apply <code>on_dependency_failure</code> (<code>skip</code> or <code>run</code>) to dependent suites.
+Missing or invalid outcome records are treated as dependency failures. Test failures remain
+visible in the report and are propagated to the final workflow status after report
+publication, rather than being silently converted to success by <code>continue-on-error</code>.</p>
+<h2 id="8-reporting-and-workflow-completion">8. Reporting and workflow completion</h2>
+<p>Each suite job produces uniquely named artifacts containing its Allure results/report and
+a compact outcome record. The report deployment stage downloads all artifacts for the
+current workflow run and publishes the suite reports and updated Allure history. Suite
+history is separated by both suite and environment.</p>
+<p>AI analysis runs once after suite execution and consumes an aggregate prompt built from
+the suite outcomes and relevant failures. The analysis is supplemental: it does not
+replace the authoritative test outcome.</p>
+<p>Each suite builds its own prompt section with <code>.github/scripts/build_ai_prompt.py</code> and
+keeps it inside a character budget (<code>MAX_PROMPT_CHARS</code>, 16000 by default; the aggregate is
+therefore bounded by the number of suites). When a section is too large, traces and
+evidence are shortened level by level and trailing failures are omitted only as a last
+resort, with an explicit note in the prompt. A shortened trace keeps its final frames
+(the failing step helper and the exception) and drops the framework frames at its head. A failure reported by both Allure and JUnit
+appears once, with the Allure entry kept.</p>
+<p>A SOAP call answers HTTP 200 even when its body reports <code>outcome=KO</code> and a <code>faultCode</code>, so
+the scenario can fail steps later with an unrelated message. For suites with
+<code>ai_soap_evidence: true</code> in the registry (currently <code>wisp</code>), each failure therefore also
+lists the error-bearing responses found in its Allure attachments: SOAP KO outcomes and
+faults, JSON bodies with an error status or outcome, and non-XML error bodies such as an
+APIM 500 (attachments carry the HTTP status, written by the suite's <code>execute_request</code>).
+Healthy responses are not included, and the evidence has its own cap (<code>MAX_EVIDENCE_*</code>).</p>
+<p>The inference step (<code>.github/workflows/ai-report-analysis.yml</code>) protects the run against
+token limits. It requests a low <code>thinkingLevel</code>, because thinking tokens count toward
+<code>max_tokens</code>; it clamps the output cap to each model's <code>outputTokenLimit</code> and skips models
+whose <code>inputTokenLimit</code> the prompt exceeds, using the model catalog it already reads; it
+retries a rate-limited call once after the API's <code>retryDelay</code> (a per-day quota moves on to
+the next model at once); and it marks an analysis cut at the output limit with a visible
+notice and a workflow warning. The real token usage is logged and added to the job summary.</p>
+<p>Publication follows suite execution, aggregate prompt generation, and AI analysis, as in
+the legacy dispatch flow. The deployment job waits for <code>ai_analysis</code> and downloads
+<code>nrt-ai-analysis</code> when that job succeeds. It reuses the legacy analysis renderer to place
+<code>analysis/index.html</code> and <code>analysis/analysis.md</code> inside each selected suite's current
+timestamped report folder. The aggregate prompt asks for one <code>## Suite: &lt;id&gt;</code> section per
+suite (ids from <code>.github/nrt-suites.json</code>) and for cross-suite findings in a final
+<code>## Cross-suite correlation</code> section. Publication splits the analysis on those headings
+(<code>split_suite_sections</code> in <code>.github/scripts/process_reports.py</code>): each suite's
+<code>analysis/index.html</code> shows only its own section and links to <code>analysis/full.html</code>, which
+holds the whole analysis and is labelled as aggregate NRT analysis; <code>analysis/analysis.md</code>
+always keeps the whole Markdown. The cross-suite section therefore appears only in
+<code>full.html</code>. Headings are matched ignoring case and punctuation (<code>FDR-3</code> is <code>fdr3</code>).
+When the model omits a suite's heading, <code>index.html</code> falls back to the whole analysis and
+the publish step emits a <code>::warning::</code>. Reports published before this split keep showing
+the whole analysis until they age out of the 30-day retention. The Frontend's
+<strong>AI Analysis</strong> button keeps pointing at <code>analysis/index.html</code>, so it needs no change. The
+suite history index exposes the existing <strong>View Analysis</strong> link, and <code>last-history</code>
+includes the analysis of the latest report.
+Older runs and unselected suites are not assigned the current analysis. A suite without
+a current Allure report is skipped with a warning. If AI analysis fails or is skipped,
+Allure publication still runs and emits a warning; a successful AI job with a missing
+or empty analysis artifact fails publication instead of silently omitting the report.</p>
+<p>The NRT Slack notification runs after suite execution and final-status evaluation, even
+when tests fail. During rollout, its heading is explicitly marked <strong>NRT BETA TEST</strong> so it
+cannot be confused with the established production notification. It combines each outcome artifact with the corresponding Allure
+<code>widgets/summary.json</code> to report suite status, passed/failed/skipped counts, duration, and a
+link to the workflow run. It uses the existing <code>SLACK_INTEGRATION_TEST_WEBHOOK_URL</code> secret
+and does not depend on the legacy report-deployment workflow.</p>
+<p>The NRT <code>save_test_data</code> job calls <code>test-data-ingestion.yml</code> after suite execution,
+whenever the prepare job succeeded. It does not depend on report deployment: it downloads
+every <code>allure-report-*</code> artifact of the current run into <code>artifacts/&lt;report_artifact&gt;/</code> and
+ingests each suite from its <code>widgets/summary.json</code> and <code>data/test-cases/*.json</code>. The run is
+saved with the selected <code>target_env</code>, trigger type <code>CRON</code> for scheduled runs or <code>MANUAL</code>
+otherwise, and origin <code>NRT</code>.</p>
+<p>Report publication, Confluence reporting, and test-data ingestion run with an
+always-evaluate condition so test failures do not prevent diagnostic artifacts from being
+published. A final status job evaluates required suite outcomes and reports the NRT run as
+failed when required tests fail.</p>
+<h2 id="9-operational-constraints">9. Operational constraints</h2>
+<ul>
+<li>GitHub Actions permits at most 256 jobs in a matrix for a workflow run. The organization
+  plan and concurrent usage determine how many can run at once.</li>
+<li><code>max-parallel</code> is configured conservatively to protect shared environments as well as
+  the runner quota.</li>
+<li>Test jobs have explicit <code>timeout-minutes</code>; the limit is set according to suite runtime
+  and leaves time for report generation and cleanup.</li>
+<li>Dependency caches may be used for Python packages and Playwright browsers. Cache keys
+  include dependency lockfiles and relevant runtime versions.</li>
+<li>The <code>gh-pages</code> checkout is shallow and sparse where only a suite's previous Allure
+  history is needed. Retention of historical reports is managed separately from the test
+  execution workflow.</li>
+<li>The secret synchronization workflow reports the last successful refresh time. NRT runs
+  should surface bundle age and alert when the configured freshness threshold is exceeded.</li>
+</ul>
+<h2 id="10-repository-references">10. Repository references</h2>
+<ul>
+<li><a href="../../.github/workflows/">NRT workflow directory</a></li>
+<li><a href="../../.github/workflows/main-dispatch-tests.yml">Current dispatch workflow</a></li>
+<li><a href="../../.github/workflows/wisp-tests.yml">Current WISP workflow</a></li>
+<li><a href="../../.github/workflows/checkout-e2e-tests.yml">Current Checkout E2E workflow</a></li>
+<li><a href="../../.github/workflows/test-data-ingestion.yml">Test data ingestion workflow</a></li>
+<li><a href="../../.github/scripts/populate_tables.py">Test data ingestion script</a></li>
+<li><a href="../../.github/workflows/qa-hub-adx-sync.yml">QA Hub ADX sync workflow</a></li>
+<li><a href="../../.github/scripts/qa_hub_adx_sync.py">QA Hub ADX sync script</a></li>
+<li><a href="../../src/conf/configuration.py">Secret resolver</a></li>
+<li><a href="../../src/utility/config/README.md">Configuration utility guidance</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

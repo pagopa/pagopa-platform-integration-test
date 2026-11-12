@@ -19,15 +19,15 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
     
     
       
-        <title>User pays a single payment with stamp via nodoInviaRPT - PagoPA platform integration test</title>
+        <title>Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT - PagoPA platform integration test</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.57a0d79d.min.css">
       
       
 
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#user-pays-a-single-payment-with-stamp-via-nodoinviarpt" class="md-skip">
+        <a href="#utente-paga-un-pagamento-singolo-con-marca-da-bollo-tramite-nodoinviarpt" class="md-skip">
           Skip to content
         </a>
       
@@ -100,7 +100,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              User pays a single payment with stamp via nodoInviaRPT
+              Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT
             
           </span>
         </div>
@@ -294,14 +294,70 @@
   
   
     <li class="md-nav__item">
-      <a href="../../gpd/" class="md-nav__link">
+      <a href="../../ebollo/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    gpd
+    ebollo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tas_pass/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_pass
   
 
     
@@ -350,14 +406,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utility/" class="md-nav__link">
+      <a href="../../tas_mixed/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    utility
+    tas_mixed
   
 
     
@@ -406,14 +462,70 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ebollo/" class="md-nav__link">
+      <a href="../../fdr3/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    ebollo
+    fdr3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cup
   
 
     
@@ -491,15 +603,15 @@
   
 
 
-<h1 id="user-pays-a-single-payment-with-stamp-via-nodoinviarpt">User pays a single payment with stamp via nodoInviaRPT</h1>
+<h1 id="utente-paga-un-pagamento-singolo-con-marca-da-bollo-tramite-nodoinviarpt">Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT</h1>
 <h2 id="scenarios">Scenarios:</h2>
 <ul>
-<li>User pays a single payment with no simple transfer and one stamp</li>
-<li>User pays a single payment with one simple transfer and one stamp</li>
-<li>User pays a single payment with two simple transfer and one stamp</li>
-<li>User pays a single payment with two simple transfer and two stamp</li>
-<li>User pays a single payment as PO type with no simple transfer and one stamp</li>
-<li>User pays a single payment as PO type with one simple transfer and one stamp, but fails the semantic validation</li>
+<li>Utente paga un pagamento singolo con nessun versamento semplice e una marca da bollo</li>
+<li>Utente paga un pagamento singolo con un versamento semplice e una marca da bollo</li>
+<li>Utente paga un pagamento singolo con due versamenti semplici e una marca da bollo</li>
+<li>Utente paga un pagamento singolo con due versamenti semplici e due marche da bollo</li>
+<li>Utente paga un pagamento singolo di tipo PO con nessun versamento semplice e una marca da bollo</li>
+<li>Utente paga un pagamento singolo di tipo PO con un versamento semplice e una marca da bollo, ma fallisce la validazione semantica</li>
 </ul>
 
 
@@ -550,10 +662,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   </body>

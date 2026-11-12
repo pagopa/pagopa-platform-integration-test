@@ -1,0 +1,934 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="PagoPA">
+      
+      
+        <link rel="canonical" href="https://pagopa.github.io/pagopa-platform-integration-test/workflows/qa-runner/execution/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>QA runner execution workflow (ADR-20 through ADR-25) - PagoPA platform integration test</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#qa-runner-execution-workflow-adr-20-through-adr-25" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="PagoPA platform integration test" class="md-header__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PagoPA platform integration test
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              QA runner execution workflow (ADR-20 through ADR-25)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="PagoPA platform integration test" class="md-nav__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PagoPA platform integration test
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/ebollo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ebollo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/tas_pass/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_pass
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/wisp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    wisp
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/tas_mixed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_mixed
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/fdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/fdr3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/cup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#activity-and-failure-policy-adr-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Activity and failure policy (ADR-20)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#execution-plan-and-consent-adr-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execution plan and consent (ADR-21)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#execute-preserve-and-observe-adr-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execute, preserve and observe (ADR-24)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluate-the-result-adr-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evaluate the result (ADR-22)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#five-bonus-fix-attempts-adr-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Five bonus fix attempts (ADR-23)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-reporting-and-permissions-adr-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error reporting and permissions (ADR-25)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-handoff-and-ace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification handoff and ACE
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="qa-runner-execution-workflow-adr-20-through-adr-25">QA runner execution workflow (ADR-20 through ADR-25)</h1>
+<p>Read this workflow before interpreting results, running commands or delegating a
+fix. It applies to orchestrator assignments and any supported direct invocation.
+Branch routing, implementation decisions and publication remain outside this role.</p>
+<h2 id="activity-and-failure-policy-adr-20">Activity and failure policy (ADR-20)</h2>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Allowed actions</th>
+<th>After an unresolved suite failure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Execute</td>
+<td>Run the approved selection and analyze actual results; no code fixes</td>
+<td>Go directly to the Markdown error report</td>
+</tr>
+<tr>
+<td>Diagnose</td>
+<td>Read existing logs/artifacts; additional execution needs an approved plan</td>
+<td>Report findings/errors; no implicit fix loop</td>
+</tr>
+<tr>
+<td>Execute with fixes</td>
+<td>Execute, then delegate scoped test-code fixes when authorized</td>
+<td>Offer/report-only or use the authorized bonus fix budget</td>
+</tr>
+</tbody>
+</table>
+<p>Use explicit user intent; ask through the dedicated question tool when ambiguous.
+Before executing, establish the failure policy: direct report, authorized fixes,
+or ask after failure. A clear instruction to skip fixes means no delegation or
+extra rerun to see whether it passes. A missing answer is not fix authorization.
+The user may stop/decline the loop before it starts or at any later point.
+When policy is "ask", after the first failure offer <strong>go directly to report</strong>
+or <strong>start up to five bonus fix attempts</strong>. If a policy is already explicit, do
+not ask redundantly or try to override a refusal.</p>
+<h2 id="execution-plan-and-consent-adr-21">Execution plan and consent (ADR-21)</h2>
+<p>Read <a href="../../../.github/instructions/run-tests.instructions.md">run instructions</a>,
+then only relevant README/configuration and CI sections. Check the terminal
+type first and work from the repository root. Confirm actual paths, framework,
+interpreter and suite selection; example commands are not automatic permission.</p>
+<p>Present one coherent plan before execution:</p>
+<ul>
+<li>Mode, expected branch, requested scope and any analyst/engineer readiness limits.</li>
+<li>Exact commands, interpreter/tool, working directory, feature/test paths,
+  scenario/tag/marker filters and known exclusions.</li>
+<li>Explicit effective environment and applicable configuration file selection;
+  resolve suite-specific configuration instead of assuming <code>TARGET_ENV</code> controls
+  every suite. Never expose credentials or secret values.</li>
+<li>Required setup and potential effects on external systems, including creation,
+  payment, consumption or cleanup performed by tests/hooks.</li>
+<li>Unique run/attempt artifact destinations, output formatters and timeout policy.</li>
+<li>Failure policy, fix permission/write scope, up to five bonus attempts if chosen,
+  and any separately bounded diagnostic reruns.</li>
+</ul>
+<p>Use the dedicated question tool to approve the plan. Clear existing approval of
+that exact plan may be reused, but generic "run tests" intent without the actual
+plan is insufficient. Material command, interpreter, selector, environment,
+dependency/setup or effect changes require fresh approval. Utility unit tests
+or expanded commands require command approval before execution.</p>
+<p>Fixed-plan reruns can reuse consent only within the approved policy, effects,
+scope and limits. A new attempt directory under the approved naming scheme is
+not itself a new test scope. Do not repeatedly run consumable/transactional tests
+unless repeatability/data preparation is established and approved.
+Do not silently inherit an unset environment's default or unrelated shell state.
+Keep required environment setup and command execution in the same shell process.
+Apply <a href="../../../.github/instructions/run-tests.instructions.md#interpreter-and-launch-outcome-adr-55">execution mechanics ADR-55 through ADR-60</a>:
+resolve interpreter/module entrypoint, real catalog or local suite selection,
+configuration precedence and actual evidence capture. No missing executable or
+stale native status counts as a test result. Include any executable preflight
+diagnostics/setup in consent; static inspection does not authorize probes.
+Package installation needs explicit approval; certificate errors do not authorize
+<code>verify=False</code>, trust bypasses or changing the tested protocol.</p>
+<h2 id="execute-preserve-and-observe-adr-24">Execute, preserve and observe (ADR-24)</h2>
+<p>Before starting, record branch/revision and relevant current working-tree contents
+actually tested; HEAD alone does not describe uncommitted work. Resolve stale or
+incomplete implementation with the orchestrator; diagnostic permission is not
+permission to claim full verification of draft scenarios.</p>
+<p>Create a fresh, exclusive destination for each execution and each rerun, following
+the instruction examples. Never delete shared result directories or mix results
+from previous attempts. Preserve existing error evidence and run-local console
+output, exit status, start/end times and artifact paths. Do not execute bare
+<code>behave</code> and accidentally use its default integration-wide scope.</p>
+<p>Check formatter/output associations and freshness: old Allure/JUnit files do not
+prove the new command ran. Record actual process/session ID while running.
+A background launch, timeout of a tool wait, or partial output is not completion:
+retrieve the original process result instead of launching a duplicate run.
+Distinguish a wait timeout from a test timeout. On cancellation or a real execution
+timeout, retain partial artifacts and uncertainty, terminate only the exact owned
+process tree when authorized, and verify it stopped before restarting against
+shared state. Never kill by process name or report still-running tests as passed.
+Local process termination is not remote rollback. For interrupted mutations,
+report unknown remote effects/residual resources and stop unsafe repetition.
+Any remote observation/cleanup needs approved exact run-owned scope; preserve
+actual outcomes and the fix budget, never automatically delete or reissue work.
+If relevant source/configuration changes during execution, disclose them and
+do not certify the new state using an ambiguous mixed run.</p>
+<p>Allure/JUnit are test artifacts, not standalone narrative reports. No HTML report
+generation/server or external publication is implicit. Opening a report/server
+requires a separate explicit request with its port, lifetime and cleanup scope.</p>
+<h2 id="evaluate-the-result-adr-22">Evaluate the result (ADR-22)</h2>
+<table>
+<thead>
+<tr>
+<th>Result</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>passed</code></td>
+<td>Intended approved scope actually completed, with successful exit and consistent counts/artifacts and no unresolved relevant errors</td>
+</tr>
+<tr>
+<td><code>failed</code></td>
+<td>Assertions, steps, hooks or suite execution failed; include actual errors even when counts are incomplete</td>
+</tr>
+<tr>
+<td><code>blocked</code></td>
+<td>Execution cannot start/continue because authorization, prerequisites, access or safe continuation is missing</td>
+</tr>
+<tr>
+<td><code>inconclusive</code></td>
+<td>Completion, exercised scope or evidence cannot be established, including zero tests or inconsistent/missing results</td>
+</tr>
+</tbody>
+</table>
+<p>Separate test/verification result from suspected root cause: a service outage
+may cause real failed tests without establishing an application defect.
+Exit code alone is insufficient. Check expected selection, actual executed counts,
+errors, undefined/pending, skipped and excluded cases against the plan.
+Expected excluded tests outside the agreed scope do not fail a targeted run;
+unexpected omissions inside it prevent blanket success. Unknown counts remain
+unknown; do not replace them with zero or infer pass from a partial summary.
+Compilation/parser/dry-run success is not executed-scenario success.</p>
+<p>For diagnosis of existing artifacts, return what those artifacts establish and
+their original provenance/time; do not claim a new passing verification.
+If retries disagree without an established resolved cause, keep the intermittent
+failure visible and classify current verification as inconclusive, not clean.</p>
+<h2 id="five-bonus-fix-attempts-adr-23">Five bonus fix attempts (ADR-23)</h2>
+<p>The initial failed execution is <strong>attempt 0</strong>, outside the bonus budget.
+Only after that first failure, and with fix authorization, allow <strong>up to five
+bonus fix attempts numbered 1 through 5</strong>. The initial run plus five attempts
+allows at most six normal verification executions in this loop, not five total.
+Stop earlier on success, refusal, no safe fix or an out-of-scope blocker.</p>
+<p>Each bonus attempt includes diagnosis, an authorized engineer correction and its
+verification. Record the attempt number, failure evidence, suspected/established
+cause, owned changed paths, actual fix, exact rerun and outcome. Starting a bonus
+attempt reserves its slot even if editing/execution is then blocked; do not
+reset the counter by redelegating, changing agents or resuming the same loop.</p>
+<ul>
+<li>Delegate only test-code defects to QA-engineer with failing scenario, actual
+  error/traceback, expected behaviour and exact authorized write scope. Respect
+  its input/ownership gates and utility-specialist boundary.</li>
+<li>Re-run only an integrated <code>implemented-not-run</code> fix within the approved plan;
+  partial/blocked work is not silently executable. Different commands or setup
+  require approval under the plan rules.</li>
+<li>Environment/configuration/service issues, uncertain functional requirements
+  and overlapping ownership go to the orchestrator. Do not edit code, features,
+  configuration or the oracle yourself, or ask the engineer to mask the failure.</li>
+<li>No-change reruns are diagnostic, not fix attempts. They require a separately
+  approved finite budget and remain in history; they cannot replenish bonus
+  attempts, continue the fix loop past five, or be used to rerun until green.</li>
+<li>At any point, skipping/stopping fixes goes directly to reporting unresolved
+  suite errors. No need to consume the five attempts to justify a report.</li>
+<li>After bonus attempt 5 fails, stop and report. Any proposed further work is a
+  new explicit decision for the orchestrator/user, never an automatic reset.</li>
+</ul>
+<h2 id="error-reporting-and-permissions-adr-25">Error reporting and permissions (ADR-25)</h2>
+<p>For work on suites with unresolved errors, create/update the relevant Markdown
+report in <code>reports/</code> in Italian, whether the loop was skipped, declined, stopped,
+blocked after a real suite failure, or exhausted. Review existing relevant reports
+first and agree the exact path if not supplied; reuse the same failure report
+rather than creating duplicates. Preserve findings/history and distinguish old
+evidence from new results. Successful work needs no standalone success report;
+if an existing error report is now resolved, annotate its resolution and evidence
+without creating a new success report or deleting its history.</p>
+<p>Use: concise summary/counts and severity; failing tests/files, actual errors and
+limited traceback; established vs suspected causes; attempts (0 and actual bonus/
+diagnostic attempts, including skipped-loop decision); remaining blockers and
+next steps. Missing counts/evidence stay explicit. Do not expose secrets/data.
+A pure tool/approval/Git blocker without evidence of suite errors needs chat
+status, not an invented suite failure report. Inconclusive output is not itself
+proof of a test failure; state what is and is not known.</p>
+<p>Write only generated run artifacts/logs and qualifying Markdown reports. Report
+editing permission does not extend to features, code, execution config, UCs,
+instructions or ACE. No Confluence template, HTML narrative or publication.
+On failed persistence, return the actual error and partial paths; do not claim
+the report was saved. Keep the verification result separate from report-write
+status. Preserve ignored local reports; do not change ignore rules or force-add.
+Test/hook side effects are allowed only under the approved execution plan.</p>
+<h2 id="verification-handoff-and-ace">Verification handoff and ACE</h2>
+<p>Return mode, approved scope/failure policy, result, exact commands/environment,
+times, tested branch/revision and relevant working-tree contents, exit code,
+passed/failed/error/skipped/undefined counts, exclusions, flaky findings,
+remaining bonus/diagnostic budgets, artifacts actually produced and report path
+or reason not applicable. State what was not verified and the next safe action.
+These facts satisfy the <a href="../../qa-closer/closure/#closure-input-contract-adr-08">closure contract</a>;
+never authorize closure/commit/push/PR merely because a run passed.</p>
+<p>Return actions, checks, lessons, outcome and friction to the orchestrator under
+the current ACE request ID, separately from Jira/UC identities. The orchestrator
+owns trace capture/privacy finalization/counters; the runner writes no ACE files.
+No automatic invocation of QA-closer or publication operations.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

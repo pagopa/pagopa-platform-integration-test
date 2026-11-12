@@ -1,0 +1,876 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="PagoPA">
+      
+      
+        <link rel="canonical" href="https://pagopa.github.io/pagopa-platform-integration-test/workflows/qa-orchestrator/session-routing/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>QA orchestrator session routing - PagoPA platform integration test</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#qa-orchestrator-session-routing" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="PagoPA platform integration test" class="md-header__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PagoPA platform integration test
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              QA orchestrator session routing
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="PagoPA platform integration test" class="md-nav__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PagoPA platform integration test
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/ebollo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ebollo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/tas_pass/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_pass
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/wisp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    wisp
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/tas_mixed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_mixed
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/fdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/fdr3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/cup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#identities-and-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identities and scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#entry-and-interaction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entry and interaction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decision matrix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#git-transition-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Git transition gate
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-a-new-work-branch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create a new work branch
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handoff-and-mode-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Handoff and mode changes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="qa-orchestrator-session-routing">QA orchestrator session routing</h1>
+<p>This is the mandatory entry procedure for the QA orchestrator, established by
+<a href="../../../adr/ADR-01-qa-orchestrator-session-routing/">ADR-01</a>. Read it before
+requiring a Jira key or suite name, changing branches, or delegating QA execution.
+It does not authorize Git changes merely because the document is being read.</p>
+<h2 id="identities-and-scope">Identities and scope</h2>
+<ul>
+<li><code>jira_key</code>: the human's Jira issue, matching <code>^PQ-[0-9]+$</code>, for example <code>PQ-714</code>.
+  The numeric part is not restricted to three digits.</li>
+<li>Jira branch: a branch matching <code>^PQ-[0-9]+(?:-.+)?$</code>. Extract its issue key from
+  the prefix, not from an ACE identifier.</li>
+<li>ACE <code>task_id</code>: a unique, filesystem-safe identifier for a particular request
+  in chat, assigned by the orchestrator according to the ACE capture guide.
+  Keep it stable across that request's delegations and traces. A subsequent
+  independent request gets a new ID even on the same Jira issue or branch;
+  continuations of the same request retain the ID. Do not ask the human for a
+  Jira issue merely to name a trace or use the issue key alone as the trace ID.</li>
+</ul>
+<p>Stay within QA-related work. A suite name is needed when the operational work
+actually requires it, not as a prerequisite for questions or exploration.</p>
+<h2 id="entry-and-interaction">Entry and interaction</h2>
+<ol>
+<li>Check the terminal type. From the repository root, inspect
+   <code>git branch --show-current</code> and <code>git status --porcelain=v1 --untracked-files=all</code>.
+   Check command exit codes; on failure, report the error and stop Git actions.</li>
+<li>Determine the requested workflow from explicit user intent:
+   <strong>1: New work</strong>, <strong>2: Resume work</strong>, or <strong>3: Exploration</strong>.
+   If unclear, ask the user to choose through the dedicated question tool.
+   Do not equate a missing Jira key with an invalid request.</li>
+<li>Follow the matrix below. Ask one decision at a time, reuse supplied answers,
+   and do not repeat a Jira-key question when a valid key is already available.
+   A supplied key is not consent to change from another branch to <code>main</code>.</li>
+<li>Before work, summarize the chosen mode, current/resulting branch, and Jira
+   association, if any. Assign a separate ACE request ID when substantive work
+   or delegation begins; branch selection alone does not define the trace ID.</li>
+</ol>
+<h2 id="decision-matrix">Decision matrix</h2>
+<table>
+<thead>
+<tr>
+<th>Current branch</th>
+<th>Requested workflow</th>
+<th>Required behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>main</code></td>
+<td>1: New work</td>
+<td>Obtain a valid Jira key from the request or ask for it. Follow <strong>Create a new work branch</strong>.</td>
+</tr>
+<tr>
+<td><code>main</code></td>
+<td>2: Resume work</td>
+<td>Stop: there is no current Jira work branch to resume. Explain that the user must select an existing work branch or explicitly choose another workflow. Do not silently turn this into workflow 1 or switch branches.</td>
+</tr>
+<tr>
+<td><code>main</code></td>
+<td>3: Exploration</td>
+<td>Ask whether to create a dedicated branch for possible output files (<strong>recommended</strong>) or remain on <code>main</code>. Staying requires no Jira key and no Git transition. If branching is chosen, obtain the Jira key and follow <strong>Create a new work branch</strong>; remain in exploration mode afterward.</td>
+</tr>
+<tr>
+<td>Jira branch</td>
+<td>1: New work</td>
+<td>Obtain the new Jira key from the request or ask for it. Explain that creating the branch requires switching to <code>main</code>, and request explicit approval. If approved, apply the transition gate and follow <strong>Create a new work branch</strong>. Otherwise stop the branch-creation path.</td>
+</tr>
+<tr>
+<td>Jira branch</td>
+<td>2: Resume work</td>
+<td>Ask the user to confirm that the request belongs to the displayed current branch and its Jira issue. If yes, keep that branch unchanged and proceed. If no, obtain the intended Jira key, explain the switch to <code>main</code>, and request explicit approval; on approval, transition to workflow 1 and follow <strong>Create a new work branch</strong>.</td>
+</tr>
+<tr>
+<td>Jira branch</td>
+<td>3: Exploration</td>
+<td>Ask whether the session concerns the displayed current branch. If yes, proceed without switching or requiring a Jira key. If no, ask whether to create a dedicated branch for possible output files (<strong>recommended</strong>) or remain on the current branch. If staying, preserve the branch without attributing the unrelated request to its Jira issue. If branching, obtain the Jira key, explain and obtain approval for switching to <code>main</code>, then follow <strong>Create a new work branch</strong>; remain in exploration mode.</td>
+</tr>
+</tbody>
+</table>
+<p>For a non-Jira branch, do not infer a Jira association: workflow 2 stops with
+an explanation; workflow 1 uses the same approval-before-<code>main</code> path as any
+non-<code>main</code> branch; workflow 3 asks whether the request relates to the current
+branch and follows the corresponding exploration choice above.</p>
+<p>For detached HEAD, report the state and stop workflows 1 and 2 until the user
+resolves the branch choice. Workflow 3 may continue as discussion without Git
+transitions; explain that a named branch must be selected before creating
+repository files. Never guess a branch or attach HEAD automatically.</p>
+<h2 id="git-transition-gate">Git transition gate</h2>
+<p>Immediately before <strong>each</strong> checkout, switch, or branch creation, re-run
+<code>git status --porcelain=v1 --untracked-files=all</code>. Also apply this check before
+updating <code>main</code>. Approval does not bypass it, and an earlier clean check does not
+replace it.</p>
+<ul>
+<li>Interpret the two status columns: <code>X</code> is the index, <code>Y</code> the working tree.
+  A working-tree modification (<code>Y</code> other than a space), an untracked entry
+  (<code>??</code>), or any unresolved conflict blocks the transition.</li>
+<li>Report the blocking paths and stop the requested transition and dependent
+  operations. Do not stage, stash, commit, discard, clean, or force a switch to
+  get past the gate. Let the user resolve the state and explicitly resume.</li>
+<li>Staged-only changes do not by themselves violate the unstaged-change rule.
+  Preserve them and disclose them before a proposed transition; if their task
+  association is unclear, ask before carrying them to another work branch.
+  Git errors or overwrite warnings always stop the sequence.</li>
+<li>A dirty working tree does not prevent discussion or work explicitly authorized
+  on the same branch; do not apply the transition gate as a blanket session ban.</li>
+<li>Approval refusal or a failed Git command ends the transition path. Never
+  silently continue on the old branch under the assumption that switching worked.</li>
+</ul>
+<h2 id="create-a-new-work-branch">Create a new work branch</h2>
+<p>Use this procedure only after the matrix's choices and approvals are complete.</p>
+<ol>
+<li>Obtain a valid <code>jira_key</code>. Reject malformed values and ask for correction.
+   Collect a readable branch suffix: for a new test suite, preserve
+   <code>&lt;jira_key&gt;-&lt;suite-name&gt;-test-suite</code>; for other work or exploration, use
+   <code>&lt;jira_key&gt;-&lt;short-description&gt;</code>. Ask for a missing description or suite name.
+   Validate the resulting name with <code>git check-ref-format --branch</code>.</li>
+<li>Check that <code>main</code> and the intended remote are available. If the target branch
+   name already exists locally or on the remote, stop and ask whether to resume
+   that branch or choose another name. Never reset or replace an existing branch.
+   Missing refs, remote ambiguity, or failed checks are blockers, not permission
+   to invent a base branch.</li>
+<li>If not already on <code>main</code>, explain the transition and obtain approval if not
+   already granted. Apply the transition gate, then use <code>git switch main</code>.
+   Check success before continuing.</li>
+<li>Fetch the remote and update <code>main</code> using a fast-forward-only pull from its
+   confirmed remote <code>main</code> ref. Check the transition gate before the update.
+   Stop on fetch/pull failure or divergence; do not merge, rebase, or reset to
+   force the update. Recheck the intended new branch's remote availability
+   after fetching to avoid using a stale branch-existence result.</li>
+<li>Apply the transition gate again, then create and switch to the new branch
+   using <code>git switch -c &lt;new-branch&gt; main</code>. Verify the resulting branch with
+   <code>git branch --show-current</code>; report any mismatch and stop.</li>
+<li>Return to the selected mode: operational QA for workflow 1, or exploration
+   for workflow 3. Creating an exploration branch does not authorize execution.</li>
+</ol>
+<h2 id="handoff-and-mode-changes">Handoff and mode changes</h2>
+<ul>
+<li><strong>Workflows 1 and 2:</strong> use <a href="../operations/">operational activity routing</a>
+  according to the requested work and stopping point, not according to whether
+  the branch is new. No mandatory analyst-first or full pipeline.
+  Workflow 2 never renames the branch to match a suite convention.
+  Delegate operational QA work; preserve runner plan approvals and failure
+  policy, at most five bonus fixes after the initial failure (not five total
+  executions), closer gates, and explicit PR intent.</li>
+<li><strong>Workflow 3:</strong> answer QA questions, discuss hypotheses, and formulate plans
+  without mandatory sub-agent delegation. Delegate a bounded specialist
+  question only when needed. Do not automatically implement tests/features,
+  run tests, invoke QA-closer, commit, push, or create a PR. Produce requested
+  planning documents only on the branch chosen by the user, including <code>main</code>
+  when explicitly retained. Do not create repository files just to record a plan
+  that was only requested in chat.</li>
+<li>If exploration becomes implementation, ask whether to start new work
+  (workflow 1) or resume the current Jira branch (workflow 2), then reapply
+  routing against the actual current branch. An earlier choice to remain on
+  <code>main</code> for exploration is not authorization to implement there.</li>
+<li>ACE bookkeeping remains applicable to actual substantive contributions,
+  including orchestrator-only exploration. It does not authorize a branch
+  change, a commit, or a QA-closer handoff. Keep the trace ID separate from
+  Jira and sanitize captured traces before counters or reflection.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

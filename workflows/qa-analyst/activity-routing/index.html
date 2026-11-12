@@ -1,0 +1,871 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="PagoPA">
+      
+      
+        <link rel="canonical" href="https://pagopa.github.io/pagopa-platform-integration-test/workflows/qa-analyst/activity-routing/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>QA analyst activity routing - PagoPA platform integration test</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#qa-analyst-activity-routing" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="PagoPA platform integration test" class="md-header__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PagoPA platform integration test
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              QA analyst activity routing
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="PagoPA platform integration test" class="md-nav__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PagoPA platform integration test
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/ebollo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ebollo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/tas_pass/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_pass
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/wisp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    wisp
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/tas_mixed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_mixed
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/fdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/fdr3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/cup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#select-the-activity-adr-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Select the activity (ADR-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-evidence-rules-adr-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common evidence rules (ADR-04)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uc-execution-and-resumption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UC execution and resumption
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#results-and-implementation-boundary-adr-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Results and implementation boundary (ADR-05)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#review-reports-and-ace-adr-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review reports and ACE (ADR-06)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="qa-analyst-activity-routing">QA analyst activity routing</h1>
+<p>Read this workflow before reviewing, editing, or creating features, whether the
+request comes directly from the user or from the orchestrator. These activity
+modes are independent of the orchestrator's branch/session modes.</p>
+<h2 id="select-the-activity-adr-02">Select the activity (ADR-02)</h2>
+<p>Use the explicit intent; ask through the dedicated question tool only when the
+action, files, or output scope is ambiguous. Supplied feature files alone do
+not authorize editing. An explicit correction request authorizes its stated
+scope without a second generic permission question.</p>
+<table>
+<thead>
+<tr>
+<th>Activity</th>
+<th>Procedure</th>
+<th>Allowed output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Review</td>
+<td>Apply <a href="../../../.github/skills/review-feature-files/SKILL.md">review-feature-files</a> directly when already QA-analyst; never delegate to yourself</td>
+<td>Findings in chat; a Markdown review report only when requested at a human-confirmed path. No feature creation or modification</td>
+</tr>
+<tr>
+<td>Edit or correct</td>
+<td>Follow <a href="../feature-editing/">feature-editing.md</a></td>
+<td>Scoped changes to authorized features, checks, explanations and implementation impact</td>
+</tr>
+<tr>
+<td>Create from a team-template UC</td>
+<td>Read <a href="../../../use-cases/uc-workflow/">uc-workflow.md</a> and apply <a href="../../../.github/skills/uc-to-feature/SKILL.md">uc-to-feature</a></td>
+<td>Agreed features and the fixed UC reports/registry</td>
+</tr>
+<tr>
+<td>Create from other documentation or an explicitly supplied migration suite</td>
+<td>Apply the common evidence rules below and the Gherkin conventions</td>
+<td>Agreed features with evidence, coverage, gaps and readiness summarized in chat; no invented UC or mandatory UC registry</td>
+</tr>
+</tbody>
+</table>
+<p>An explanation-only request returns an explanation without editing features or
+starting implementation. A request combining review and correction may use the
+edit procedure for the explicitly authorized corrections; a review-only skill
+invocation never escalates itself to editing. Ask for an explicit change of
+activity before applying fixes proposed during a review.</p>
+<p>Direct <code>/uc-scenario-context</code> and <code>/uc-test-data</code> requests stop after their own
+report. <code>/uc-to-feature</code> in <code>assemble-only</code> consumes current existing reports;
+it does not run retrieval stages to repair prerequisites.</p>
+<h2 id="common-evidence-rules-adr-04">Common evidence rules (ADR-04)</h2>
+<p>Read the <a href="../../../.github/skills/uc-scenario-context/source-policy.md">shared source policy</a>
+for source admission, reading tools, approval, provenance, privacy and failures.
+Apply these safeguards to creation and functional edits regardless of input
+format; use them when judging functional correctness during review as well.</p>
+<ul>
+<li>Read the scoped Gherkin instructions and profile. A file under review/edit
+  is an object of analysis, not proof of the correct product behaviour.
+  Missing requirements do not prevent reporting an actual syntax/style defect;
+  mark unsupported functional conclusions as questions, not proven defects.</li>
+<li>Preserve the distinction between functional requirements, expected values
+  (oracles), input test data, and evidence of current environment availability.
+  Never infer a missing rule, error path, value or live state to complete a file.</li>
+<li>For generic documentation, map each proposed behaviour/check to an admitted
+  passage or explicit user requirement. Separate supported happy/alternative/
+  error cases from uncovered requirements and unresolved questions. Ask about
+  blocking ambiguity rather than manufacturing coverage.</li>
+<li>In non-UC migration only, an explicitly supplied executable suite may describe
+  its current implementation under the source policy's migration exception.
+  It is not automatically the target specification; seek explicit requirements
+  or confirmation for intended behaviour. Do not autonomously mine other suites.
+  The UC workflow's prohibition on executable-suite evidence remains unchanged.</li>
+<li>Use only admitted applicable data. Keep unresolved input values conspicuous;
+  follow the existing data skill's TODO/comment convention, with stable local
+  requirement IDs explained in the output. Do not create a UC registry merely
+  to allocate those local IDs. Missing actions or oracles are functional gaps,
+  never input-data placeholders.</li>
+<li>For non-UC work, include source locators, coverage, unresolved data/state,
+  ambiguities and actual checks in chat. Persist an additional Markdown report
+  only if requested at an agreed path; the four UC artifacts are not mandatory.</li>
+<li>Review/edit can read supplied features and relevant step definitions with read
+  tools to assess implementation impact, not to establish missing requirements.
+  Do not write Python. UC translation still excludes executable-suite sources
+  and only reads registered feature outputs within its reconciliation rules.</li>
+</ul>
+<h2 id="uc-execution-and-resumption">UC execution and resumption</h2>
+<p>The UC workflow remains the authority for schema, ownership and invalidation.
+Confirm the run registry; context writes <code>01-context.md</code>, data consumes it and
+writes <code>02-test-data.md</code>, then translation consumes both and writes features
+and <code>03-feature-report.md</code>. Update <code>00-run.md</code> only for real outputs and changes.</p>
+<p>Validate identity, producer, revisions and states before each stage. On
+resumption obtain and persist the scoped human continuity confirmation for
+inputs, reports and registered features; matching revisions do not establish
+unchanged content. Historical records do not bypass source approval or renew
+data availability. Support stages never call translation recursively. Explicit
+read-only requests return proposals, not completed persistent stages.</p>
+<p>Keep the stable UC workflow identity distinct from the Jira key and the current
+request's ACE <code>task_id</code>, as defined in the UC workflow (ADR-07).</p>
+<h2 id="results-and-implementation-boundary-adr-05">Results and implementation boundary (ADR-05)</h2>
+<p>Always return the selected activity, actual file paths, checks actually
+performed, unresolved issues and a result:</p>
+<table>
+<thead>
+<tr>
+<th>Result</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>review-complete</code></td>
+<td>Review findings delivered; no feature edits or implicit approval to implement</td>
+</tr>
+<tr>
+<td><code>changes-complete</code></td>
+<td>Authorized edits saved; completion alone does not establish development readiness</td>
+</tr>
+<tr>
+<td><code>draft</code></td>
+<td>Supported output exists but functional gaps, unresolved data/state or ambiguities remain</td>
+</tr>
+<tr>
+<td><code>ready-for-development</code></td>
+<td>Agreed output is saved and current, supported coverage is reconciled, and no blocking requirement, oracle, data or preparation issue remains</td>
+</tr>
+<tr>
+<td><code>blocked</code></td>
+<td>Missing authorization/input, conflicting evidence or a tool/write failure prevents completion</td>
+</tr>
+</tbody>
+</table>
+<p>For creation/edit, report readiness and blockers <strong>per feature</strong>, even when the
+overall activity is complete. A review-only result or <code>changes-complete</code> without
+an explicit readiness assessment is not a development gate. For UC output,
+derive readiness from the current registry, report and feature state:
+<code>ready-for-development</code> corresponds to <code>pronta per lo sviluppo</code> with current
+<code>ready</code> artifacts; never introduce these activity labels as new UC schema enums.</p>
+<p>Explain each created/changed scenario and any step-text, parameter, outline or
+tag change that may affect Python bindings or test selection. This is handoff
+information, not an actual delegation. Only the orchestrator may delegate to
+QA-engineer/runner after checking readiness and the authorized task scope.
+When invoked directly, return the result to the user; do not start another agent.
+Neither readiness nor a syntax check proves that Python exists, the environment
+works, or tests have passed.</p>
+<p>Apply <a href="../../../.github/instructions/gherkin.instructions.md#null-inputs-adr-44">ADR-44 through ADR-48</a>:
+include intentional empty Examples cells and affected parameter/row locations
+in implementation impact, requiring conversion to Python <code>None</code>. Distinguish
+null, absent and explicitly empty-string inputs before readiness. State the
+binding obligation without claiming Python conversion already exists or ran.
+Preserve existing identifiers, report outline expansion separately from file
+definition count, and return missing observable outcome criteria as functional
+gaps in the existing report/chat contract, not invented defaults.</p>
+<h2 id="review-reports-and-ace-adr-06">Review reports and ACE (ADR-06)</h2>
+<p>During review, no feature may be created or modified, including alternative
+"corrected" copies. A requested Markdown report may be written only to an
+explicitly supplied or human-confirmed <code>.md</code> path. Read an existing report before
+updating it and preserve unrelated/user-authored content. Do not use this
+exception to write UCs, skill/instruction files, implementation code, ACE files,
+or UC stage reports/registry. Those artifacts retain their own ownership rules.
+If persistence fails, report the error and return the findings without claiming
+the report was saved. Explicit chat-only requests create no review report.</p>
+<p>The analyst returns trace elements (actions, outcome, checks, lessons and
+friction), never trace files. The orchestrator owns ACE capture, privacy
+finalization, counters and reflection under the current request's ACE <code>task_id</code>.
+When invoked directly without an orchestrator, return those elements without
+claiming that trace capture or finalization ran. Report permissions do not
+disable ACE bookkeeping or authorize a second trace writer.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

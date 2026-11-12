@@ -1,0 +1,1094 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="PagoPA">
+      
+      
+        <link rel="canonical" href="https://pagopa.github.io/pagopa-platform-integration-test/use-cases/uc-workflow-validation/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Verifica del contratto UC - PagoPA platform integration test</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#verifica-del-contratto-uc" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="PagoPA platform integration test" class="md-header__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PagoPA platform integration test
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Verifica del contratto UC
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="PagoPA platform integration test" class="md-nav__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PagoPA platform integration test
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/ebollo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ebollo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/tas_pass/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_pass
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/wisp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    wisp
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/tas_mixed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_mixed
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/fdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/fdr3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/cup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#livelli-di-verifica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Livelli di verifica
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#matrice-di-accettazione" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Matrice di accettazione
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regressioni-analista-e-orchestratore-adr-02-adr-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regressioni analista e orchestratore (ADR-02 - ADR-07)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stato-delle-prove" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stato delle prove
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="verifica-del-contratto-uc">Verifica del contratto UC</h1>
+<p>Questa matrice verifica <a href="../uc-workflow/">uc-workflow/v1</a>, non specifica
+comportamenti di prodotto. Gli identificativi sono astratti: nessun UC,
+dato reale, feature della suite o esempio UC-to-feature approvato viene
+introdotto. Le tre skill restano responsabili degli output del contratto.</p>
+<h2 id="livelli-di-verifica">Livelli di verifica</h2>
+<ol>
+<li><strong>Asset statici</strong>: metadata, link, colonne e sezioni dei template, permessi,
+   invalidazione, enum e presenza delle regole operative concordate.</li>
+<li><strong>Sintassi isolata</strong>: il parser Behave legge frammenti artificiali in memoria
+   con TODO, outline parziali, Background e piu verifiche nello stesso scenario.
+   Non esegue step, transazioni o test della suite; non dimostra idoneita dei dati.</li>
+<li><strong>Comportamento dell'agente</strong>: una prova richiede un UC umano, fonti ammesse,
+   percorsi/input e run confermati. Confrontare gli artefatti effettivi con la
+   matrice, registrando risultati, metodo, revisioni ed evidenza. Non dedurre
+   il comportamento dell'agente dalla presenza di una frase nella skill.</li>
+</ol>
+<p>I test di sviluppo, esterni al QA-analyst, sono in
+<a href="../../tests/unit/qa_workflow/test_uc_workflow_contract.py">test_uc_workflow_contract.py</a>.
+Usano il runner dei test unitari e il parser Behave gia adottati dal progetto:</p>
+<pre><code class="language-powershell">.\.venv\Scripts\python.exe -m pytest tests\unit\qa_workflow\test_uc_workflow_contract.py -q
+</code></pre>
+<p>Eseguire dalla root con pytest e le dipendenze del progetto disponibili nel
+virtualenv di sviluppo. I tool di sviluppo mancanti non sono capacita
+operative aggiuntive dell'analista.</p>
+<p>L'analista non esegue questo comando: i suoi permessi terminale non cambiano.
+Nessun verificatore o matcher runtime viene installato nel workflow.
+Gli assert sulle clausole e sulle tabelle sono regressioni del contratto
+documentale, non un motore sostitutivo che simula l'agente.</p>
+<h2 id="matrice-di-accettazione">Matrice di accettazione</h2>
+<table>
+<thead>
+<tr>
+<th>Caso</th>
+<th>Preparazione astratta</th>
+<th>Risultato atteso</th>
+<th>Evidenza da controllare nella prova agente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V-01</td>
+<td>Il contesto scopre un caso supportato dello stesso flusso</td>
+<td>Registra un nuovo SC, collega F/O/D e AC, senza creare AF o rinumerare id</td>
+<td>Scenario inventory, contesto e History</td>
+</tr>
+<tr>
+<td>V-02</td>
+<td>I dati scoprono un caso non registrato</td>
+<td>Propongono il caso con Q; ritorno al contesto prima delle nuove C; in manuale nessuna chiamata automatica</td>
+<td>Questions, report dati e successiva revisione del contesto</td>
+</tr>
+<tr>
+<td>V-03</td>
+<td>Una decisione modifica il report di un'altra skill</td>
+<td>Aggiorna Q e invalida i dipendenti, senza riscrivere report o revisioni altrui</td>
+<td>Questions, Artifacts e History</td>
+</tr>
+<tr>
+<td>V-04</td>
+<td>D-001 ha valori diversi in due SC/C</td>
+<td>Un solo requisito D; risoluzioni distinte con provenienza e fitness per ogni valore</td>
+<td>Data requirements, Data resolution e Combinations</td>
+</tr>
+<tr>
+<td>V-05</td>
+<td>Due valori nello stesso caso devono essere diversi per ruolo o vincolo</td>
+<td>Il contesto definisce D distinti e la relazione; i dati non fondono i requisiti</td>
+<td>Contesto e relazione della C</td>
+</tr>
+<tr>
+<td>V-06</td>
+<td>D-001 resta irrisolto in due casi</td>
+<td>Stesso token <strong>TODO_D001</strong>; nessuna uguaglianza concreta dedotta; entrambi i casi restano bozza</td>
+<td>Valori e warning per ogni SC/C</td>
+</tr>
+<tr>
+<td>V-07</td>
+<td>Due AC compatibili riferiti a FP</td>
+<td>Stesso scenario con tutte le verifiche Then/And e voci Coverage distinte</td>
+<td>Oracles, feature e Coverage</td>
+</tr>
+<tr>
+<td>V-08</td>
+<td>Due AC compatibili riferiti ad AF02</td>
+<td>Stesso scenario alternativo con entrambe le verifiche; nessuna estensione automatica a FP</td>
+<td>Oracles e Coverage per AF02</td>
+</tr>
+<tr>
+<td>V-09</td>
+<td>Due AC compatibili riferiti ad EF01</td>
+<td>Stesso caso negativo con entrambe le verifiche; nessuna estensione ad altre EF</td>
+<td>Oracles e Coverage per EF01</td>
+</tr>
+<tr>
+<td>V-10</td>
+<td>Due casi richiedono insiemi di verifiche diversi</td>
+<td>Scenari/outline separati; non uno scenario per singolo AC compatibile</td>
+<td>Mapping e Coverage</td>
+</tr>
+<tr>
+<td>V-11</td>
+<td>Alias equivalenti per un flusso presente, con case/spazi/punti diversi</td>
+<td>Risoluzione allo stesso id originale; tutti gli AC conservati</td>
+<td>Oracles e riferimenti della Coverage</td>
+</tr>
+<tr>
+<td>V-12</td>
+<td>Riferimento inesistente, ambiguo, assente o usato come esclusione</td>
+<td>Q quando necessario; nessun FP di default, nessun flusso inventato, esclusione non positiva</td>
+<td>Questions e copertura affected</td>
+</tr>
+<tr>
+<td>V-13</td>
+<td>Una risposta intermedia necessaria e documentata non ha un AC dedicato</td>
+<td>Verifica intermedia con riferimento funzionale reale, senza inventare AC</td>
+<td>Mapping, evidenza e Oracles</td>
+</tr>
+<tr>
+<td>V-14</td>
+<td>Un controllo interno o click implementativo non richiede un esito osservabile</td>
+<td>Nessun Then o scomposizione aggiunto per comodita</td>
+<td>Mapping e motivazione della granularita</td>
+</tr>
+<tr>
+<td>V-15</td>
+<td>Ripresa con revisioni uguali, contenuti confermati invariati e struttura valida</td>
+<td>Q/History della conferma con scopo esatto; riuso senza retrieval superfluo</td>
+<td>Inventario presentato, risposta umana e inputs</td>
+</tr>
+<tr>
+<td>V-16</td>
+<td>Modifica manuale dichiarata con revisioni numeriche invariate</td>
+<td>Artefatto e dipendenti stale; report rivalidato dal proprietario; nessuna adozione cieca dei metadati</td>
+<td>Artifacts, provenienza e nuova revisione</td>
+</tr>
+<tr>
+<td>V-17</td>
+<td>Continuita non confermata oppure file mancante/illeggibile</td>
+<td>Ripresa blocked con Q; nessun riuso presunto; una conferma non supera l'errore di lettura</td>
+<td>Questions, errore e status della run</td>
+</tr>
+<tr>
+<td>V-18</td>
+<td>Solo History o conferma amministrativa cambiano</td>
+<td>Nessuna invalidazione dei report/feature; revisione del registro non entra negli inputs</td>
+<td>Artifacts e inputs immutati</td>
+</tr>
+<tr>
+<td>V-19</td>
+<td>Cambia il contesto di una run prima complete</td>
+<td>Dati, finale e tutte le feature dipendenti stale; run in_progress, non complete</td>
+<td>Artifacts e status prima della rielaborazione</td>
+</tr>
+<tr>
+<td>V-20</td>
+<td>Cambiano solo dati o una feature manuale</td>
+<td>Dati cambiati invalidano finale/feature; feature manuale invalida se stessa/finale, non il contesto</td>
+<td>Propagazione circoscritta e nessuna sovrascrittura non confermata</td>
+</tr>
+<tr>
+<td>V-21</td>
+<td>Report precedente con enum non canonici</td>
+<td>Rivalidazione del produttore, non conversione silenziosa nel consumatore</td>
+<td>Report corretto e History</td>
+</tr>
+<tr>
+<td>V-22</td>
+<td>assemble-only con prerequisiti mancanti, stale, blocked o continuita non confermata</td>
+<td>Stop con passaggio necessario; nessuna skill di retrieval eseguita</td>
+<td>Questions, report finale quando persistibile e assenza di feature inventate</td>
+</tr>
+<tr>
+<td>V-23</td>
+<td>TODO in alcune righe outline o nel Background</td>
+<td>Warning prima dei tag per ogni scenario interessato; righe interessate identificate; nessun vuoto usato per il dato mancante</td>
+<td>Feature, Scenario warnings e Data and oracles</td>
+</tr>
+<tr>
+<td>V-24</td>
+<td>Nessun dato richiesto, oppure nessuno scenario funzionalmente supportato</td>
+<td>Nel primo caso report dati obbligatorio senza righe fittizie; nel secondo finale blocked senza feature vuota</td>
+<td>Report effettivi, Coverage e Feature outputs</td>
+</tr>
+<tr>
+<td>V-25</td>
+<td>Conferma di continuita su report con disponibilita dati non stabilita</td>
+<td>Nessuna nuova ammissione o availability dedotta; warning nei report e bozza conservati, senza commenti nella feature in assenza di TODO</td>
+<td>Admission, Availability evidence e Readiness</td>
+</tr>
+<tr>
+<td>V-26</td>
+<td>Salvataggio di feature/report riuscito ma registro fallito</td>
+<td>Errore esplicito, stop e riconciliazione del proprietario; nessuna run complete presunta</td>
+<td>File effettivi, errore e History riconciliata</td>
+</tr>
+<tr>
+<td>V-27</td>
+<td>Dato concreto ammesso come non verificato, senza placeholder</td>
+<td>Nessun commento sui dati nella feature; incertezza e bozza nei report, Required comment=not-applicable</td>
+<td>Feature, Data resolution, Scenario warnings e Readiness</td>
+</tr>
+<tr>
+<td>V-28</td>
+<td>Risolto l'ultimo placeholder di uno scenario, resta disponibilita non verificata</td>
+<td>Rimosso il commento relativo al TODO; conservati warning nei report e stato bozza, tracking e dichiarazione lingua intatti</td>
+<td>Feature e Readiness</td>
+</tr>
+<tr>
+<td>V-29</td>
+<td>Una fonte usa un hostname UAT solo come esempio di deployment</td>
+<td>Step ed Examples indipendenti dall'ambiente; configurazione Python/Behave dalla run; controllo di uscita dal dominio invariato</td>
+<td>Mapping, metadati e feature</td>
+</tr>
+<tr>
+<td>V-30</td>
+<td>Un requisito verifica esplicitamente un dominio o URL letterale</td>
+<td>Valore letterale conservato con motivazione funzionale, non rimosso come configurazione</td>
+<td>Evidenza, Mapping e oracle</td>
+</tr>
+<tr>
+<td>V-31</td>
+<td>Idoneita di un dato nota solo attraverso l'operazione sotto test</td>
+<td>Nessun Given che la garantisce e nessuna operazione anticipata; vincolo nei requisiti dati, esito osservabile solo se documentato</td>
+<td>Contesto, Mapping e Data resolution</td>
+</tr>
+<tr>
+<td>V-32</td>
+<td>Stato iniziale stabilibile mediante preparazione indipendente supportata</td>
+<td>Given ammesso con evidenza del meccanismo, senza dipendenza da altri scenari; non serve un'asserzione separata per ogni Given</td>
+<td>Functional evidence e Mapping</td>
+</tr>
+<tr>
+<td>V-33</td>
+<td>UC contiene una precondizione ma non e documentato come prepararla</td>
+<td>Requisito conservato aperto, nessun setup inventato; lacuna di preparazione distinta da regola funzionale mancante</td>
+<td>Questions, Mapping e Readiness</td>
+</tr>
+<tr>
+<td>V-34</td>
+<td>README documenta configurazioni diverse per tipi di suite</td>
+<td>Consultazione selettiva delle sezioni applicabili; vincoli operativi nel report, nessuna estensione automatica di default o capacita ad altre suite</td>
+<td>Mapping e Checks con sezioni consultate e ambito</td>
+</tr>
+<tr>
+<td>V-35</td>
+<td>README contiene comandi o link verso percorsi esclusi</td>
+<td>Nessun comando eseguito e nessun percorso escluso letto; documentazione insufficiente segnalata se incide sul disegno, senza esplorazione indiscriminata</td>
+<td>Operazioni effettive, Mapping e Questions</td>
+</tr>
+<tr>
+<td>V-36</td>
+<td>README contiene un possibile dato di test o esito funzionale</td>
+<td>Trovato distinto dal contesto operativo e soggetto alla policy fonti; nessuna disponibilita o capacita di setup dedotta dal framework</td>
+<td>Sources, decisioni di ammissione e Mapping</td>
+</tr>
+<tr>
+<td>V-37</td>
+<td>UC con finalità limitata e documentazione molto più ampia</td>
+<td>Focus persistito; UC obbligatorio contabilizzato; nessun test di operazioni estranee</td>
+<td>Agreed inputs, Mapping e Coverage</td>
+</tr>
+<tr>
+<td>V-38</td>
+<td>Nota umana ambigua o incompatibile con una regola fornita</td>
+<td>Distinzione scoping/requisito/decisione; Q circoscritta o riuso di decisione già esplicita; nessuna precedenza automatica</td>
+<td>Sources, Questions, History e dipendenti invalidati se cambia la decisione</td>
+</tr>
+<tr>
+<td>V-39</td>
+<td>Fonte ammessa descrive un percorso ulteriore dell'operazione UC con trigger ed esito completi</td>
+<td>Nuovo SC del contesto con anchor e ragione, non AF inventata né riga dati; un percorso estraneo non viene aggiunto</td>
+<td>Scenario inventory, Functional evidence e Coverage</td>
+</tr>
+<tr>
+<td>V-40</td>
+<td>Evento asincrono in ingresso e risposta; eventuali ACK/completamento sono distinti dalla fonte</td>
+<td>Keyword dal ruolo causale; ogni AC resta verificato e non si aggiungono ACK o completamento non prescritti</td>
+<td>Mapping, Oracles e feature</td>
+</tr>
+<tr>
+<td>V-41</td>
+<td>AC prescrive soltanto invio del messaggio; un altro richiede una verifica prima di avanzare</td>
+<td>Entrambi verificati con Then/And nel rispettivo scope; il primo non viene sostituito da ricezione/completamento, il secondo non viene omesso come semplice trigger</td>
+<td>Oracles, osservazioni intermedie e Coverage separata</td>
+</tr>
+<tr>
+<td>V-42</td>
+<td>Postcondizione UC e AC simile esplicitamente riferito a un EF</td>
+<td>Postcondizione verificata in tutti i positivi FP/AF; AC verificato nell'EF indicato, senza restringere l'obbligo dei positivi né estenderlo ad altri EF</td>
+<td>Oracles e Coverage per tutti i percorsi pertinenti</td>
+</tr>
+<tr>
+<td>V-43</td>
+<td>Proprietà esclusa dal focus senza prova che sia funzionalmente ininfluente</td>
+<td>Nessuna invarianza inventata e nessuna enumerazione arbitraria; eventuale conflitto materiale reso esplicito</td>
+<td>Agreed inputs, evidenza e Mapping</td>
+</tr>
+<tr>
+<td>V-44</td>
+<td>Esempio con letterale o enum incompatibili con la regola; formula temporale con configurazione esemplificativa</td>
+<td>Esempio non elevato a norma/fixture; formula e fase preservate; conflitto rilevante non risolto scegliendo un valore</td>
+<td>Sources, Oracles, Data resolution e Questions</td>
+</tr>
+<tr>
+<td>V-45</td>
+<td>Campo necessario solo a un'API di implementazione e input realmente richiesto ma mancante</td>
+<td>Primo resta nel report/handoff senza parametro artificiale; secondo segue TODO; oracle e tracking non diventano D</td>
+<td>Data requirements, Data resolution, handoff e warning</td>
+</tr>
+<tr>
+<td>V-46</td>
+<td>Feedback cambia il requisito, oppure soltanto dati o wording</td>
+<td>Rielaborazione attraverso gli owner pertinenti e invalidazione circoscritta; nessun retrieval delle parti invariate</td>
+<td>Questions, History, Artifacts e nuove revisioni reali</td>
+</tr>
+</tbody>
+</table>
+<h2 id="regressioni-analista-e-orchestratore-adr-02-adr-07">Regressioni analista e orchestratore (ADR-02 - ADR-07)</h2>
+<p>Lo stesso test di contratto verifica anche routing, permessi, gate e identita
+nei documenti dell'analista e dell'orchestratore. Come per V-01 - V-36, i casi
+seguenti sono risultati attesi, non prove di un'esecuzione reale dell'agente.</p>
+<table>
+<thead>
+<tr>
+<th>Caso</th>
+<th>Richiesta o stato</th>
+<th>Risultato atteso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A-01</td>
+<td>Feature allegata senza azione chiara</td>
+<td>Chiede review/modifica/creazione, senza dedurre permesso di modifica dall'allegato</td>
+</tr>
+<tr>
+<td>A-02</td>
+<td>QA-analyst invoca review-feature-files direttamente</td>
+<td>Applica la skill senza autodelega; nessuna feature creata o modificata</td>
+</tr>
+<tr>
+<td>A-03</td>
+<td>Review con report Markdown richiesto</td>
+<td>Conferma il percorso se manca, salva solo il report e restituisce elementi ACE senza scrivere trace</td>
+</tr>
+<tr>
+<td>A-04</td>
+<td>Review solo in chat</td>
+<td>Nessun report o feature scritto; nessuna delega a engineer/runner/closer</td>
+</tr>
+<tr>
+<td>A-05</td>
+<td>Correzione esplicita di file nominati</td>
+<td>Nessuna seconda autorizzazione generica; preserva lo scope e spiega impatto sui binding</td>
+</tr>
+<tr>
+<td>A-06</td>
+<td>Correzione di feature registrata UC</td>
+<td>Riconcilia tramite il proprietario; se incompleta, invalidazione circoscritta e nessun vecchio ready mantenuto</td>
+</tr>
+<tr>
+<td>A-07</td>
+<td>Creazione da documentazione non UC</td>
+<td>Stesse garanzie sulle fonti, oracle e dati; nessun UC o registro UC inventato</td>
+</tr>
+<tr>
+<td>A-08</td>
+<td>Suite di migrazione fornita come input non UC</td>
+<td>Evidenza dell'implementazione corrente, non requisito implicito; nessuna eccezione per traduzione UC</td>
+</tr>
+<tr>
+<td>A-09</td>
+<td>Analista restituisce bozza o solo changes-complete</td>
+<td>Nessuna implementazione automatica; orchestratore verifica readiness per file e confini della richiesta</td>
+</tr>
+<tr>
+<td>A-10</td>
+<td>Solo un sottoinsieme delle feature e pronto</td>
+<td>Implementazione parziale soltanto con autorizzazione esplicita dell'umano</td>
+</tr>
+<tr>
+<td>A-11</td>
+<td>Nuova richiesta ACE riprende una run UC</td>
+<td>Nuovo ACE task_id ma identita e percorsi UC invariati; nessuna migrazione dello schema</td>
+</tr>
+<tr>
+<td>A-12</td>
+<td>Scrittura report o registro fallita</td>
+<td>Errore e file realmente salvati espliciti; nessun successo o stato corrente inventato</td>
+</tr>
+</tbody>
+</table>
+<h2 id="stato-delle-prove">Stato delle prove</h2>
+<p>La matrice contiene risultati attesi, non risultati osservati. Nessuna riga
+attesta una run reale solo perche esiste qui. I test statici/sintattici possono
+essere eseguiti senza queste run; una prova agente deve specificare il caso,
+gli input confermati, i percorsi effettivi e l'esito osservato nel suo report.
+Una valutazione su un caso iterato non dimostra generalizzazione.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

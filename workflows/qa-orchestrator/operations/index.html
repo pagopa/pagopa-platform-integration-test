@@ -1,0 +1,1019 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="PagoPA">
+      
+      
+        <link rel="canonical" href="https://pagopa.github.io/pagopa-platform-integration-test/workflows/qa-orchestrator/operations/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>QA orchestrator operations (ADR-26 through ADR-31) - PagoPA platform integration test</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#qa-orchestrator-operations-adr-26-through-adr-31" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="PagoPA platform integration test" class="md-header__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PagoPA platform integration test
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              QA orchestrator operations (ADR-26 through ADR-31)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="PagoPA platform integration test" class="md-nav__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PagoPA platform integration test
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/ebollo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ebollo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/tas_pass/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_pass
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/wisp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    wisp
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/tas_mixed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_mixed
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/fdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/fdr3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/cup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#activity-routing-adr-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Activity routing (ADR-26)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#delegation-and-recovery-contract-adr-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delegation and recovery contract (ADR-27)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authorization-precedence-adr-28" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authorization precedence (ADR-28)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analyst-result-gate-adr-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analyst-result gate (ADR-05)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#engineer-ownership-and-result-gate-adr-14-through-adr-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engineer ownership and result gate (ADR-14 through ADR-19)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runner-activity-and-plan-gate-adr-20-through-adr-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runner activity and plan gate (ADR-20 through ADR-25)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidence-dependencies-and-safe-parallelism-adr-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence dependencies and safe parallelism (ADR-29)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#completion-and-closure-handoff-adr-30-adr-08-through-adr-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Completion and closure handoff (ADR-30, ADR-08 through ADR-13)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#closure-handoff-adr-08-through-adr-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Closure handoff (ADR-08 through ADR-13)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qa-result-and-ace-lifecycle-adr-31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QA result and ACE lifecycle (ADR-31)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="qa-orchestrator-operations-adr-26-through-adr-31">QA orchestrator operations (ADR-26 through ADR-31)</h1>
+<p>Read this complete workflow before operational delegation or substantive planning.
+Use <a href="../session-routing/">session routing</a> for branch choices and Git transitions;
+session mode and requested activity are independent. This workflow does not
+authorize execution, editing or publication merely because a branch was selected.</p>
+<h2 id="activity-routing-adr-26">Activity routing (ADR-26)</h2>
+<p>Determine intent, scope and requested stopping point from the user. Ask through
+the dedicated question tool only where ambiguous; show a concise plan before
+delegation. Collect a suite name only where needed for the actual work. Keep the
+selected branch; new-suite work does not independently require a second branch.</p>
+<table>
+<thead>
+<tr>
+<th>Requested activity</th>
+<th>Entry and route</th>
+<th>Stop boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Explain or explore</td>
+<td>Answer directly; use a bounded specialist only when necessary</td>
+<td>Requested answer/plan, no automatic implementation</td>
+</tr>
+<tr>
+<td>Review features</td>
+<td>QA-analyst in review mode</td>
+<td>Findings and only a requested report, no corrections</td>
+</tr>
+<tr>
+<td>Review Python steps</td>
+<td>QA-engineer in review mode</td>
+<td>Findings and only a requested report, no corrections</td>
+</tr>
+<tr>
+<td>Create or edit features</td>
+<td>QA-analyst with applicable sources/skills</td>
+<td>Authorized feature output and per-feature readiness</td>
+</tr>
+<tr>
+<td>Implement or fix test code</td>
+<td>QA-engineer with current readiness or concrete existing-defect evidence</td>
+<td>Integrated implementation and actual static checks, not inferred test success</td>
+</tr>
+<tr>
+<td>Diagnose or execute tests</td>
+<td>QA-runner in the requested mode</td>
+<td>Actual evidence/report, no implicit implementation or closure</td>
+</tr>
+<tr>
+<td>Documentation or publication closure</td>
+<td>QA-closer for the exact authorized task and its applicable evidence gates</td>
+<td>Requested documentation/publication result</td>
+</tr>
+<tr>
+<td>Complete suite work</td>
+<td>Analyst when requirements/features need work, engineer when implementation needs work, runner for approved verification; closer only if needed</td>
+<td>Agreed end-to-end result within current authorizations</td>
+</tr>
+</tbody>
+</table>
+<p>Do not always start with the analyst: a concrete technical defect, Python review,
+existing-suite execution or closure-only request can enter its actual owner.
+Functional requirements/scenario changes or uncertainty return to the analyst.
+Providing documentation for discussion alone does not start feature creation.
+A combined review/correction request authorizes only its explicit correction scope.
+If a request expands beyond exploration, reapply session routing before changes.</p>
+<h2 id="delegation-and-recovery-contract-adr-27">Delegation and recovery contract (ADR-27)</h2>
+<p>Give each delegated task:</p>
+<ul>
+<li>Objective, activity mode, deliverable and explicit stopping point.</li>
+<li>Exact read/write scope, owned files, shared-file/resource owner, baseline and
+  pre-existing edits to preserve; read-only means no corrected copies.</li>
+<li>Current inputs/evidence and their provenance, requirements/readiness or existing
+  defect evidence, suite/framework/environment where relevant.</li>
+<li>Distinct Jira association, stable UC identity when applicable and current ACE
+  request ID. No fabricated participation for an unconfigured specialist.</li>
+<li>Current approvals/refusals and constraints, permitted effects, dependencies,
+  remaining bonus/diagnostic budgets and prior completed actions.</li>
+</ul>
+<p>Validate the return against that assignment. Retain specialist-specific result
+labels; summarize coordination as completed, partial, blocked or delegation
+failed/interrupted. A successful tool/agent return alone proves no artifact,
+execution or publication. Use actual returned evidence; resolve missing scope,
+contradictory output or unverifiable claims without repeating successful work.</p>
+<p>An interrupted delegate may have saved partial changes: do not blindly relaunch
+against its files or give a second agent the same ownership. Establish whether
+the original writer/process is still active, reconcile actual artifacts and
+release/transfer ownership before resuming. Preserve user/unrelated edits.
+Never reset/stash/discard changes to recover a delegation.</p>
+<p>Maintain a concise in-context checkpoint: current branch/activity/scope, completed
+outputs, remaining work, blockers, approvals, budgets, active writers/processes
+and prior publication/ACE stage. No mandatory new tracking file. When context is
+missing, reconstruct from available evidence and ask only about unresolved facts.
+On resume recheck relevant current branch, contents, evidence and permission;
+restart at the last established step, not automatically at the first agent.
+Independent chat requests get a new ACE ID; continuation keeps its existing ID.</p>
+<h2 id="authorization-precedence-adr-28">Authorization precedence (ADR-28)</h2>
+<p>The latest explicit applicable decision supersedes an earlier one for the same
+action/scope. An earlier PR request does not survive a later "do not open a PR".
+Preserve independent <code>commit</code>, <code>push</code>, <code>create_pr</code>, execution and fix decisions,
+including unresolved values. No success condition sets <code>create_pr: true</code> implicitly.</p>
+<p>Pass the updated decisions to every affected delegate. If a decision changes
+while work is active, stop future affected actions, notify the delegate and
+establish what already happened; do not claim a completed push/PR was undone.
+Ambiguous revisions require clarification, not silently treating them as consent.
+Never ask again merely to overturn an explicit refusal.
+Reusing consent requires the same still-valid scope/environment/effects and
+destination; a broader or changed plan needs its own decision. Generic approval
+does not waive runner command approval, specialist readiness or Git safety gates.</p>
+<h2 id="analyst-result-gate-adr-05">Analyst-result gate (ADR-05)</h2>
+<p>Use the <a href="../../qa-analyst/activity-routing/#results-and-implementation-boundary-adr-05">analyst activity/result contract</a>.
+Only the orchestrator chooses downstream work; review/edit-only requests end at
+their requested boundary. Do not start another stage simply because files exist.</p>
+<ul>
+<li>Require explicit <code>ready-for-development</code> for new/changed feature implementation.
+  <code>changes-complete</code> or <code>review-complete</code> is not readiness.</li>
+<li>For UC output require current registry/reports/feature rows in <code>ready</code> state;
+  the final report says <code>pronta per lo sviluppo</code>. Filenames, old summaries or
+  missing TODO tokens do not prove readiness.</li>
+<li>For mixed output, the user explicitly
+  authorizes that partial implementation scope before a ready subset proceeds.</li>
+<li>Preserve runner approvals; diagnostic
+  permission for existing tests is not permission to execute draft scenarios.</li>
+<li>Existing test-code maintenance can use concrete defect evidence under the
+  engineer's gate without manufacturing a new UC or analyst stage.</li>
+</ul>
+<h2 id="engineer-ownership-and-result-gate-adr-14-through-adr-19">Engineer ownership and result gate (ADR-14 through ADR-19)</h2>
+<p>Use the <a href="../../qa-engineer/implementation/">engineer workflow</a>. Assign exact write
+sets and current functional/defect evidence, not just a feature filename.
+Parallelize only disjoint ownership; group or serialize overlapping work,
+including shared steps/hooks/utilities/unit tests and nested utility assignments.
+One shared file has one writer. After integration assign the suite-wide
+binding/context collision check; static inspection is not runtime verification.</p>
+<p>Keep <code>review-complete</code>, <code>implemented-not-run</code>, <code>partial</code> and <code>blocked</code> distinct.
+Resolve incomplete dependencies before normal verification; limited diagnostics
+need explicit scope/approval. Pass actual changed paths, binding/utility impact,
+known issues and proposed checks to the runner. Utility-specialist unit tests
+are executed by the approved runner, not by implementation agents indirectly.
+Direct or scoped implementation is not automatic permission for execution.</p>
+<h2 id="runner-activity-and-plan-gate-adr-20-through-adr-25">Runner activity and plan gate (ADR-20 through ADR-25)</h2>
+<p>Use the <a href="../../qa-runner/execution/">runner workflow</a>. Pass requested mode, current
+integrated contents, suite/framework/environment, verification scope and failure
+policy. The runner obtains approval for exact commands, selection, setup/effects,
+unique artifacts and rerun limits; orchestrator intent is not that approval.
+Same-plan reruns may reuse consent, material changes need fresh approval.</p>
+<p>The first failure is attempt 0, followed only when authorized by up to five bonus
+fix attempts. Keep its counter across delegations and resumptions; separately
+approved finite diagnostic reruns do not reset/extend it. Allow direct reporting
+without fixes or stopping early; never restart the loop automatically.
+Test-code defects go through engineer ownership, functional changes through the
+analyst, environment/configuration/service issues through an explicit scoped
+orchestrator decision. Do not authorize a test-code workaround for an unclear oracle.</p>
+<p>Consume <code>passed</code>, <code>failed</code>, <code>blocked</code> and <code>inconclusive</code> as defined by the runner.
+Zero failures alone, zero executed cases or unexplained flaky retries do not
+establish blanket success. Execution-only/diagnosis requests do not auto-start
+implementation/closure. Reuse the relevant unresolved-suite-error report even
+when the fix loop never started.</p>
+<h2 id="evidence-dependencies-and-safe-parallelism-adr-29">Evidence dependencies and safe parallelism (ADR-29)</h2>
+<p>Associate evidence with the inputs/contents and selection it actually covers;
+matching HEAD alone is insufficient. Before each dependent stage, compare current
+relevant artifacts/changes to that baseline. If relevance is uncertain, resolve
+it rather than presuming everything stale or everything valid.</p>
+<table>
+<thead>
+<tr>
+<th>Change or dependency</th>
+<th>Required reassessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requirements, oracles or scenarios</td>
+<td>Analyst readiness and affected coverage/bindings; apply UC invalidation rules when applicable</td>
+</tr>
+<tr>
+<td>Steps, hooks, helpers, dependencies or execution configuration</td>
+<td>Affected implementation and runner verification; shared changes may affect multiple features/suites</td>
+</tr>
+<tr>
+<td>Descriptive documentation only</td>
+<td>Assess README/documentation impact; do not indiscriminately invalidate tests</td>
+</tr>
+<tr>
+<td>Partial selection, unknown baseline or missing artifacts</td>
+<td>Explicit coverage limitation; no whole-task passing claim</td>
+</tr>
+<tr>
+<td>Shared external test data, accounts, service state or consumable resources</td>
+<td>Establish isolation/repeatability and effects before concurrent execution; serialize if unsafe or uncertain</td>
+</tr>
+</tbody>
+</table>
+<p>No downstream gate may reuse evidence invalidated by a relevant change. Assign
+targeted fresh checks to the owner/runner; do not demand full-repository execution
+when scoped checks suffice. Do not run verification concurrently with relevant
+writers unless the approved isolated snapshot is explicit and reported.
+File-disjoint engineers do not imply safe parallel suite execution.</p>
+<h2 id="completion-and-closure-handoff-adr-30-adr-08-through-adr-13">Completion and closure handoff (ADR-30, ADR-08 through ADR-13)</h2>
+<p>End every requested activity with actual results, changed/produced paths, checks
+performed, unexecuted checks, coverage limits/blockers and next safe actions.
+Activity completion is not publication. Stop at the requested boundary.</p>
+<p>After a coherent repository change set, apply the
+<a href="../../../AGENTS.md#readme-maintenance-gate-adr-11">README gate</a> and
+<a href="../../../.github/skills/ppa-readme/SKILL.md">ppa-readme</a>, even without a commit.
+Reuse a current assessment; restricted agents return requirements for an
+authorized writer. The orchestrator may make explicitly authorized planning/
+README edits, not test code/features. Do not expand another role's permissions
+or run tests because README assessment occurred.</p>
+<p>Invoke QA-closer only for an actual assigned documentation/report-completion or
+authorized publication task, not merely because another agent succeeded.</p>
+<h2 id="closure-handoff-adr-08-through-adr-13">Closure handoff (ADR-08 through ADR-13)</h2>
+<p>Pass
+the <a href="../../qa-closer/closure/#closure-input-contract-adr-08">closure input contract</a>:
+expected branch and file scope/work type, current verification including tested
+working-tree contents, artifacts/limits, current independent <code>commit</code>, <code>push</code>
+and <code>create_pr</code> decisions, README assessment and prior publication state.
+Use explicit unknown/not-applicable rather than inventing evidence.</p>
+<p>For publication supply an exact English message from current scope/user intent;
+for full suite work <code>test: &lt;suite-name&gt; tests complete</code> or
+<code>test: &lt;suite-name&gt; tests updated &lt;fix semantic&gt;</code> are examples, not substitutes
+for an explicit user message or factual scope. Preserve skill/trailer rules.
+No merge/force push/amend or implicit Git action.</p>
+<p>With unresolved suite errors, reuse the runner's report; request report-only
+closer work only for a real missing/incomplete report, never to bypass evidence
+gates. Non-suite/tool/Git blockers do not invent a suite error report. Successful
+work needs no standalone success report. Documentation-only closer work does not
+authorize publication and must not require invented executed-test evidence.</p>
+<h2 id="qa-result-and-ace-lifecycle-adr-31">QA result and ACE lifecycle (ADR-31)</h2>
+<p>The orchestrator owns capture; specialists return trace elements, not trace files.
+Before capture read the schema and capture guide listed in the persona. Capture
+only actual configured participants under the same request ID, plus the
+orchestrator's substantive work. Assess friction and evidence deliberately.</p>
+<p>Track QA result separately from ACE completion: pending capture, captured,
+privacy-finalized, counters/threshold checked and reflection delegated when due,
+or blocked at the actual failed stage. These are coordination notes, not new ACE
+schema enums. A privacy failure does not turn a genuinely passed run into a test
+failure, but the overall lifecycle is not complete; return both statuses honestly.</p>
+<p>After all traces (including closer's) are captured, run the project privacy addon
+before counters, thresholds, reflection or trace publication. Stop ACE processing
+on failure; never consume/commit raw traces or call the core finalizer directly.
+Report the failed command/stage without exposing private trace content.</p>
+<p>Recovery uses the original request ID and established stage, not a new QA loop.
+Inspect actual persisted state and applicable addon/script recovery guidance
+before retrying; do not blindly repeat a possibly completed counter/reflection
+action or overwrite finalized traces. If safe replay cannot be established,
+report the blocker and obtain a recovery decision. Amend later assessments only
+through the capture guide's separate correction-trace procedure.
+Do not change runtime/scripts/playbooks or install addon dependencies implicitly.</p>
+<p>The closer's trace is captured after its result: privacy-finalize
+those through the existing ACE lifecycle afterward. Never require it inside the
+commit it describes, initiate a recursive commit, or automatically
+publish newly captured traces. Only sanitized, explicitly scoped traces can be
+included in an authorized later publication.</p>
+<p>Before final response verify claimed persistence/command results and distinguish
+actual outputs from proposals. On ACE failure preserve QA results and recover
+only the blocked lifecycle stage; do not rerun tests, commits, pushes or PRs.
+Only gh/ace/warden applies playbook changes after explicit human sign-off.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

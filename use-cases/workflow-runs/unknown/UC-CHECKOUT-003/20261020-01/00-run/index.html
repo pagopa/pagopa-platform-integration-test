@@ -1,0 +1,1006 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="PagoPA">
+      
+      
+        <link rel="canonical" href="https://pagopa.github.io/pagopa-platform-integration-test/use-cases/workflow-runs/unknown/UC-CHECKOUT-003/20261020-01/00-run/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>UC - Run - PagoPA platform integration test</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#uc-run" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../../.." title="PagoPA platform integration test" class="md-header__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PagoPA platform integration test
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              UC - Run
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../../.." title="PagoPA platform integration test" class="md-nav__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PagoPA platform integration test
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/ebollo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ebollo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/tas_pass/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_pass
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/wisp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    wisp
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/tas_mixed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_mixed
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/fdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/fdr3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/cup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#agreed-inputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agreed inputs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scenario-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scenario inventory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#artifacts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Artifacts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        History
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="uc-run">UC - Run</h1>
+<h2 id="agreed-inputs">Agreed inputs</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+<th>Human confirmation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Functional sources</td>
+<td>UC allegato; <code>C:\Users\dquero\Downloads\Checkout PagoPA - Interfaccia Utente e Comportamento Funzionale.md</code>; risposte umane; catalogo Markdown, solo ritorno scelta metodo verso email</td>
+<td>Allegati iniziali; conferma punti 1, 3, 4 del 2026-10-20T13:20:40.119+02:00; conferma punti 2 e 3 del 2026-10-20T13:26:52.455+02:00</td>
+</tr>
+<tr>
+<td>Data sources</td>
+<td><code>C:\Users\dquero\Downloads\Note per gli sviluppatori.md</code>; docs/use-cases/test-data/checkout/checkout-test-data.md, solo avviso completo, CF, carta Mastercard ed email mail@pagopa.it</td>
+<td>Risposta del 2026-10-20T13:26:52.455+02:00, punto 1: autorizzati come dati non verificati; incluso intestatario sintetico gia documentato</td>
+</tr>
+<tr>
+<td>Feature paths</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>Punto 1 confermato il 2026-10-20T13:20:40.119+02:00</td>
+</tr>
+<tr>
+<td>Run directory</td>
+<td>docs/use-cases/workflow-runs/unknown/UC-CHECKOUT-003/20261020-01/</td>
+<td>Punto 1 confermato, salvo task da ignorare; unknown rappresenta l'assenza del task, non un ticket</td>
+</tr>
+<tr>
+<td>Gherkin profile inputs</td>
+<td>Profilo .github/profiles/gherkin.profile.yaml; italiano; progressivo 004; commento mock #1234567890</td>
+<td>Punti 1 e 2 confermati il 2026-10-20T13:20:40.119+02:00</td>
+</tr>
+<tr>
+<td>UC identity and revision</td>
+<td>UC-CHECKOUT-003; revisione 1; ambiente uat; nessun task associato</td>
+<td>Punto 1: tutto confermato tranne id task, da ignorare</td>
+</tr>
+<tr>
+<td>Source boundaries</td>
+<td>Non esplorare src o docs/use-cases/features; scrivere soltanto il nuovo output concordato nella destinazione feature</td>
+<td>Richiesta iniziale</td>
+</tr>
+<tr>
+<td>Workflow mode</td>
+<td>Automatico, nuova run; nessun output preesistente riutilizzato</td>
+<td>Richiesta di traduzione e conferma della nuova run</td>
+</tr>
+</tbody>
+</table>
+<h2 id="scenario-inventory">Scenario inventory</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario id</th>
+<th>UC elements</th>
+<th>Behaviour to cover</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SC-001</td>
+<td>FP 1-2; postcondizione destinazione; AC-01 secondo Q-006</td>
+<td>Inserimento dati avviso verso Home con 1 pressione di Indietro; verifica dati non applicabile</td>
+</tr>
+<tr>
+<td>SC-002</td>
+<td>FP 1-2; entrambe le postcondizioni; AC-01</td>
+<td>Riepilogo dati pagamento verso inserimento avviso; conservazione codice avviso e CF ente</td>
+</tr>
+<tr>
+<td>SC-003</td>
+<td>FP 1-2; entrambe le postcondizioni; AC-01</td>
+<td>Inserimento email verso riepilogo dati pagamento; codice avviso e CF ente precedenti ancora visibili nel riepilogo</td>
+</tr>
+<tr>
+<td>SC-004</td>
+<td>FP 1-2; postcondizione destinazione; AC-01 secondo Q-006</td>
+<td>Inserimento carta verso scelta metodo; verifica dati non applicabile</td>
+</tr>
+<tr>
+<td>SC-005</td>
+<td>FP 1-2; entrambe le postcondizioni; AC-01</td>
+<td>Lista PSP del percorso carta verso inserimento carta; conservazione dei 4 campi, CVV incluso</td>
+</tr>
+<tr>
+<td>SC-006</td>
+<td>FP 1-2; postcondizione destinazione; AC-01 secondo Q-006</td>
+<td>Lista PSP del percorso PayPal verso scelta metodo; verifica dati non applicabile</td>
+</tr>
+<tr>
+<td>SC-007</td>
+<td>FP 1-2; postcondizione destinazione; AC-01 secondo Q-006</td>
+<td>Lista PSP del percorso Apple Pay verso scelta metodo; stesse azioni e verifiche di SC-006</td>
+</tr>
+<tr>
+<td>SC-008</td>
+<td>FP 1-2; postcondizione destinazione; AC-01 secondo Q-006</td>
+<td>Lista PSP del percorso BANCOMAT Pay verso scelta metodo; stesse azioni e verifiche di SC-006</td>
+</tr>
+<tr>
+<td>SC-009</td>
+<td>FP 1-2; postcondizione destinazione; AC-01 secondo Q-006</td>
+<td>Lista PSP del percorso MyBank verso scelta metodo; stesse azioni e verifiche di SC-006</td>
+</tr>
+<tr>
+<td>SC-010</td>
+<td>FP 1-2; entrambe le postcondizioni; AC-01</td>
+<td>Scelta metodo verso email con Indietro; conservazione di indirizzo email e Ripeti di nuovo, secondo Q-005</td>
+</tr>
+</tbody>
+</table>
+<h2 id="artifacts">Artifacts</h2>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Producer skill</th>
+<th>Path</th>
+<th>Revision</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>context</td>
+<td>uc-scenario-context</td>
+<td>docs/use-cases/workflow-runs/unknown/UC-CHECKOUT-003/20261020-01/01-context.md</td>
+<td>2</td>
+<td>ready</td>
+</tr>
+<tr>
+<td>test-data</td>
+<td>uc-test-data</td>
+<td>docs/use-cases/workflow-runs/unknown/UC-CHECKOUT-003/20261020-01/02-test-data.md</td>
+<td>1</td>
+<td>incomplete</td>
+</tr>
+<tr>
+<td>feature-report</td>
+<td>uc-to-feature</td>
+<td>docs/use-cases/workflow-runs/unknown/UC-CHECKOUT-003/20261020-01/03-feature-report.md</td>
+<td>1</td>
+<td>incomplete</td>
+</tr>
+<tr>
+<td>feature</td>
+<td>uc-to-feature</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>1</td>
+<td>incomplete</td>
+</tr>
+</tbody>
+</table>
+<h2 id="questions">Questions</h2>
+<table>
+<thead>
+<tr>
+<th>Question id</th>
+<th>Stage</th>
+<th>Question</th>
+<th>Decision and scope</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q-001</td>
+<td>initialization</td>
+<td>Identita, revisione, ambiente, destinazione e nuova run?</td>
+<td>Conferma umana del 2026-10-20T13:20:40.119+02:00; task ignorato e rappresentato da unknown; nessuna associazione Jira</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-002</td>
+<td>translation</td>
+<td>Numero di tracking richiesto dal profilo?</td>
+<td>Stessa risposta, punto 2: usare #1234567890 come mock, non identificativo reale</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-003</td>
+<td>context</td>
+<td>Controllo, cardinalita e campi conservati?</td>
+<td>Stessa risposta, punto 3: Indietro dell'applicazione; 1 ritorno per scenario; tutti i campi avviso, email e carta, CVV incluso, quando presenti nella pagina di destinazione</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-004</td>
+<td>context</td>
+<td>AF ed EF vuoti significano assenza?</td>
+<td>Stessa risposta, punto 4: nessun AF/EF previsto; nessuna variante negativa inventata</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-005</td>
+<td>context</td>
+<td>Come si torna dalla scelta metodo alla pagina email?</td>
+<td>Risposta del 2026-10-20T13:26:52.455+02:00, punto 2: Indietro verso email, conservazione di entrambi i campi. Ammessa la relativa coppia del catalogo</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-006</td>
+<td>context</td>
+<td>Come applicare la conservazione dati ai ritorni verso Home e scelta metodo, senza input documentati?</td>
+<td>Stessa risposta, punto 3: verificare solo la destinazione; conservazione dati dove sono presenti i campi</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-007</td>
+<td>data</td>
+<td>Approvare i candidati del catalogo Markdown per questa traduzione?</td>
+<td>Stessa risposta, punto 1: avviso 302042025112600001, CF 77777777777, Mastercard 5255000260000014 / 12/30 / 123 / Test test ed email mail@pagopa.it autorizzati come non verificati con warning; nessuna verifica notifiche</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-008</td>
+<td>data</td>
+<td>Stato e disponibilita correnti dei dati e percorsi richiesti?</td>
+<td>Nessuna disponibilita corrente confermata: avviso valido e non pagato, accettazione carta, metodi e lista PSP da predisporre/verificare. Nessuna esecuzione autorizzata o svolta dall'analista; bozza</td>
+<td>open</td>
+</tr>
+</tbody>
+</table>
+<h2 id="history">History</h2>
+<table>
+<thead>
+<tr>
+<th>Timestamp</th>
+<th>Skill or human</th>
+<th>Action</th>
+<th>Output path and revision</th>
+<th>Invalidated outputs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-10-20T13:20:40.119+02:00</td>
+<td>human</td>
+<td>Conferma inizializzazione, commento mock, controllo applicativo, 1 ritorno, conservazione campi e assenza AF/EF</td>
+<td>Decisioni Q-001..Q-004</td>
+<td>Nessuno</td>
+</tr>
+<tr>
+<td>2026-10-20T13:20:40.119+02:00</td>
+<td>uc-to-feature</td>
+<td>Inizializzazione nuova run e inventario dai soli input ammessi; task non associato</td>
+<td>docs/use-cases/workflow-runs/unknown/UC-CHECKOUT-003/20261020-01/00-run.md revision 1</td>
+<td>Nessuno</td>
+</tr>
+<tr>
+<td>2026-10-20T13:20:40.119+02:00</td>
+<td>uc-scenario-context</td>
+<td>Persistenza evidenza funzionale, estensione inventario ai percorsi documentati e registrazione lacune; aggiornamento registro</td>
+<td>docs/use-cases/workflow-runs/unknown/UC-CHECKOUT-003/20261020-01/01-context.md revision 1; 00-run.md revision 2</td>
+<td>Nessuno; output a valle non creati</td>
+</tr>
+<tr>
+<td>2026-10-20T13:26:52.455+02:00</td>
+<td>human</td>
+<td>Risoluzione Q-005..Q-007; proseguimento della stessa traduzione senza riuso di feature preesistenti</td>
+<td>Messaggio di conferma punti 1-3</td>
+<td>Nessuno</td>
+</tr>
+<tr>
+<td>2026-10-20T13:26:52.455+02:00</td>
+<td>uc-scenario-context</td>
+<td>Contesto aggiornato con ritorno verso email e applicabilita del confronto dati; inventario corrente</td>
+<td>docs/use-cases/workflow-runs/unknown/UC-CHECKOUT-003/20261020-01/01-context.md revision 2; 00-run.md revision 3</td>
+<td>Nessuno; output a valle non creati</td>
+</tr>
+<tr>
+<td>2026-10-20T13:26:52.455+02:00</td>
+<td>uc-test-data</td>
+<td>Letti registro e contesto revision 2; valori ammessi con warning e combinazioni per tutti i casi; disponibilita non accertata Q-008</td>
+<td>docs/use-cases/workflow-runs/unknown/UC-CHECKOUT-003/20261020-01/02-test-data.md revision 1; 00-run.md revision 4</td>
+<td>Nessuno; feature e report finale non creati</td>
+</tr>
+<tr>
+<td>2026-10-20T13:26:52.455+02:00</td>
+<td>uc-to-feature</td>
+<td>Letti entrambi i report persistiti e registro; verificati identita, revisioni, fonti, decisioni e SC/D/C/O; scritti nuovo file feature e report finale con esito positivo del tool</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature revision 1; docs/use-cases/workflow-runs/unknown/UC-CHECKOUT-003/20261020-01/03-feature-report.md revision 1</td>
+<td>Nessuno</td>
+</tr>
+<tr>
+<td>2026-10-20T13:26:52.455+02:00</td>
+<td>uc-to-feature</td>
+<td>Registrati soltanto output realmente scritti; chiusura in draft per Q-008. Verificati staticamente 7 definizioni, 10 casi, 1 ritorno per caso, confronti dati e warning; nessun test o parser eseguito</td>
+<td>00-run.md revision 5; context revision 2 ready; test-data revision 1 incomplete; feature-report e feature revision 1 incomplete</td>
+<td>Nessuno</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../../..", "features": [], "search": "../../../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

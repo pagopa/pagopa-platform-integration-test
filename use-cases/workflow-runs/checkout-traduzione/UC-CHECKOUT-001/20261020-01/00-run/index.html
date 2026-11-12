@@ -1,0 +1,1019 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="PagoPA">
+      
+      
+        <link rel="canonical" href="https://pagopa.github.io/pagopa-platform-integration-test/use-cases/workflow-runs/checkout-traduzione/UC-CHECKOUT-001/20261020-01/00-run/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>UC - Run - PagoPA platform integration test</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#uc-run" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../../.." title="PagoPA platform integration test" class="md-header__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PagoPA platform integration test
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              UC - Run
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../../.." title="PagoPA platform integration test" class="md-nav__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PagoPA platform integration test
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/ebollo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ebollo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/tas_pass/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_pass
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/wisp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    wisp
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/tas_mixed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_mixed
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/fdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/fdr3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/cup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#agreed-inputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agreed inputs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scenario-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scenario inventory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#artifacts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Artifacts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        History
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="uc-run">UC - Run</h1>
+<h2 id="agreed-inputs">Agreed inputs</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+<th>Human confirmation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Functional sources</td>
+<td>UC allegato; C:/Users/dquero/Downloads/Checkout PagoPA - Interfaccia Utente e Comportamento Funzionale.md; docs/use-cases/test-data/checkout/checkout-test-data.md; chiarimenti umani in chat</td>
+<td>Richiesta iniziale e risposta del 2026-10-20T16:06:16.298+02:00</td>
+</tr>
+<tr>
+<td>Data sources</td>
+<td>C:/Users/dquero/Downloads/Note per gli sviluppatori.md; docs/use-cases/test-data/checkout/checkout-test-data.md</td>
+<td>Allegati esplicitamente forniti nella stessa conversazione</td>
+</tr>
+<tr>
+<td>Feature paths</td>
+<td>docs/use-cases/features/checkout/FEAT_001_Checkout_Attivazione_Pagamento.feature; docs/use-cases/features/checkout/FEAT_002_Checkout_Errori_Avviso.feature</td>
+<td>Cartella confermata nella richiesta iniziale; nomi descrittivi scelti secondo il profilo</td>
+</tr>
+<tr>
+<td>Run directory</td>
+<td>docs/use-cases/workflow-runs/checkout-traduzione/UC-CHECKOUT-001/20261020-01/</td>
+<td>Punto 1 della risposta umana del 2026-10-20T16:06:16.298+02:00: ok; comprende UAT e revisione v1</td>
+</tr>
+<tr>
+<td>Gherkin profile inputs</td>
+<td>.github/profiles/gherkin.profile.yaml; tracking 0123456789; suite checkout</td>
+<td>Punto 2 della risposta umana del 2026-10-20T16:06:16.298+02:00</td>
+</tr>
+<tr>
+<td>Source exclusions</td>
+<td>Nessuna esplorazione o lettura di src o docs/use-cases/features, incluse le nuove feature; nessun contenuto eseguibile come evidenza</td>
+<td>Divieto esplicito nella richiesta iniziale</td>
+</tr>
+<tr>
+<td>Functional boundary</td>
+<td>Non testare azioni successive all'uscita da pagoPA; tempi degli errori interpretati come massimi</td>
+<td>Punto 3 della risposta umana del 2026-10-20T16:06:16.298+02:00</td>
+</tr>
+</tbody>
+</table>
+<h2 id="scenario-inventory">Scenario inventory</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario id</th>
+<th>UC elements</th>
+<th>Behaviour to cover</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SC-001</td>
+<td>FP 1-6; AC-01; postcondizione</td>
+<td>Percorso carta, dettagli carta, scelta PSP e avvio del pagamento; successo fuori perimetro</td>
+</tr>
+<tr>
+<td>SC-002</td>
+<td>AF-01; AC-02; FP 1-2, 5-6; postcondizione</td>
+<td>PayPal con scelta PSP e avvio del pagamento; successo fuori perimetro</td>
+</tr>
+<tr>
+<td>SC-003</td>
+<td>AF-02; AC-03; FP 1-2, 6; postcondizione</td>
+<td>Google Pay senza scelta iniziale PSP e avvio del pagamento; successo fuori perimetro</td>
+</tr>
+<tr>
+<td>SC-004</td>
+<td>AF-03; AC-04; FP 1-2, 5-6; postcondizione</td>
+<td>Apple Pay con scelta PSP e avvio del pagamento; successo fuori perimetro</td>
+</tr>
+<tr>
+<td>SC-005</td>
+<td>AF-04; AC-05; FP 1-2, 5-6; postcondizione</td>
+<td>BANCOMAT Pay con scelta PSP e avvio del pagamento; successo fuori perimetro</td>
+</tr>
+<tr>
+<td>SC-006</td>
+<td>AF-05; AC-06; FP 1-2, 6; postcondizione</td>
+<td>Conto iCONTO senza scelta iniziale PSP e avvio del pagamento; successo fuori perimetro</td>
+</tr>
+<tr>
+<td>SC-007</td>
+<td>AF-06; AC-07; FP 1-2, 6; postcondizione</td>
+<td>Conto Intesa Sanpaolo senza scelta iniziale PSP e avvio del pagamento; successo fuori perimetro</td>
+</tr>
+<tr>
+<td>SC-008</td>
+<td>AF-07; AC-08; FP 1-2, 6; postcondizione</td>
+<td>Fabrick Pay By Bank senza scelta iniziale PSP e avvio del pagamento; successo fuori perimetro</td>
+</tr>
+<tr>
+<td>SC-009</td>
+<td>AF-08; AC-09; FP 1-2, 6; postcondizione</td>
+<td>Klarna senza scelta iniziale PSP e avvio del pagamento; successo fuori perimetro</td>
+</tr>
+<tr>
+<td>SC-010</td>
+<td>AF-09; AC-10; FP 1-2, 5-6; postcondizione</td>
+<td>MyBank con scelta PSP e avvio del pagamento; successo fuori perimetro</td>
+</tr>
+<tr>
+<td>SC-011</td>
+<td>EF-01; AC-11; AC-12; AC-13</td>
+<td>Avviso sconosciuto: titolo e corpo documentati, entro 5 secondi da Continua</td>
+</tr>
+<tr>
+<td>SC-012</td>
+<td>EF-01; AC-11; AC-12; AC-13</td>
+<td>Avviso scaduto: titolo e corpo documentati, entro 60 secondi; variante sostenuta dal catalogo allegato, stesse verifiche di EF-01</td>
+</tr>
+<tr>
+<td>SC-013</td>
+<td>EF-01; AC-11; AC-12; AC-13</td>
+<td>Timeout stazione: titolo e corpo documentati, entro 60 secondi; variante sostenuta dal catalogo allegato, stesse verifiche di EF-01</td>
+</tr>
+<tr>
+<td>SC-014</td>
+<td>EF-01; AC-11; AC-12; AC-13</td>
+<td>Avviso duplicato: titolo documentato, assenza di corpo, entro 5 secondi; variante sostenuta dal catalogo allegato, verifica di assenza distinta</td>
+</tr>
+<tr>
+<td>SC-015</td>
+<td>EF-01; AC-11; AC-12; AC-13</td>
+<td>Ente irraggiungibile: variante documentale esclusa dal test su richiesta umana, tempo e corpo esatto mancanti</td>
+</tr>
+</tbody>
+</table>
+<h2 id="artifacts">Artifacts</h2>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Producer skill</th>
+<th>Path</th>
+<th>Revision</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>context</td>
+<td>uc-scenario-context</td>
+<td>docs/use-cases/workflow-runs/checkout-traduzione/UC-CHECKOUT-001/20261020-01/01-context.md</td>
+<td>1</td>
+<td>incomplete</td>
+</tr>
+<tr>
+<td>test-data</td>
+<td>uc-test-data</td>
+<td>docs/use-cases/workflow-runs/checkout-traduzione/UC-CHECKOUT-001/20261020-01/02-test-data.md</td>
+<td>1</td>
+<td>incomplete</td>
+</tr>
+<tr>
+<td>feature-report</td>
+<td>uc-to-feature</td>
+<td>docs/use-cases/workflow-runs/checkout-traduzione/UC-CHECKOUT-001/20261020-01/03-feature-report.md</td>
+<td>1</td>
+<td>incomplete</td>
+</tr>
+<tr>
+<td>feature</td>
+<td>uc-to-feature</td>
+<td>docs/use-cases/features/checkout/FEAT_001_Checkout_Attivazione_Pagamento.feature</td>
+<td>1</td>
+<td>incomplete</td>
+</tr>
+<tr>
+<td>feature</td>
+<td>uc-to-feature</td>
+<td>docs/use-cases/features/checkout/FEAT_002_Checkout_Errori_Avviso.feature</td>
+<td>1</td>
+<td>incomplete</td>
+</tr>
+</tbody>
+</table>
+<h2 id="questions">Questions</h2>
+<table>
+<thead>
+<tr>
+<th>Question id</th>
+<th>Stage</th>
+<th>Question</th>
+<th>Decision and scope</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q-001</td>
+<td>initialization</td>
+<td>Identita, revisione, ambiente e directory della nuova run?</td>
+<td>Confermati punto 1 della risposta umana del 2026-10-20T16:06:16.298+02:00</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-002</td>
+<td>translation</td>
+<td>Numero di tracciamento obbligatorio?</td>
+<td>0123456789, punto 2 della stessa risposta</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-003</td>
+<td>context</td>
+<td>Perimetro dopo l'uscita da pagoPA?</td>
+<td>Le azioni successive non vanno testate; non equiparare il reindirizzamento al pagamento completato o al messaggio di successo, punto 3 della stessa risposta</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-004</td>
+<td>context</td>
+<td>Semantica dei tempi degli errori?</td>
+<td>Tempo massimo, punto 3 della stessa risposta; istante iniziale ancora da confermare in Q-005</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-005</td>
+<td>context</td>
+<td>Il massimo decorre dalla pressione di Continua dopo l'inserimento dell'avviso?</td>
+<td>Si, punto 1 risposta umana del 2026-10-20T16:41:36.150+02:00</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-006</td>
+<td>context</td>
+<td>I testi candidati sono autorizzati come valori attesi per questa bozza? Come trattare irraggiungibile?</td>
+<td>Confermata proposta dei quattro errori; quello con copertura mancante non va incluso nel test, punto 2 stessa risposta. Valori non verificati sulla versione applicativa</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-007</td>
+<td>test-data</td>
+<td>Usare i valori documentati ma non verificati con warning, oppure TODO?</td>
+<td>Si ai dati documentati, compresi sintetici, come non verificati con warning e senza generarne altri, punto 3 stessa risposta</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-008</td>
+<td>test-data</td>
+<td>Quale PSP selezionare per Apple Pay, BANCOMAT Pay e MyBank?</td>
+<td>Nessun candidato specifico nel catalogo fornito, unico record presente nella directory dati; D-005 resta TODO nei tre casi, non si estende l'ID PayPal ad altri metodi</td>
+<td>open</td>
+</tr>
+</tbody>
+</table>
+<h2 id="history">History</h2>
+<table>
+<thead>
+<tr>
+<th>Timestamp</th>
+<th>Skill or human</th>
+<th>Action</th>
+<th>Output path and revision</th>
+<th>Invalidated outputs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-10-20T16:06:16.298+02:00</td>
+<td>human</td>
+<td>Confermati nuova run, revisione v1, UAT, tracking, semantica massima dei tempi e confine prima delle azioni esterne; fornito catalogo checkout</td>
+<td>Input della run</td>
+<td>Nessuno</td>
+</tr>
+<tr>
+<td>2026-10-20T16:06:16.298+02:00</td>
+<td>uc-to-feature</td>
+<td>Inizializzazione del registro e inventario da UC; letti allegati, policy, profilo e template; nessuna lettura dei percorsi vietati; nessun test eseguito; domande dedicate non disponibili nell'harness, chiarimenti richiesti in chat</td>
+<td>docs/use-cases/workflow-runs/checkout-traduzione/UC-CHECKOUT-001/20261020-01/00-run.md revision 1</td>
+<td>Nessuno</td>
+</tr>
+<tr>
+<td>2026-10-20T16:41:36.150+02:00</td>
+<td>human</td>
+<td>Confermati origine dei massimi, quattro errori e dati candidati con warning; escluso ente irraggiungibile</td>
+<td>Q-005, Q-006, Q-007</td>
+<td>Nessuno</td>
+</tr>
+<tr>
+<td>2026-10-20T16:41:36.150+02:00</td>
+<td>uc-scenario-context</td>
+<td>Salvato contesto, definiti F/O/D, registrate varianti SC-012-SC-015. Nessun report o feature preesistente da riprendere; le risposte completano l'inizializzazione della stessa run</td>
+<td>docs/use-cases/workflow-runs/checkout-traduzione/UC-CHECKOUT-001/20261020-01/01-context.md revision 1; 00-run.md revision 2</td>
+<td>Nessuno</td>
+</tr>
+<tr>
+<td>2026-10-20T16:41:36.150+02:00</td>
+<td>uc-test-data</td>
+<td>Consumato contesto revision 1; completata ricerca locale nei soli dati autorizzati; salvate 14 combinazioni, ammissione e warning; tre PSP irrisolti in Q-008. Nessun catalogo modificato, nessun nuovo valore generato</td>
+<td>docs/use-cases/workflow-runs/checkout-traduzione/UC-CHECKOUT-001/20261020-01/02-test-data.md revision 1; 00-run.md revision 3</td>
+<td>Nessuno</td>
+</tr>
+<tr>
+<td>2026-10-20T16:41:36.150+02:00</td>
+<td>uc-to-feature</td>
+<td>Validati gli input reali e i report revision 1; scritte due feature con 5 definizioni/14 casi e warning. Escluso SC-015. Salvato report finale incompleto con copertura e controlli statici; nessuna lettura delle feature, nessun test. Registro draft</td>
+<td>docs/use-cases/features/checkout/FEAT_001_Checkout_Attivazione_Pagamento.feature revision 1; docs/use-cases/features/checkout/FEAT_002_Checkout_Errori_Avviso.feature revision 1; docs/use-cases/workflow-runs/checkout-traduzione/UC-CHECKOUT-001/20261020-01/03-feature-report.md revision 1; 00-run.md revision 4</td>
+<td>Nessuno</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../../..", "features": [], "search": "../../../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,1292 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="PagoPA">
+      
+      
+        <link rel="canonical" href="https://pagopa.github.io/pagopa-platform-integration-test/use-cases/workflow-runs/checkout-traduzione/UC-CHECKOUT-001/20261020-01/01-context/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>UC - Functional context - PagoPA platform integration test</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#uc-functional-context" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../../.." title="PagoPA platform integration test" class="md-header__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PagoPA platform integration test
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              UC - Functional context
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../../.." title="PagoPA platform integration test" class="md-nav__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PagoPA platform integration test
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/ebollo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ebollo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/tas_pass/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_pass
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/wisp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    wisp
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/tas_mixed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_mixed
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/fdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/fdr3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/cup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#functional-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functional evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mapping
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oracles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Oracles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data requirements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#readiness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Readiness
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="uc-functional-context">UC - Functional context</h1>
+<h2 id="sources">Sources</h2>
+<table>
+<thead>
+<tr>
+<th>Source id</th>
+<th>Locator</th>
+<th>Section or page</th>
+<th>Retrieved at</th>
+<th>Environment and version</th>
+<th>Admission</th>
+<th>Human decision reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S-001</td>
+<td>C:/Users/dquero/Downloads/UC-CHECKOUT-001 - Attivazione pagamento Checkout.txt</td>
+<td>UC completo, 53 righe</td>
+<td>2026-10-20</td>
+<td>uat, revisione v1 confermata</td>
+<td>provided</td>
+<td>Richiesta iniziale; conferma run del 2026-10-20T16:06:16.298+02:00</td>
+</tr>
+<tr>
+<td>S-002</td>
+<td>C:/Users/dquero/Downloads/Checkout PagoPA - Interfaccia Utente e Comportamento Funzionale.md</td>
+<td>Home Page; Inserimento Dati Avviso; Pagina Riepilogo Dati Pagamento; Pagina di inserimento Email; tre famiglie di flussi</td>
+<td>2026-10-20</td>
+<td>uat, versione applicativa unknown</td>
+<td>provided</td>
+<td>Allegato iniziale</td>
+</tr>
+<tr>
+<td>S-003</td>
+<td>C:/Users/dquero/Downloads/Note per gli sviluppatori.md</td>
+<td>Codici Avviso; CF Ente Creditore</td>
+<td>2026-10-20</td>
+<td>Ambiente test, versione unknown</td>
+<td>provided</td>
+<td>Allegato iniziale</td>
+</tr>
+<tr>
+<td>S-004</td>
+<td>docs/use-cases/test-data/checkout/checkout-test-data.md</td>
+<td>Scopo; Avvisi per prove di errore; Messaggi associati agli errori; dati e percorsi</td>
+<td>2026-10-20</td>
+<td>dev e uat; configurazione e corrispondenza alla versione da verificare</td>
+<td>provided</td>
+<td>Allegato del 2026-10-20T16:06:16.298+02:00; valori candidati autorizzati il 2026-10-20T16:41:36.150+02:00</td>
+</tr>
+<tr>
+<td>S-005</td>
+<td>Chat della presente sessione, risposte del 2026-10-20T16:06:16.298+02:00 e 2026-10-20T16:41:36.150+02:00</td>
+<td>Punti 1-3 delle risposte ai chiarimenti</td>
+<td>2026-10-20</td>
+<td>uat, scope di questa prova</td>
+<td>provided</td>
+<td>Non testare azioni esterne; tempi massimi dal clic Continua; escludere irraggiungibile; usare dati documentati non verificati con warning, senza generare altri dati</td>
+</tr>
+</tbody>
+</table>
+<h2 id="functional-evidence">Functional evidence</h2>
+<table>
+<thead>
+<tr>
+<th>Evidence id</th>
+<th>Scenario id</th>
+<th>UC element</th>
+<th>Question</th>
+<th>Supported detail</th>
+<th>Source id and passage</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F-001</td>
+<td>SC-001-SC-014</td>
+<td>Precondizioni</td>
+<td>Da dove parte il percorso?</td>
+<td>Checkout aperto in italiano; homepage UAT https://uat.checkout.pagopa.it/; ogni caso riparte autonomamente dalla homepage</td>
+<td>S-001 Precondizioni; S-002 Home Page</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>F-002</td>
+<td>SC-001-SC-014</td>
+<td>FP 1; EF-01</td>
+<td>Come si invia un avviso?</td>
+<td>Scegliere inserimento manuale, compilare codice avviso di 18 cifre e CF EC di 11 cifre, premere Continua; per dati validi segue il riepilogo dell'avviso</td>
+<td>S-002 Inserimento Dati Avviso; S-003 CF EC</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>F-003</td>
+<td>SC-001-SC-010</td>
+<td>FP 1-2</td>
+<td>Come si prosegue ai metodi?</td>
+<td>Dal riepilogo premere Vai al pagamento; inserire lo stesso indirizzo valido in Indirizzo email e Ripeti di nuovo; premere Continua</td>
+<td>S-002 Pagina Riepilogo Dati Pagamento; Pagina di inserimento Email</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>F-004</td>
+<td>SC-001</td>
+<td>FP 3-5</td>
+<td>Quale percorso distingue la carta?</td>
+<td>Scegliere carta; compilare numero, scadenza, CVV e Intestata a; Continua; scegliere PSP con radio button; Continua</td>
+<td>S-001 FP 3-5; S-002 Flusso Carta di Credito</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>F-005</td>
+<td>SC-002, SC-004, SC-005, SC-010</td>
+<td>AF-01, AF-03, AF-04, AF-09</td>
+<td>Quali alternative richiedono PSP?</td>
+<td>PayPal, Apple Pay, BANCOMAT Pay e MyBank saltano i dettagli carta e raggiungono lista PSP; selezione radio button e Continua portano al riepilogo</td>
+<td>S-001 AF indicati; S-002 Flusso PayPal e coincidenze dichiarate</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>F-006</td>
+<td>SC-003, SC-006-SC-009</td>
+<td>AF-02, AF-05-AF-08</td>
+<td>Quali alternative saltano la lista PSP iniziale?</td>
+<td>Google Pay, Conto iCONTO, Conto Intesa Sanpaolo, Fabrick Pay By Bank e Klarna portano direttamente al riepilogo</td>
+<td>S-001 AF indicati; S-002 Flusso Google Pay e coincidenze dichiarate</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>F-007</td>
+<td>SC-001-SC-010</td>
+<td>FP 6; conclusione AF</td>
+<td>Quale azione e quale esito sono nel perimetro?</td>
+<td>Premere il pulsante Paga con il totale visualizzato; il browser esce dal dominio Checkout. Fermare il test al reindirizzamento, senza interazioni con siti esterni</td>
+<td>S-002 pulsante Paga xxxx nei tre flussi; S-005 punto 3 prima risposta</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>F-008</td>
+<td>SC-001-SC-010</td>
+<td>AC-01-AC-10; postcondizione</td>
+<td>Il redirect dimostra pagamento completato?</td>
+<td>No: non e documentato ne verificato il messaggio di successo entro il confine concordato. Conservare gli AC come parziali e la postcondizione come non coperta; nessuna asserzione di successo inventata</td>
+<td>S-001 AC e postcondizione; S-005 esclusione delle azioni esterne</td>
+<td>unresolved</td>
+</tr>
+<tr>
+<td>F-009</td>
+<td>SC-011-SC-014</td>
+<td>EF-01; AC-11-AC-13</td>
+<td>Quali varianti negative sono documentate?</td>
+<td>Sconosciuto, scaduto, timeout e duplicato hanno avvisi documentati, titolo, corpo o sua assenza e tempi numerici. Sono varianti dello stesso EF, non nuove AF</td>
+<td>S-004 Avvisi per prove di errore; Messaggi associati agli errori; S-005 conferma punto 2 ultima risposta</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>F-010</td>
+<td>SC-011-SC-014</td>
+<td>AC-13</td>
+<td>Come interpretare e misurare il tempo?</td>
+<td>Massimo inclusivo di 5 o 60 secondi dalla pressione di Continua dopo compilazione avviso e CF; verificare comparsa del messaggio entro il limite, senza sleep fisso e senza considerarlo SLA di produzione</td>
+<td>S-004 tempi indicativi; S-005 massimi e origine temporale confermati ai punti 1-2 ultima risposta</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>F-011</td>
+<td>SC-015</td>
+<td>EF-01; AC-11-AC-13</td>
+<td>Includere ente irraggiungibile?</td>
+<td>Escluso dal test su istruzione umana: mancano tempo massimo e corpo esatto, il testo Codice di errore per l'assistenza non definisce il codice concreto</td>
+<td>S-004 riga ente irraggiungibile; S-005 punto 2 ultima risposta</td>
+<td>unresolved</td>
+</tr>
+<tr>
+<td>F-012</td>
+<td>SC-001-SC-014</td>
+<td>Dati e prerequisiti</td>
+<td>Quali dati possono essere usati?</td>
+<td>Ammessi i dati gia documentati, anche sintetici, come non verificati con warning. Nessuna generazione aggiuntiva; ammissione non prova disponibilita di avvisi, metodi, carte o PSP</td>
+<td>S-004 Scopo e condizioni; S-005 punto 3 ultima risposta</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>F-013</td>
+<td>SC-001-SC-010</td>
+<td>FP 3; AF-02; AF-05; AF-07</td>
+<td>Come gestire i nomi?</td>
+<td>GPay e Google Pay indicano il medesimo percorso citato; iCONTO/iConto e Fabrick/Fabrik sono grafie nelle fonti per i flussi esplicitamente associati. Si mantiene il nome UC, salvo Google Pay per esteso; non si pretende corrispondenza letterale di etichette UI</td>
+<td>S-001 nomi dei metodi; S-002 intestazioni e liste delle coincidenze</td>
+<td>supported</td>
+</tr>
+</tbody>
+</table>
+<h2 id="mapping">Mapping</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario id</th>
+<th>UC step</th>
+<th>Proposed action or check</th>
+<th>Evidence ids</th>
+<th>Reason for granularity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SC-001-SC-014</td>
+<td>Precondizioni</td>
+<td>Background con homepage UAT aperta e lingua italiana</td>
+<td>F-001</td>
+<td>Solo stato iniziale; nessun percorso operativo trasferito in Given</td>
+</tr>
+<tr>
+<td>SC-001-SC-010</td>
+<td>FP 1</td>
+<td>When sceglie inserimento manuale; And compila avviso e CF; And preme Continua; And preme Vai al pagamento nel riepilogo</td>
+<td>F-002, F-003</td>
+<td>La sequenza pagina input, invio e prosecuzione da riepilogo e prescritta dalla documentazione; i due campi dell'avviso restano un inserimento coeso</td>
+</tr>
+<tr>
+<td>SC-001-SC-010</td>
+<td>FP 2</td>
+<td>And compila i due campi email con lo stesso valore; And preme Continua nella pagina email</td>
+<td>F-003</td>
+<td>I due indirizzi devono coincidere; il click e il trigger separato per accedere ai metodi, non una verifica nascosta</td>
+</tr>
+<tr>
+<td>SC-001</td>
+<td>FP 3-4</td>
+<td>And sceglie carta; And compila i 4 dettagli in una data table; And preme Continua nella pagina carta</td>
+<td>F-004</td>
+<td>La scelta cambia percorso; i 4 campi non hanno rami indipendenti nel caso di pagamento e restano coesi</td>
+</tr>
+<tr>
+<td>SC-001, SC-002, SC-004, SC-005, SC-010</td>
+<td>FP 5 e AF con PSP</td>
+<td>And seleziona il PSP con radio button; And preme Continua nella lista PSP</td>
+<td>F-004, F-005</td>
+<td>Selezione necessaria per abilitare la prosecuzione; nessuna chiamata tecnica o codice PSP confuso col nome</td>
+</tr>
+<tr>
+<td>SC-003, SC-006-SC-009</td>
+<td>AF senza PSP iniziale</td>
+<td>And sceglie il metodo; And preme Paga nel riepilogo</td>
+<td>F-006, F-007</td>
+<td>Nessuna selezione PSP o compilazione carta inventata</td>
+</tr>
+<tr>
+<td>SC-001-SC-010</td>
+<td>FP 6 e AF</td>
+<td>And preme il pulsante Paga relativo al totale; Then browser fuori dal dominio del Checkout</td>
+<td>F-007, F-008</td>
+<td>Una sola attivazione per caso; il percorso completo in When mantiene la storia rilevante. Nessun successo implicito</td>
+</tr>
+<tr>
+<td>SC-011-SC-014</td>
+<td>EF-01 al passo 1</td>
+<td>When inserimento manuale; And avviso negativo e CF; And Continua; Then messaggio entro limite; And titolo; And corpo o assenza di descrizione</td>
+<td>F-002, F-009, F-010</td>
+<td>Termina all'errore senza email o metodi. I 3 AC compatibili sono verifiche dello stesso esito; duplicato separato per il controllo di assenza del corpo</td>
+</tr>
+<tr>
+<td>SC-015</td>
+<td>EF-01 variante documentale</td>
+<td>Nessuno step generato</td>
+<td>F-011</td>
+<td>Esclusione richiesta, senza sostituire oracle mancanti con TODO dati</td>
+</tr>
+</tbody>
+</table>
+<h2 id="oracles">Oracles</h2>
+<table>
+<thead>
+<tr>
+<th>Oracle id</th>
+<th>Scenario id</th>
+<th>AC or postcondition</th>
+<th>Property and expected value</th>
+<th>Timing semantics</th>
+<th>Evidence ids</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O-001</td>
+<td>SC-001-SC-010</td>
+<td>FP 6 e AF; S-002 pulsante Paga xxxx</td>
+<td>Reindirizzamento al di fuori del dominio uat.checkout.pagopa.it, senza ulteriori azioni del test</td>
+<td>not-applicable</td>
+<td>F-007</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>O-002</td>
+<td>SC-001-SC-010</td>
+<td>AC-01-AC-10; postcondizione</td>
+<td>Messaggio di successo e pagamento completato: non verificabili con il perimetro adottato; non applicati nelle feature</td>
+<td>not-applicable</td>
+<td>F-008</td>
+<td>unresolved</td>
+</tr>
+<tr>
+<td>O-003</td>
+<td>SC-011</td>
+<td>AC-11 (EF-01)</td>
+<td>Titolo: Non riusciamo a trovare l’avviso</td>
+<td>not-applicable</td>
+<td>F-009</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>O-004</td>
+<td>SC-011</td>
+<td>AC-12 (EF-01)</td>
+<td>Corpo: L'avviso potrebbe essere stato già pagato. Per ricevere assistenza, contatta l’Ente Creditore.</td>
+<td>not-applicable</td>
+<td>F-009</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>O-005</td>
+<td>SC-011</td>
+<td>AC-13 (EF-01)</td>
+<td>Comparsa entro 5 secondi dal clic Continua</td>
+<td>maximum</td>
+<td>F-010</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>O-006</td>
+<td>SC-012</td>
+<td>AC-11 (EF-01)</td>
+<td>Titolo: L’avviso è scaduto e non è più possibile pagarlo</td>
+<td>not-applicable</td>
+<td>F-009</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>O-007</td>
+<td>SC-012</td>
+<td>AC-12 (EF-01)</td>
+<td>Corpo: Contatta l’Ente per maggiori informazioni.</td>
+<td>not-applicable</td>
+<td>F-009</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>O-008</td>
+<td>SC-012</td>
+<td>AC-13 (EF-01)</td>
+<td>Comparsa entro 60 secondi dal clic Continua</td>
+<td>maximum</td>
+<td>F-010</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>O-009</td>
+<td>SC-013</td>
+<td>AC-11 (EF-01)</td>
+<td>Titolo: Si è verificato un errore imprevisto</td>
+<td>not-applicable</td>
+<td>F-009</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>O-010</td>
+<td>SC-013</td>
+<td>AC-12 (EF-01)</td>
+<td>Corpo: Riprova, oppure contatta l’assistenza</td>
+<td>not-applicable</td>
+<td>F-009</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>O-011</td>
+<td>SC-013</td>
+<td>AC-13 (EF-01)</td>
+<td>Comparsa entro 60 secondi dal clic Continua</td>
+<td>maximum</td>
+<td>F-010</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>O-012</td>
+<td>SC-014</td>
+<td>AC-11 (EF-01)</td>
+<td>Titolo: Questo avviso è stato già pagato!</td>
+<td>not-applicable</td>
+<td>F-009</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>O-013</td>
+<td>SC-014</td>
+<td>AC-12 (EF-01)</td>
+<td>Assenza di testo descrittivo aggiuntivo, non stringa letterale Vuoto</td>
+<td>not-applicable</td>
+<td>F-009</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>O-014</td>
+<td>SC-014</td>
+<td>AC-13 (EF-01)</td>
+<td>Comparsa entro 5 secondi dal clic Continua</td>
+<td>maximum</td>
+<td>F-010</td>
+<td>supported</td>
+</tr>
+<tr>
+<td>O-015</td>
+<td>SC-015</td>
+<td>AC-11-AC-13 (EF-01)</td>
+<td>Variante irraggiungibile esclusa: tempo e corpo esatto mancanti; titolo documentato ma non testato isolatamente</td>
+<td>unknown</td>
+<td>F-011</td>
+<td>unresolved</td>
+</tr>
+</tbody>
+</table>
+<h2 id="data-requirements">Data requirements</h2>
+<table>
+<thead>
+<tr>
+<th>Data id</th>
+<th>Scenario id</th>
+<th>Parameter and meaning</th>
+<th>Constraints and relationships</th>
+<th>Required entity state</th>
+<th>Evidence ids</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-001</td>
+<td>SC-001-SC-010</td>
+<td>Codice avviso valido</td>
+<td>Stringa di 18 cifre, associata al CF D-002; nessuna generazione autonoma</td>
+<td>Disponibile, non gia pagato, utilizzabile per il percorso scelto; preparazione indipendente per ciascun caso</td>
+<td>F-002, F-012</td>
+</tr>
+<tr>
+<td>D-002</td>
+<td>SC-001-SC-014</td>
+<td>CF ente creditore di test</td>
+<td>Stringa di 11 cifre; non CF personale; abbinato agli avvisi</td>
+<td>Ente di test configurato in UAT</td>
+<td>F-002, F-009, F-012</td>
+</tr>
+<tr>
+<td>D-003</td>
+<td>SC-001-SC-010</td>
+<td>Email e conferma</td>
+<td>Un valore valido copiato nei due campi; non si testa ricezione email</td>
+<td>Utilizzo autorizzato per compilazione; nessun accesso alla casella richiesto</td>
+<td>F-003, F-012</td>
+</tr>
+<tr>
+<td>D-004</td>
+<td>SC-001</td>
+<td>Carta di test, oggetto con PAN, scadenza, CVV e intestatario</td>
+<td>Tutti e 4 i campi, PAN senza spazi, scadenza futura, carta coerente con PSP D-005</td>
+<td>Accettata dal gateway in UAT; non carta reale</td>
+<td>F-004, F-012</td>
+</tr>
+<tr>
+<td>D-005</td>
+<td>SC-001, SC-002, SC-004, SC-005, SC-010</td>
+<td>PSP selezionabile per il metodo corrente</td>
+<td>Nome o identificativo documentato, radio button corrispondente; non confondere nome e ID; compatibilita con D-004 per carta</td>
+<td>PSP abilitato nella lista per il metodo e l'avviso</td>
+<td>F-004, F-005, F-012</td>
+</tr>
+<tr>
+<td>D-006</td>
+<td>SC-001-SC-010</td>
+<td>Disponibilita del metodo di pagamento</td>
+<td>Metodo indicato nello SC; nomi funzionali, non codici tecnici inventati</td>
+<td>Metodo abilitato e selezionabile in UAT</td>
+<td>F-004, F-005, F-006, F-012, F-013</td>
+</tr>
+<tr>
+<td>D-007</td>
+<td>SC-011-SC-014</td>
+<td>Avviso negativo per il tipo di errore</td>
+<td>18 cifre; SC-011 sconosciuto, SC-012 scaduto, SC-013 timeout, SC-014 duplicato; CF D-002</td>
+<td>Mock configurato per l'errore corrispondente; non richiede un pagamento precedente eseguito dal test</td>
+<td>F-009, F-012</td>
+</tr>
+<tr>
+<td>D-008</td>
+<td>SC-001-SC-014</td>
+<td>Lingua della sessione</td>
+<td>Italiano, valore it; determina gli oracle testuali</td>
+<td>Configurazione italiana prima del flusso</td>
+<td>F-001, F-009</td>
+</tr>
+</tbody>
+</table>
+<h2 id="questions">Questions</h2>
+<table>
+<thead>
+<tr>
+<th>Question id</th>
+<th>Scenario id</th>
+<th>Missing detail or conflict</th>
+<th>Human decision and scope</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q-003</td>
+<td>SC-001-SC-010</td>
+<td>Successo richiesto dagli AC ma azioni esterne fuori perimetro</td>
+<td>Escluse le azioni dopo l'uscita; copertura positiva solo fino al redirect, senza assumere successo; risposta 2026-10-20T16:06:16.298+02:00</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-004</td>
+<td>SC-011-SC-014</td>
+<td>Fonte indica attese indicative, non limiti</td>
+<td>L'umano richiede massimi per questa prova; non e modifica dello SLA del prodotto</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-005</td>
+<td>SC-011-SC-014</td>
+<td>Origine della misura temporale</td>
+<td>Dal clic Continua dopo compilazione avviso e CF, punto 1 risposta 2026-10-20T16:41:36.150+02:00</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-006</td>
+<td>SC-011-SC-015</td>
+<td>Testi candidati e variante priva di oracle completi</td>
+<td>Confermata proposta dei 4 errori documentati; variante irraggiungibile non inclusa nel test, punto 2 stessa risposta</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-007</td>
+<td>SC-001-SC-014</td>
+<td>Idoneita e disponibilita dei dati</td>
+<td>Dati documentati autorizzati come non verificati con warning, nessuna generazione; punto 3 stessa risposta. Non e conferma live</td>
+<td>answered</td>
+</tr>
+</tbody>
+</table>
+<h2 id="readiness">Readiness</h2>
+<p>incomplete: i percorsi fino al redirect e i quattro errori hanno evidenza ammessa.
+Gli AC-01-AC-10 restano parziali e la postcondizione pagamento completato non
+coperta per il confine richiesto. SC-015 e escluso dal test per decisione umana.
+Il contesto definisce i nuovi SC-012-SC-015 come varianti documentali di EF-01,
+senza modificare lo UC. Gli oracle dei quattro errori sono valori attesi della
+bozza autorizzati, non osservazioni dell'applicazione. I dettagli carta restano
+un inserimento coeso; nessuna variante aggiunta solo per enumerare un catalogo.
+Nessun test, parser o verifica dell'ambiente eseguito. Nessuna fonte da src
+o dalla cartella features letta o esplorata. Nessuna lezione ACE attiva.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../../..", "features": [], "search": "../../../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

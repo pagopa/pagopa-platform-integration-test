@@ -1,0 +1,947 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="PagoPA">
+      
+      
+        <link rel="canonical" href="https://pagopa.github.io/pagopa-platform-integration-test/workflows/qa-closer/closure/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>QA closure workflow (ADR-08 through ADR-13) - PagoPA platform integration test</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#qa-closure-workflow-adr-08-through-adr-13" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="PagoPA platform integration test" class="md-header__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PagoPA platform integration test
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              QA closure workflow (ADR-08 through ADR-13)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="PagoPA platform integration test" class="md-nav__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PagoPA platform integration test
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/ebollo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ebollo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/tas_pass/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_pass
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/wisp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    wisp
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/tas_mixed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_mixed
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/fdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/fdr3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/cup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#closure-input-contract-adr-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Closure input contract (ADR-08)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#actions-and-approval-gates-adr-09-and-adr-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actions and approval gates (ADR-09 and ADR-10)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation-and-ignore-maintenance-adr-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation and ignore maintenance (ADR-11)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-only-markdown-reporting-adr-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error-only Markdown reporting (ADR-12)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ace-boundary-and-recovery-adr-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ACE boundary and recovery (ADR-13)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="qa-closure-workflow-adr-08-through-adr-13">QA closure workflow (ADR-08 through ADR-13)</h1>
+<p>QA-closer prepares documentation and performs only authorized publication actions.
+It does not run tests, fix code/features, choose a new branch, or capture ACE traces.
+Read the complete workflow before closure; stop if required inputs cannot be read.</p>
+<p>For a documentation-only assignment, use actual scoped inputs and perform only
+the requested README/ignore maintenance; runtime verification, a commit message
+and publication decisions are not prerequisites to saving authorized documentation.
+Use <code>not-applicable</code> where appropriate. This exception never authorizes Git
+publication or a standalone success report; publication still requires all
+applicable evidence/action gates below.</p>
+<h2 id="closure-input-contract-adr-08">Closure input contract (ADR-08)</h2>
+<p>The orchestrator supplies the following facts, using explicit <code>unknown</code> or
+<code>not-applicable</code> for missing evidence rather than invented success:</p>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Required content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Identity and scope</td>
+<td>Expected work branch; Jira key if known; current ACE request ID; UC identity if applicable; exact intended files and work type</td>
+</tr>
+<tr>
+<td>Verification</td>
+<td>Runner's exact command, suite/environment, time, branch/revision and relevant working-tree contents verified, exit status, passed/failed/error/skipped/undefined counts, exclusions and flaky findings</td>
+</tr>
+<tr>
+<td>Evidence</td>
+<td>Actual output/artifact/log paths or accessible references; what was not checked; whether verification covers all requested changes</td>
+</tr>
+<tr>
+<td>Documentation</td>
+<td>README assessment and its covered contents/scope, if already performed</td>
+</tr>
+<tr>
+<td>Publication plan</td>
+<td>Independent <code>commit</code>, <code>push</code> and <code>create_pr</code> decisions (<code>true</code>, <code>false</code> or unresolved), exact commit message, remote/head/base choices and PR inputs where applicable</td>
+</tr>
+<tr>
+<td>Prior closure state</td>
+<td>README assessment, error report, commit hash, push result and PR URL already produced, including errors or partial completion</td>
+</tr>
+</tbody>
+</table>
+<p>A larger test count or a previously failing test is not required for a legitimate
+update/refactor. Passing applicable checks of the intended changes is the normal
+publication gate. The runner supplies evidence, not just "all green".</p>
+<p>Before publication, compare evidence against the actual relevant current contents,
+including staged/unstaged inputs, configuration and dependencies. A matching HEAD
+alone does not establish freshness for uncommitted changes. Missing/unreadable
+artifacts, unexplained exclusions, zero executed tests, relevant undefined/skipped
+cases or unresolved flaky findings do not count as blanket success. Return gaps
+to the orchestrator for the runner or a scoped human decision; do not rerun tests
+or waive failures yourself. Do not demand the full repository suite when targeted
+verification adequately covers the authorized change.</p>
+<p>Reader-only documentation and ignore updates do not automatically invalidate
+test results; changes to execution inputs or executable code/configuration do.
+If relevant contents changed after verification, stop publication and request
+fresh evidence. Never relabel an unverified result as passed.</p>
+<h2 id="actions-and-approval-gates-adr-09-and-adr-10">Actions and approval gates (ADR-09 and ADR-10)</h2>
+<ol>
+<li>Check terminal type and repository state from the root using read-only Git
+   commands. Confirm the current branch is the expected work branch. Detached HEAD,
+   <code>main</code>, the repository default branch, or any unexpected branch blocks Git
+   publication. Report it; do not checkout, switch, create a branch or repair
+   routing inside QA-closer.</li>
+<li>Confirm exact intended files and preserve pre-existing staging/edits. Add only
+   relevant README/ignore outputs explicitly covered by closure. Unrelated staged
+   content blocks a commit until its scope is resolved; do not include it or
+   unstage it silently. Do not stage local reports or ignored files forcibly.</li>
+<li>Resolve each action independently through the dedicated question tool only
+   when needed. Reuse clear user authorizations; explicit refusal takes precedence.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>commit: true</code></td>
+<td>Create a scoped commit after the evidence gate, using the exact orchestrator message</td>
+</tr>
+<tr>
+<td><code>push: true</code></td>
+<td>Publish the authorized commits to the confirmed destination, after the evidence gate</td>
+</tr>
+<tr>
+<td><code>create_pr: true</code></td>
+<td>Open/reuse the authorized PR after the evidence gate and required publication</td>
+</tr>
+<tr>
+<td>Any explicit <code>false</code></td>
+<td>Skip that action; do not ask again to override a refusal</td>
+</tr>
+<tr>
+<td>Unresolved decision</td>
+<td>Ask before that action; test success does not supply consent</td>
+</tr>
+</tbody>
+</table>
+<p>A PR request can use an already published branch without a new commit or push.
+If a PR needs an unpublished commit but push is forbidden, report the dependency
+and stop that action; do not override the refusal. <code>create_pr: false</code> does not
+cancel an independently authorized commit/push. A no-push/commit-only restriction
+must be passed explicitly to the commit skill rather than relying on its default.</p>
+<ol>
+<li>Before a push, inspect outgoing commits as well as the current index: existing
+   commits can contain unrelated or unverified work. If their authorization or
+   verified scope is unclear, stop and resolve it. Recheck branch, destination,
+   relevant contents and approval before each publication action, including resume.</li>
+<li>Use <a href="../../../.github/skills/ppa-commit/SKILL.md">ppa-commit</a> as the Git procedure
+   source, passing the exact file scope, message and push restriction. Preserve the
+   subject/body and apply its required trailer policy. A message conflict is a
+   blocker, not permission to rewrite the orchestrator message.
+   For an authorized push-only action or retry of an existing commit, use only
+   the skill's push procedure; never invoke its commit/staging steps again.</li>
+<li>Use <a href="../../../.github/skills/ppa-pr/SKILL.md">ppa-pr</a> only when authorized. Preserve
+   reviewers, release labels, explicit source/target routing and PR template rules.
+   PR-body completion is not a standalone error report. Reuse existing PRs rather
+   than creating duplicates; do not silently edit an existing PR without permission.</li>
+</ol>
+<p>No merge, force push, amend, history rewriting, hook bypass, staging-all shortcut,
+secret publication or generated-output inclusion is authorized by closure.</p>
+<h2 id="documentation-and-ignore-maintenance-adr-11">Documentation and ignore maintenance (ADR-11)</h2>
+<p>Apply <a href="../../../.github/skills/ppa-readme/SKILL.md">ppa-readme</a> once for the current
+coherent change set, or reuse an assessment that actually covers its current
+contents. A new suite may need usage/location documentation; a fix may need a
+targeted correction or no README change. Correct obsolete material instead of
+appending duplicate suite sections. Report <code>no-update-needed</code> when appropriate.</p>
+<p>Inspect existing ignore rules only for new local/generated outputs from this
+work. Add a narrowly scoped rule only if needed; preserve existing rules and
+tracked files. Do not create or edit <code>.gitignore</code> merely because closure ran.
+Local ignored reports remain local; publication requires a separate authorized
+destination, not an automatic ignore exception.</p>
+<h2 id="error-only-markdown-reporting-adr-12">Error-only Markdown reporting (ADR-12)</h2>
+<p>Create or update a standalone closure report <strong>only for work on test suites with
+unresolved errors in the relevant evidence</strong>, including unresolved intermittent
+failures explicitly reported by the runner. Successful work, non-suite repository
+maintenance, a missing count increase, or a Git/PR/tool failure alone does not
+generate a suite report. Earlier failures resolved by current verified results
+do not require a new error report.</p>
+<ul>
+<li>Normal publication requires successful verification. With unresolved suite
+  errors, the orchestrator may request <strong>report-only</strong> closure: no commit, push
+  or PR through this path. A possible partial/failing-work publication requires
+  a separate explicit decision outside successful closure, not a warning bypass.</li>
+<li>First reuse the runner's relevant Markdown failure report when it already
+  documents the same evidence. Do not generate a duplicate for the same failure.
+  If a report is missing/incomplete, write or extend an agreed <code>.md</code> path under
+  <code>reports/</code>, preserving existing findings and recording the evidence used.</li>
+<li>Write in Italian: concise summary and counts, affected tests/files, actual
+  errors and limited traceback evidence, established/suspected cause distinguished,
+  attempts, remaining blockers and next steps. Do not invent execution or counts.
+  Unknown values remain unknown; unavailable evidence is an explicit limitation.</li>
+<li>No HTML/Allure generation or serving, Confluence templates/API, external
+  publication, or template lookup for a standalone report. The GitHub PR template
+  remains mandatory when creating a PR through ppa-pr.</li>
+<li>Use only actual runner artifacts; do not run tests to reconstruct a report.
+  Avoid secrets and personal data. A failed report write is an explicit partial
+  failure, not a saved report. Final chat status and ACE trace elements remain
+  required even when no standalone report is applicable.</li>
+</ul>
+<h2 id="ace-boundary-and-recovery-adr-13">ACE boundary and recovery (ADR-13)</h2>
+<p>The analyst/engineer/runner/closer return trace elements; the orchestrator owns
+capture and project privacy finalization. Do not create or edit ACE files here.
+ACE files are excluded from closure scope by default. Include only explicitly
+authorized trace files with actual evidence of successful privacy finalization
+for those contents; a filename or a human statement alone is not proof of a
+successful sanitization command. Raw or uncertain trace contents must not be
+staged, committed or published.</p>
+<p>The closer's own trace is captured after its result by the orchestrator. It
+need not be in the commit it describes. There is no recursive commit to include
+that trace and no second automatic publication after finalization.</p>
+<p>Return actual state before stopping. On resumption, verify recorded state using
+read-only Git/gh checks; do not infer success from an earlier attempted command.</p>
+<table>
+<thead>
+<tr>
+<th>Last verified state</th>
+<th>Resume behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No commit created</td>
+<td>Reconcile partial documentation/report writes, current scope, evidence and approval before retrying</td>
+</tr>
+<tr>
+<td>Commit created, push failed or not attempted</td>
+<td>Preserve the hash; retry only the authorized push, not a new commit</td>
+</tr>
+<tr>
+<td>Push verified, PR failed or not attempted</td>
+<td>Recheck authorization and existing PR, then perform only the needed PR step</td>
+</tr>
+<tr>
+<td>PR verified</td>
+<td>Return its actual metadata/URL; do not duplicate it</td>
+</tr>
+<tr>
+<td>Prior state cannot be established</td>
+<td>Report the uncertainty and ask before any potentially duplicate write</td>
+</tr>
+</tbody>
+</table>
+<p>The same approved actions may be retried only within unchanged scope/destination;
+new edits, commits, destinations or a later refusal require reassessment. Never
+amend to hide a failed step. New uncommitted work is not part of a prior commit
+and does not justify repeating the old closure blindly.</p>
+<h2 id="output">Output</h2>
+<p>Return a concise result to the orchestrator, not only the commit/PR skill's
+individual output:</p>
+<ul>
+<li>Closure mode and result: <code>completed</code>, <code>report-only</code>, <code>partial</code> or <code>blocked</code>;
+  verified evidence scope and unresolved issues.</li>
+<li>README assessment/changed sections; ignore changes or why unnecessary.</li>
+<li>Error report path actually saved/reused, or <code>not-applicable</code>; not a success report.</li>
+<li>Commit message/hash or explicit not-created/skipped; push destination/result
+  and PR URL/result, with failed, skipped and existing states distinguished.</li>
+<li>Next safe action for recovery, if any.</li>
+<li>Actual actions, checks, lesson IDs and friction for the current ACE request.</li>
+</ul>
+<p>Never claim an artifact, published branch, completed PR or passed test without
+its corresponding evidence.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

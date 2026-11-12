@@ -1,0 +1,1443 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="PagoPA">
+      
+      
+        <link rel="canonical" href="https://pagopa.github.io/pagopa-platform-integration-test/use-cases/test-data/checkout/checkout-test-data/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Checkout - raccolta dati di test - PagoPA platform integration test</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#checkout-raccolta-dati-di-test" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="PagoPA platform integration test" class="md-header__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PagoPA platform integration test
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Checkout - raccolta dati di test
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="PagoPA platform integration test" class="md-nav__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PagoPA platform integration test
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../components/ebollo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ebollo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../components/tas_pass/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_pass
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../components/wisp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    wisp
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../components/tas_mixed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_mixed
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../components/fdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../components/fdr3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../components/cup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scopo-e-condizioni-di-utilizzo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scopo e condizioni di utilizzo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ente-creditore-e-lingua" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ente creditore e lingua
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#codici-avviso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Codici avviso
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Codici avviso">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#avvisi-generabili-tramite-prefisso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Avvisi generabili tramite prefisso
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#avviso-completo-disponibile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Avviso completo disponibile
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#carte-di-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carte di test
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metodi-di-pagamento-e-psp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metodi di pagamento e PSP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Metodi di pagamento e PSP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#combinazioni-candidate-per-prove-di-pagamento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Combinazioni candidate per prove di pagamento
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#avvisi-per-prove-di-errore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Avvisi per prove di errore
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Avvisi per prove di errore">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#messaggi-associati-agli-errori" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Messaggi associati agli errori
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dati-per-validazione-dei-campi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dati per validazione dei campi
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#percorsi-e-dati-per-prove-dellinterfaccia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Percorsi e dati per prove dell'interfaccia
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Percorsi e dati per prove dell&#39;interfaccia">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coppie-per-prove-di-navigazione-indietro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coppie per prove di navigazione indietro
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#etichette-e-opzioni" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Etichette e opzioni
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="checkout-raccolta-dati-di-test">Checkout - raccolta dati di test</h1>
+<h2 id="scopo-e-condizioni-di-utilizzo">Scopo e condizioni di utilizzo</h2>
+<p>Raccolta di dati per provare il pagamento di un avviso, la selezione del
+prestatore di servizi di pagamento (PSP), la gestione degli errori, la
+validazione dei campi e la navigazione nel Checkout.</p>
+<p>Utilizzare questi dati esclusivamente in ambienti di test, mai in produzione.
+Tutti i dati di questo documento valgono indifferentemente per gli ambienti
+<strong>dev</strong> e <strong>uat</strong>: non occorrono valori diversi in base all'ambiente.
+La disponibilita di carte, PSP, metodi e comportamenti simulati dipende dalla
+configurazione dell'ambiente. Le associazioni PSP/carta e i dati negativi
+indicati come <strong>da verificare</strong> sono candidati di prova, non garanzie di esito.</p>
+<p>Non utilizzare dati personali o carte reali. Questa raccolta non contiene
+password o credenziali di accesso. Per le prove autenticate occorre disporre
+separatamente di un'utenza di test autorizzata.</p>
+<h2 id="ente-creditore-e-lingua">Ente creditore e lingua</h2>
+<table>
+<thead>
+<tr>
+<th>Dato</th>
+<th>Valore</th>
+<th>Significato e utilizzo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Codice fiscale ente creditore</td>
+<td><code>77777777777</code></td>
+<td>Identifica l'ente di test da abbinare al codice avviso per verificarne i dati e avviare il pagamento. E composto da 11 cifre e non va utilizzato come codice fiscale personale del pagatore.</td>
+</tr>
+<tr>
+<td>Lingua</td>
+<td><code>it</code></td>
+<td>Seleziona l'italiano per provare etichette, messaggi e interazioni del Checkout.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="codici-avviso">Codici avviso</h2>
+<h3 id="avvisi-generabili-tramite-prefisso">Avvisi generabili tramite prefisso</h3>
+<p>Nel mock di test, <strong>qualunque codice avviso numerico che inizi con uno dei
+prefissi seguenti e abbia 18 cifre totali e funzionante</strong> per la famiglia
+indicata. Il prefisso occupa 5 cifre: aggiungere quindi <strong>13 cifre arbitrarie
+da 0 a 9</strong>.</p>
+<p>Usare il CF ente <code>77777777777</code>. La regola riguarda l'avviso, non garantisce
+il completamento del pagamento con qualunque carta o PSP.</p>
+<table>
+<thead>
+<tr>
+<th>Prefisso</th>
+<th>Formato completo</th>
+<th>Famiglia di pagamento</th>
+<th>Possibile utilizzo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>30200</code></td>
+<td><code>^30200[0-9]{13}$</code></td>
+<td>Multibeneficiario, conti postali per entrambi i beneficiari</td>
+<td>Provare verifica, riepilogo e pagamento di avvisi con ripartizione tra beneficiari su conti postali.</td>
+</tr>
+<tr>
+<td><code>30201</code></td>
+<td><code>^30201[0-9]{13}$</code></td>
+<td>Multibeneficiario, primo conto postale e secondo bancario</td>
+<td>Provare pagamenti con beneficiari che utilizzano tipi di conto differenti.</td>
+</tr>
+<tr>
+<td><code>30202</code></td>
+<td><code>^30202[0-9]{13}$</code></td>
+<td>Multibeneficiario, primo conto bancario e secondo postale</td>
+<td>Provare la diversa ripartizione tra beneficiari e la selezione o l'ordinamento dei PSP compatibili.</td>
+</tr>
+</tbody>
+</table>
+<p>I formati sono espressioni regolari: <code>[0-9]{13}</code> significa esattamente
+13 cifre numeriche. Il codice completo va conservato come stringa, senza
+spazi, separatori o conversioni numeriche.</p>
+<p><strong>Riutilizzo:</strong> un avviso gia pagato non puo essere pagato nuovamente senza
+pulizia dell'ambiente. Generare un codice diverso oppure verificare che
+l'avviso scelto non sia gia stato pagato.</p>
+<h3 id="avviso-completo-disponibile">Avviso completo disponibile</h3>
+<table>
+<thead>
+<tr>
+<th>Codice avviso</th>
+<th>CF ente</th>
+<th>Significato e utilizzo</th>
+<th>Condizione</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>302042025112600001</code></td>
+<td><code>77777777777</code></td>
+<td>Codice di 18 cifre della famiglia <code>30204</code>, monobeneficiario; utilizzabile come candidato per inserimento dati, riepilogo e navigazione del flusso.</td>
+<td>Verificare disponibilita e stato del pagamento nell'ambiente prima dell'uso.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="carte-di-test">Carte di test</h2>
+<p>Il <strong>PAN</strong> e il numero della carta; la <strong>scadenza</strong> e espressa come mese/anno
+(<code>MM/AA</code>); il <strong>CVV</strong> e il codice di sicurezza; l'<strong>intestatario carta</strong>
+corrisponde al campo "Intestata a". I dati per compilare ciascuna carta
+comprendono tutti e quattro i campi, riportati insieme nella tabella.</p>
+<table>
+<thead>
+<tr>
+<th>Circuito</th>
+<th>PAN</th>
+<th>Scadenza</th>
+<th>CVV</th>
+<th>Intestatario carta</th>
+<th>Possibile utilizzo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mastercard</td>
+<td><code>5255000260000014</code></td>
+<td><code>12/30</code></td>
+<td><code>123</code></td>
+<td><code>Test test</code></td>
+<td>Inserimento dati carta e prove di pagamento NPG con un PSP compatibile, tra cui Postepay e Worldline.</td>
+</tr>
+<tr>
+<td>Visa</td>
+<td><code>4242424242424242</code></td>
+<td><code>12/30</code></td>
+<td><code>123</code></td>
+<td><code>Test test</code></td>
+<td>Inserimento dati carta e prove di pagamento NPG con Worldpay o Worldline, secondo la configurazione disponibile.</td>
+</tr>
+</tbody>
+</table>
+<p>Inserire i PAN senza spazi. La scadenza deve essere ancora futura al momento
+della prova. La compatibilita di una carta non conferma automaticamente
+disponibilita del PSP o buon esito dell'autorizzazione.
+L'intestatario <code>Test test</code> e un nome sintetico per compilare il campo senza
+usare dati personali; resta da verificarne l'accettazione con il gateway
+utilizzato.</p>
+<table>
+<thead>
+<tr>
+<th>Dato complementare</th>
+<th>Valore</th>
+<th>Significato e utilizzo</th>
+<th>Condizione</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Email</td>
+<td><code>ecommerce-test-mailgroup@pagopa.it</code></td>
+<td>Candidato per inserimento e conferma email e ricezione delle notifiche di pagamento.</td>
+<td>Verificare autorizzazione all'uso e accesso alla casella se si controlla la ricezione.</td>
+</tr>
+<tr>
+<td>Email</td>
+<td><code>mail@pagopa.it</code></td>
+<td>Candidato per compilazione e conferma dei campi email.</td>
+<td>Non presumere che la casella sia disponibile o che le notifiche siano consultabili.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="metodi-di-pagamento-e-psp">Metodi di pagamento e PSP</h2>
+<table>
+<thead>
+<tr>
+<th>Dato</th>
+<th>Valore</th>
+<th>Significato e utilizzo</th>
+<th>Condizione</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Metodo carta</td>
+<td><code>CP</code></td>
+<td>Codice tecnico del metodo carta di credito/debito, per selezionare il pagamento con carta.</td>
+<td>Verificare che il metodo sia abilitato.</td>
+</tr>
+<tr>
+<td>Metodo PayPal</td>
+<td><code>PPAL</code></td>
+<td>Codice candidato per selezionare PayPal e provare scelta, modifica e ordinamento del PSP.</td>
+<td>Codice e disponibilita da verificare nell'ambiente.</td>
+</tr>
+<tr>
+<td>ID PSP Postepay</td>
+<td><code>PPAYITR1XXX</code></td>
+<td>Identificativo candidato per selezionare Postepay.</td>
+<td>Associazione al PSP da verificare.</td>
+</tr>
+<tr>
+<td>ID PSP Worldline</td>
+<td><code>BNLIITRR</code></td>
+<td>Identificativo candidato per selezionare Worldline.</td>
+<td>Associazione al PSP da verificare.</td>
+</tr>
+<tr>
+<td>ID PSP Worldpay</td>
+<td><code>WOLLNLB1</code></td>
+<td>Identificativo candidato per selezionare Worldpay.</td>
+<td>Associazione al PSP da verificare.</td>
+</tr>
+<tr>
+<td>ID PSP per PayPal</td>
+<td><code>BCITITMM</code></td>
+<td>Identificativo candidato per selezionare un PSP nel flusso PayPal.</td>
+<td>Associazione al metodo e disponibilita da verificare.</td>
+</tr>
+<tr>
+<td>Configurazione lista PSP</td>
+<td><code>enablePspPage=true</code></td>
+<td>Abilitazione della pagina di selezione PSP per provare il flusso carta o wallet salvato e la navigazione di ritorno.</td>
+<td>Disponibilita e comportamento del flag da verificare nell'ambiente.</td>
+</tr>
+</tbody>
+</table>
+<p>Il nome commerciale e l'identificativo tecnico sono dati distinti.
+La grafia <code>Wordline</code> e una variante da uniformare a <strong>Worldline</strong>, non un
+ulteriore PSP.</p>
+<h3 id="combinazioni-candidate-per-prove-di-pagamento">Combinazioni candidate per prove di pagamento</h3>
+<p>Queste combinazioni permettono di preparare prove complete, anche con utente
+autenticato. <strong>Le associazioni complete sono da verificare nell'ambiente.</strong>
+Completare il prefisso con 13 cifre e usare un avviso non gia pagato.</p>
+<table>
+<thead>
+<tr>
+<th>PSP</th>
+<th>Prefisso avviso</th>
+<th>CF ente</th>
+<th>PAN</th>
+<th>Scadenza</th>
+<th>CVV</th>
+<th>Intestatario carta</th>
+<th>ID PSP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Postepay</code></td>
+<td><code>30200</code></td>
+<td><code>77777777777</code></td>
+<td><code>5255000260000014</code></td>
+<td><code>12/30</code></td>
+<td><code>123</code></td>
+<td><code>Test test</code></td>
+<td><code>PPAYITR1XXX</code></td>
+</tr>
+<tr>
+<td>Worldline</td>
+<td><code>30201</code></td>
+<td><code>77777777777</code></td>
+<td><code>5255000260000014</code></td>
+<td><code>12/30</code></td>
+<td><code>123</code></td>
+<td><code>Test test</code></td>
+<td><code>BNLIITRR</code></td>
+</tr>
+<tr>
+<td><code>Worldpay</code></td>
+<td><code>30201</code></td>
+<td><code>77777777777</code></td>
+<td><code>4242424242424242</code></td>
+<td><code>12/30</code></td>
+<td><code>123</code></td>
+<td><code>Test test</code></td>
+<td><code>WOLLNLB1</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="avvisi-per-prove-di-errore">Avvisi per prove di errore</h2>
+<p>Usare il CF ente <code>77777777777</code>. Gli intervalli comprendono entrambi gli
+estremi e contengono codici avviso di 18 cifre.</p>
+<p><strong>Da verificare:</strong> la configurazione del mock deve associare questi codici
+agli errori indicati. La corretta lunghezza da sola non garantisce l'errore
+desiderato. Gli intervalli seguenti non sono avvisi per pagamenti riusciti.</p>
+<table>
+<thead>
+<tr>
+<th>Codice errore previsto</th>
+<th>Avviso iniziale</th>
+<th>Avviso finale</th>
+<th>Significato e utilizzo</th>
+<th>Attesa indicativa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PAA_PAGAMENTO_SCONOSCIUTO</code></td>
+<td><code>302400000000000000</code></td>
+<td><code>302409999999999999</code></td>
+<td>Provare la gestione di un avviso non riconosciuto e le indicazioni di assistenza.</td>
+<td><code>5</code> secondi</td>
+</tr>
+<tr>
+<td><code>PAA_PAGAMENTO_SCADUTO</code></td>
+<td><code>302990000000000000</code></td>
+<td><code>302999999999999999</code></td>
+<td>Provare il blocco del pagamento di un avviso scaduto.</td>
+<td><code>60</code> secondi</td>
+</tr>
+<tr>
+<td><code>PPT_STAZIONE_INT_PA_TIMEOUT</code></td>
+<td><code>302980000000000000</code></td>
+<td><code>302989999999999999</code></td>
+<td>Provare la gestione del timeout della stazione dell'ente creditore.</td>
+<td><code>60</code> secondi</td>
+</tr>
+<tr>
+<td><code>PAA_PAGAMENTO_DUPLICATO</code></td>
+<td><code>302950100443009424</code></td>
+<td><code>302950100443009424</code></td>
+<td>Provare il rifiuto di un pagamento duplicato usando il singolo codice indicato.</td>
+<td><code>5</code> secondi</td>
+</tr>
+<tr>
+<td><code>PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE</code></td>
+<td><code>302970000000000000</code></td>
+<td><code>302979999999999999</code></td>
+<td>Provare la gestione dell'ente creditore non raggiungibile e la visualizzazione del codice di assistenza.</td>
+<td>Non definita</td>
+</tr>
+</tbody>
+</table>
+<p>Le attese sono valori indicativi per osservare la comparsa del messaggio,
+non SLA o garanzie sui tempi di risposta. La scadenza dell'avviso e distinta
+dalla scadenza di una transazione o di un token di pagamento.</p>
+<h3 id="messaggi-associati-agli-errori">Messaggi associati agli errori</h3>
+<p>Testi candidati per controllare comprensibilita, localizzazione e coerenza
+della comunicazione all'utente; la corrispondenza esatta va verificata
+sulla versione del Checkout utilizzata.</p>
+<table>
+<thead>
+<tr>
+<th>Errore</th>
+<th>Intestazione</th>
+<th>Corpo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Avviso sconosciuto</td>
+<td>Non riusciamo a trovare l’avviso</td>
+<td>L'avviso potrebbe essere stato già pagato. Per ricevere assistenza, contatta l’Ente Creditore.</td>
+</tr>
+<tr>
+<td>Avviso scaduto</td>
+<td>L’avviso è scaduto e non è più possibile pagarlo</td>
+<td>Contatta l’Ente per maggiori informazioni.</td>
+</tr>
+<tr>
+<td>Timeout</td>
+<td>Si è verificato un errore imprevisto</td>
+<td>Riprova, oppure contatta l’assistenza</td>
+</tr>
+<tr>
+<td>Pagamento duplicato</td>
+<td>Questo avviso è stato già pagato!</td>
+<td>Vuoto: assenza di testo aggiuntivo da verificare</td>
+</tr>
+<tr>
+<td>Ente irraggiungibile</td>
+<td>L’Ente Creditore sta avendo problemi nella risposta</td>
+<td>Codice di errore per l'assistenza</td>
+</tr>
+</tbody>
+</table>
+<h2 id="dati-per-validazione-dei-campi">Dati per validazione dei campi</h2>
+<p>Questi input sono deliberatamente invalidi. Servono a provare i controlli
+prima della verifica dell'avviso o della prosecuzione del pagamento.
+I messaggi sono testi candidati da verificare sulla versione utilizzata.</p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Dato di prova</th>
+<th>Motivo / possibile utilizzo</th>
+<th>Messaggio candidato</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Codice avviso</td>
+<td><code>12345678901234567890</code></td>
+<td>20 cifre: superamento della lunghezza di 18 cifre.</td>
+<td><code>Inserisci 18 cifre</code></td>
+</tr>
+<tr>
+<td>Codice avviso</td>
+<td><code>12345678</code></td>
+<td>8 cifre: lunghezza insufficiente.</td>
+<td><code>Inserisci 18 cifre</code></td>
+</tr>
+<tr>
+<td>Codice avviso</td>
+<td><code>aaabbbcccdddeeefff</code></td>
+<td>18 caratteri alfabetici: rifiuto di un codice non numerico.</td>
+<td><code>Inserisci 18 cifre</code></td>
+</tr>
+<tr>
+<td>CF ente</td>
+<td><code>1234567890</code></td>
+<td>10 cifre: lunghezza inferiore alle 11 richieste.</td>
+<td><code>Inserisci 11 cifre</code></td>
+</tr>
+<tr>
+<td>CF ente</td>
+<td><code>123456789012345</code></td>
+<td>15 cifre: lunghezza superiore alle 11 richieste.</td>
+<td><code>Inserisci 11 cifre</code></td>
+</tr>
+<tr>
+<td>CF ente</td>
+<td><code>aaabbbcccdd</code></td>
+<td>11 caratteri alfabetici: rifiuto di un CF ente non numerico.</td>
+<td><code>Inserisci 11 cifre</code></td>
+</tr>
+<tr>
+<td>Email</td>
+<td><code>aaaaaaaaaa</code></td>
+<td>Assenza di separatore <code>@</code> e dominio.</td>
+<td><code>Inserisci un indirizzo email valido</code></td>
+</tr>
+<tr>
+<td>Email</td>
+<td><code>aaaaaaaaaa@</code></td>
+<td>Assenza del dominio dopo <code>@</code>.</td>
+<td><code>Inserisci un indirizzo email valido</code></td>
+</tr>
+<tr>
+<td>Email</td>
+<td><code>mail@gmail</code></td>
+<td>Dominio senza suffisso: prova della politica di validazione email dell'applicazione.</td>
+<td><code>Inserisci un indirizzo email valido</code></td>
+</tr>
+<tr>
+<td>Email e conferma</td>
+<td>Due indirizzi validi ma diversi</td>
+<td>Controllo della corrispondenza tra i due campi.</td>
+<td><code>Gli indirizzi email non coincidono</code></td>
+</tr>
+<tr>
+<td>Codice avviso, CF ente, email o conferma</td>
+<td>Campo vuoto</td>
+<td>Controllo dell'obbligatorieta: lasciare vuoto un solo campo alla volta e compilare gli altri correttamente.</td>
+<td><code>Campo obbligatorio</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="percorsi-e-dati-per-prove-dellinterfaccia">Percorsi e dati per prove dell'interfaccia</h2>
+<p>I percorsi sono relativi alla base URL del Checkout dell'ambiente scelto.
+Servono come riferimenti per prove di navigazione e riconoscimento delle
+pagine; disponibilita e comportamento vanno verificati sulla versione utilizzata.</p>
+<table>
+<thead>
+<tr>
+<th>Percorso</th>
+<th>Significato e possibile utilizzo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/</code></td>
+<td>Homepage: avvio del flusso e ritorno alla pagina iniziale.</td>
+</tr>
+<tr>
+<td><code>/inserisci-dati-avviso</code></td>
+<td>Inserimento del codice avviso e del CF ente; prove di campi obbligatori e accesso diretto.</td>
+</tr>
+<tr>
+<td><code>/dati-pagamento</code></td>
+<td>Riepilogo dei dati dell'avviso prima della prosecuzione al pagamento.</td>
+</tr>
+<tr>
+<td><code>/inserisci-email</code></td>
+<td>Inserimento e conferma email; prove di formato e corrispondenza.</td>
+</tr>
+<tr>
+<td><code>/scegli-metodo</code></td>
+<td>Scelta o modifica del metodo di pagamento.</td>
+</tr>
+<tr>
+<td><code>/inserisci-carta</code></td>
+<td>Inserimento di PAN, scadenza, CVV e intestatario.</td>
+</tr>
+<tr>
+<td><code>/lista-psp</code></td>
+<td>Selezione del PSP e prove di ordinamento per nome o commissione.</td>
+</tr>
+<tr>
+<td><code>/riepilogo-pagamento</code></td>
+<td>Riepilogo finale e modifica delle scelte prima del pagamento.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="coppie-per-prove-di-navigazione-indietro">Coppie per prove di navigazione indietro</h3>
+<p>Le coppie seguenti sono riferimenti di comportamento da verificare, non
+garanzie sulla cronologia del browser.</p>
+<table>
+<thead>
+<tr>
+<th>Pagina di partenza</th>
+<th>Pagina di ritorno</th>
+<th>Possibile utilizzo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/inserisci-dati-avviso</code></td>
+<td><code>/</code></td>
+<td>Ritorno alla homepage, anche dopo accesso diretto alla pagina di inserimento.</td>
+</tr>
+<tr>
+<td><code>/dati-pagamento</code></td>
+<td><code>/inserisci-dati-avviso</code></td>
+<td>Ritorno alla compilazione dell'avviso.</td>
+</tr>
+<tr>
+<td><code>/inserisci-email</code></td>
+<td><code>/dati-pagamento</code></td>
+<td>Ritorno al riepilogo dell'avviso.</td>
+</tr>
+<tr>
+<td><code>/scegli-metodo</code></td>
+<td><code>/inserisci-email</code></td>
+<td>Ritorno ai dati di contatto.</td>
+</tr>
+<tr>
+<td><code>/inserisci-carta</code></td>
+<td><code>/scegli-metodo</code></td>
+<td>Ritorno alla scelta del metodo.</td>
+</tr>
+<tr>
+<td><code>/lista-psp</code></td>
+<td><code>/scegli-metodo</code></td>
+<td>Ritorno alla scelta del metodo dal flusso PSP.</td>
+</tr>
+</tbody>
+</table>
+<p>Dopo la modifica del metodo dal riepilogo finale, una sequenza candidata
+per provare l'assenza di loop e:
+<code>/scegli-metodo</code> → <code>/inserisci-email</code> → <code>/dati-pagamento</code> →
+<code>/inserisci-dati-avviso</code> → <code>/</code>, senza ripetizioni.</p>
+<h3 id="etichette-e-opzioni">Etichette e opzioni</h3>
+<p>I testi seguenti aiutano a identificare controlli e azioni da provare.
+La grafia esatta puo variare con la versione e la localizzazione.</p>
+<table>
+<thead>
+<tr>
+<th>Valore</th>
+<th>Significato e possibile utilizzo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Accedi</code></td>
+<td>Avvio dell'autenticazione; controllo della disponibilita dell'accesso durante il pagamento.</td>
+</tr>
+<tr>
+<td><code>Inserisci tu i dati</code></td>
+<td>Avvio dell'inserimento manuale dell'avviso.</td>
+</tr>
+<tr>
+<td><code>Continua</code></td>
+<td>Validazione dei dati inseriti e passaggio alla fase successiva.</td>
+</tr>
+<tr>
+<td><code>Vai al pagamento</code></td>
+<td>Prosecuzione dal riepilogo dell'avviso al pagamento.</td>
+</tr>
+<tr>
+<td><code>Carte di Credito</code></td>
+<td>Scelta del pagamento con carta.</td>
+</tr>
+<tr>
+<td><code>Indietro</code></td>
+<td>Ritorno alla fase precedente e controllo dell'assenza di loop o uscite indesiderate.</td>
+</tr>
+<tr>
+<td><code>Modifica metodo di pagamento</code></td>
+<td>Cambio del metodo prima della conferma finale.</td>
+</tr>
+<tr>
+<td><code>ordina per commissione</code></td>
+<td>Prova dell'ordinamento dei PSP per costo, crescente e decrescente.</td>
+</tr>
+<tr>
+<td><code>ordina per nome</code></td>
+<td>Prova dell'ordinamento alfabetico dei PSP.</td>
+</tr>
+<tr>
+<td><code>ordina per importo</code></td>
+<td>Opzione candidata per ordinare i PSP secondo l'importo della commissione.</td>
+</tr>
+<tr>
+<td><code>Codice Avviso</code></td>
+<td>Campo per il codice numerico di 18 cifre.</td>
+</tr>
+<tr>
+<td><code>Codice Fiscale Ente Creditore</code></td>
+<td>Campo per il CF numerico di 11 cifre dell'ente, non del pagatore.</td>
+</tr>
+<tr>
+<td><code>Indirizzo email</code>; <code>Indirizzo Email</code></td>
+<td>Varianti di etichetta del campo email, utili per controlli di localizzazione e uniformita.</td>
+</tr>
+<tr>
+<td><code>Ripeti di nuovo</code></td>
+<td>Campo di conferma email, per controlli di corrispondenza e obbligatorieta.</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": [], "search": "../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

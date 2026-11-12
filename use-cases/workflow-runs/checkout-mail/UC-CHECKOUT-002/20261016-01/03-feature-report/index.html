@@ -1,0 +1,1121 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="PagoPA">
+      
+      
+        <link rel="canonical" href="https://pagopa.github.io/pagopa-platform-integration-test/use-cases/workflow-runs/checkout-mail/UC-CHECKOUT-002/20261016-01/03-feature-report/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>UC - Feature report - PagoPA platform integration test</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#uc-feature-report" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../../.." title="PagoPA platform integration test" class="md-header__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PagoPA platform integration test
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              UC - Feature report
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../../.." title="PagoPA platform integration test" class="md-nav__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PagoPA platform integration test
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/ebollo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ebollo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/tas_pass/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_pass
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/wisp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    wisp
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/tas_mixed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_mixed
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/fdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/fdr3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/cup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#feature-outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Feature outputs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mapping
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-and-oracles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data and oracles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#engineer-handoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engineer handoff
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#readiness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Readiness
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="uc-feature-report">UC - Feature report</h1>
+<h2 id="feature-outputs">Feature outputs</h2>
+<table>
+<thead>
+<tr>
+<th>Root-relative feature path</th>
+<th>Producer skill</th>
+<th>Write result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>docs/use-cases/features/checkout/checkout-email-sintattica.feature</td>
+<td>uc-to-feature</td>
+<td>written</td>
+</tr>
+</tbody>
+</table>
+<h2 id="mapping">Mapping</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario id</th>
+<th>UC steps</th>
+<th>Resulting Gherkin steps</th>
+<th>Evidence ids</th>
+<th>Granularity rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SC-001</td>
+<td>Flusso principale 1, 2; Postcondizione/AC-01</td>
+<td>2 Quando (inserimento nei due campi) + 1 Quando (click) + 1 Allora (avanzamento)</td>
+<td>F-001, F-002, F-003, F-009</td>
+<td>Due campi distinti restano due step When separati: ciascuno può essere sede di un'anomalia indipendente (EF-01/02 vs EF-03/04/05/06)</td>
+</tr>
+<tr>
+<td>SC-002</td>
+<td>Flusso principale 1 sostituito da EF-01; AC-03</td>
+<td>1 Quando (digitazione non valida) + 1 Allora (errore in tempo reale) + 1 Quando (click) + 2 Allora/E (persistenza errore, mancato avanzamento)</td>
+<td>F-003, F-004, F-005</td>
+<td>Verifica intermedia (errore in tempo reale) richiesta da F-004 prima del tentativo di click richiesto da AC-03 (F-005)</td>
+</tr>
+<tr>
+<td>SC-003</td>
+<td>Flusso principale 1 sostituito da EF-02; AC-02; AC-03</td>
+<td>1 Quando (digitazione) + 1 Allora (errore generico durante la digitazione) + 1 Quando (click) + 1 Allora (persistenza dell'errore generico) + 1 E (warning specifico, in aggiunta all'errore) + 1 E (mancato avanzamento), parametrizzati in Esempi</td>
+<td>F-003, F-004, F-005, F-006</td>
+<td>Due pattern di sintassi (assenza di "@"; assenza di parte dopo "@") condividono lo stesso comportamento e le stesse verifiche: un solo Schema dello scenario; errore e warning coesistono per risposta umana a Q-001 (S-004 in 01-context.md)</td>
+</tr>
+<tr>
+<td>SC-004</td>
+<td>Flusso principale 1 (valido); Flusso principale 2 sostituito da EF-03; AC-03</td>
+<td>1 Quando (inserimento valido passo 1) + 1 E (digitazione non valida passo 2) + 1 Allora (errore in tempo reale) + 1 Quando (click) + 2 Allora/E</td>
+<td>F-002, F-003, F-004, F-005</td>
+<td>Il passo 1 valido è un'azione del flusso principale (When), non una precondizione, perché EF-03 presuppone che sia già avvenuta nello stesso scenario</td>
+</tr>
+<tr>
+<td>SC-005</td>
+<td>Flusso principale 1 (valido); Flusso principale 2 sostituito da EF-04; AC-02; AC-03</td>
+<td>1 Quando + 1 E (digitazione) + 1 Allora (errore generico durante la digitazione) + 1 Quando (click) + 1 Allora (persistenza dell'errore generico) + 1 E (warning specifico, in aggiunta all'errore) + 1 E (mancato avanzamento), parametrizzati in Esempi</td>
+<td>F-002, F-003, F-004, F-005, F-006</td>
+<td>Stesso comportamento e stesse verifiche per i due pattern: un solo Schema dello scenario; errore e warning coesistono per risposta umana a Q-001 (S-004 in 01-context.md)</td>
+</tr>
+<tr>
+<td>SC-006</td>
+<td>Flusso principale 1 (valido); Flusso principale 2 sostituito da EF-05/EF-06; AC-03; AC-04</td>
+<td>1 Quando + 1 E (digitazione indirizzo diverso) + 1 Allora (errore di mancata coincidenza durante la digitazione) + 1 Quando (click) + 1 Allora (persistenza esplicita del messaggio di errore, AC-03) + 1 E (nessuna azione osservabile, AC-04) + 1 E (mancato avanzamento)</td>
+<td>F-002, F-007, F-008</td>
+<td>EF-05 ed EF-06 sono la stessa anomalia osservata da due angolazioni compatibili: un solo scenario, con un'asserzione Then dedicata e distinta per la persistenza del messaggio (AC-03) e una per l'assenza di azione (AC-04)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="coverage">Coverage</h2>
+<table>
+<thead>
+<tr>
+<th>UC element</th>
+<th>Scenario id</th>
+<th>Feature path</th>
+<th>Scenario title</th>
+<th>Examples row or not-applicable</th>
+<th>Coverage and reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flusso principale 1-2</td>
+<td>SC-001</td>
+<td>docs/use-cases/features/checkout/checkout-email-sintattica.feature</td>
+<td>Inserimento di un indirizzo email sintatticamente valido e coincidente nei due campi</td>
+<td>not-applicable</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>Postcondizione</td>
+<td>SC-001</td>
+<td>docs/use-cases/features/checkout/checkout-email-sintattica.feature</td>
+<td>Inserimento di un indirizzo email sintatticamente valido e coincidente nei due campi</td>
+<td>not-applicable</td>
+<td>covered, la postcondizione è osservata direttamente tramite la navigazione alla pagina di scelta del metodo di pagamento, senza richiedere uno stato interno non esposto dallo UC</td>
+</tr>
+<tr>
+<td>AC-01</td>
+<td>SC-001</td>
+<td>docs/use-cases/features/checkout/checkout-email-sintattica.feature</td>
+<td>Inserimento di un indirizzo email sintatticamente valido e coincidente nei due campi</td>
+<td>not-applicable</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>EF-01</td>
+<td>SC-002</td>
+<td>docs/use-cases/features/checkout/checkout-email-sintattica.feature</td>
+<td>Indirizzo email sintatticamente non valido al passo 1</td>
+<td>not-applicable</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>EF-02</td>
+<td>SC-003</td>
+<td>docs/use-cases/features/checkout/checkout-email-sintattica.feature</td>
+<td>Tentativo di proseguire con un indirizzo email malformato in un pattern specifico al passo 1</td>
+<td>riga 1 (assenza di "@"); riga 2 (assenza di parte dopo "@")</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>EF-03</td>
+<td>SC-004</td>
+<td>docs/use-cases/features/checkout/checkout-email-sintattica.feature</td>
+<td>Indirizzo email sintatticamente non valido al passo 2</td>
+<td>not-applicable</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>EF-04</td>
+<td>SC-005</td>
+<td>docs/use-cases/features/checkout/checkout-email-sintattica.feature</td>
+<td>Tentativo di proseguire con un indirizzo email di conferma malformato in un pattern specifico al passo 2</td>
+<td>riga 1 (assenza di "@"); riga 2 (assenza di parte dopo "@")</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>EF-05</td>
+<td>SC-006</td>
+<td>docs/use-cases/features/checkout/checkout-email-sintattica.feature</td>
+<td>Inserimento al passo 2 di un indirizzo email valido ma diverso da quello del passo 1</td>
+<td>not-applicable</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>EF-06</td>
+<td>SC-006</td>
+<td>docs/use-cases/features/checkout/checkout-email-sintattica.feature</td>
+<td>Inserimento al passo 2 di un indirizzo email valido ma diverso da quello del passo 1</td>
+<td>not-applicable</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>AC-02</td>
+<td>SC-003, SC-005</td>
+<td>docs/use-cases/features/checkout/checkout-email-sintattica.feature</td>
+<td>(idem)</td>
+<td>tutte le righe di entrambi gli Schemi</td>
+<td>covered, conforme al chiarimento umano S-004 su Q-001: il warning compare in aggiunta all'errore generico persistente, non in sua sostituzione</td>
+</tr>
+<tr>
+<td>AC-03</td>
+<td>SC-002, SC-003, SC-004, SC-005, SC-006</td>
+<td>docs/use-cases/features/checkout/checkout-email-sintattica.feature</td>
+<td>(idem)</td>
+<td>not-applicable per SC-002/SC-004/SC-006; tutte le righe di entrambi gli Schemi per SC-003/SC-005</td>
+<td>covered, conforme al chiarimento umano S-004 su Q-001: l'errore generico resta visibile al click anche nei due pattern di EF-02/EF-04</td>
+</tr>
+<tr>
+<td>AC-04</td>
+<td>SC-006</td>
+<td>docs/use-cases/features/checkout/checkout-email-sintattica.feature</td>
+<td>Inserimento al passo 2 di un indirizzo email valido ma diverso da quello del passo 1</td>
+<td>not-applicable</td>
+<td>covered</td>
+</tr>
+</tbody>
+</table>
+<h2 id="data-and-oracles">Data and oracles</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario id</th>
+<th>Combination id or not-applicable</th>
+<th>Data ids</th>
+<th>Oracle ids</th>
+<th>Applied values or unresolved ids</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SC-001</td>
+<td>C-001</td>
+<td>D-001</td>
+<td>O-006</td>
+<td><code>mario.rossi@esempio-test.it</code> (entrambi i campi)</td>
+</tr>
+<tr>
+<td>SC-002</td>
+<td>C-002</td>
+<td>D-002</td>
+<td>O-001</td>
+<td><code>mario.rossi@esempiotest</code></td>
+</tr>
+<tr>
+<td>SC-003</td>
+<td>C-003, C-004</td>
+<td>D-003, D-004</td>
+<td>O-001, O-003, O-004</td>
+<td><code>mariorossiesempiotest.it</code>; <code>mario.rossi@</code></td>
+</tr>
+<tr>
+<td>SC-004</td>
+<td>C-005</td>
+<td>D-001, D-002</td>
+<td>O-001</td>
+<td><code>mario.rossi@esempio-test.it</code> (passo 1); <code>mario.rossi@esempiotest</code> (passo 2)</td>
+</tr>
+<tr>
+<td>SC-005</td>
+<td>C-006, C-007</td>
+<td>D-001, D-003, D-004</td>
+<td>O-001, O-003, O-004</td>
+<td><code>mario.rossi@esempio-test.it</code> (passo 1); <code>mariorossiesempiotest.it</code> / <code>mario.rossi@</code> (passo 2)</td>
+</tr>
+<tr>
+<td>SC-006</td>
+<td>C-008</td>
+<td>D-001, D-005</td>
+<td>O-002, O-005</td>
+<td><code>mario.rossi@esempio-test.it</code> (passo 1); <code>luigi.verdi@esempio-test.it</code> (passo 2)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="questions">Questions</h2>
+<table>
+<thead>
+<tr>
+<th>Question id</th>
+<th>Scenario id</th>
+<th>Missing detail or conflict</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q-001</td>
+<td>SC-002, SC-003, SC-004, SC-005</td>
+<td>Ripartizione tra l'errore generico persistente al click (AC-03/EF-01/EF-03) e il warning specifico al click (EF-02/EF-04) per i pattern di sintassi non valida diversi da "assenza di @" e "assenza di parte dopo @"; chiarita con risposta esplicita dell'utente (S-004 in 01-context.md): l'errore generico resta sempre visibile al click, il warning si aggiunge nei due pattern nominati senza sostituirlo</td>
+<td>answered</td>
+</tr>
+</tbody>
+</table>
+<h2 id="checks">Checks</h2>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Method actually used</th>
+<th>Result</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Parole chiave Gherkin italiane (Funzionalità, Contesto, Schema dello scenario, Quando, Allora, Esempi, E)</td>
+<td>Esecuzione autorizzata <code>behave --lang-help it</code> e confronto manuale con il testo scritto</td>
+<td>Conforme</td>
+<td>Output del comando, confrontato riga per riga con le keyword usate nella feature</td>
+</tr>
+<tr>
+<td>Indentazione e struttura secondo il profilo (<code>feature:0, scenario:2, steps:4, examples:4, table_rows:6</code>)</td>
+<td>Lettura visiva del file scritto e confronto con <code>.github/profiles/gherkin.profile.yaml</code></td>
+<td>Conforme</td>
+<td>File <code>checkout-email-sintattica.feature</code> e profilo letto</td>
+</tr>
+<tr>
+<td>Presenza del tag <code>Feature</code> (<code>@checkout_email_sintattica_001</code>) e tag di scenario uno per riga all'indentazione di profilo (correzione di una violazione presente nella revisione precedente, dove tutti i tag erano su un'unica riga e mancava il tag di <code>Funzionalità</code>)</td>
+<td>Lettura visiva del file riscritto</td>
+<td>Conforme dopo correzione</td>
+<td>File <code>checkout-email-sintattica.feature</code>, sezione tag di ciascuno scenario e tag <code>Feature</code></td>
+</tr>
+<tr>
+<td>Commento di tracciamento <code>#0123456789</code> prima della riga <code># language: it</code></td>
+<td>Lettura visiva del file scritto</td>
+<td>Conforme</td>
+<td>Prime due righe del file</td>
+</tr>
+<tr>
+<td>Regola "nessuna colonna Examples con un solo valore"</td>
+<td>Analisi manuale delle tabelle Esempi di SC-003 e SC-005 (entrambe le colonne variano su due righe)</td>
+<td>Conforme</td>
+<td>Tabelle Esempi nella feature</td>
+</tr>
+<tr>
+<td>Copertura di tutti gli elementi UC (FP, EF-01..EF-06, Postcondizione, AC-01..AC-04)</td>
+<td>Compilazione manuale della tabella Coverage da 01-context.md e 02-test-data.md</td>
+<td>Completa, nessuna riserva residua dopo la risposta umana a Q-001 (S-004)</td>
+<td>Tabella Coverage sopra</td>
+</tr>
+<tr>
+<td>Risoluzione dei riferimenti verbali di flusso negli AC (FP, EF-01..EF-06)</td>
+<td>Applicazione manuale delle regole di <code>ac-flow-references.md</code> (nessun riferimento esplicito presente nello UC fornito; applicabilità dedotta dal significato funzionale, come previsto per l'assenza di riferimento)</td>
+<td>Conforme</td>
+<td>AC-01..AC-04 nello UC, nessun riferimento verbale esplicito presente</td>
+</tr>
+</tbody>
+</table>
+<p>| Rivalidazione dopo <code>02-test-data.md</code> revisione 2 (correzione dell'<code>inputs</code> di contesto da revisione 1 a revisione 2) | Lettura reale di <code>02-test-data.md</code> revisione 2 e di <code>01-context.md</code> revisione 2; confronto riga per riga di Data resolution, Combinations (C-003/C-004/C-006/C-007) e Decisions con la feature già scritta | Conforme, nessuna modifica di contenuto richiesta: i valori D-001..D-005, gli oracle O-001..O-006 e il testo degli step erano già coerenti con la coesistenza errore/warning di Q-001; aggiornata solo la relazione evidenza nel report dati, non i valori applicati | <code>02-test-data.md</code> rev 2 (Combinations, Decisions), <code>01-context.md</code> rev 2 (F-004, F-005, F-006, O-001, O-003, O-004), feature <code>checkout-email-sintattica.feature</code> (step invariati) |</p>
+<p>Nessun parser automatico, step Python o esecuzione <code>behave</code> della suite è stato eseguito;
+i controlli sopra sono verifiche statiche manuali eseguite dall'analista.</p>
+<h2 id="engineer-handoff">Engineer handoff</h2>
+<p>Sei scenari in un unico file, con <code>Contesto</code> condiviso (pagina email, lingua italiana).</p>
+<ol>
+<li><strong>SC-001</strong> (<code>@checkout_email_sintattica_001_01</code>): percorso positivo, stesso indirizzo
+   nei due campi, verifica l'avanzamento alla pagina di scelta del metodo di pagamento.</li>
+<li><strong>SC-002</strong> (<code>_001_02</code>): sintassi non valida generica al passo 1. Verifica l'errore
+   "Inserisci un indirizzo email valido" mostrato <strong>durante la digitazione</strong> (step <code>Quando
+   l'utente digita...</code> seguito da un <code>Allora</code> esplicito "durante la digitazione", distinto
+   volutamente da <code>inserisce</code> per segnalare la natura realtime del controllo), poi un
+   secondo <code>Quando</code> per il click su Continua, con verifica che l'errore permanga e non
+   ci sia avanzamento.</li>
+<li><strong>SC-003</strong> (<code>_001_03</code>): Schema dello scenario con 2 righe (assenza di "@"; assenza di
+   parte dopo "@") al passo 1. Verifica, in ordine: l'errore generico mostrato <strong>durante
+   la digitazione</strong> (stesso testo di SC-002, risposta umana a Q-001: l'errore generico si
+   applica anche a questi due pattern); al click su Continua, la persistenza dello stesso
+   errore generico <strong>e</strong> la comparsa aggiuntiva del warning specifico, testo esatto
+   incluso (i due messaggi coesistono, il warning non sostituisce l'errore).</li>
+<li><strong>SC-004</strong> (<code>_001_04</code>): come SC-002 ma al passo 2, con un primo <code>Quando</code> che inserisce
+   un indirizzo valido nel campo email (passo 1 del flusso principale) prima dell'anomalia.</li>
+<li><strong>SC-005</strong> (<code>_001_05</code>): come SC-003 ma al passo 2, con lo stesso passo 1 valido di
+   precondizione funzionale e la stessa coesistenza errore/warning al click.</li>
+<li><strong>SC-006</strong> (<code>_001_06</code>): indirizzi validi ma diversi nei due campi: verifica l'errore
+   di mancata coincidenza mostrato <strong>durante la digitazione</strong>, poi, al click su Continua,
+   un'asserzione esplicita e distinta per la persistenza dello stesso messaggio di errore
+   (AC-03) e una successiva per l'assenza di qualunque azione osservabile (AC-04 /
+   EF-06), oltre al mancato avanzamento.</li>
+</ol>
+<p>Nessun testo di step esistente è stato modificato rispetto all'implementazione (nessuno
+step Python esiste ancora per questa feature): tutti gli step sono nuovi. Rispetto alla
+revisione 1 di questo report sono stati aggiunti/modificati i seguenti step testuali, da
+tenere a mente per la definizione degli step Python: un <code>Allora</code> esplicito "durante la
+digitazione" subito dopo ogni <code>digita</code> dove prima c'era una verifica generica; negli
+Schemi SC-003/SC-005, un <code>Allora</code> di persistenza dell'errore generico seguito da un <code>E</code>
+per il warning (prima il warning era l'unica verifica al click); in SC-006, un <code>Allora</code>
+di persistenza del messaggio di mancata coincidenza prima dell'<code>E</code> di assenza di azione.
+L'uso distinto di "inserisce" (azione completata, senza verifica in tempo reale richiesta
+in quel punto) e "digita" (azione la cui verifica in tempo reale è esplicitamente
+richiesta subito dopo) resta intenzionale e va preservato nell'implementazione: non
+unificare i due verbi in un'unica step definition che ignori questa distinzione.</p>
+<p>Q-001 è stata risolta da una risposta umana esplicita (S-004 in 01-context.md): non
+esiste più alcuna ripartizione esclusiva tra errore generico (EF-01/EF-03) e warning
+specifico (EF-02/EF-04); l'errore generico persiste sempre al click e, nei due pattern
+nominati, il warning compare in aggiunta. Non è richiesta ulteriore conferma prima
+dell'implementazione per questo punto.</p>
+<h2 id="readiness">Readiness</h2>
+<p><code>pronta per lo sviluppo</code>. Motivi:
+- Q-001 è stata risolta con risposta umana esplicita (S-004 in 01-context.md): l'errore
+  generico persiste sempre al click; nei due pattern nominati di EF-02/EF-04 il warning
+  specifico compare in aggiunta, senza sostituirlo. Nessuna ripartizione interpretativa
+  residua tra errore e warning.
+- Tutti i dati sono sintetici con evidenza di disponibilità <code>documented-not-checked</code>
+  (nessuna verifica di ambiente live svolta), coerentemente con l'autorizzazione
+  ricevuta per dati di solo inserimento campo.
+- La correttezza sintattica Gherkin verificata manualmente non implica step Python
+  implementati, ambiente disponibile o test eseguiti: non è permesso di implementazione
+  o esecuzione automatica.
+- Rivalidato dopo la correzione di <code>02-test-data.md</code> (passato a revisione 2 per
+  allineare il proprio <code>inputs</code> a <code>01-context.md</code> revisione 2, invalidazione dovuta alla
+  sola dipendenza stale, senza variazione dei valori D-001..D-005): la feature non
+  richiede modifiche di contenuto; questo report passa a revisione 3 con <code>inputs</code>
+  aggiornati a contesto revisione 2 e dati revisione 2.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../../..", "features": [], "search": "../../../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

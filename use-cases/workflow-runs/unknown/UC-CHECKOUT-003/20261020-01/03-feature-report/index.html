@@ -1,0 +1,1265 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="PagoPA">
+      
+      
+        <link rel="canonical" href="https://pagopa.github.io/pagopa-platform-integration-test/use-cases/workflow-runs/unknown/UC-CHECKOUT-003/20261020-01/03-feature-report/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>UC - Feature report - PagoPA platform integration test</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#uc-feature-report" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../../.." title="PagoPA platform integration test" class="md-header__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PagoPA platform integration test
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              UC - Feature report
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../../.." title="PagoPA platform integration test" class="md-nav__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PagoPA platform integration test
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/ebollo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ebollo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/tas_pass/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_pass
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/wisp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    wisp
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/tas_mixed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_mixed
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/fdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/fdr3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../components/cup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#feature-outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Feature outputs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mapping
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-and-oracles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data and oracles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#engineer-handoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engineer handoff
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#readiness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Readiness
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="uc-feature-report">UC - Feature report</h1>
+<h2 id="feature-outputs">Feature outputs</h2>
+<table>
+<thead>
+<tr>
+<th>Root-relative feature path</th>
+<th>Producer skill</th>
+<th>Write result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>uc-to-feature</td>
+<td>written</td>
+</tr>
+</tbody>
+</table>
+<p>Una feature, 6 scenari semplici e 1 outline con 4 righe: 7 definizioni, 10 casi indipendenti. La cartella di destinazione viene creata dalla scrittura del nuovo file, senza elencare o leggere la cartella o altre feature.</p>
+<h2 id="mapping">Mapping</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario id</th>
+<th>UC steps</th>
+<th>Resulting Gherkin steps</th>
+<th>Evidence ids</th>
+<th>Granularity rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SC-001..SC-010</td>
+<td>Precondizioni</td>
+<td>Contesto: Home del Checkout UAT aperta; lingua italiana</td>
+<td>01-context.md F-001, F-002</td>
+<td>Stato iniziale comune, preparabile indipendentemente; nessuna azione del flusso nascosta nel Contesto. L'apertura della Home non elimina la storia rilevante, che comincia e resta esplicita con l'accesso all'inserimento avviso</td>
+</tr>
+<tr>
+<td>SC-001</td>
+<td>FP 1</td>
+<td>Quando sceglie inserimento manuale; Allora visualizza inserimento avviso</td>
+<td>F-001, F-002</td>
+<td>L'osservazione intermedia verifica la pagina di partenza del singolo ritorno, requisito FP 1; non aggiunge una validazione di campo o un obiettivo autonomo</td>
+</tr>
+<tr>
+<td>SC-002</td>
+<td>FP 1</td>
+<td>Scelta inserimento manuale; compilazione congiunta codice avviso e CF; Continua; osservazione riepilogo</td>
+<td>F-002, F-003</td>
+<td>Scomposizione giustificata dalla sequenza funzionale del documento: accesso, dati, avanzamento; non un passo per ciascun campo. Il valore da conservare viene creato nel medesimo scenario</td>
+</tr>
+<tr>
+<td>SC-003</td>
+<td>FP 1</td>
+<td>Stessa sequenza fino al riepilogo; Vai al pagamento; osservazione inserimento email</td>
+<td>F-002, F-003, F-005</td>
+<td>Percorso storico rilevante esplicito; nessuna compilazione email superflua o preparazione via URL della pagina finale</td>
+</tr>
+<tr>
+<td>SC-010</td>
+<td>FP 1</td>
+<td>Percorso avviso e riepilogo; Vai al pagamento; compilazione email e conferma insieme; Continua; osservazione scelta metodo</td>
+<td>F-002, F-003, F-005, F-006, F-011</td>
+<td>Compilazione coesa dei 2 campi correlati; avanzamento separato per preservare l'ordine. Il ritorno verso email proviene dal chiarimento ammesso, non da deduzione</td>
+</tr>
+<tr>
+<td>SC-004</td>
+<td>FP 1</td>
+<td>Percorso fino a scelta metodo; selezione Carta di Credito; osservazione inserimento carta</td>
+<td>F-002, F-003, F-005, F-006, F-007</td>
+<td>Caso distinto dal ritorno verso carta: si verifica un'altra singola transizione. Non compilare dati carta inutili al ritorno verso scelta metodo</td>
+</tr>
+<tr>
+<td>SC-005</td>
+<td>FP 1</td>
+<td>Percorso fino a carta; inserimento coeso di numero, scadenza, CVV e intestatario tramite tabella; Continua; osservazione lista PSP</td>
+<td>F-002, F-003, F-005, F-006, F-007</td>
+<td>La tabella e l'argomento di un'azione di compilazione, non un elenco di script. Continua e l'avanzamento prima del ritorno; nessun PSP selezionato</td>
+</tr>
+<tr>
+<td>SC-006..SC-009</td>
+<td>FP 1</td>
+<td>Percorso fino a scelta metodo; selezione di <metodo>; osservazione lista PSP</td>
+<td>F-002, F-003, F-005, F-006, F-009</td>
+<td>Un solo outline: stessi passi e stessi controlli per i 4 metodi esplicitamente equiparati dalla fonte. Il parametro e solo il metodo, non un percorso operativo</td>
+</tr>
+<tr>
+<td>SC-001..SC-010</td>
+<td>FP 2</td>
+<td>Quando preme 1 sola volta Indietro del Checkout</td>
+<td>F-001, F-002, F-004, F-005, F-007, F-008, F-009, F-011</td>
+<td>Esattamente 1 ritorno per caso, mai browser back, catena di ritorni o loop. L'osservazione della pagina di partenza precede questa azione</td>
+</tr>
+<tr>
+<td>SC-001, SC-004, SC-006..SC-009</td>
+<td>Postcondizioni; AC-01</td>
+<td>Allora destinazione Home o scelta metodo</td>
+<td>F-002, F-007, F-009, F-010; O-001, O-004, O-007</td>
+<td>Sola destinazione secondo Q-006: non inventare dati o stato selezionato dove non sono previsti input</td>
+</tr>
+<tr>
+<td>SC-002</td>
+<td>Postcondizioni; AC-01</td>
+<td>Allora inserimento avviso; codice e CF ancora visibili con i medesimi valori</td>
+<td>F-004; O-002</td>
+<td>2 verifiche compatibili dell'esito della stessa operazione; nessun nuovo ritorno</td>
+</tr>
+<tr>
+<td>SC-003</td>
+<td>Postcondizioni; AC-01</td>
+<td>Allora riepilogo; codice e CF ancora visibili</td>
+<td>F-005; O-003</td>
+<td>Verificare gli input esposti dal riepilogo; nessun importo, nome o oggetto atteso inventato</td>
+</tr>
+<tr>
+<td>SC-010</td>
+<td>Postcondizioni; AC-01</td>
+<td>Allora inserimento email; entrambi i campi ancora visibili e uguali al valore precedente</td>
+<td>F-011; O-006</td>
+<td>Uguaglianza rispetto agli input dello stesso scenario; non confrontare solo i 2 campi tra loro</td>
+</tr>
+<tr>
+<td>SC-005</td>
+<td>Postcondizioni; AC-01</td>
+<td>Allora inserimento carta; numero, scadenza, CVV e intestatario ancora visibili e uguali agli input</td>
+<td>F-008; O-005</td>
+<td>4 controlli della stessa operazione; conservazione CVV richiesta dall'utente, non omessa o sostituita da un generico controllo pagina</td>
+</tr>
+</tbody>
+</table>
+<p>F/O citati senza prefisso nella tabella sono definiti in <code>01-context.md</code>. Ogni accesso sotto test termina con una verifica intermedia della pagina raggiunta, supportata da FP 1 e dal percorso documentato; poi un nuovo Quando introduce l'unico ritorno. Non vengono aggiunti controlli intermedi di formato, abilitazione pulsante o successo del pagamento.</p>
+<p>JTBD-001 resta tracciabilita e non viene trasformato in una narrativa inventata. Nessun UC/AC tag o commento aggiuntivo e stato introdotto senza formato concordato: la matrice sottostante conserva il collegamento. Il commento tracking #1234567890 e esclusivamente mock. Il titolo inglese dello UC e reso funzionalmente in italiano, senza modificarne il contenuto.</p>
+<h2 id="coverage">Coverage</h2>
+<table>
+<thead>
+<tr>
+<th>UC element</th>
+<th>Scenario id</th>
+<th>Feature path</th>
+<th>Scenario title</th>
+<th>Examples row or not-applicable</th>
+<th>Coverage and reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UC-CHECKOUT-003; JTBD-001</td>
+<td>SC-001..SC-010</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>Tutti gli scenari della feature</td>
+<td>not-applicable</td>
+<td>covered; tracciabilita al caso d'uso e al riferimento JTBD, non obiettivo aggiuntivo</td>
+</tr>
+<tr>
+<td>Precondizioni: Checkout aperto e lingua italiana</td>
+<td>SC-001..SC-010</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>Tutti gli scenari della feature</td>
+<td>not-applicable</td>
+<td>covered; Contesto condiviso, privo di azioni del flusso</td>
+</tr>
+<tr>
+<td>FP 1: accesso a una pagina</td>
+<td>SC-001..SC-010</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>Tutti gli scenari della feature</td>
+<td>not-applicable</td>
+<td>covered; percorso esplicito e osservazione della pagina di partenza prima del ritorno</td>
+</tr>
+<tr>
+<td>FP 2: tornare indietro 1 sola volta</td>
+<td>SC-001..SC-010</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>Tutti gli scenari della feature</td>
+<td>not-applicable</td>
+<td>covered; una pressione applicativa per ogni caso</td>
+</tr>
+<tr>
+<td>Postcondizione: pagina precedente</td>
+<td>SC-001..SC-010</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>Tutti gli scenari della feature</td>
+<td>not-applicable</td>
+<td>covered; Then di destinazione in tutti i casi</td>
+</tr>
+<tr>
+<td>Postcondizione: dati inseriti ancora visibili</td>
+<td>SC-002, SC-003, SC-005, SC-010</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>Scenari con confronto dati avviso, riepilogo, carta ed email</td>
+<td>not-applicable</td>
+<td>covered; confronto esplicito con gli input dello stesso scenario; per le altre destinazioni controllo non applicabile secondo Q-006</td>
+</tr>
+<tr>
+<td>AC-01 (FP)</td>
+<td>SC-001</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>Ritorno dall'inserimento dati avviso alla Home</td>
+<td>not-applicable</td>
+<td>covered; sola destinazione secondo Q-006</td>
+</tr>
+<tr>
+<td>AC-01 (FP)</td>
+<td>SC-002</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>Ritorno dal riepilogo ai dati avviso conservando i valori inseriti</td>
+<td>not-applicable</td>
+<td>covered; destinazione e conservazione codice avviso/CF</td>
+</tr>
+<tr>
+<td>AC-01 (FP)</td>
+<td>SC-003</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>Ritorno dall'inserimento email al riepilogo con i dati avviso ancora visibili</td>
+<td>not-applicable</td>
+<td>covered; destinazione e visibilita degli input nel riepilogo</td>
+</tr>
+<tr>
+<td>AC-01 (FP)</td>
+<td>SC-010</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>Ritorno dalla scelta metodo ai dati email conservando entrambi i campi</td>
+<td>not-applicable</td>
+<td>covered; destinazione confermata Q-005 e conservazione dei 2 campi</td>
+</tr>
+<tr>
+<td>AC-01 (FP)</td>
+<td>SC-004</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>Ritorno dall'inserimento carta alla scelta metodo di pagamento</td>
+<td>not-applicable</td>
+<td>covered; sola destinazione secondo Q-006</td>
+</tr>
+<tr>
+<td>AC-01 (FP)</td>
+<td>SC-005</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>Ritorno dalla lista PSP ai dati carta conservando tutti i campi</td>
+<td>not-applicable</td>
+<td>covered; destinazione e tutti i 4 campi, CVV incluso</td>
+</tr>
+<tr>
+<td>AC-01 (FP)</td>
+<td>SC-006</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>Ritorno dalla lista PSP alla scelta del metodo di pagamento</td>
+<td>metodo=PayPal</td>
+<td>covered; sola destinazione secondo Q-006</td>
+</tr>
+<tr>
+<td>AC-01 (FP)</td>
+<td>SC-007</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>Ritorno dalla lista PSP alla scelta del metodo di pagamento</td>
+<td>metodo=Apple Pay</td>
+<td>covered; sola destinazione secondo Q-006</td>
+</tr>
+<tr>
+<td>AC-01 (FP)</td>
+<td>SC-008</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>Ritorno dalla lista PSP alla scelta del metodo di pagamento</td>
+<td>metodo=BANCOMAT Pay</td>
+<td>covered; sola destinazione secondo Q-006</td>
+</tr>
+<tr>
+<td>AC-01 (FP)</td>
+<td>SC-009</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>Ritorno dalla lista PSP alla scelta del metodo di pagamento</td>
+<td>metodo=MyBank</td>
+<td>covered; sola destinazione secondo Q-006</td>
+</tr>
+<tr>
+<td>AF; EF</td>
+<td>SC-001..SC-010</td>
+<td>docs/use-cases/features/checkout/FEAT_004_Checkout_Back_Navigation_Control.feature</td>
+<td>Tutti gli scenari della feature</td>
+<td>not-applicable</td>
+<td>covered; sezioni esplicitamente prive di casi secondo Q-004, nessun negativo inventato</td>
+</tr>
+</tbody>
+</table>
+<p>Coverage indica copertura del requisito nel testo Gherkin, non test superati. Nessun controllo dati su Home/scelta metodo viene presentato come eseguito o coperto: e escluso dall'applicabilita tramite conferma umana Q-006. Le pagine di riepilogo finale documentano Annulla e Modifica, non un ulteriore Indietro: quei controlli e le sequenze anti-loop non sono aggiunti al perimetro.</p>
+<h2 id="data-and-oracles">Data and oracles</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario id</th>
+<th>Combination id or not-applicable</th>
+<th>Data ids</th>
+<th>Oracle ids</th>
+<th>Applied values or unresolved ids</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SC-001</td>
+<td>C-001</td>
+<td>Nessuno</td>
+<td>O-001, O-007</td>
+<td>Origine /inserisci-dati-avviso; destinazione /; dati non applicabili</td>
+</tr>
+<tr>
+<td>SC-002</td>
+<td>C-002</td>
+<td>D-001, D-002</td>
+<td>O-002</td>
+<td>Avviso 302042025112600001; CF 77777777777; destinazione /inserisci-dati-avviso; Q-008</td>
+</tr>
+<tr>
+<td>SC-003</td>
+<td>C-003</td>
+<td>D-001, D-002</td>
+<td>O-003</td>
+<td>Stessa coppia; destinazione /dati-pagamento e confronto degli input; Q-008</td>
+</tr>
+<tr>
+<td>SC-004</td>
+<td>C-004</td>
+<td>D-001, D-002, D-003</td>
+<td>O-004, O-007</td>
+<td>Stessa coppia; email mail@pagopa.it nei 2 campi; metodo Carta di Credito; destinazione /scegli-metodo; Q-008</td>
+</tr>
+<tr>
+<td>SC-005</td>
+<td>C-005</td>
+<td>D-001..D-007</td>
+<td>O-005</td>
+<td>Stessa coppia ed email; PAN 5255000260000014, scadenza 12/30, CVV 123, intestatario Test test; destinazione /inserisci-carta; Q-008</td>
+</tr>
+<tr>
+<td>SC-006</td>
+<td>C-006</td>
+<td>D-001, D-002, D-003</td>
+<td>O-004, O-007</td>
+<td>Stessa coppia ed email; PayPal; destinazione /scegli-metodo; Q-008</td>
+</tr>
+<tr>
+<td>SC-007</td>
+<td>C-007</td>
+<td>D-001, D-002, D-003</td>
+<td>O-004, O-007</td>
+<td>Stessa coppia ed email; Apple Pay; destinazione /scegli-metodo; Q-008</td>
+</tr>
+<tr>
+<td>SC-008</td>
+<td>C-008</td>
+<td>D-001, D-002, D-003</td>
+<td>O-004, O-007</td>
+<td>Stessa coppia ed email; BANCOMAT Pay; destinazione /scegli-metodo; Q-008</td>
+</tr>
+<tr>
+<td>SC-009</td>
+<td>C-009</td>
+<td>D-001, D-002, D-003</td>
+<td>O-004, O-007</td>
+<td>Stessa coppia ed email; MyBank; destinazione /scegli-metodo; Q-008</td>
+</tr>
+<tr>
+<td>SC-010</td>
+<td>C-010</td>
+<td>D-001, D-002, D-003</td>
+<td>O-006</td>
+<td>Stessa coppia ed email; destinazione /inserisci-email; entrambi i campi uguali all'email inserita; Q-008</td>
+</tr>
+</tbody>
+</table>
+<p>D/O sono definiti in <code>01-context.md</code>; C e risoluzioni per ciascun D/SC in <code>02-test-data.md</code>.</p>
+<p>Input: D-001..D-007 hanno valori documentati e ammessi, nessun TODO. Il CF e provided da <code>02-test-data.md#S-001</code>; avviso, email e carta provengono da <code>02-test-data.md#S-002</code>, approved con Q-007. La riga Mastercard documenta insieme i 4 campi e il carattere sintetico dell'intestatario: non sono stati generati o mescolati dati di carte diverse. Formati e scadenza controllati staticamente; fitness ancora unverified per D-001, D-004, D-006, D-007 e combinazioni dipendenti. Availability evidence e documented-not-checked, mai user-confirmed per stati correnti. Restano da predisporre/verificare avviso valido/non pagato, accettazione carta e disponibilita dei metodi/lista PSP. Nessun valore aggiuntivo da reperire e nessun catalogo Markdown salvato o modificato: Optional catalogue not-requested.</p>
+<p>Oracle: le destinazioni O-001..O-005 e i pulsanti provengono da <code>01-context.md#S-002</code>; O-006 da <code>01-context.md#S-005</code> con conferma <code>01-context.md#S-006</code>. Le uguaglianze con gli input sono prescritte da AC-01/postcondizioni e conferma <code>01-context.md#S-003</code>; O-007 e l'eccezione di applicabilita confermata in <code>01-context.md#S-006</code>. Nessun testo di errore, importo o tempo viene ricavato dai dati o dall'ambiente osservato.</p>
+<h2 id="questions">Questions</h2>
+<table>
+<thead>
+<tr>
+<th>Question id</th>
+<th>Scenario id</th>
+<th>Missing detail or conflict</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q-001</td>
+<td>SC-001..SC-010</td>
+<td>Identita e percorsi confermati; task ignorato e rappresentato da unknown, senza associazione Jira</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-002</td>
+<td>SC-001..SC-010</td>
+<td>Commento tracking mock #1234567890 confermato</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-003</td>
+<td>SC-001..SC-010</td>
+<td>Indietro applicativo, 1 ritorno e conservazione campi, CVV incluso, confermati</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-004</td>
+<td>SC-001..SC-010</td>
+<td>Nessun AF/EF previsto, confermato</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-005</td>
+<td>SC-010</td>
+<td>Ritorno scelta metodo verso email e conservazione entrambi i campi, confermati</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-006</td>
+<td>SC-001, SC-004, SC-006..SC-009</td>
+<td>Sola destinazione per Home/scelta metodo, confermata</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-007</td>
+<td>SC-002..SC-010</td>
+<td>Candidati approvati come non verificati con warning</td>
+<td>answered</td>
+</tr>
+<tr>
+<td>Q-008</td>
+<td>SC-002..SC-010</td>
+<td>Da predisporre/verificare stati e disponibilita correnti di avviso, carta, metodi e lista PSP</td>
+<td>open</td>
+</tr>
+</tbody>
+</table>
+<p>Nessuna lacuna funzionale bloccante resta nel perimetro concordato. L'espressione "pagina iniziale" dell'AC viene letta insieme a FP 1 e ai chiarimenti sulle singole pagine, non come richiesta di tornare indietro dalla Home. Il contrasto apparente tra coppia PSP generica del catalogo e percorso carta e delimitato dall'ammissione: per la carta si applica la destinazione specifica del documento funzionale, non quella generica.</p>
+<h2 id="checks">Checks</h2>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Method actually used</th>
+<th>Result</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Identita e provenienza handoff</td>
+<td>Lettura effettiva del registro e dei 2 report ai percorsi registrati; confronto frontmatter, Artifacts, History, fonti e decisioni</td>
+<td>Conforme: contesto revision 2 ready; dati revision 1 incomplete, consumabili per una bozza; UC/run/task/ambiente concordanti</td>
+<td>00-run.md revision 4 prima dell'assemblaggio; inputs del report dati e di questo report</td>
+</tr>
+<tr>
+<td>Struttura semantica</td>
+<td>Revisione manuale del contenuto composto: prerequisiti, azioni, osservazioni prima/dopo ritorno e origine di ogni confronto</td>
+<td>Conforme: nessuna azione del viaggio nascosta nel Contesto; nessuna azione business nei Then; And mantiene il ruolo del blocco precedente</td>
+<td>Mapping; sequenza Quando/Allora/Quando/Allora in ogni definizione</td>
+</tr>
+<tr>
+<td>Cardinalita e autonomia</td>
+<td>Conteggio manuale delle azioni Indietro nel contenuto da scrivere; verifica dei percorsi indipendenti</td>
+<td>1 pressione per ciascuna delle 7 definizioni, quindi 1 per ciascuno dei 10 casi; nessuna dipendenza da altri scenari</td>
+<td>6 scenari semplici e outline di 4 righe</td>
+</tr>
+<tr>
+<td>Conformita al profilo</td>
+<td>Controllo statico manuale di lingua, nome file, indentazione, commento, tag e tabelle</td>
+<td>Conforme: 004; italiano; 2/4/6 spazi; 7 definizioni e 10 casi, entrambi entro il massimo 12; tracking mock; un solo parametro variabile metodo con 4 valori distinti</td>
+<td>.github/profiles/gherkin.profile.yaml e .github/instructions/gherkin.instructions.md</td>
+</tr>
+<tr>
+<td>Completezza campi e confronti</td>
+<td>Confronto manuale con F/O/D/C, valori ammessi e specifiche dei 4 campi carta/2 email</td>
+<td>Conforme: PAN, scadenza, CVV, intestatario, codice avviso, CF e 2 email espliciti nei casi applicabili; nessun confronto basato su un token irrisolto</td>
+<td>Data and oracles; 01-context.md; 02-test-data.md</td>
+</tr>
+<tr>
+<td>Warning</td>
+<td>Confronto manuale con Scenario warnings del report dati</td>
+<td>Presenti prima dei tag di ogni definizione interessata, incluse tutte le 4 righe dell'outline; nessuna disponibilita corrente dichiarata verificata</td>
+<td>Q-007 e Q-008; 02-test-data.md</td>
+</tr>
+<tr>
+<td>Copertura e tracciabilita</td>
+<td>Riconciliazione manuale SC-001..SC-010 e unico AC-01 con righe outline, postcondizioni e chiarimenti</td>
+<td>Completa nel perimetro concordato; nessun AF/EF o variante negativa inventato</td>
+<td>Coverage; Q-004..Q-006</td>
+</tr>
+<tr>
+<td>Limiti di lettura</td>
+<td>Uso esclusivo di allegati, istruzioni/profilo, report correnti e catalogo Markdown ammesso; nessuna lettura della cartella feature</td>
+<td>Rispettati; nessuna esplorazione di src o docs/use-cases/features</td>
+<td>Fonti registrate; scrittura del solo nuovo file feature concordato</td>
+</tr>
+<tr>
+<td>Sintassi automatica, build e test</td>
+<td>Non eseguiti: il ruolo analista non esegue parser o test</td>
+<td>Non verificati automaticamente; controllo soltanto manuale, nessuna dichiarazione di test superati</td>
+<td>Nessun comando terminale eseguito</td>
+</tr>
+<tr>
+<td>ACE</td>
+<td>Letti persona, istruzioni ACE scoped e configurazione famiglie</td>
+<td>Nessuna lezione attiva da applicare/citare; nessuna famiglia assegnata; nessuna traccia scritta dall'analista</td>
+<td>.github/instructions/ace-qa-analyst.instructions.md; ace/config/project.json</td>
+</tr>
+</tbody>
+</table>
+<h2 id="engineer-handoff">Engineer handoff</h2>
+<p>Questa e una traduzione nuova, senza lettura di step o feature esistenti. Non viene dichiarata compatibilita con decorator gia implementati; nessun testo preesistente e stato modificato. I nuovi testi dovranno essere considerati esplicitamente nell'eventuale fase di implementazione, dopo la risoluzione della bozza, non riadattati a step scoperti in suite.</p>
+<ul>
+<li><strong>SC-001, tag finale 01:</strong> dalla Home apre l'inserimento manuale, verifica di trovarsi nella pagina avviso, preme Indietro 1 volta e verifica la Home. Nessun input o controllo di conservazione per la destinazione priva di campi.</li>
+<li><strong>SC-002, tag finale 02:</strong> inserisce la coppia avviso/ente, avanza al riepilogo e torna 1 volta alla compilazione. Entrambi i campi devono mostrare esattamente gli input del caso, senza reinserirli nei Then.</li>
+<li><strong>SC-003, tag finale 03:</strong> raggiunge l'email passando dal riepilogo dell'avviso, poi torna 1 volta. Il riepilogo deve esporre codice avviso e CF gia inseriti. Non verifica dati email, non ancora compilati, o valori derivati non richiesti.</li>
+<li><strong>SC-010, tag finale 04:</strong> compila email e conferma con lo stesso indirizzo, avanza alla scelta metodo e torna 1 volta. Verifica i 2 campi separatamente rispetto al valore originario, non semplicemente la loro uguaglianza reciproca.</li>
+<li><strong>SC-004, tag finale 05:</strong> sceglie Carta di Credito e torna dall'inserimento carta alla scelta metodo. Non compila dati carta e non pretende una selezione persistente non richiesta.</li>
+<li><strong>SC-005, tag finale 06:</strong> compila tutti i dati della carta della stessa riga approvata, raggiunge la lista PSP e torna 1 volta alla carta. Non seleziona un PSP, non paga. Verifica visibilita e conservazione di numero, scadenza, CVV e intestatario. Non omettere o correggere il CVV per aspettative di implementazione diverse: eventuali discrepanze richiedono un chiarimento del requisito.</li>
+<li><strong>SC-006..SC-009, tag finale 07:</strong> una riga indipendente per PayPal, Apple Pay, BANCOMAT Pay e MyBank. Stesso percorso avviso/email, selezione del metodo, lista PSP, 1 ritorno alla scelta metodo. Nessun ramo o passo opzionale nascosto nel parametro; nessun PSP scelto.</li>
+</ul>
+<p>Ogni caso parte da una Home preparata indipendentemente; i dati e la storia di navigazione da conservare nascono nei suoi When. Le osservazioni intermedie verificano il punto di partenza del ritorno, non causano ulteriori avanzamenti. Il pulsante Continua e qualificato dalla pagina per evitare ambiguita di azione, non prescrive selettori tecnici. L'ambiente, i metodi, lo stato dell'avviso e l'accettazione della carta restano prerequisiti da predisporre/verificare separatamente. Non consultare caselle email, completare pagamenti o introdurre accessi autenticati per questo UC.</p>
+<p>Friction rilevata per l'orchestratore: dettagli mancanti risolti con 2 gruppi di conferme umane; tool domande e lettura web non disponibili, chiarimenti ottenuti in chat; nessun accesso terminale o tentativo di aggiramento. Conferme registrate nelle Q pertinenti. Nessuna lezione ACE attiva, nessuna traccia o playbook scritto.</p>
+<h2 id="readiness">Readiness</h2>
+<p><strong>bozza</strong>. Feature/report revision 1 prodotti da uc-to-feature; contesto revision 2 ready di uc-scenario-context; dati revision 1 incomplete di uc-test-data. Nessun valore mancante e nessuna lacuna funzionale aperta nel perimetro confermato; resta Q-008: disponibilita e idoneita correnti non accertate. L'approvazione Q-007 permette l'inclusione dei candidati, non li trasforma in dati verificati.</p>
+<p>La matrice copre AC-01, FP, precondizioni e postcondizioni nel perimetro concordato, senza rivendicare esecuzione. Il controllo statico manuale non equivale a validazione automatica della sintassi, implementazione degli step o test applicativi superati. Non e pronta per lo sviluppo/esecuzione automatici finche i prerequisiti irrisolti restano tali. Il numero di tracking e mock e nessun task Jira e associato.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../../..", "features": [], "search": "../../../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

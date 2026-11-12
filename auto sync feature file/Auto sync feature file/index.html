@@ -1,0 +1,1079 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="PagoPA">
+      
+      
+        <link rel="canonical" href="https://pagopa.github.io/pagopa-platform-integration-test/auto%20sync%20feature%20file/Auto%20sync%20feature%20file/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Auto Sync Feature File Documentation - PagoPA platform integration test</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#auto-sync-feature-file-documentation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="PagoPA platform integration test" class="md-header__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PagoPA platform integration test
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Auto Sync Feature File Documentation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="PagoPA platform integration test" class="md-nav__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PagoPA platform integration test
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/ebollo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ebollo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/tas_pass/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_pass
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/wisp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    wisp
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/tas_mixed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_mixed
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/fdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/fdr3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/cup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduzione-e-finalita" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Introduzione e Finalità
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spiegazione-tecnica-del-funzionamento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spiegazione Tecnica del Funzionamento
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Spiegazione Tecnica del Funzionamento">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-autenticazione" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Autenticazione
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-caricamento-dei-componenti-html-page_components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Caricamento dei componenti HTML (page_components/)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-recupero-della-pagina-confluence-esistente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Recupero della pagina Confluence esistente
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-parsing-del-feature-file-e-costruzione-del-corpo-html" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Parsing del feature file e costruzione del corpo HTML
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-sostituzione-del-codice-inline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Sostituzione del codice inline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-upload-della-pagina-aggiornata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Upload della pagina aggiornata
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requisiti-per-il-feature-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requisiti per il Feature File
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Requisiti per il Feature File">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#linee-obbligatorie-iniziali" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linee obbligatorie iniziali
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linguaggio-e-keyword-riconosciute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linguaggio e keyword riconosciute
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vincoli-sulla-struttura-del-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vincoli sulla struttura del file
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tag-e-direttive-speciali" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tag e direttive speciali
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#formattazione-inline-del-codice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Formattazione inline del codice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#esempio-completo-di-feature-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Esempio completo di feature file
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#requisiti-per-la-pagina-confluence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requisiti per la pagina Confluence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#github-action" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GitHub Action
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GitHub Action">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flusso-di-esecuzione" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flusso di esecuzione
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#script-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Script Python
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Script Python">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flusso-di-esecuzione-dello-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flusso di esecuzione dello script
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="auto-sync-feature-file-documentation">Auto Sync Feature File Documentation</h1>
+<h2 id="introduzione-e-finalita">Introduzione e Finalità</h2>
+<p>Lo script <code>create_feature_page.py</code> ha lo scopo di sincronizzare automaticamente il contenuto di un file <code>.feature</code> Gherkin (in lingua italiana) con una pagina Confluence esistente, tramite GitHub Actions. Ad ogni esecuzione, lo script legge il feature file, ne interpreta la struttura riga per riga, costruisce un corpo HTML strutturato e lo carica sulla pagina Confluence corrispondente, sovrascrivendo il contenuto esistente, preservando solo l'header già presente sulla pagina.</p>
+<p>Lo script è pensato per mantenere la documentazione dei feature files sempre allineata al codice, senza intervento manuale.</p>
+<hr />
+<h2 id="spiegazione-tecnica-del-funzionamento">Spiegazione Tecnica del Funzionamento</h2>
+<h3 id="1-autenticazione">1. Autenticazione</h3>
+<p>All'avvio, lo script legge e utilizza le credenziali Confluence per costruire un oggetto <code>HTTPBasicAuth</code> usato in tutte le chiamate HTTP successive.</p>
+<h3 id="2-caricamento-dei-componenti-html-page_components">2. Caricamento dei componenti HTML (<code>page_components/</code>)</h3>
+<p>Prima di elaborare il feature file, lo script legge una serie di template HTML parziali contenuti nella cartella <code>page_components/</code>, posizionata nella cartella .github. I template sono file <code>.txt</code> con segnaposto (<code>{placeholder}</code>) che vengono sostituiti dinamicamente durante la costruzione della pagina:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Scopo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scenario_header.txt</code></td>
+<td>Intestazione di ogni scenario (titolo + link opzionale); contiene i segnaposto <code>{scenario_title}</code> e <code>{link}</code></td>
+</tr>
+<tr>
+<td><code>table_header.txt</code></td>
+<td>Header della tabella HTML che racchiude gli step del singolo scenario</td>
+</tr>
+<tr>
+<td><code>table_cell.txt</code></td>
+<td>Cella della tabella HTML per un gruppo di step; contiene il segnaposto <code>{step}</code></td>
+</tr>
+<tr>
+<td><code>step_content.txt</code></td>
+<td>Singolo step (Given/When/Then/And) formattato; contiene il segnaposto <code>{step}</code></td>
+</tr>
+<tr>
+<td><code>scenario_link.txt</code></td>
+<td>Blocco link da inserire nell'header dello scenario; contiene i segnaposto <code>{anchor}</code>, <code>{space}</code>, <code>{page}</code></td>
+</tr>
+<tr>
+<td><code>code_macro.txt</code></td>
+<td>Macro Confluence per blocco di codice (usata per gli Esempi degli Scenario Outline); contiene il segnaposto <code>{code_block}</code></td>
+</tr>
+<tr>
+<td><code>inline_code.txt</code></td>
+<td>Template per la formattazione inline del codice; contiene il segnaposto <code>{inline_code}</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-recupero-della-pagina-confluence-esistente">3. Recupero della pagina Confluence esistente</h3>
+<p>Lo script legge la <strong>prima riga</strong> del feature file per ricavare l'ID della pagina Confluence. Tramite l'API REST v2 di Confluence (<code>GET /wiki/api/v2/pages/&lt;id&gt;?body-format=storage</code>), recupera il contenuto corrente della pagina in formato Storage (XHTML), che diventa il punto di partenza su cui viene <strong>accodato</strong> il nuovo contenuto generato. In questo modo l'header esistente sulla pagina viene preservato intatto.</p>
+<h3 id="4-parsing-del-feature-file-e-costruzione-del-corpo-html">4. Parsing del feature file e costruzione del corpo HTML</h3>
+<p>Lo script scorre il file riga per riga e, in base alla parola chiave che inizia la riga, decide quale blocco HTML aggiungere al contenuto della pagina. L'engine tiene traccia dell'ultimo keyword significativo incontrato (<code>last_ins</code>) per gestire i flussi multi-riga (es. una sequenza di step <code>E</code> dopo un <code>Allora</code>, oppure le righe della tabella degli Esempi).</p>
+<p>La logica dei blocchi principali è la seguente:</p>
+<ul>
+<li><strong>Tag <code>@...</code></strong> → viene estratto l'ID numerico dello scenario (terzo segmento dopo <code>_</code>) da utilizzare insieme al titolo del blocco Scenario successivo.</li>
+<li><strong><code>Scenario</code> / <code>Scenario Outline</code></strong> → apre un nuovo blocco scenario: viene inserito l'header dello scenario (con l'ID e il link, se presenti) e l'intestazione della tabella degli step.</li>
+<li><strong><code>Dato</code></strong> → primo step del flusso; viene accodato al buffer <code>content_to_add</code> senza ancora chiudere celle (non esiste una cella "precedente").</li>
+<li><strong><code>Quando</code> / <code>Allora</code></strong> → chiude la cella corrente (flush del buffer), apre la successiva accodando il nuovo step al buffer.</li>
+<li><strong><code>E</code></strong> → step di continuazione; viene sempre accodato al buffer corrente senza flush.</li>
+<li><strong><code>Esempi:</code></strong> → attiva la modalità raccolta del blocco codice; il contenuto viene accumulato nel buffer.</li>
+<li><strong><code>|</code></strong> (pipe) → se si è in modalità <code>Esempi</code>, ogni riga della tabella Gherkin viene aggiunta al buffer del blocco codice.</li>
+<li><strong>Riga vuota o non riconosciuta</strong> → se <code>last_ins == Allora</code>, esegue il flush finale della cella e chiude la tabella (<code>&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;</code>); se <code>last_ins == Esempi</code>, inserisce il blocco codice Confluence con tutto il contenuto accumulato.</li>
+</ul>
+<h3 id="5-sostituzione-del-codice-inline">5. Sostituzione del codice inline</h3>
+<p>Prima dell'analisi di ogni riga, lo script applica la regex <code>&lt;\s*([A-Za-z0-9_]+)\s*&gt;</code> per trasformare ogni occorrenza nel formato <code>&lt;valore&gt;</code> nel corrispondente template di codice inline Confluence, sostituendo il segnaposto <code>{inline_code}</code>.</p>
+<h3 id="6-upload-della-pagina-aggiornata">6. Upload della pagina aggiornata</h3>
+<p>Una volta costruito il contenuto completo, lo script lo invia alla pagina Confluence tramite <code>PUT /wiki/api/v2/pages/&lt;id&gt;</code>, incrementando di 1 il numero di versione corrente e impostando il messaggio <code>"Updated feature file content via GitHub Action"</code>.</p>
+<hr />
+<h2 id="requisiti-per-il-feature-file">Requisiti per il Feature File</h2>
+<p>Il feature file deve rispettare una struttura rigorosamente definita affinché lo script possa riconoscere e elaborare correttamente tutti i componenti.</p>
+<h3 id="linee-obbligatorie-iniziali">Linee obbligatorie iniziali</h3>
+<ul>
+<li>
+<p><strong>Prima riga</strong> — deve contenere l'ID della pagina Confluence nel formato <code>#{idPagina}</code>. Il carattere <code>#</code> e gli spazi vengono rimossi automaticamente dallo script.
+  <code>#3111586225</code></p>
+</li>
+<li>
+<p><strong>Seconda riga</strong> — deve riportare il linguaggio utilizzato nel formato <code>#language:it</code>. L'esecuzione fallirà se il linguaggio non è italiano (<code>it</code>). Questa riga è <strong>obbligatoria</strong>.
+  <code>#language:it</code></p>
+</li>
+</ul>
+<h3 id="linguaggio-e-keyword-riconosciute">Linguaggio e keyword riconosciute</h3>
+<ul>
+<li>Il feature file <strong>deve essere scritto in italiano</strong>, almeno per quanto riguarda le keyword Gherkin (Contesto, Scenario, Dato, Quando, Allora, Esempi).</li>
+<li>Lo script riconosce esclusivamente le seguenti keyword:</li>
+<li><code>Contesto:</code> — sezione preliminare con punti di contesto comuni a più scenario</li>
+<li><code>Scenario</code> — apre un nuovo blocco scenario</li>
+<li><code>Dato</code> — step di tipo <em>Given</em></li>
+<li><code>Quando</code> — step di tipo <em>When</em></li>
+<li><code>Allora</code> — step di tipo <em>Then</em></li>
+<li><code>E</code> — step di tipo <em>And</em> (continuazione del blocco precedente)</li>
+<li><code>Esempi:</code> — indica la sezione degli esempi di uno Scenario Outline</li>
+<li><code>|</code> — riga della tabella degli esempi (riconosciuta solo dopo <code>Esempi:</code>)</li>
+</ul>
+<h3 id="vincoli-sulla-struttura-del-file">Vincoli sulla struttura del file</h3>
+<ul>
+<li><strong>Non utilizzare keyword o pipe come prima parola/carattere della riga</strong> se non in questi contesti specifici:</li>
+<li>Per i singoli punti della sezione di Contesto</li>
+<li>Per gli step dello scenario</li>
+<li>
+<p>Per la tabella degli Esempi</p>
+</li>
+<li>
+<p><strong>Sezione di Contesto</strong> — se presente, ogni riga di contesto deve iniziare con una variante di <code>Dato</code> (<code>Dato</code>, <code>Data</code>, <code>Dati</code>, <code>Date</code>) oppure con <code>E</code>. Questa sezione viene elaborata e inserita in un blocco di contesto separato sulla pagina Confluence.</p>
+</li>
+</ul>
+<h3 id="tag-e-direttive-speciali">Tag e direttive speciali</h3>
+<ul>
+<li>
+<p><strong>Suite e scenario ID</strong> — prima della riga del link e dello scenario, inserire un tag nel formato <code>@SUITE_NNN_NN</code> (es. <code>@CUP_001_01</code>). Il terzo segmento (numero dello scenario) viene estratto e aggiunto al titolo del blocco sulla pagina Confluence.</p>
+</li>
+<li>
+<p><strong>Link a pagina Confluence</strong> — una riga nel formato <code>#link:{anchor}|{confluence_area_id}|{confluence_page_name}</code> deve precedere il <code>Scenario</code> a cui si riferisce. Inserisce un link cliccabile nell'header dello scenario. I tre valori sono:</p>
+</li>
+<li><code>{anchor}</code>: ancora HTML di destinazione della pagina Confluence. <strong>Nota bene</strong>: se l'anchor contiene un emoji (verificabile dall'URL della pagina), l'emoji <strong>deve essere presente</strong> anche all'interno di questo campo.</li>
+<li><code>{confluence_area_id}</code>: ID o chiave dello space Confluence</li>
+<li><code>{confluence_page_name}</code>: titolo della pagina Confluence di destinazione</li>
+</ul>
+<h3 id="formattazione-inline-del-codice">Formattazione inline del codice</h3>
+<p>All'interno di qualsiasi step, i valori racchiusi tra parentesi angolari (es. <code>&lt;nomeVariabile&gt;</code>) vengono automaticamente formattati come codice inline nel template Confluence. La sintassi supportata è:</p>
+<pre><code>&lt;[A-Za-z0-9_]+&gt;
+</code></pre>
+<h3 id="esempio-completo-di-feature-file">Esempio completo di feature file</h3>
+<pre><code>#3111586225                           
+#language:it
+@CUP_001
+Funzionalità: Creazione di una posizione debitoria per CUP
+
+  Contesto:
+    Dati ...
+    E ...
+
+#----------------------------------------------------------
+# Happy Path: flusso di creazione della posizione debitoria
+#----------------------------------------------------------
+
+@positivo
+@CUP_001_01
+#link:📜-Dettaglio-flusso-principale|IQCGJ|[CUP - 2027] UC-01: Creazione Posizione Debitoria
+Scenario: Posizione debitoria per CUP creata correttamente
+  Dato Il PSP ha ricevuto dalla Corporate un file di input valido che include i dati mandatori  
+  E Il file di input contiene una sola chiave di identificazione Ente
+  Quando Il PSP Invia la primitiva demandPaymentNotice includendo i dati mandatori
+  E Il PSP Invia la primitiva demandPaymentNotice valorizzando un parametro identificativo
+  Allora Viene creata correttamente la posizione debitoria
+  E La posizione debitoria contiene il campo remittanceInformation: /RFB/{IUV}/CNR/{CF_Debitore}/TXT/Canone Unico Patrimoniale Saldo {anno}
+  E La posizione debitoria contiene il campo payment.option.description : Canone Unico Patrimoniale {anno}
+  E Il PSP Riceve la risposta demandPaymentNotice res con l'esito della creazione nel formato previsto per l'output
+</code></pre>
+<h3 id="requisiti-per-la-pagina-confluence">Requisiti per la pagina Confluence</h3>
+<ul>
+<li><strong>La pagina deve esistere</strong> — lo script non crea nuove pagine; recupera e aggiorna una pagina già esistente tramite il suo ID.</li>
+<li><strong>L'header deve essere già presente sulla pagina</strong> — lo script <strong>preserva</strong> il contenuto già esistente sulla pagina e vi <strong>accoda</strong> il nuovo contenuto generato dal feature file. Tutto ciò che si vuole mantenere fisso (es. titolo, introduzione, badge) deve essere inserito manualmente sulla pagina prima della prima esecuzione.</li>
+<li><strong>Il tag <code>h2</code> non deve essere inserito manualmente nella parte iniziale della pagina</strong> — lo script usa il primo <code>h2</code> come delimitatore per capire dove termina la sezione da preservare e da quale punto iniziare a rigenerare il contenuto automatico. Un <code>h2</code> aggiunto manualmente in quella sezione può quindi alterare il punto di taglio e compromettere il risultato finale.</li>
+<li><strong>La pagina deve essere accessibile</strong> — l'account le cui credenziali sono usate (<code>CONFLUENCE_EMAIL</code> / <code>CONFLUENCE_KEY</code>) deve avere permessi di lettura e scrittura sulla pagina target.</li>
+<li><strong>Le variabili d'ambiente devono essere configurate</strong> nel workflow GitHub Actions:</li>
+<li><code>CONFLUENCE_EMAIL</code>: indirizzo email dell'account Atlassian</li>
+<li><code>CONFLUENCE_KEY</code>: API token dell'account Atlassian</li>
+</ul>
+<hr />
+<h2 id="github-action">GitHub Action</h2>
+<p>La GitHub Action viene lanciata automaticamente alla chiusura di una pull request verso il branch <code>main</code>, ma è anche eseguibile manualmente tramite il workflow dispatch.</p>
+<h3 id="flusso-di-esecuzione">Flusso di esecuzione</h3>
+<p>L'action segue i seguenti step:</p>
+<ol>
+<li><strong>Specifica delle modalità di esecuzione</strong> — configurazione dell'ambiente e delle opzioni di esecuzione</li>
+<li><strong>Specifica dell'environment</strong> — lettura delle variabili di configurazione (credenziali Confluence, ecc.)</li>
+<li><strong>Git checkout</strong> — checkout del branch corrente per ottenere le ultime modifiche</li>
+<li><strong>Git diff</strong> — identificazione dei file modificati dalla PR, filtrati per estensione <code>.feature</code></li>
+<li><strong>Setup dell'ambiente Python</strong> — installazione e configurazione di Python nella runner</li>
+<li><strong>Esecuzione dello script Python</strong> — il file <code>create_feature_page.py</code> viene eseguito una volta per ogni file <code>.feature</code> trovato durante il git diff</li>
+</ol>
+<hr />
+<h2 id="script-python">Script Python</h2>
+<p>Lo script <code>create_feature_page.py</code> si occupa di estrarre le informazioni dal feature file, recuperare la pagina Confluence da modificare, costruire il nuovo corpo della pagina e pubblicarlo su Confluence.</p>
+<h3 id="flusso-di-esecuzione-dello-script">Flusso di esecuzione dello script</h3>
+<ol>
+<li><strong>Creazione dell'oggetto di autenticazione</strong> — lettura delle variabili d'ambiente <code>CONFLUENCE_EMAIL</code> e <code>CONFLUENCE_KEY</code> per costruire l'oggetto <code>HTTPBasicAuth</code></li>
+<li><strong>Recupero del metadata del feature file</strong> — lettura della prima riga per ottenere l'ID della pagina Confluence e della seconda riga per verificare che la lingua sia impostata a italiano</li>
+<li><strong>Recupero della pagina Confluence</strong> — esecuzione di una chiamata HTTP GET all'API REST v2 di Confluence per ottenere il body della pagina in formato Storage (XHTML)</li>
+<li><strong>Caricamento dei template HTML</strong> — lettura dalla cartella <code>page_components/</code> dei file <code>.txt</code> contenenti i blocchi XHTML da usare per costruire la pagina</li>
+<li><strong>Parsing e costruzione del body</strong> — iterazione riga per riga sul feature file, aggiunta dinamica dei blocchi XHTML appropriati in base al contenuto e ai keyword riconosciuti</li>
+<li><strong>Aggiornamento della pagina Confluence</strong> — esecuzione di una chiamata HTTP PUT all'API REST v2 di Confluence per inviare il nuovo body, incrementando il numero di versione della pagina</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

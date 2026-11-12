@@ -1,0 +1,1343 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="PagoPA">
+      
+      
+        <link rel="canonical" href="https://pagopa.github.io/pagopa-platform-integration-test/use-cases/uc-workflow/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Workflow UC: fonti, dati e feature - PagoPA platform integration test</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#workflow-uc-fonti-dati-e-feature" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="PagoPA platform integration test" class="md-header__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PagoPA platform integration test
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Workflow UC: fonti, dati e feature
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="PagoPA platform integration test" class="md-nav__button md-logo" aria-label="PagoPA platform integration test" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PagoPA platform integration test
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/pagopa/pagopa-platform-integration-test" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pagopa/pagopa-platform-integration-test
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/ebollo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ebollo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/tas_pass/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_pass
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/wisp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    wisp
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/tas_mixed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_mixed
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/fdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/fdr3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fdr3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/cup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#percorsi-identita-e-formati" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Percorsi, identita e formati
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Percorsi, identita e formati">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identita-distinte-adr-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identita distinte (ADR-07)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vincoli-dei-percorsi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vincoli dei percorsi
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#requisiti-casi-e-valori" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requisiti, casi e valori
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#focus-e-decisioni-interpretative" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Focus e decisioni interpretative
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#varianti-dati-e-riferimenti-ac-ai-flussi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Varianti dati e riferimenti AC ai flussi
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#registro-e-proprieta-degli-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registro e proprieta degli output
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#esecuzione-automatica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Esecuzione automatica
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#esecuzione-manuale-uno-step-alla-volta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Esecuzione manuale, uno step alla volta
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ripresa-invalidazione-e-controlli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ripresa, invalidazione e controlli
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ripresa, invalidazione e controlli">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#conferma-di-continuita-alla-ripresa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conferma di continuita alla ripresa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#invalidazione-e-stato-della-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Invalidazione e stato della run
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verifica-del-contratto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verifica del contratto
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fonti-e-portabilita" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fonti e portabilita
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="workflow-uc-fonti-dati-e-feature">Workflow UC: fonti, dati e feature</h1>
+<p>Questo e il contratto operativo <code>uc-workflow/v1</code>. Le tre skill condividono
+il prefisso <code>uc-</code> e lavorano con il solo agente <code>QA-analyst</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Ordine</th>
+<th>Skill</th>
+<th>Responsabilita</th>
+<th>Output obbligatorio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>uc-to-feature, oppure la prima skill invocata manualmente</td>
+<td>Confermare input e percorso; inizializzare il registro</td>
+<td><code>00-run.md</code></td>
+</tr>
+<tr>
+<td>1</td>
+<td><a href="../../.github/skills/uc-scenario-context/SKILL.md">uc-scenario-context</a></td>
+<td>Precisare il comportamento e i valori attesi dalle fonti</td>
+<td><code>01-context.md</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><a href="../../.github/skills/uc-test-data/SKILL.md">uc-test-data</a></td>
+<td>Risolvere i dati in ingresso, le combinazioni e gli stati</td>
+<td><code>02-test-data.md</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><a href="../../.github/skills/uc-to-feature/SKILL.md">uc-to-feature</a></td>
+<td>Usare i due report per produrre Gherkin e copertura</td>
+<td>Percorsi <code>.feature</code> concordati e <code>03-feature-report.md</code></td>
+</tr>
+</tbody>
+</table>
+<p>Non genera UC dalla documentazione, Python, test eseguiti o commit automatici.
+I nomi precedenti <code>document-scenario-context</code> e <code>resolve-test-data</code> sono
+sostituiti dai nuovi nomi; <code>uc-to-feature</code> resta invariato. Non sono alias o skill
+duplicate. Riavviare/ricaricare la discovery delle skill nell'harness se mostra
+ancora i vecchi comandi. I comandi slash richiedono supporto dell'harness; in
+alternativa chiedere esplicitamente al QA-analyst di leggere e usare la skill.
+L'instradamento al solo analista e una prescrizione, non un controllo di accesso
+garantito dal frontmatter.</p>
+<h2 id="percorsi-identita-e-formati">Percorsi, identita e formati</h2>
+<p>Una esecuzione riguarda <strong>un UC</strong>; piu UC usano registri distinti. Confermare
+con l'umano task id, UC id, input UC, revisione UC, ambiente, percorsi feature e:</p>
+<p><code>docs/use-cases/workflow-runs/&lt;task-id&gt;/&lt;uc-id&gt;/&lt;run-id&gt;/</code></p>
+<h3 id="identita-distinte-adr-07">Identita distinte (ADR-07)</h3>
+<p>Qui <code>task_id</code> e il nome storico del campo che identifica la lavorazione UC:
+resta stabile quando si riprende la stessa run. Non e il codice Jira
+<code>PQ-&lt;cifre&gt;</code> assegnato all'umano, ne l'ACE <code>task_id</code> della particolare richiesta
+in chat. Piu richieste ACE, con identificativi distinti, possono contribuire
+alla stessa lavorazione UC e allo stesso ticket Jira.</p>
+<p>Riutilizzare l'identita UC confermata alla ripresa; non rinominare directory o
+riscrivere il frontmatter dei report per adeguarli al nuovo identificativo ACE.
+Nella restituzione all'orchestratore distinguere Jira (se noto), identita UC
+(<code>task_id</code>, <code>uc_id</code>, <code>run_id</code>) e ACE request ID ricevuto per la richiesta corrente.
+Se serve un collegamento persistente, usare History con un evento amministrativo
+reale, senza nuovi campi o invalidazioni dei contenuti.
+<code>uc-workflow/v1</code>, template e report storici mantengono i campi e i valori esistenti.</p>
+<h3 id="vincoli-dei-percorsi">Vincoli dei percorsi</h3>
+<ul>
+<li><code>run-id</code>: <code>YYYYMMDD-NN</code>, data reale e progressivo libero a due cifre.</li>
+<li><code>task-id</code> e <code>uc-id</code>: identificativi concordati, solo lettere, cifre e trattini.
+  Vietati segmenti <code>..</code>, separatori, percorsi assoluti e nomi derivati dai dati.</li>
+<li>Riutilizzare una run solo su richiesta esplicita; non scegliere il report
+  "piu recente" tramite glob. Non sovrascrivere output di un'altra run.</li>
+<li>UC incollato in chat: registrare un riferimento stabile al messaggio e una
+  revisione confermata dall'umano, senza creare o modificare un UC sorgente.</li>
+<li>I percorsi nei documenti sono relativi alla root del repository, con <code>/</code>;
+  i tool sul sistema Windows usano percorsi nativi con <code>\</code>.</li>
+</ul>
+<p>Usare esattamente i template in <a href="workflow-templates/">workflow-templates</a>.
+Ogni report e Markdown UTF-8 con frontmatter YAML, seguito dalle intestazioni
+e tabelle del template, nello stesso ordine. Il testo descrittivo e in italiano;
+nomi dei campi, intestazioni strutturali e valori enumerati restano quelli del
+contratto. Nessun campo obbligatorio puo essere omesso. <code>unknown</code> per metadati
+non noti; liste vuote <code>[]</code>; sezioni senza elementi contengono <code>Nessuno</code>.
+Le tabelle conservano le colonne: escape <code>|</code> nei valori e nessuna riga fittizia.</p>
+<p>Metadati comuni:</p>
+<ul>
+<li><code>schema</code>: <code>uc-workflow/v1</code>; <code>artifact</code>: enum definito nel template.</li>
+<li><code>producer_skill</code>: nome esatto della skill che ha scritto il documento.</li>
+<li><code>task_id</code>, <code>uc_id</code>, <code>run_id</code>, <code>uc_input</code>, <code>uc_revision</code>, <code>environment</code>:
+  identita concordata; la revisione non va dedotta da una data di accesso.</li>
+<li><code>revision</code>: intero positivo, incrementato a ogni aggiornamento persistito.</li>
+<li><code>status</code>: <code>ready</code>, <code>incomplete</code> o <code>blocked</code> per i report; il registro usa
+  <code>in_progress</code>, <code>draft</code>, <code>complete</code> o <code>blocked</code>.</li>
+<li><code>updated_at</code>: timestamp reale ISO 8601 con fuso orario.</li>
+<li><code>inputs</code>: lista di oggetti <code>{path, revision}</code>, solo artefatti a monte realmente
+  letti. Le fonti esterne sono nelle tabelle Sources, non in questa lista.</li>
+</ul>
+<p>Vocabolari delle tabelle (non sinonimi):</p>
+<table>
+<thead>
+<tr>
+<th>Colonna</th>
+<th>Valori ammessi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Artifacts.State</td>
+<td><code>not_created</code>, <code>ready</code>, <code>incomplete</code>, <code>blocked</code>, <code>stale</code></td>
+</tr>
+<tr>
+<td>Sources.Admission e Data resolution.Admission</td>
+<td><code>provided</code>, <code>approved</code>, <code>pending-approval</code>, <code>rejected</code>, <code>unknown</code></td>
+</tr>
+<tr>
+<td>Functional evidence.State e Oracles.State</td>
+<td><code>supported</code>, <code>unresolved</code>, <code>conflict</code></td>
+</tr>
+<tr>
+<td>Fitness</td>
+<td><code>fit</code>, <code>unverified</code>, <code>unfit</code></td>
+</tr>
+<tr>
+<td>Questions.State e Decisions.State</td>
+<td><code>open</code>, <code>answered</code>, <code>declined</code>, <code>pending-approval</code></td>
+</tr>
+<tr>
+<td>Timing semantics</td>
+<td><code>maximum</code>, <code>minimum</code>, <code>exact</code>, <code>not-applicable</code>, <code>unknown</code></td>
+</tr>
+<tr>
+<td>Coverage and reason</td>
+<td><code>covered</code>, <code>partial</code>, <code>uncovered</code>, seguito da una motivazione se non covered</td>
+</tr>
+<tr>
+<td>Feature outputs.Write result</td>
+<td><code>written</code>; file non scritti non compaiono in questa tabella</td>
+</tr>
+<tr>
+<td>Optional catalogue</td>
+<td><code>not-requested</code>, <code>not-saved</code>, <code>pending-confirmation</code>, oppure percorso realmente salvato con decisione</td>
+</tr>
+</tbody>
+</table>
+<p>Nel registro aggiungere una riga <code>feature</code> per ogni <code>.feature</code> scritto:
+produttore <code>uc-to-feature</code>, percorso concordato, revisione locale incrementale
+e stato <code>ready</code> o <code>incomplete</code> coerente con il report finale. I report hanno
+sempre le tre righe previste, anche quando non creati. <code>inputs</code> registra solo
+file letti: un report finale bloccato per prerequisiti mancanti usa la lista
+dei soli input effettivi (anche <code>[]</code>), non i percorsi fittizi del template.
+Se un artefatto dichiarato non esiste, correggere il registro con l'errore e
+non avanzare.</p>
+<p><code>Availability evidence</code> contiene <code>documented-not-checked</code>, <code>user-confirmed</code>
+oppure <code>unknown-to-prepare</code>, seguito da fonte, scopo e data se presenti.
+Gli SC devono esistere nell'inventario del registro; gli F/O/D nella run devono
+essere definiti in <code>01-context.md</code>, i C in <code>02-test-data.md</code>. Le S sono locali
+al report: un richiamo inter-report usa <code>01-context.md#S-001</code> o
+<code>02-test-data.md#S-001</code> come identificativo testuale, non come link a un anchor
+Markdown inesistente. Le questioni Q sono allocate nel registro e richiamate
+nei report. Non confondere id dei requisiti con nomi di campi API o placeholder.</p>
+<p>Identificativi stabili nella run: <code>SC-NNN</code> scenari/casi previsti, <code>S-NNN</code> fonti,
+<code>F-NNN</code> evidenza funzionale, <code>O-NNN</code> oracle, <code>D-NNN</code> requisiti dati, <code>C-NNN</code>
+combinazioni di dati, <code>Q-NNN</code> questioni. Non rinumerare o riciclare id eliminati.
+Un caso poi raggruppato in un outline mantiene il proprio <code>SC-NNN</code>; il report
+finale lo associa a file, titolo scenario e riga di Examples.</p>
+<h3 id="requisiti-casi-e-valori">Requisiti, casi e valori</h3>
+<p>Un D identifica un requisito dati con significato, ruolo e vincoli, non un
+singolo valore. Piu SC possono usare lo stesso D con valori diversi nelle
+rispettive C, senza creare un D per ogni riga. Due entita con ruoli distinti
+o valori che devono essere diversi nello stesso caso richiedono D distinti,
+definiti dal contesto con la relazione richiesta. Il report dati non assegna
+nuovi D: propone la necessita e ritorna al contesto.</p>
+<p>In Data resolution distinguere le risoluzioni per D e SC; se lo stesso SC
+ha piu C con valori differenti, esplicitare i C pertinenti nella cella
+<code>Value or TODO token</code>. Combinations associa ogni D al valore scelto:
+nessuna risoluzione sovrascrive un altro valore dello stesso requisito.
+Ogni valore selezionato deve corrispondere a una risoluzione con provenienza,
+ammissione e idoneita; non ereditare queste proprieta da un altro valore.</p>
+<p><code>__TODO_D001__</code> identifica D-001, non e un valore concreto condiviso ne
+un'asserzione di uguaglianza fra istanze. Si puo ripetere per lo stesso
+requisito in casi diversi, mantenendo irrisolta ciascuna C interessata.
+Per requisiti distinti usare token distinti; mai rinumerare i D esistenti
+per differenziare semplici varianti di valore.</p>
+<h2 id="focus-e-decisioni-interpretative">Focus e decisioni interpretative</h2>
+<p>Registrare obiettivo funzionale e confini ricavati dallo UC e dai chiarimenti
+espliciti come righe della tabella Agreed inputs, senza nuovi campi o template.
+Non chiedere una conferma aggiuntiva quando gli input forniti sono già chiari.
+Le note usate come evidenza compaiono in Sources; le decisioni che risolvono
+conflitti compaiono nelle Questions pertinenti e in History con scopo reale.
+La policy fonti distingue scoping, chiarimenti e decisioni: una nota non ha
+precedenza automatica e non elimina la copertura obbligatoria senza decisione.</p>
+<p>Il contesto registra anche percorsi documentati pertinenti secondo la regola
+d'inventario di uc-to-feature; i dati mantengono l'ownership delle sole C.
+Mapping e Coverage mappano le verifiche di ogni AC nei flussi indicati e le
+postcondizioni in tutti i positivi FP/AF; conservano la motivazione dei
+parametri. Non introdurre nuovi enum.
+Un feedback funzionale aggiorna la decisione e torna al contesto prima dei dati
+e della feature; un feedback solo dati o Gherkin segue l'invalidazione già
+definita. Non ripetere retrieval o domande sulle parti rimaste invariate.</p>
+<h2 id="varianti-dati-e-riferimenti-ac-ai-flussi">Varianti dati e riferimenti AC ai flussi</h2>
+<p>Le AF rappresentano variazioni del percorso o dell'esito, non set di dati.
+Le skill di supporto ricavano dimensioni, vincoli e combinazioni rilevanti
+dalla documentazione e dal materiale ammessi anche senza AF dedicate.
+Il numero di record di un catalogo non determina il numero di casi: niente
+prodotto cartesiano o varianti arbitrarie. Restano obbligatori ammissione,
+evidenza, idoneita e gestione separata della disponibilita.</p>
+<p>L'inventario iniziale puo essere esteso durante l'analisi del contesto con nuovi
+SC-NNN per casi supportati dello stesso flusso, senza modificare lo UC.
+Registrare motivazione, fonti, AC e F/O/D applicabili nel contesto; i dati
+riportano le combinazioni C-NNN per questi casi. Se la risoluzione dati scopre
+un caso aggiuntivo, ritorna al contesto per registrarlo e collegarlo prima di
+usarlo nelle combinazioni, senza avviare altri step in modalita manuale.
+Riutilizzare gli F/O/D esistenti quando il significato non cambia. La traduzione
+decide il raggruppamento finale: stesso comportamento e stesse verifiche
+possono diventare righe di un outline; casi con insiemi di verifiche differenti
+restano separati. Piu AC compatibili per lo stesso caso, invece, si verificano
+nello stesso scenario con Then/And: il rapporto AC:flusso e AC:scenario puo
+essere molti-a-uno per FP, AF ed EF/casi negativi. Non creare uno scenario per
+AC, non conservare un solo AC per flusso e non considerare duplicati i
+riferimenti allo stesso flusso in criteri distinti. Coverage conserva una
+voce per ogni AC anche quando scenario e riga Examples coincidono.
+Nuovi vincoli funzionali richiedono prima un aggiornamento del contesto,
+poi dei dati, con normale invalidazione a valle.</p>
+<p>Il contesto può registrare anche SC per percorsi documentati pertinenti ammessi
+dalla regola d'inventario di uc-to-feature; le differenze di percorso non
+diventano varianti dati né righe Examples.</p>
+<p>E consigliato un riferimento verbale negli AC, per esempio <code>(FP)</code> o <code>(AF02)</code>,
+ma non e un nuovo campo obbligatorio. La skill uc-to-feature definisce le
+<a href="../../.github/skills/uc-to-feature/ac-flow-references.md">forme riconosciute e la risoluzione</a>:
+case insensitive, spazi flessibili, acronimi anche puntati e confronto con
+gli identificativi effettivi dello UC. Il riferimento include le varianti
+supportate del flusso salvo limitazioni espresse dall'AC; non estende le
+verifiche ad altri flussi. Riferimenti ambigui, duplicati o inesistenti
+rimangono questioni esplicite. Nessun riferimento non significa FP di default.</p>
+<h2 id="registro-e-proprieta-degli-output">Registro e proprieta degli output</h2>
+<p>Il QA-analyst inizializza <a href="../workflow-templates/00-run.template/">00-run.template.md</a>
+prima di produrre qualsiasi report. Il registro contiene input concordati,
+inventario iniziale dei casi desunti dallo UC e <strong>percorsi attesi</strong> degli output.
+<code>not_created</code> non e prova che un documento esista.</p>
+<p>La skill funzionale scrive solo <code>01-context.md</code>; quella dati solo
+<code>02-test-data.md</code> (oltre all'eventuale catalogo autorizzato); la traduzione scrive
+le feature concordate e <code>03-feature-report.md</code>. Il registro e condiviso con
+questi permessi, non con un generico diritto di riscrittura:</p>
+<table>
+<thead>
+<tr>
+<th>Sezione o operazione</th>
+<th>Chi puo aggiornarla</th>
+<th>Limite</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agreed inputs e identita</td>
+<td>Skill inizializzatrice; poi skill attiva con conferma umana</td>
+<td>Registrare input concordati; un cambiamento sostanziale invalida gli output dipendenti</td>
+</tr>
+<tr>
+<td>Scenario inventory</td>
+<td>uc-to-feature (iniziale); uc-scenario-context</td>
+<td>Allocare SC stabili e motivati; uc-test-data propone nuovi casi senza registrarli autonomamente</td>
+</tr>
+<tr>
+<td>Questions</td>
+<td>Tutte e tre le skill</td>
+<td>Allocare Q globali e aggiornare solo decisioni pertinenti con riferimento umano; non cambiare decisioni altrui senza conferma</td>
+</tr>
+<tr>
+<td>Artifacts: produzione</td>
+<td>Skill proprietaria dell'output</td>
+<td>Aggiornare solo la propria riga dopo salvataggio riuscito; uc-to-feature gestisce anche le righe feature</td>
+</tr>
+<tr>
+<td>Artifacts: invalidazione</td>
+<td>Skill che rileva modifica o errore</td>
+<td>Marcare stale gli output dipendenti gia creati senza cambiare produttore, percorso o revisione degli output altrui</td>
+</tr>
+<tr>
+<td>History e metadati registro</td>
+<td>Skill attiva</td>
+<td>Appendere eventi reali e aggiornare revision, updated_at e status del registro</td>
+</tr>
+</tbody>
+</table>
+<p>Ogni aggiornamento persistito del registro incrementa la sua revisione e
+mantiene History, inventario e decisioni precedenti. Allocare Q non basta
+a risolverla: la stessa decisione e il suo scopo devono essere coerenti nel
+registro e nel report proprietario. Quando la decisione cambia il contenuto
+di un altro report, invalidarlo e rinviare alla sua skill; non editarlo.</p>
+<p>Mai dichiarare prodotto un file se il tool non lo ha scritto. Se il salvataggio
+di un output o del registro fallisce, riportare l'errore e fermarsi prima del
+passaggio successivo; segnalare i file eventualmente gia scritti e non
+dichiarare completata la run. Alla ripresa riconciliare l'operazione incompleta
+con la skill proprietaria. Non scrivere skill, UC sorgenti, altre specifiche,
+Python o ACE durante l'esecuzione dell'analista.</p>
+<p>Il report dati e sempre obbligatorio, anche se contiene solo requisiti mancanti
+e TODO; non e il catalogo opzionale <code>docs/use-cases/test-data/&lt;scope&gt;/</code>.
+Il report funzionale e obbligatorio anche quando lo UC basta: cita lo UC come
+fonte, registra le informazioni sufficienti e non cerca fonti inutili.
+I report sono evidenza derivata, <strong>non nuove specifiche autoritative</strong>.
+Nel report funzionale <code>inputs</code> e <code>[]</code>: lo UC e identificato nei metadati e in
+Sources. Il report dati registra la revisione del contesto; il report finale
+registra quelle di contesto e dati. Non registrare la revisione continuamente
+crescente del registro come dipendenza: la sua identita/inventario e comunque
+verificata a ogni passaggio.</p>
+<h2 id="esecuzione-automatica">Esecuzione automatica</h2>
+<p>Invocare <code>/uc-to-feature</code> con UC, task id, fonti e destinazione, oppure:</p>
+<blockquote>
+<p>Usa uc-to-feature per questo UC, con analisi funzionale e dati, e registra
+gli output secondo uc-workflow/v1.</p>
+</blockquote>
+<p>L'analista:</p>
+<ol>
+<li>Conferma gli input mancanti e crea/legge <code>00-run.md</code>.</li>
+<li>Valida lo UC e prepara l'inventario <code>SC-NNN</code>, senza importare suite esistenti.</li>
+<li>Invoca o legge e applica <code>uc-scenario-context</code>; salva <code>01-context.md</code>.</li>
+<li>Legge quel file, poi invoca o applica <code>uc-test-data</code>; salva <code>02-test-data.md</code>.</li>
+<li>Rilegge registro e report dai percorsi registrati, valida identita, revisione,
+   stato e riferimenti; produce feature e <code>03-feature-report.md</code>.</li>
+<li>Aggiorna il registro e restituisce i percorsi realmente prodotti, produttori,
+   stati, questioni aperte e controlli effettivamente svolti.</li>
+</ol>
+<p>Le skill di supporto non richiamano automaticamente la traduzione: le
+restituiscono gli artefatti, evitando cicli ricorsivi. La skill dati, se scopre
+una domanda funzionale, la registra e restituisce il controllo alla traduzione,
+che ripete contesto, poi dati, solo per la parte cambiata.</p>
+<h2 id="esecuzione-manuale-uno-step-alla-volta">Esecuzione manuale, uno step alla volta</h2>
+<p>Selezionare <code>QA-analyst</code> nel selettore agente; i comandi sono:</p>
+<pre><code class="language-text">/uc-scenario-context Analizza questo UC e queste fonti. Task &lt;task-id&gt;.
+Crea la run &lt;run-id&gt; per &lt;uc-id&gt;; conferma con me input e percorso del registro.
+</code></pre>
+<p>Fermarsi e leggere <code>01-context.md</code>, chiarire/approvare i candidati se necessario.
+Poi:</p>
+<pre><code class="language-text">/uc-test-data Usa il registro &lt;percorso-root-relativo&gt;/00-run.md
+e il suo 01-context.md. Risolvi i requisiti con queste fonti di dati.
+</code></pre>
+<p>La skill verifica il prerequisito funzionale: se manca, non lo sintetizza dalla
+memoria e non avvia autonomamente altri step in modalita manuale. Chiede di
+eseguire <code>uc-scenario-context</code>.</p>
+<p>Infine:</p>
+<pre><code class="language-text">/uc-to-feature Usa il registro &lt;percorso-root-relativo&gt;/00-run.md
+in modalita assemble-only. Leggi i due report e produci le feature concordate.
+</code></pre>
+<p>In <code>assemble-only</code> non riesegue skill di supporto: se report mancanti, stale,
+incompatibili o bloccanti, spiega quale step eseguire. In modalita automatica
+puo invece invocare solo i passaggi necessari per renderli correnti.
+Invocare la prima skill gia autorizza i report contrattuali nella run confermata,
+ma non approva fonti autonomamente scoperte o valori di dati.</p>
+<h2 id="ripresa-invalidazione-e-controlli">Ripresa, invalidazione e controlli</h2>
+<p>Prima di consumare un report, controllare frontmatter, sezioni, colonne e id;
+leggere il percorso esatto dal registro. Verificare che produttore, artefatto,
+UC, task, run, ambiente e revisione coincidano. Una stringa <code>producer_skill</code>
+non basta a garantire la provenienza: confrontare la riga Artifacts, History e
+le fonti/decisioni del report. Se un report e esterno o modificato manualmente,
+chiedere conferma e farlo validare dalla skill proprietaria, senza fingere che
+lo abbia prodotto essa.</p>
+<h3 id="conferma-di-continuita-alla-ripresa">Conferma di continuita alla ripresa</h3>
+<p>Il contratto resta <code>uc-workflow/v1</code>: nessun nuovo campo, fingerprint, parser
+operativo o comando e richiesto all'analista. Revisioni e History da sole
+non rilevano modifiche di contenuto che conservano i metadati. La verifica
+di continuita e umana, non una certificazione automatica di integrita.</p>
+<p>Alla ripresa di una run esistente, anche tra comandi manuali o dopo
+un'interruzione, prima di riusare o sovrascrivere output chiedere conferma
+tramite lo strumento domande. Presentare un inventario esatto di input UC,
+fonti/passaggi usati, profilo/input concordati, report da consumare e feature
+gia registrate, con percorsi, revisioni e stati noti. Chiedere se i contenuti
+sono invariati rispetto a quelli registrati, non solo se i numeri coincidono;
+una risposta generica non copre file non elencati. I file mancanti o
+illeggibili restano errori, anche se l'umano li dichiara invariati.</p>
+<p>Registrare risposta, scopo, riferimento umano e timestamp in una Q di
+Questions e in History, usando le colonne esistenti. Se l'umano conferma
+la continuita, e i controlli strutturali passano, si possono riusare report
+correnti senza ripetere retrieval. Una conferma vale per i percorsi e le
+revisioni elencati nella ripresa corrente; una nuova ripresa o una modifica
+richiede un nuovo controllo. Non ripetere la domanda fra passaggi automatici
+consecutivi della stessa esecuzione senza interruzioni o modifiche esterne.</p>
+<p>Se viene dichiarata una modifica, marcarne l'artefatto e i dipendenti stale
+prima del riuso; la skill proprietaria valida/riproduce il contenuto e
+incrementa la revisione. Non adottare ciecamente producer_skill o revision
+di un file modificato: registrare la provenienza manuale in History.
+In assemble-only fermarsi e indicare la skill da rieseguire, senza retrieval.
+Se la continuita non e confermata o non e verificabile, registrare la
+questione aperta/declined, marcare stale gli output esistenti coinvolti e
+bloccare la ripresa; non presumere che siano correnti.</p>
+<p>Le feature ai percorsi concordati si possono leggere solo per verificare
+la corrispondenza con il report, le modifiche dichiarate e la destinazione
+di scrittura, mai come fonte di requisiti, step o convenzioni. Una feature
+modificata non diventa una fonte funzionale: fermarsi prima di sovrascriverla,
+chiarire con l'umano come preservare le modifiche e far riconciliare alla
+traduzione il report con UC e fonti ammesse. Non cancellare file o modifiche
+manuali automaticamente.</p>
+<p>La conferma di continuita non approva nuovi candidati e non rinnova la
+disponibilita dei dati nell'ambiente. I report v1 precedenti si possono
+riusare solo dopo questa conferma e i controlli correnti; enum non canonici
+o altre incompatibilita richiedono rivalidazione della skill proprietaria,
+non una conversione silenziosa del consumatore.</p>
+<h3 id="invalidazione-e-stato-della-run">Invalidazione e stato della run</h3>
+<p>Ogni report registra le revisioni dei propri input. Cambi di UC, contesto,
+vincoli o decisioni rendono <code>stale</code> gli output a valle nel registro; non si
+aggiorna soltanto il numero in <code>inputs</code>. La skill proprietaria deve rielaborare
+il contenuto e incrementare la revisione. Rivalutare l'idoneita dei dati se
+cambiano i requisiti; non riutilizzare approvazioni oltre il loro scopo.
+Confermare che l'input UC e ancora la revisione registrata a ogni ripresa;
+se non verificabile, chiedere all'umano.</p>
+<table>
+<thead>
+<tr>
+<th>Contenuto cambiato</th>
+<th>Output da invalidare nel registro</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UC, ambiente o decisione funzionale</td>
+<td>context, test-data, feature-report, feature</td>
+</tr>
+<tr>
+<td>01-context.md</td>
+<td>test-data, feature-report, feature</td>
+</tr>
+<tr>
+<td>Fonte o decisione solo dati</td>
+<td>test-data, feature-report, feature</td>
+</tr>
+<tr>
+<td>02-test-data.md</td>
+<td>feature-report, feature</td>
+</tr>
+<tr>
+<td>Feature registrata modificata manualmente</td>
+<td>feature interessata, feature-report</td>
+</tr>
+<tr>
+<td>03-feature-report.md modificato manualmente</td>
+<td>feature-report, feature</td>
+</tr>
+<tr>
+<td>History o sola conferma di continuita</td>
+<td>Nessuno</td>
+</tr>
+</tbody>
+</table>
+<p>La tabella include tutte le righe feature dipendenti, non solo i report.
+Un artefatto modificato manualmente e anch'esso stale; se e appena stato
+rielaborato dal proprietario, la sua nuova riga riporta lo stato effettivo.
+<code>not_created</code> resta tale; invalidare un output mai creato non lo rende
+esistente. Conservare le revisioni registrate degli output invalidati:
+solo il produttore le incrementa dopo una scrittura riuscita.
+Modifiche al profilo, agli input Gherkin o ai percorsi feature invalidano
+feature-report e feature; se cambiano anche il significato funzionale,
+invalidare pure contesto e dati.</p>
+<p>Quando si invalida un risultato esistente, la run passa a <code>in_progress</code>,
+non resta complete/draft sulla base del vecchio report. Una ripresa fermata
+per identita, accesso o continuita non confermata usa <code>blocked</code>, con la Q
+pertinente. La sola modifica amministrativa del registro non invalida
+report o feature: non usare la revisione o l'intero contenuto di 00-run.md
+come dipendenza a monte. Non creare cicli di auto-invalidazione.</p>
+<p><code>01-context.md</code>: <code>ready</code> solo senza lacune funzionali bloccanti; <code>incomplete</code>
+per copertura parziale esplicita; <code>blocked</code> per conflitto/identita non risolti.
+<code>02-test-data.md</code>: <code>ready</code> solo con tutti i dati richiesti idonei e ammessi e
+stati necessari stabiliti; <code>incomplete</code> per TODO o incertezze. Dati mancanti
+non bloccano la produzione di una feature <strong>bozza</strong>. Un conflitto funzionale
+o input non valido produce <code>blocked</code>, non valori presunti.</p>
+<p>Con contesto incompleto, la traduzione puo produrre solo scenari supportati,
+segnalando tutta la copertura mancante; non inventa azioni/Then per riempire
+il file. Se nessuno scenario e supportato, non crea una feature vuota: scrive
+un report finale <code>blocked</code>, senza registrare feature inesistenti. Non consuma
+report <code>blocked</code>, <code>stale</code> o <code>not_created</code>.</p>
+<p>La feature applica le instructions Gherkin; non eredita le tabelle Markdown.
+Placeholder e commenti seguono la skill dati: solo i placeholder irrisolti
+richiedono commenti sui dati nella feature. Provenienza, approvazione,
+idoneita e disponibilita restano nei report, anche quando non esistono TODO.
+Nella tabella Scenario warnings del report dati, Required comment contiene
+<code>not-applicable</code> quando non occorre un commento; l'incertezza resta nelle
+colonne esistenti e in Data resolution/Readiness, senza cambiare lo schema.
+L'ambiente resta nei metadati e nell'applicabilita delle fonti; hostname e
+base URL di deployment sono risolti dalla configurazione della run, non
+fissati negli step, salvo requisito funzionale esplicito. I Given richiedono
+evidenza di preparazione o osservazione indipendente dall'operazione testata:
+un vincolo di idoneita del dato non basta a garantirne lo stato iniziale.
+La mancanza di tale evidenza e distinta da una lacuna nella regola funzionale;
+una precondizione UC non attuabile non viene eliminata, ma resta aperta.
+Il report finale verifica anche
+coerenza dei riferimenti, combinazioni, oracle e tutti gli SC/AC/AF/EF coperti
+o esclusi con ragione. La sintassi controllata non implica disponibilita
+dell'ambiente, step Python implementati o test eseguiti. L'analista non esegue
+parser/test da terminale: dichiara controlli statici effettivi, oppure il
+risultato di un controllo autorizzato fornito esternamente.</p>
+<p>Prima di chiudere una run, verificare:</p>
+<ol>
+<li>Tutti i file dichiarati <code>ready</code>/<code>incomplete</code>/<code>blocked</code> nel registro esistono;
+   produttore e revisione dei report coincidono col frontmatter.</li>
+<li><code>inputs</code> del report dati e finale coincidono con le revisioni a monte
+   realmente consumate; revisioni discordanti rendono l'output <code>stale</code>.</li>
+<li>Ogni azione/oracle applicato nella feature ha evidenza <code>supported</code> con
+   fonte <code>provided</code> o <code>approved</code>. Evidenza non ammessa non copre un requisito.</li>
+<li>Ogni valore di input applicato proviene da una riga del report dati ammessa e idonea,
+   oppure esplicitamente autorizzata come non verificata con warning. Tutte
+   le combinazioni rispettano i vincoli, senza prodotto cartesiano inventato.
+   Oracoli e metadati seguono rispettivamente il contesto e il profilo/gli
+   input autorevoli; una regola attesa non è un requisito dati da risolvere.</li>
+<li>Tutti i TODO e le incertezze hanno warning nei report per ogni scenario
+   interessato; solo i TODO richiedono commenti nelle feature. La risoluzione
+   dell'ultimo TODO rimuove il relativo commento, non le incertezze residue
+   nei report. Null intenzionali non sono TODO. Tutti gli elementi UC sono
+   in Coverage.</li>
+<li>Registro <code>complete</code> solo con report finale <code>ready</code>; <code>draft</code> con finale
+   <code>incomplete</code>; <code>blocked</code> con finale <code>blocked</code>; altrimenti <code>in_progress</code>.
+   Il report deve essere corrente anche nel registro e i controlli di
+   continuita applicabili devono essere soddisfatti. Un report finale blocked
+   non riabilita le feature stale di una generazione precedente.
+   Questo stato non autorizza sviluppo/esecuzione automatici.</li>
+</ol>
+<h2 id="verifica-del-contratto">Verifica del contratto</h2>
+<p>I <a href="../uc-workflow-validation/">casi di regressione</a> fissano risultati attesi
+per proprieta, identita, ripresa, granularita, enum e TODO. I test statici e
+sintattici degli asset sono eseguiti esternamente all'analista e non sono
+test della suite applicativa. La loro riuscita non dimostra che l'agente
+abbia completato una run reale; tale verifica richiede input umani e run
+confermati, e registra controlli effettivi nel report finale.</p>
+<h2 id="fonti-e-portabilita">Fonti e portabilita</h2>
+<p>La <a href="../../.github/skills/uc-scenario-context/source-policy.md">policy fonti</a>
+resta unica per ammissione, approvazione e privacy. Persistire un candidato
+come <code>pending-approval</code> non lo rende utilizzabile nella feature. Storici e
+cataloghi sono candidati, non stato corrente dell'ambiente.
+Le skill dipendono da questo repository, dalle sue instructions e dall'agente:
+copiarle da sole a livello utente non rende il workflow portabile.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>
