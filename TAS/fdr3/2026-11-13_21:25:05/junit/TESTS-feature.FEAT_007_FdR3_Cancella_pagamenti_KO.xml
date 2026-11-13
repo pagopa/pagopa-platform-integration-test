@@ -1,0 +1,15 @@
+<testsuite name="feature.FEAT_007_FdR3_Cancella_pagamenti_KO.Rimozione di pagamenti da un FdR" tests="1" errors="0" failures="0" skipped="0" time="0.655378" timestamp="2026-11-13T21:25:14.525513" hostname="runnervmccnms"><testcase classname="feature.FEAT_007_FdR3_Cancella_pagamenti_KO.Rimozione di pagamenti da un FdR" name="Cancellazione di un pagamento - subscription_key non valida" status="passed" time="0.655378"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @fdr3_007_4
+  Scenario: Cancellazione di un pagamento - subscription_key non valida
+    Dato che i sistemi sono operativi ... passed in 0.000s
+    Dato che lo scenario "Cancellazione di un pagamento - bad request" è stato eseguito con successo ... passed in 0.507s
+    Quando il PSP invia la richiesta di "Cancellazione pagamenti" con il payload "None" con subscription_key non valida ... passed in 0.149s
+    Allora il PSP riceve il codice di stato HTTP 401 ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

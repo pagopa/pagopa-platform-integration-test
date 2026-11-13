@@ -1,0 +1,15 @@
+<testsuite name="feature.FEAT_006_FdR3_Cancella_FdR_KO.Cancellazione di FdR creati" tests="1" errors="0" failures="0" skipped="0" time="0.64525" timestamp="2026-11-13T21:25:13.865512" hostname="runnervmccnms"><testcase classname="feature.FEAT_006_FdR3_Cancella_FdR_KO.Cancellazione di FdR creati" name="Cancellazione del FdR con subscription_key non valida" status="passed" time="0.64525"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @fdr3_006_5
+  Scenario: Cancellazione del FdR con subscription_key non valida
+    Dato che i sistemi sono operativi ... passed in 0.000s
+    Dato che lo scenario "Cancellazione del FdR non trovato" è stato eseguito con successo ... passed in 0.497s
+    Quando il PSP invia la richiesta di "Cancellazione flusso" con il payload "None" con subscription_key non valida ... passed in 0.148s
+    Allora il PSP riceve il codice di stato HTTP 401 ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
