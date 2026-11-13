@@ -1,0 +1,15 @@
+<testsuite name="feature.FEAT_004_FdR3_Cancella_pagamenti.Rimozione di pagamenti da un flusso di rendicontazione" tests="1" errors="0" failures="0" skipped="0" time="0.910685" timestamp="2026-11-13T10:04:18.107600" hostname="runnervm8axu0"><testcase classname="feature.FEAT_004_FdR3_Cancella_pagamenti.Rimozione di pagamenti da un flusso di rendicontazione" name="Tentativo di pubblicazione dopo cancella pagamenti" status="passed" time="0.910685"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @fdr3_004_06
+  Scenario: Tentativo di pubblicazione dopo cancella pagamenti
+    Dato che i sistemi sono operativi ... passed in 0.000s
+    Dato che lo scenario "Verifica pagamenti dopo cancellazione" è stato eseguito con successo ... passed in 0.810s
+    Quando il PSP invia la richiesta di "Pubblicazione" con il payload "None" ... passed in 0.101s
+    Allora il PSP riceve il codice di stato HTTP 400 ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
