@@ -1,0 +1,337 @@
+<testsuite name="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT" tests="15" errors="0" failures="6" skipped="0" time="89.292354" timestamp="2026-11-13T09:35:56.080461" hostname="runnervm7aw5e"><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT" name="L'utente paga un carrello con singola RPT senza marca da bollo gia esistente in GPD" status="failed" time="7.435364"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.827s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_existingPaymentPosition.feature:19
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655a30e00>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': 'c296e004-51e8-4efd-a938-af762cb21e19'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_01
+  Scenario: L'utente paga un carrello con singola RPT senza marca da bollo gia esistente in GPD
+    Dati i sistemi sono operativi ... passed in 1.133s
+    Dato un carrello di RPT non multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla prima RPT con segregation code uguale a 48 e stato uguale a VALID ... passed in 0.586s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.889s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.827s
+    E la posizione debitoria è chiusa ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT" name="L'utente paga un carrello con singola RPT con versamenti multipli gia esistente in GPD" status="failed" time="6.59634"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.311s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_existingPaymentPosition.feature:32
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655a6b1f0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '0c5b161e-e705-4c91-83fc-ddccfdb316d8'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_02
+  Scenario: L'utente paga un carrello con singola RPT con versamenti multipli gia esistente in GPD
+    Dati i sistemi sono operativi ... passed in 1.101s
+    Dato un carrello di RPT non multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 3 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla prima RPT con segregation code uguale a 48 e stato uguale a VALID ... passed in 0.509s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.675s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.311s
+    E la posizione debitoria è chiusa ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT" name="L'utente paga un carrello con singola RPT con una marca da bollo gia esistente in GPD" status="failed" time="5.633888"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.824s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_existingPaymentPosition.feature:45
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655a6b3d0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '08a7606f-ec63-4667-9988-e56dccd38d51'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_03
+  Scenario: L'utente paga un carrello con singola RPT con una marca da bollo gia esistente in GPD
+    Dati i sistemi sono operativi ... passed in 0.863s
+    Dato un carrello di RPT non multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla prima RPT con segregation code uguale a 48 e stato uguale a VALID ... passed in 0.452s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.496s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.824s
+    E la posizione debitoria è chiusa ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT" name="L'utente paga un carrello con due RPT senza marca da bollo di cui una gia esistente in GPD" status="failed" time="5.912332"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.908s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_existingPaymentPosition.feature:59
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa0e50>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '878f5098-272c-4e62-91bb-2b0f1f42a288'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_04
+  Scenario: L'utente paga un carrello con due RPT senza marca da bollo di cui una gia esistente in GPD
+    Dati i sistemi sono operativi ... passed in 0.871s
+    Dato un carrello di RPT non multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla prima RPT con segregation code uguale a 48 e stato uguale a VALID ... passed in 0.430s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.703s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.908s
+    E la posizione debitoria è chiusa ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT" name="L'utente paga un carrello con due RPT con versamenti multipli gia esistente in GPD" status="failed" time="6.457529"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.462s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_existingPaymentPosition.feature:73
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa03b0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '76fc1e41-6e07-472e-8caf-0208740a0b72'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_05
+  Scenario: L'utente paga un carrello con due RPT con versamenti multipli gia esistente in GPD
+    Dati i sistemi sono operativi ... passed in 0.859s
+    Dato un carrello di RPT non multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 3 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 3 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla prima RPT con segregation code uguale a 48 e stato uguale a VALID ... passed in 0.479s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.658s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.462s
+    E la posizione debitoria è chiusa ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT" name="L'utente paga un carrello con due RPT con almeno una marca da bollo gia esistente in GPD" status="failed" time="6.519583"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.485s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_existingPaymentPosition.feature:87
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa2200>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '3b883a96-bb26-45cd-81ee-441e4afa4bac'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_06
+  Scenario: L'utente paga un carrello con due RPT con almeno una marca da bollo gia esistente in GPD
+    Dati i sistemi sono operativi ... passed in 0.855s
+    Dato un carrello di RPT non multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 3 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla prima RPT con segregation code uguale a 48 e stato uguale a VALID ... passed in 0.457s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.722s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.485s
+    E la posizione debitoria è chiusa ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello con singola RPT gia esistente in GPD in stato non valido" status="passed" time="5.815123"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_07
+  Scenario: L'utente tenta di pagare un carrello con singola RPT gia esistente in GPD in stato non valido
+    Dati i sistemi sono operativi ... passed in 0.833s
+    Dato un carrello di RPT non multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla prima RPT con segregation code uguale a 48 e stato uguale a DRAFT ... passed in 0.428s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.489s
+    Allora la conversione al nuovo modello fallisce nel wisp-converter ... passed in 1.538s
+    E la ricevuta KO è inviata ... passed in 2.527s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello con singola RPT inserita da ACA e in stato valido" status="passed" time="5.220294"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_08
+  Scenario: L'utente tenta di pagare un carrello con singola RPT inserita da ACA e in stato valido
+    Dati i sistemi sono operativi ... passed in 0.988s
+    Dato un carrello di RPT non multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla prima RPT con segregation code uguale a 01 e stato uguale a VALID ... passed in 0.435s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.509s
+    Allora la conversione al nuovo modello fallisce nel wisp-converter ... passed in 0.770s
+    E la ricevuta KO è inviata ... passed in 2.518s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello con singola RPT inserita da ACA e in stato non valido" status="passed" time="5.012075"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_09
+  Scenario: L'utente tenta di pagare un carrello con singola RPT inserita da ACA e in stato non valido
+    Dati i sistemi sono operativi ... passed in 0.828s
+    Dato un carrello di RPT non multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla prima RPT con segregation code uguale a 01 e stato uguale a DRAFT ... passed in 0.459s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.561s
+    Allora la conversione al nuovo modello fallisce nel wisp-converter ... passed in 0.630s
+    E la ricevuta KO è inviata ... passed in 2.535s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello con due RPT gia esistenti in GPD in stato non valido" status="passed" time="5.680495"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_10
+  Scenario: L'utente tenta di pagare un carrello con due RPT gia esistenti in GPD in stato non valido
+    Dati i sistemi sono operativi ... passed in 0.836s
+    Dato un carrello di RPT non multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla prima RPT con segregation code uguale a 48 e stato uguale a DRAFT ... passed in 0.444s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.731s
+    Allora la conversione al nuovo modello fallisce nel wisp-converter ... passed in 1.067s
+    E la ricevuta KO è inviata ... passed in 2.603s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello con due RPT inserite da ACA e in stato valido" status="passed" time="5.837924"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_11
+  Scenario: L'utente tenta di pagare un carrello con due RPT inserite da ACA e in stato valido
+    Dati i sistemi sono operativi ... passed in 1.153s
+    Dato un carrello di RPT non multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla prima RPT con segregation code uguale a 01 e stato uguale a VALID ... passed in 0.466s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.648s
+    Allora la conversione al nuovo modello fallisce nel wisp-converter ... passed in 0.969s
+    E la ricevuta KO è inviata ... passed in 2.601s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello con due RPT inserite da ACA e in stato non valido" status="passed" time="5.813046"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_12
+  Scenario: L'utente tenta di pagare un carrello con due RPT inserite da ACA e in stato non valido
+    Dati i sistemi sono operativi ... passed in 0.826s
+    Dato un carrello di RPT non multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla prima RPT con segregation code uguale a 01 e stato uguale a DRAFT ... passed in 0.451s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.645s
+    Allora la conversione al nuovo modello fallisce nel wisp-converter ... passed in 1.272s
+    E la ricevuta KO è inviata ... passed in 2.618s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello multibeneficiario gia esistente in GPD in stato non valido" status="passed" time="5.811292"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_13
+  Scenario: L'utente tenta di pagare un carrello multibeneficiario gia esistente in GPD in stato non valido
+    Dati i sistemi sono operativi ... passed in 0.846s
+    Dato un carrello di RPT multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla prima RPT con segregation code uguale a 48 e stato uguale a DRAFT ... passed in 0.438s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.615s
+    Allora la conversione al nuovo modello fallisce nel wisp-converter ... passed in 1.308s
+    E la ricevuta KO è inviata ... passed in 2.604s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello multibeneficiario inserito da ACA e in stato valido" status="passed" time="5.777837"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_14
+  Scenario: L'utente tenta di pagare un carrello multibeneficiario inserito da ACA e in stato valido
+    Dati i sistemi sono operativi ... passed in 0.836s
+    Dato un carrello di RPT multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla prima RPT con segregation code uguale a 01 e stato uguale a VALID ... passed in 0.450s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.615s
+    Allora la conversione al nuovo modello fallisce nel wisp-converter ... passed in 1.253s
+    E la ricevuta KO è inviata ... passed in 2.623s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_existingPaymentPosition.L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello multibeneficiario inserito da ACA e in stato non valido" status="passed" time="5.769233"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_15
+  Scenario: L'utente tenta di pagare un carrello multibeneficiario inserito da ACA e in stato non valido
+    Dati i sistemi sono operativi ... passed in 0.825s
+    Dato un carrello di RPT multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla prima RPT con segregation code uguale a 01 e stato uguale a DRAFT ... passed in 0.446s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.594s
+    Allora la conversione al nuovo modello fallisce nel wisp-converter ... passed in 1.274s
+    E la ricevuta KO è inviata ... passed in 2.630s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

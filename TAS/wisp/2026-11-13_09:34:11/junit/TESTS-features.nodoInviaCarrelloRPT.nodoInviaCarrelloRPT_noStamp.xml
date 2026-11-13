@@ -1,0 +1,402 @@
+<testsuite name="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_noStamp.L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT" tests="15" errors="0" failures="13" skipped="0" time="76.426586" timestamp="2026-11-13T09:38:03.481680" hostname="runnervm7aw5e"><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_noStamp.L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT" name="L'utente paga un carrello con singola RPT con un versamento" status="failed" time="5.144753"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.825s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_noStamp.feature:18
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655a6b2e0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '331cc755-621c-4e17-bda3-d00a4ca0badc'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_NoStamp_004_01
+  Scenario: L'utente paga un carrello con singola RPT con un versamento
+    Dati i sistemi sono operativi ... passed in 0.819s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.500s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.825s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_noStamp.L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT" name="L'utente paga un carrello con singola RPT con due versamenti" status="failed" time="5.237609"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.703s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_noStamp.feature:29
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa3dd0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': 'e18e8894-dffb-4f0e-a39a-0cdba31b61fd'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_NoStamp_004_02
+  Scenario: L'utente paga un carrello con singola RPT con due versamenti
+    Dati i sistemi sono operativi ... passed in 0.901s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 2 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.633s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.703s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_noStamp.L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT" name="L'utente paga un carrello con singola RPT con tre versamenti" status="failed" time="5.075413"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.728s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_noStamp.feature:40
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa0130>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '9b485a6a-648d-47d8-a198-529a0b5fe017'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_NoStamp_004_03
+  Scenario: L'utente paga un carrello con singola RPT con tre versamenti
+    Dati i sistemi sono operativi ... passed in 0.845s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 3 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.503s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.728s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_noStamp.L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT" name="L'utente paga un carrello con singola RPT con quattro versamenti" status="failed" time="5.148091"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.745s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_noStamp.feature:51
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa27a0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '18a93577-8934-4e65-a291-3d2a6906c4bc'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_NoStamp_004_04
+  Scenario: L'utente paga un carrello con singola RPT con quattro versamenti
+    Dati i sistemi sono operativi ... passed in 0.821s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 4 versamenti di cui none sono marche da bollo ... passed in 0.001s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.581s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.745s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_noStamp.L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT" name="L'utente paga un carrello con singola RPT con cinque versamenti" status="failed" time="5.007185"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.678s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_noStamp.feature:62
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa3c40>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': 'd59f0910-814c-4b63-9e11-426e85f6f81f'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_NoStamp_004_05
+  Scenario: L'utente paga un carrello con singola RPT con cinque versamenti
+    Dati i sistemi sono operativi ... passed in 0.838s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 5 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.491s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.678s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_noStamp.L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT" name="L'utente paga un carrello con tre RPT con un versamento ciascuna" status="failed" time="5.620844"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.070s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_noStamp.feature:75
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa2840>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '7baf579c-0ccd-49c1-8d93-dbf048df4d05'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_NoStamp_004_06
+  Scenario: L'utente paga un carrello con tre RPT con un versamento ciascuna
+    Dati i sistemi sono operativi ... passed in 0.858s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.692s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.070s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_noStamp.L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT" name="L'utente paga un carrello con quattro RPT con un versamento ciascuna" status="failed" time="6.273638"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.137s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_noStamp.feature:89
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa04f0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '456af069-b770-4671-ae31-d5ef8d4c7b0f'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_NoStamp_004_07
+  Scenario: L'utente paga un carrello con quattro RPT con un versamento ciascuna
+    Dati i sistemi sono operativi ... passed in 0.839s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 1.297s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.137s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_noStamp.L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT" name="L'utente paga un carrello con cinque RPT con un versamento ciascuna" status="failed" time="5.946402"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.459s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_noStamp.feature:104
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa2a20>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '3583f3f0-0c95-4ef9-82db-6ba7bb12c4f6'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_NoStamp_004_08
+  Scenario: L'utente paga un carrello con cinque RPT con un versamento ciascuna
+    Dati i sistemi sono operativi ... passed in 0.826s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.661s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.459s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_noStamp.L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT" name="L'utente paga un carrello con due RPT per un totale di cinque versamenti" status="failed" time="6.091967"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.565s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_noStamp.feature:116
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655acdc60>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': 'c32cf36e-c692-40e8-b406-63725f5d5b0d'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_NoStamp_004_09
+  Scenario: L'utente paga un carrello con due RPT per un totale di cinque versamenti
+    Dati i sistemi sono operativi ... passed in 0.825s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 2 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 3 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.702s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.565s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_noStamp.L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT" name="L'utente paga un carrello con tre RPT per un totale di cinque versamenti" status="failed" time="6.419247"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.870s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_noStamp.feature:129
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655acc7c0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '01d5e301-ed2b-4752-9dee-08921ddc497e'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_NoStamp_004_10
+  Scenario: L'utente paga un carrello con tre RPT per un totale di cinque versamenti
+    Dati i sistemi sono operativi ... passed in 0.829s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 2 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 2 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.720s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.870s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_noStamp.L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT" name="L'utente paga un carrello con tre RPT per un totale di dieci versamenti" status="failed" time="6.023531"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.579s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_noStamp.feature:142
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa0c70>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': 'd805bfdb-afe9-4ea5-900b-43948ec71bb3'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_NoStamp_004_11
+  Scenario: L'utente paga un carrello con tre RPT per un totale di dieci versamenti
+    Dati i sistemi sono operativi ... passed in 0.813s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 3 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 3 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 4 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.631s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.579s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_noStamp.L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello con due RPT ma la chiusura del pagamento fallisce, poi ritenta con successo" status="failed" time="5.319844"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: E l'utente viene reindirizzato su Checkout senza completare il pagamento multibeneficiario ... failed in 3.810s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_noStamp.feature:154
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655b3a610>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '62f9636c-cdb7-4f38-a53f-b9f2b7ec811e'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_NoStamp_004_12
+  Scenario: L'utente tenta di pagare un carrello con due RPT ma la chiusura del pagamento fallisce, poi ritenta con successo
+    Dati i sistemi sono operativi ... passed in 0.822s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.688s
+    E l'utente viene reindirizzato su Checkout senza completare il pagamento multibeneficiario ... failed in 3.810s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... skipped in 0.000s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_noStamp.L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello con una RPT che ha una quantita di versamenti oltre il limite" status="passed" time="1.393236"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_NoStamp_004_13
+  Scenario: L'utente tenta di pagare un carrello con una RPT che ha una quantita di versamenti oltre il limite
+    Dati i sistemi sono operativi ... passed in 0.830s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 6 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC senza verifica dell'URL di redirect ... passed in 0.563s
+    Allora il pagamento fallisce essendo il numero di versamenti oltre il limite e viene restituito l'errore PPT_SINTASSI_XSD ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_noStamp.L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello con due RPT che hanno una quantita di versamenti oltre il limite" status="passed" time="1.400424"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_NoStamp_004_14
+  Scenario: L'utente tenta di pagare un carrello con due RPT che hanno una quantita di versamenti oltre il limite
+    Dati i sistemi sono operativi ... passed in 0.863s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 2 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 6 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 6 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC senza verifica dell'URL di redirect ... passed in 0.537s
+    Allora il pagamento fallisce essendo il numero di versamenti oltre il limite e viene restituito l'errore PPT_SINTASSI_XSD ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_noStamp.L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello con due RPT ma la chiusura del pagamento fallisce" status="failed" time="6.324403"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout senza completare il pagamento multibeneficiario ... failed in 3.807s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_noStamp.feature:192
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655acd1c0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '68bfc198-310e-4041-8363-daaf2df9a077'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_NoStamp_004_15
+  Scenario: L'utente tenta di pagare un carrello con due RPT ma la chiusura del pagamento fallisce
+    Dati i sistemi sono operativi ... passed in 1.868s
+    Dato un carrello di RPT non-multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.649s
+    Allora l'utente viene reindirizzato su Checkout senza completare il pagamento multibeneficiario ... failed in 3.807s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

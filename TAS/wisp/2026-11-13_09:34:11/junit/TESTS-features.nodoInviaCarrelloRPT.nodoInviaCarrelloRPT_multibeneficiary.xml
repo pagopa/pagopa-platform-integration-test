@@ -1,0 +1,182 @@
+<testsuite name="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_multibeneficiary.L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT" tests="8" errors="0" failures="4" skipped="0" time="27.89316" timestamp="2026-11-13T09:36:31.999731" hostname="runnervm7aw5e"><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_multibeneficiary.L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT" name="L'utente paga un carrello multibeneficiario con due RPT con un totale di due versamenti" status="failed" time="5.702921"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario ... failed in 4.249s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_multibeneficiary.feature:19
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655a6b9c0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': 'a0a3632b-a560-4000-b78e-ef136340b175'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_MultiBeneficiario_007_01
+  Scenario: L'utente paga un carrello multibeneficiario con due RPT con un totale di due versamenti
+    Dati i sistemi sono operativi ... passed in 0.830s
+    Dato un carrello di RPT multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.624s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario ... failed in 4.249s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_multibeneficiary.L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT" name="L'utente paga un carrello multibeneficiario con due RPT con un totale di tre versamenti" status="failed" time="5.218087"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario ... failed in 3.778s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_multibeneficiary.feature:31
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655a6b7e0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '3ce6c470-5c6c-4080-8e29-d04af5b26949'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_MultiBeneficiario_007_02
+  Scenario: L'utente paga un carrello multibeneficiario con due RPT con un totale di tre versamenti
+    Dati i sistemi sono operativi ... passed in 0.823s
+    Dato un carrello di RPT multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 2 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.617s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario ... failed in 3.778s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_multibeneficiary.L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT" name="L'utente paga un carrello multibeneficiario con due RPT con un totale di quattro versamenti" status="failed" time="5.438267"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario ... failed in 3.714s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_multibeneficiary.feature:43
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa31a0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': 'b040a97a-661b-44ac-a452-ef12f2fb8716'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_MultiBeneficiario_007_03
+  Scenario: L'utente paga un carrello multibeneficiario con due RPT con un totale di quattro versamenti
+    Dati i sistemi sono operativi ... passed in 0.808s
+    Dato un carrello di RPT multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 3 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.916s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario ... failed in 3.714s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_multibeneficiary.L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT" name="L'utente paga un carrello multibeneficiario con due RPT con un totale di cinque versamenti" status="failed" time="5.732091"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario ... failed in 4.229s
+Location: src/integration/wisp/features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_multibeneficiary.feature:55
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa28e0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': 'aab64e46-7c89-4ea0-a3e7-ab67a29cfe3f'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @happy_path @NodoInviaCarrelloRPT_MultiBeneficiario_007_04
+  Scenario: L'utente paga un carrello multibeneficiario con due RPT con un totale di cinque versamenti
+    Dati i sistemi sono operativi ... passed in 0.843s
+    Dato un carrello di RPT multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 4 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC ... passed in 0.660s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario ... failed in 4.229s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_multibeneficiary.L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello multibeneficiario con due RPT con un totale di sei versamenti, ma il carrello ha piu di 5 versamenti" status="passed" time="1.404007"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_MultiBeneficiario_007_05
+  Scenario: L'utente tenta di pagare un carrello multibeneficiario con due RPT con un totale di sei versamenti, ma il carrello ha piu di 5 versamenti
+    Dati i sistemi sono operativi ... passed in 0.828s
+    Dato un carrello di RPT multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 5 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC senza verifica dell'URL di redirect ... passed in 0.575s
+    E il tentativo di pagamento fallisce ... passed in 0.000s
+    Allora la risposta contiene il campo description con valore 'Il carrello deve avere massimo 5 versamenti totali' ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_multibeneficiary.L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello multibeneficiario con tre RPT con un versamento ciascuna, ma il carrello ha piu di 2 RPT" status="passed" time="1.421019"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_MultiBeneficiario_007_06
+  Scenario: L'utente tenta di pagare un carrello multibeneficiario con tre RPT con un versamento ciascuna, ma il carrello ha piu di 2 RPT
+    Dati i sistemi sono operativi ... passed in 0.826s
+    Dato un carrello di RPT multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC senza verifica dell'URL di redirect ... passed in 0.594s
+    E il tentativo di pagamento fallisce ... passed in 0.000s
+    Allora la risposta contiene il campo description con valore 'Il carrello non contiene solo 2 RPT' ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_multibeneficiary.L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello multibeneficiario con due RPT, in cui la seconda ha due versamenti, ma la seconda RPT contiene piu di un versamento" status="passed" time="1.550126"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_MultiBeneficiario_007_07
+  Scenario: L'utente tenta di pagare un carrello multibeneficiario con due RPT, in cui la seconda ha due versamenti, ma la seconda RPT contiene piu di un versamento
+    Dati i sistemi sono operativi ... passed in 0.987s
+    Dato un carrello di RPT multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 3 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 2 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC senza verifica dell'URL di redirect ... passed in 0.563s
+    E il tentativo di pagamento fallisce ... passed in 0.000s
+    Allora la risposta contiene il campo description con valore 'La seconda RPT non contiene solo 1 versamento' ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaCarrelloRPT.nodoInviaCarrelloRPT_multibeneficiary.L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT" name="L'utente tenta di pagare un carrello multibeneficiario con due RPT con una marca da bollo, ma fallisce perche una RPT ha la marca da bollo" status="passed" time="1.426642"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_carrello_rpt @unhappy_path @NodoInviaCarrelloRPT_MultiBeneficiario_007_08
+  Scenario: L'utente tenta di pagare un carrello multibeneficiario con due RPT con una marca da bollo, ma fallisce perche una RPT ha la marca da bollo
+    Dati i sistemi sono operativi ... passed in 0.860s
+    Dato un carrello di RPT multi-beneficiario ... passed in 0.000s
+    E una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC senza verifica dell'URL di redirect ... passed in 0.566s
+    E il tentativo di pagamento fallisce ... passed in 0.000s
+    Allora la risposta contiene il campo description con valore 'Nessuna RPT deve contienere marca da bollo' ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

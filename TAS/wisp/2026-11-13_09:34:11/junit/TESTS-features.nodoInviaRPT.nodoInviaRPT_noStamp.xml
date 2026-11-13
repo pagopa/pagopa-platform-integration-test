@@ -1,0 +1,241 @@
+<testsuite name="features.nodoInviaRPT.nodoInviaRPT_noStamp.Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT" tests="10" errors="0" failures="8" skipped="0" time="46.889907" timestamp="2026-11-13T09:40:33.975772" hostname="runnervm7aw5e"><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT" name="Utente paga un pagamento singolo con un versamento e nessuna marca da bollo" status="failed" time="5.607665"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.816s
+Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_noStamp.feature:17
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa2ac0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '02973977-cca0-4a70-8a9c-b79881c43cb3'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path @NodoInviaRPT_NoStamp_001_01
+  Scenario: Utente paga un pagamento singolo con un versamento e nessuna marca da bollo
+    Dati i sistemi sono operativi ... passed in 1.155s
+    Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.637s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.816s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT" name="Utente paga un pagamento singolo con due versamenti e nessuna marca da bollo" status="failed" time="5.36483"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.052s
+Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_noStamp.feature:27
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa02c0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '4c0d69ab-fb78-4993-9400-e251ba92dd5b'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path @NodoInviaRPT_NoStamp_001_02
+  Scenario: Utente paga un pagamento singolo con due versamenti e nessuna marca da bollo
+    Dati i sistemi sono operativi ... passed in 0.827s
+    Data una singola RPT di tipo BBT con 2 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.485s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.052s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT" name="Utente paga un pagamento singolo con tre versamenti e nessuna marca da bollo" status="failed" time="5.181781"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.704s
+Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_noStamp.feature:37
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa13f0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '2ee35c20-7240-4574-bb0e-003d323bf318'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path @NodoInviaRPT_NoStamp_001_03
+  Scenario: Utente paga un pagamento singolo con tre versamenti e nessuna marca da bollo
+    Dati i sistemi sono operativi ... passed in 0.951s
+    Data una singola RPT di tipo BBT con 3 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.527s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.704s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT" name="Utente paga un pagamento singolo con quattro versamenti e nessuna marca da bollo" status="failed" time="6.108533"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.407s
+Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_noStamp.feature:47
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa3290>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '7f1d5291-c605-4ac1-a257-4f094a3c115d'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path @NodoInviaRPT_NoStamp_001_04
+  Scenario: Utente paga un pagamento singolo con quattro versamenti e nessuna marca da bollo
+    Dati i sistemi sono operativi ... passed in 0.857s
+    Data una singola RPT di tipo BBT con 4 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.844s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.407s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT" name="Utente paga un pagamento singolo con cinque versamenti e nessuna marca da bollo" status="failed" time="5.702825"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.206s
+Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_noStamp.feature:57
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655acf290>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': 'bdec75fc-9816-463c-aab8-f7645318721a'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path @NodoInviaRPT_NoStamp_001_05
+  Scenario: Utente paga un pagamento singolo con cinque versamenti e nessuna marca da bollo
+    Dati i sistemi sono operativi ... passed in 0.955s
+    Data una singola RPT di tipo BBT con 5 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.542s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.206s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT" name="Utente paga un pagamento singolo di tipo PO con un versamento e nessuna marca da bollo" status="passed" time="1.385639"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path @NodoInviaRPT_NoStamp_001_06
+  Scenario: Utente paga un pagamento singolo di tipo PO con un versamento e nessuna marca da bollo
+    Dati i sistemi sono operativi ... passed in 0.842s
+    Data una singola RPT di tipo PO con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente invia una richiesta nodoInviaRPT ... passed in 0.543s
+    Allora l'utente riceve una risposta con esito positivo ... passed in 0.000s
+    E la risposta contiene il vecchio URL WISP ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT" name="Utente paga un pagamento singolo di tipo PO con due versamenti e nessuna marca da bollo" status="passed" time="1.360307"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @unhappy_path @NodoInviaRPT_NoStamp_001_07
+  Scenario: Utente paga un pagamento singolo di tipo PO con due versamenti e nessuna marca da bollo
+    Dati i sistemi sono operativi ... passed in 0.876s
+    Data una singola RPT di tipo PO con 2 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ma il pagamento fallisce ... passed in 0.484s
+    Allora il pagamento fallisce having invalid semantic validation due to incorrect RPT structure e viene restituito l'errore PPT_SEMANTICA ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT" name="Utente esegue un primo reindirizzamento, poi ripete il reindirizzamento e completa il flusso di pagamento" status="failed" time="5.675669"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: E l'utente viene reindirizzato nuovamente su Checkout completando il pagamento ... failed in 3.498s
+Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_noStamp.feature:89
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655acc6d0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': 'bc109a95-988a-4909-b598-700820a951f7'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path @NodoInviaRPT_NoStamp_001_08
+  Scenario: Utente esegue un primo reindirizzamento, poi ripete il reindirizzamento e completa il flusso di pagamento
+    Dati i sistemi sono operativi ... passed in 0.841s
+    Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.571s
+    Allora la conversione al nuovo modello ha successo nel wisp-converter ... passed in 0.764s
+    E l'utente viene reindirizzato nuovamente su Checkout completando il pagamento ... failed in 3.498s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT" name="Utente tenta due volte di pagare la stessa RPT ma la conversione al nuovo modello fallisce" status="failed" time="5.468896"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.808s
+Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_noStamp.feature:99
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655ace840>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '24e319c7-9ef7-434c-aa4a-c99708d757ad'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @unhappy_path @NodoInviaRPT_NoStamp_001_09
+  Scenario: Utente tenta due volte di pagare la stessa RPT ma la conversione al nuovo modello fallisce
+    Dati i sistemi sono operativi ... passed in 0.839s
+    Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.822s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.808s
+    E la conversione al nuovo modello fallisce nel wisp-converter ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_noStamp.Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT" name="Utente tenta il pagamento, poi riprova il flusso ma fallisce" status="failed" time="5.033762"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: E l'utente ha tentato di pagare la RPT sul sito dell'EC ... failed in 4.205s
+Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_noStamp.feature:109
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655acc180>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': 'ca5c5740-a20f-44d1-9cd6-f9747edf44a2'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @unhappy_path @to_fix @NodoInviaRPT_NoStamp_001_10
+  Scenario: Utente tenta il pagamento, poi riprova il flusso ma fallisce
+    Dati i sistemi sono operativi ... passed in 0.829s
+    Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E l'utente ha tentato di pagare la RPT sul sito dell'EC ... failed in 4.205s
+    Quando vengono inviate le richieste activatePaymentNoticeV2 ... skipped in 0.000s
+    Allora la conversione al nuovo modello fallisce nel wisp-converter ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

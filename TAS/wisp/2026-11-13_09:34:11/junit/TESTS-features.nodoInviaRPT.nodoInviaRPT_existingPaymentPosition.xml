@@ -1,0 +1,133 @@
+<testsuite name="features.nodoInviaRPT.nodoInviaRPT_existingPaymentPosition.Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT" tests="6" errors="0" failures="3" skipped="0" time="37.020483" timestamp="2026-11-13T09:39:37.050263" hostname="runnervm7aw5e"><testcase classname="features.nodoInviaRPT.nodoInviaRPT_existingPaymentPosition.Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT" name="Utente paga un pagamento singolo con un versamento e nessuna marca da bollo gia esistente in GPD" status="failed" time="6.144017"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.258s
+Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_existingPaymentPosition.feature:18
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa27a0>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '934312b3-805e-4e35-a645-8e20b9a898f2'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path @NodoInviaRPT_ExistingPaymentPosition_003_01
+  Scenario: Utente paga un pagamento singolo con un versamento e nessuna marca da bollo gia esistente in GPD
+    Dati i sistemi sono operativi ... passed in 0.876s
+    Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a VALID ... passed in 0.461s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.549s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 4.258s
+    E la posizione debitoria è chiusa ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_existingPaymentPosition.Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT" name="Utente paga un pagamento singolo senza versamenti semplici e una marca da bollo gia esistente in GPD" status="failed" time="5.444567"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.620s
+Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_existingPaymentPosition.feature:27
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa1b20>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': 'a057d4a3-dcec-444d-85c3-060c0bbdea16'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path @NodoInviaRPT_ExistingPaymentPosition_003_02
+  Scenario: Utente paga un pagamento singolo senza versamenti semplici e una marca da bollo gia esistente in GPD
+    Dati i sistemi sono operativi ... passed in 0.843s
+    Data una singola RPT di tipo BBT con 1 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a VALID ... passed in 0.467s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.514s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.620s
+    E la posizione debitoria è chiusa ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_existingPaymentPosition.Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT" name="Utente paga un pagamento singolo con un versamento e una marca da bollo gia esistente in GPD" status="failed" time="6.43639"><failure type="AssertionError" message="The status code is not 200. Current value: 500.">
+<![CDATA[
+Failing step: Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.909s
+Location: src/integration/wisp/features/nodoInviaRPT/nodoInviaRPT_existingPaymentPosition.feature:39
+Assertion Failed: The status code is not 200. Current value: 500.
+Captured logging:
+INFO:root:Response status code: 200
+INFO:root:Response body: <Element 'Envelope' at 0x7fb655aa0630>
+INFO:root:Waiting [2] secondto wait for Nodo to write RE events
+INFO:root:Wait time ended
+INFO:root:Response status code: 500
+INFO:root:Response body: {'statusCode': 500, 'message': 'Internal server error', 'activityId': '7e477c11-8e6f-4059-a2dd-01e8b55ff1e6'}]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @happy_path @NodoInviaRPT_ExistingPaymentPosition_003_03
+  Scenario: Utente paga un pagamento singolo con un versamento e una marca da bollo gia esistente in GPD
+    Dati i sistemi sono operativi ... passed in 0.858s
+    Data una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a VALID ... passed in 0.629s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 1.041s
+    Allora l'utente viene reindirizzato su Checkout completando il pagamento ... failed in 3.909s
+    E la posizione debitoria è chiusa ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_existingPaymentPosition.Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT" name="Utente tenta di pagare un pagamento singolo con un versamento e nessuna marca da bollo gia esistente in GPD in stato non valido" status="passed" time="6.384443"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @unhappy_path @NodoInviaRPT_ExistingPaymentPosition_003_04
+  Scenario: Utente tenta di pagare un pagamento singolo con un versamento e nessuna marca da bollo gia esistente in GPD in stato non valido
+    Dati i sistemi sono operativi ... passed in 0.896s
+    Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a DRAFT ... passed in 0.436s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 1.507s
+    Allora la conversione al nuovo modello fallisce nel wisp-converter ... passed in 0.992s
+    E la ricevuta KO è inviata ... passed in 2.554s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_existingPaymentPosition.Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT" name="Utente tenta di pagare un pagamento singolo inserito da ACA e in stato valido" status="passed" time="6.674705"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @unhappy_path @NodoInviaRPT_ExistingPaymentPosition_003_05
+  Scenario: Utente tenta di pagare un pagamento singolo inserito da ACA e in stato valido
+    Dati i sistemi sono operativi ... passed in 1.900s
+    Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 01 e stato uguale a VALID ... passed in 0.452s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.483s
+    Allora la conversione al nuovo modello fallisce nel wisp-converter ... passed in 1.316s
+    E la ricevuta KO è inviata ... passed in 2.524s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.nodoInviaRPT.nodoInviaRPT_existingPaymentPosition.Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT" name="Utente tenta di pagare un pagamento singolo inserito da ACA e in stato non valido" status="passed" time="5.936362"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @runnable @nodo_invia_rpt @unhappy_path @NodoInviaRPT_ExistingPaymentPosition_003_06
+  Scenario: Utente tenta di pagare un pagamento singolo inserito da ACA e in stato non valido
+    Dati i sistemi sono operativi ... passed in 1.097s
+    Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo ... passed in 0.000s
+    E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 01 e stato uguale a DRAFT ... passed in 0.455s
+    Quando l'utente tenta di pagare la RPT sul sito dell'EC ... passed in 0.481s
+    Allora la conversione al nuovo modello fallisce nel wisp-converter ... passed in 1.263s
+    E la ricevuta KO è inviata ... passed in 2.640s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
