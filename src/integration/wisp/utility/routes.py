@@ -16,7 +16,7 @@ def get_primitive_url(context, primitive):
             return context.environment.services.node_for_psp.url, None, constants.ResponseType.XML
         case 'closepaymentv2':
             url = context.environment.services.nodo_per_pm_v2.url + '/closepayment'
-            return url, context.environment.NODO_SUBSCRIPTION_KEY, constants.ResponseType.JSON
+            return url, None, constants.ResponseType.JSON
         case 'sendpaymentoutcomev2':
             service_data = services.get('node-for-psp')
             return service_data['url'], None, constants.ResponseType.XML
