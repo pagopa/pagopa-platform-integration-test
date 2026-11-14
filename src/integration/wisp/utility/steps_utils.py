@@ -53,7 +53,9 @@ def send_primitive(context, actor, primitive):
         headers = {'Content-Type': 'application/xml', 'SOAPAction': primitive,
                    constants.OCP_APIM_SUBSCRIPTION_KEY: subkey}
     elif content_type == constants.ResponseType.JSON:
-        headers = {'Content-Type': 'application/json', constants.OCP_APIM_SUBSCRIPTION_KEY: subkey}
+        headers = {'Content-Type': 'application/json'}
+        if subkey is not None:
+            headers[constants.OCP_APIM_SUBSCRIPTION_KEY] = subkey
     req_description = constants.REQ_DESCRIPTION_EXECUTE_SOAP_CALL.format(step=context.running_step)
 
     status_code, body_response, _ = utils.execute_request(url, 'post', headers, request, content_type,

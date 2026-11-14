@@ -11,7 +11,7 @@ def get_primitive_url(context, primitive):
             return context.environment.services.nodo_per_pa.url, context.environment.NUOVA_CONNETTIVITA_SUBSCRIPTION_KEY, constants.ResponseType.XML
         case 'checkposition':
             url = context.environment.services.nodo_per_pm_v1.url + '/checkPosition'
-            return url, context.environment.NODO_SUBSCRIPTION_KEY, constants.ResponseType.JSON
+            return url, None, constants.ResponseType.JSON
         case 'activatepaymentnoticev2':
             return context.environment.services.node_for_psp.url, context.environment.NODO_SUBSCRIPTION_KEY, constants.ResponseType.XML
         case 'closepaymentv2':
