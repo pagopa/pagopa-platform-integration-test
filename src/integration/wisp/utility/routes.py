@@ -13,13 +13,13 @@ def get_primitive_url(context, primitive):
             url = context.environment.services.nodo_per_pm_v1.url + '/checkPosition'
             return url, None, constants.ResponseType.JSON
         case 'activatepaymentnoticev2':
-            return context.environment.services.node_for_psp.url, context.environment.NODO_SUBSCRIPTION_KEY, constants.ResponseType.XML
+            return context.environment.services.node_for_psp.url, None, constants.ResponseType.XML
         case 'closepaymentv2':
             url = context.environment.services.nodo_per_pm_v2.url + '/closepayment'
             return url, context.environment.NODO_SUBSCRIPTION_KEY, constants.ResponseType.JSON
         case 'sendpaymentoutcomev2':
             service_data = services.get('node-for-psp')
-            return service_data['url'], context.environment.TECHNICAL_SUPPORT_SUBSCRIPTION_KEY, constants.ResponseType.XML
+            return service_data['url'], None, constants.ResponseType.XML
 
 
 # The method permits to retrieve the REST URL starting from action
