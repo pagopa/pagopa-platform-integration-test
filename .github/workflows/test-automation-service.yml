@@ -198,7 +198,7 @@ jobs:
       - name: Install Playwright (e2e suites only)
         if: ${{ inputs.test_type == 'e2e' }}
         run: |
-          pip install playwright==1.55.0
+          pip install playwright==1.61.0
           python -m playwright install --with-deps chrome
 
       - name: Determine test path
