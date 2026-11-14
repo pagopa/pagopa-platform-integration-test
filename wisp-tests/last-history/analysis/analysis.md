@@ -1,78 +1,81 @@
 ## Suite: wisp
 
-# 1. L'utente paga un carrello con tre RPT con un versamento ciascuna
+# 1. Utente paga un pagamento singolo con due versamenti e nessuna marca da bollo
 - **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con tre RPT con un versamento ciascuna`
+- **fullName**: `Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con due versamenti e nessuna marca da bollo`
 - **message**: AssertionError: There are not events with business process receipt-ok.
 - **trace**:
 ```
-[... earlier frames omitted ...]
-    match.run(runner.context)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
-    self.func(context, *args, **kwargs)
+  File "src/integration/wisp/steps/steps.py", line 172, in user_redirected_to_checkout
+    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 926, in check_wisp_session_timers_del_and_rts_were_sent
+    check_event(context, 'receipt-ok', 'status', 'RT_SEND_SUCCESS')
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 431, in check_event
+    assert_show_message(len(needed_process_events) > 0,
 ```
 ### Root cause
-The payment receipt processing service failed to generate or emit the expected `receipt-ok` event with `RT_SEND_SUCCESS` status.
+The expected event with business process `receipt-ok` and status `RT_SEND_SUCCESS` was not emitted or published within the expected window.
 
 ### Category
 application bug
 
 ### Recommended action
-Verify downstream receipt delivery services and event bus messaging to ensure `receipt-ok` events are published upon RT dispatch.
+Investigate receipt emission services and message queues to verify why `receipt-ok` events with status `RT_SEND_SUCCESS` are failing to generate.
 
 ---
 
-# 2. L'utente paga un carrello con due RPT per un totale di cinque versamenti
+# 2. L'utente paga un carrello con due RPT senza marca da bollo di cui una gia esistente in GPD
 - **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con due RPT per un totale di cinque versamenti`
+- **fullName**: `L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L'utente paga un carrello con due RPT senza marca da bollo di cui una gia esistente in GPD`
 - **message**: AssertionError: There are not events with business process receipt-ok.
 - **trace**:
 ```
-[... earlier frames omitted ...]
-    match.run(runner.context)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
-    self.func(context, *args, **kwargs)
+  File "src/integration/wisp/steps/steps.py", line 172, in user_redirected_to_checkout
+    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 926, in check_wisp_session_timers_del_and_rts_were_sent
+    check_event(context, 'receipt-ok', 'status', 'RT_SEND_SUCCESS')
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 431, in check_event
+    assert_show_message(len(needed_process_events) > 0,
 ```
 ### Root cause
-The system failed to trigger the required `receipt-ok` event with status `RT_SEND_SUCCESS` for multi-RPT carts.
+The expected event with business process `receipt-ok` and status `RT_SEND_SUCCESS` was not registered during multi-RPT cart processing.
 
 ### Category
 application bug
 
 ### Recommended action
-Check the event publisher logs and receipt handling component for multi-item cart payment flows.
+Verify downstream receipt processing logic for cart payments involving existing GPD debt positions.
 
 ---
 
-# 3. L'utente paga un carrello con singola RPT senza marca da bollo gia esistente in GPD
+# 3. L'utente paga un carrello con tre RPT per un totale di dieci versamenti
 - **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L'utente paga un carrello con singola RPT senza marca da bollo gia esistente in GPD`
+- **fullName**: `L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con tre RPT per un totale di dieci versamenti`
 - **message**: AssertionError: There are not events with business process receipt-ok.
 - **trace**:
 ```
-[... earlier frames omitted ...]
-    match.run(runner.context)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
-    self.func(context, *args, **kwargs)
+  File "src/integration/wisp/steps/steps.py", line 172, in user_redirected_to_checkout
+    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 926, in check_wisp_session_timers_del_and_rts_were_sent
+    check_event(context, 'receipt-ok', 'status', 'RT_SEND_SUCCESS')
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 431, in check_event
+    assert_show_message(len(needed_process_events) > 0,
 ```
 ### Root cause
-Missing `receipt-ok` event with `RT_SEND_SUCCESS` status when processing existing GPD debt position payments.
+The receipt generation process failed to emit `receipt-ok` events (`RT_SEND_SUCCESS`) when handling carts with multiple RPTs and high payment counts.
 
 ### Category
 application bug
 
 ### Recommended action
-Investigate the integration between GPD payment receipt status updates and the event generation service.
+Check backend logs for receipt processing delays or failures when handling multi-RPT payment transactions.
 
 ---
 
 ## Common patterns
-All 3 failures across the WISP suite share identical assertion failures (`AssertionError: There are not events with business process receipt-ok.`) during the check for receipt transmission (`check_wisp_session_timers_del_and_rts_were_sent`). This indicates a systematic break in the receipt creation or event propagation pipeline for WISP payment flows.
-
----
+- **Missing `receipt-ok` events**: All failures in the WISP suite stem from `check_wisp_session_timers_del_and_rts_were_sent` failing to find business process events matching `receipt-ok` with status `RT_SEND_SUCCESS`.
 
 ## Cross-suite correlation
-Only the `wisp` suite was provided in this run. All failures stem from a single systemic issue: missing `receipt-ok` event generation with status `RT_SEND_SUCCESS` across various payment cart configurations (single RPT, multi-RPT, and GPD debt position payments).
+- All reported failures belong to a single suite (`wisp`) and share identical assertion failures regarding missing `receipt-ok` events (`RT_SEND_SUCCESS`).
+- **Shared Root Cause**: WISP receipt generation/event notification system failed to post `receipt-ok` completion events.
+- **Recommended Action**: Inspect the receipt processor/event handler service to ensure `RT_SEND_SUCCESS` events are correctly emitted and persisted during checkout flows.

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>🤖 AI Analysis · WISP - AGGREGATE NRT ANALYSIS · 2026-11-14_13:57:47</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body { background-color: #f5f8fa; padding: 2rem; }
+    .hero {
+      background-color: #6f42c1;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      border-radius: 0.5rem;
+    }
+    .content-card {
+      background: white;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    }
+    .content-card h2 { margin-top: 1.5rem; color: #6f42c1; }
+    .content-card h3 { color: #495057; }
+    .content-card pre {
+      background: #f1f3f5;
+      padding: 0.75rem;
+      border-radius: 0.35rem;
+      overflow-x: auto;
+      font-size: 0.9rem;
+    }
+    .hero code {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      padding: 0.15rem 0.4rem;
+      border-radius: 0.35rem;
+    }
+    .content-card code {
+      color: #ff61b0;
+      background: #fff0f7;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    footer code {
+      color: #6f42c1;
+      background: #f3ebff;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    .btn-secondary { background-color: #6c757d; border: none; }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <h1 class="display-6">🤖 AI Analysis · WISP - AGGREGATE NRT ANALYSIS</h1>
+  <p class="lead mb-1">Run: <code>2026-11-14_13:57:47</code></p>
+  
+</header>
+
+<div class="container">
+  <div class="content-card">
+    <div id="analysis-content">
+      <div class="text-center text-muted">Rendering in corso...</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Powered by GitHub Models · Model: <code>gemini-3.6-flash</code></p>
+</footer>
+
+<script>
+  const markdown = "## Suite: wisp\n\n# 1. Utente paga un pagamento singolo con due versamenti e nessuna marca da bollo\n- **status**: failed\n- **fullName**: `Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con due versamenti e nessuna marca da bollo`\n- **message**: AssertionError: There are not events with business process receipt-ok.\n- **trace**:\n```\n  File \"src/integration/wisp/steps/steps.py\", line 172, in user_redirected_to_checkout\n    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py\", line 926, in check_wisp_session_timers_del_and_rts_were_sent\n    check_event(context, \u0027receipt-ok\u0027, \u0027status\u0027, \u0027RT_SEND_SUCCESS\u0027)\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py\", line 431, in check_event\n    assert_show_message(len(needed_process_events) \u003e 0,\n```\n### Root cause\nThe expected event with business process `receipt-ok` and status `RT_SEND_SUCCESS` was not emitted or published within the expected window.\n\n### Category\napplication bug\n\n### Recommended action\nInvestigate receipt emission services and message queues to verify why `receipt-ok` events with status `RT_SEND_SUCCESS` are failing to generate.\n\n---\n\n# 2. L\u0027utente paga un carrello con due RPT senza marca da bollo di cui una gia esistente in GPD\n- **status**: failed\n- **fullName**: `L\u0027utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L\u0027utente paga un carrello con due RPT senza marca da bollo di cui una gia esistente in GPD`\n- **message**: AssertionError: There are not events with business process receipt-ok.\n- **trace**:\n```\n  File \"src/integration/wisp/steps/steps.py\", line 172, in user_redirected_to_checkout\n    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py\", line 926, in check_wisp_session_timers_del_and_rts_were_sent\n    check_event(context, \u0027receipt-ok\u0027, \u0027status\u0027, \u0027RT_SEND_SUCCESS\u0027)\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py\", line 431, in check_event\n    assert_show_message(len(needed_process_events) \u003e 0,\n```\n### Root cause\nThe expected event with business process `receipt-ok` and status `RT_SEND_SUCCESS` was not registered during multi-RPT cart processing.\n\n### Category\napplication bug\n\n### Recommended action\nVerify downstream receipt processing logic for cart payments involving existing GPD debt positions.\n\n---\n\n# 3. L\u0027utente paga un carrello con tre RPT per un totale di dieci versamenti\n- **status**: failed\n- **fullName**: `L\u0027utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L\u0027utente paga un carrello con tre RPT per un totale di dieci versamenti`\n- **message**: AssertionError: There are not events with business process receipt-ok.\n- **trace**:\n```\n  File \"src/integration/wisp/steps/steps.py\", line 172, in user_redirected_to_checkout\n    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py\", line 926, in check_wisp_session_timers_del_and_rts_were_sent\n    check_event(context, \u0027receipt-ok\u0027, \u0027status\u0027, \u0027RT_SEND_SUCCESS\u0027)\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py\", line 431, in check_event\n    assert_show_message(len(needed_process_events) \u003e 0,\n```\n### Root cause\nThe receipt generation process failed to emit `receipt-ok` events (`RT_SEND_SUCCESS`) when handling carts with multiple RPTs and high payment counts.\n\n### Category\napplication bug\n\n### Recommended action\nCheck backend logs for receipt processing delays or failures when handling multi-RPT payment transactions.\n\n---\n\n## Common patterns\n- **Missing `receipt-ok` events**: All failures in the WISP suite stem from `check_wisp_session_timers_del_and_rts_were_sent` failing to find business process events matching `receipt-ok` with status `RT_SEND_SUCCESS`.\n\n## Cross-suite correlation\n- All reported failures belong to a single suite (`wisp`) and share identical assertion failures regarding missing `receipt-ok` events (`RT_SEND_SUCCESS`).\n- **Shared Root Cause**: WISP receipt generation/event notification system failed to post `receipt-ok` completion events.\n- **Recommended Action**: Inspect the receipt processor/event handler service to ensure `RT_SEND_SUCCESS` events are correctly emitted and persisted during checkout flows.";
+  const target = document.getElementById('analysis-content');
+  if (markdown && markdown.trim().length > 0) {
+    target.innerHTML = marked.parse(markdown);
+  } else {
+    target.innerHTML = '<div class="alert alert-warning">Nessuna analisi disponibile per questa run.</div>';
+  }
+</script>
+
+</body>
+</html>
