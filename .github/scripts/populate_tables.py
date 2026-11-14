@@ -159,6 +159,19 @@ def find_nrt_suite(dir_name: str, suites: dict) -> dict | None:
     return None
 
 
+def find_test_cases_dir(run_dir: str) -> str | None:
+    '''
+    Return the directory with the per-scenario result files of an artifact, or None if absent.
+
+    Prefers the processed TEST_CASES_PATH layout and falls back to the raw ALLURE_RESULT_PATH.
+    '''
+    for candidate in (TEST_CASES_PATH, ALLURE_RESULT_PATH):
+        path = os.path.join(run_dir, candidate)
+        if os.path.isdir(path):
+            return path
+    return None
+
+
 def get_test_type_from_behave_path(behave_path: str | None) -> str | None:
     # behave_path has the form src/<test_type>/<suite>, e.g. src/integration/wisp
     if not behave_path:
@@ -289,6 +302,7 @@ def main():
     with open(NRT_SUITES_FILE, 'r') as f:
         suites = json.load(f)
 
+    failed_artifacts = []
     for dir in sorted(os.listdir(processed_dir)):
 
         if args.suite and args.test_type and (dir != f"{args.suite}-{args.test_type}"):
@@ -317,6 +331,15 @@ def main():
                 test_suite.test_object = str(dir)
             print(f"[INFO][main] Processing artifact directory {dir} as test_object {test_suite.test_object}.")
 
+            # Validate the artifact before any API call so an incomplete one never leaves partial records.
+            summary_path = os.path.join(run_dir, SUMMARY_FILE_PATH)
+            test_cases_dir = find_test_cases_dir(run_dir)
+            if not os.path.isfile(summary_path) or test_cases_dir is None:
+                print(f"[ERROR][main] Incomplete artifact {dir}: summary found={os.path.isfile(summary_path)}, "
+                      f"test cases directory found={test_cases_dir is not None}. Nothing saved for it; skipping.")
+                failed_artifacts.append(dir)
+                continue
+
 
             # get the actual product version
             current_product_version = get_current_product_version(test_suite.test_object, full_config)
@@ -338,13 +361,10 @@ def main():
             # Populate the test run object based on the summary.json file 
             test_run.suite_id = latest_suite_version_obj.id
             test_version = (nrt_suite or find_nrt_suite(test_suite.test_object.lower(), suites) or {}).get('version')
-            test_run = populate_test_run(test_run, os.path.join(run_dir, SUMMARY_FILE_PATH), test_version, test_suite.test_object, nrt_suite.get('allure_subfolder') if nrt_suite else None)
+            test_run = populate_test_run(test_run, summary_path, test_version, test_suite.test_object, nrt_suite.get('allure_subfolder') if nrt_suite else None)
             # Populating test executions based on the test cases JSON files
-            if os.path.exists(os.path.join(run_dir, TEST_CASES_PATH)):
-                test_executions = populate_test_executions(os.path.join(run_dir, TEST_CASES_PATH), test_run.allure_url)
-            else:
-                 test_executions = populate_test_executions(os.path.join(run_dir, ALLURE_RESULT_PATH), test_run.allure_url)
-                 
+            test_executions = populate_test_executions(test_cases_dir, test_run.allure_url)
+
             # Save the newly created test run in the database and get the generated ID to associate with test executions
             test_run = save_test_runs(test_run, full_config)
             print(f"[INFO][main] Saved new test run for test_object {latest_suite_version_obj.test_object} with run ID {test_run.id}")
@@ -354,6 +374,9 @@ def main():
             test_executions = save_test_executions(test_executions, full_config)
             print(f"[INFO][main] Saved all new test executions for test_object {latest_suite_version_obj.test_object} for run ID {test_run.id}")
           
+    if failed_artifacts:
+        raise RuntimeError(f"Skipped incomplete artifacts (nothing saved for them): {', '.join(failed_artifacts)}")
+
 
 if __name__ == "__main__":
     try:
