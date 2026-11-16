@@ -1,6 +1,6 @@
 ---
 description: 'Use when: QA tests need to be executed, validated, failures diagnosed, and fixes delegated to the QA Engineer'
-model: Claude Sonnet 5
+model: Claude Sonnet 5.5
 tools: [execute, execute/runInTerminal, read/terminalLastCommand, read/readFile, search/fileSearch, edit/createFile, edit/editFiles, vscode/askQuestions, execute/getTerminalOutput, agent]
 agents: [QA-engineer]
 user-invocable: false

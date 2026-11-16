@@ -44,8 +44,9 @@ user explicitly included them in the source scope.
 
 Before using a discovered candidate, present the locator, relevant finding,
 scenario or UC element it would support, applicability, uncertainty and
-proposed use. Ask for approval with the dedicated question tool, for one
-coherent set of candidates at a time. Rejection means do not use those facts or
+proposed use. Ask for approval under the analyst's
+[human-interaction protocol](../../../docs/workflows/qa-analyst/activity-routing.md#human-interaction-and-harness-compatibility),
+for one coherent set of candidates at a time. Rejection means do not use those facts or
 values. If approval cannot be obtained, leave them pending and preserve the gap.
 
 ## Evidence meaning and scoped clarifications
@@ -65,9 +66,25 @@ An instruction to include alternatives supplies scope, not missing outcomes.
 
 Use a prior explicit decision only for the conflict and scope it actually
 settles. Otherwise present the incompatible claims, affected cases and proposed
-interpretation through the question tool. Do not assign automatic precedence
+interpretation through that interaction protocol. Do not assign automatic precedence
 to notes, examples, newer documents or filenames. Keep unresolved conflicts
 visible and block only their dependent checks under the owning workflow.
+
+Handle source defects by their kind, following the
+[triage](../../../docs/use-cases/uc-workflow.md#triage-dei-dubbi-e-report-di-traduzione):
+
+- **UC and documentation disagree**: do not choose a side or ask which governs.
+  Request a revision of both the documentation and the UC, then repeat the
+  task on the revised versions under a new `uc_revision`. The dependent checks
+  stay blocked meanwhile.
+- **The documentation contradicts itself**: request that the contradiction be
+  resolved, or a pointer to the documentation that resolves it.
+- **Functionality or a workflow step is unclear**: request an explanation, or
+  additional or corrected documentation.
+- **The doubt concerns how to implement** a step (operation, endpoint, URL,
+  configuration, UI component, technology, how to induce an error): it is not
+  a source defect. Do not ask and do not search; record it as an implementation
+  finding for the translation report.
 
 ## Reading tools and failures
 

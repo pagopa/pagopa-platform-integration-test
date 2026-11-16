@@ -28,7 +28,9 @@ actually requires it, not as a prerequisite for questions or exploration.
    Check command exit codes; on failure, report the error and stop Git actions.
 2. Determine the requested workflow from explicit user intent:
    **1: New work**, **2: Resume work**, or **3: Exploration**.
-   If unclear, ask the user to choose through the dedicated question tool.
+   If unclear, ask the user to choose through the
+   [human-interaction protocol](operations.md#human-interaction-and-harness-compatibility):
+   use the available question tool, otherwise ask in the main chat and wait.
    Do not equate a missing Jira key with an invalid request.
 3. Follow the matrix below. Ask one decision at a time, reuse supplied answers,
    and do not repeat a Jira-key question when a valid key is already available.

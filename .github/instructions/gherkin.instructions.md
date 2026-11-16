@@ -189,7 +189,9 @@ determined by the operation being tested. Keep the requirement and any
 unresolved preparation in the active workflow's report; do not discard an
 explicit UC precondition or invent a preliminary business operation to
 validate it. Missing preparation evidence is not automatically a missing
-functional rule.
+functional rule. In the UC translation workflow the UC precondition itself
+supports the Given; how to prepare or observe the state is an implementation
+doubt that never blocks the feature and is recorded in the translation report.
 
 Before accepting an initial-state step, ask:
 "If this state were prepared independently, without replaying the preceding
