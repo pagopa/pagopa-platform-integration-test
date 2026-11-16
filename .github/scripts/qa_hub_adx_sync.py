@@ -3,8 +3,8 @@
 Data is first ingested into ADX staging tables and verified, then published into the
 target tables:
 
-- ``QA_NRT_TEST_SUITES`` and ``QA_NRT_FLAKY_SCENARIOS`` are always fully replaced
-    (suite metadata and mutable flaky status must stay current).
+- Suite metadata and all flaky tables are always fully replaced so mutable state
+  stays current.
 - ``snapshot`` mode atomically replaces the extents of every target table.
 - Windowed modes (``yesterday``, ``since``, ``range``) soft-delete the window from the
   target tables and move the staged extents in, so reruns are idempotent.
@@ -178,7 +178,75 @@ FLAKY_SCENARIOS = TableSpec(
     windowed=False,
 )
 
-TABLES = (SUITES, RUNS, EXECUTIONS, FLAKY_SCENARIOS)
+FLAKY_REGISTRY = TableSpec(
+    pg_table="flaky_registry",
+    adx_table="QA_NRT_FLAKY_REGISTRY",
+    columns=(
+        ("id", "guid"),
+        ("test_object", "string"),
+        ("test_type", "string"),
+        ("scenario_name", "string"),
+        ("is_flaky", "bool"),
+        ("flagged_by", "string"),
+        ("flagged_at", "datetime"),
+        ("updated_by", "string"),
+        ("updated_at", "datetime"),
+        ("inserted_at", "datetime"),
+    ),
+    select_list=(
+        "f.id, f.test_object, f.test_type, f.scenario_name, f.is_flaky, "
+        "f.flagged_by, f.flagged_at, f.updated_by, f.updated_at, f.inserted_at"
+    ),
+    windowed=False,
+)
+
+FLAKY_SCORES = TableSpec(
+    pg_table="flaky_scores",
+    adx_table="QA_NRT_FLAKY_SCORES",
+    columns=(
+        ("test_object", "string"),
+        ("test_type", "string"),
+        ("scenario_name", "string"),
+        ("env", "string"),
+        ("score", "int"),
+        ("level", "int"),
+        ("state", "string"),
+        ("flip_rate", "decimal"),
+        ("retry_pass_rate", "decimal"),
+        ("runs_analyzed", "int"),
+        ("last_failure_at", "datetime"),
+        ("recent_outcomes", "dynamic"),
+        ("last_suite_id", "guid"),
+        ("computed_at", "datetime"),
+    ),
+    select_list=(
+        "f.test_object, f.test_type, f.scenario_name, f.env::text AS env, f.score, "
+        "f.level, f.state, f.flip_rate, f.retry_pass_rate, f.runs_analyzed, "
+        "f.last_failure_at, f.recent_outcomes, f.last_suite_id, f.computed_at"
+    ),
+    windowed=False,
+)
+
+FLAKY_RECOMPUTE_STATUS = TableSpec(
+    pg_table="flaky_recompute_status",
+    adx_table="QA_NRT_FLAKY_RECOMPUTE_STATUS",
+    columns=(
+        ("id", "int"),
+        ("last_attempt_at", "datetime"),
+        ("last_success_at", "datetime"),
+        ("last_error", "string"),
+        ("last_trigger", "string"),
+        ("last_requested_by", "string"),
+        ("scored_count", "int"),
+    ),
+    select_list=(
+        "f.id, f.last_attempt_at, f.last_success_at, f.last_error, "
+        "f.last_trigger, f.last_requested_by, f.scored_count"
+    ),
+    windowed=False,
+)
+
+TABLES = (SUITES, RUNS, EXECUTIONS, FLAKY_SCENARIOS, FLAKY_REGISTRY, FLAKY_SCORES, FLAKY_RECOMPUTE_STATUS)
 
 
 @dataclass
@@ -250,8 +318,8 @@ def build_select_query(spec: TableSpec, window: SyncWindow) -> tuple[str, dict[s
     """Build the parametrized SELECT used to export one table for the given window."""
     if spec is SUITES:
         sql = f"SELECT {spec.select_list} FROM {PG_SCHEMA}.test_suites s"
-    elif spec is FLAKY_SCENARIOS:
-        sql = f"SELECT {spec.select_list} FROM {PG_SCHEMA}.flaky_scenarios f"
+    elif spec in (FLAKY_SCENARIOS, FLAKY_REGISTRY, FLAKY_SCORES, FLAKY_RECOMPUTE_STATUS):
+        sql = f"SELECT {spec.select_list} FROM {PG_SCHEMA}.{spec.pg_table} f"
     elif spec is RUNS:
         sql = f"SELECT {spec.select_list} FROM {PG_SCHEMA}.test_runs r"
     elif window.is_snapshot:
@@ -577,13 +645,16 @@ class AdxPublisher:
 
 
 def publish(publisher: AdxPublisher, exports: dict[str, ExportResult], window: SyncWindow, timeout_seconds: int) -> None:
-    """Stage all tables, fully replace metadata, and publish runs/executions by window."""
+    """Stage all tables, replace mutable state, and publish runs/executions by window."""
     publisher.ensure_tables()
     for spec in TABLES:
         publisher.stage(exports[spec.adx_table], timeout_seconds)
 
     publisher.replace_all(SUITES)
     publisher.replace_all(FLAKY_SCENARIOS)
+    publisher.replace_all(FLAKY_REGISTRY)
+    publisher.replace_all(FLAKY_SCORES)
+    publisher.replace_all(FLAKY_RECOMPUTE_STATUS)
     if window.is_snapshot:
         publisher.replace_all(RUNS)
         publisher.replace_all(EXECUTIONS)
