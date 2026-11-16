@@ -6,8 +6,8 @@ modes are independent of the orchestrator's branch/session modes.
 
 ## Select the activity (ADR-02)
 
-Use the explicit intent; ask through the dedicated question tool only when the
-action, files, or output scope is ambiguous. Supplied feature files alone do
+Use the explicit intent; ask through the human-interaction protocol below only
+when the action, files, or output scope is ambiguous. Supplied feature files alone do
 not authorize editing. An explicit correction request authorizes its stated
 scope without a second generic permission question.
 
@@ -15,7 +15,7 @@ scope without a second generic permission question.
 | --- | --- | --- |
 | Review | Apply [review-feature-files](../../../.github/skills/review-feature-files/SKILL.md) directly when already QA-analyst; never delegate to yourself | Findings in chat; a Markdown review report only when requested at a human-confirmed path. No feature creation or modification |
 | Edit or correct | Follow [feature-editing.md](feature-editing.md) | Scoped changes to authorized features, checks, explanations and implementation impact |
-| Create from a team-template UC | Read [uc-workflow.md](../../use-cases/uc-workflow.md) and apply [uc-to-feature](../../../.github/skills/uc-to-feature/SKILL.md) | Agreed features and the fixed UC reports/registry |
+| Create from a team-template UC | Read [uc-workflow.md](../../use-cases/uc-workflow.md) and apply [uc-to-feature](../../../.github/skills/uc-to-feature/SKILL.md) | Agreed features, the fixed UC reports/registry and the translation report `report_traduzione_<slug-uc>.md` |
 | Create from other documentation or an explicitly supplied migration suite | Apply the common evidence rules below and the Gherkin conventions | Agreed features with evidence, coverage, gaps and readiness summarized in chat; no invented UC or mandatory UC registry |
 
 An explanation-only request returns an explanation without editing features or
@@ -27,6 +27,37 @@ activity before applying fixes proposed during a review.
 Direct `/uc-scenario-context` and `/uc-test-data` requests stop after their own
 report. `/uc-to-feature` in `assemble-only` consumes current existing reports;
 it does not run retrieval stages to repair prerequisites.
+
+## Human interaction and harness compatibility
+
+Use the dedicated question tool when available in the current execution context.
+If absent, or the host reports it unavailable or unsupported, use main-chat
+exchanges when running directly with the human: state the question, exact scope,
+relevant options and consequences, then wait for an explicit human answer before
+dependent actions. Do not use chat fallback to bypass a refusal, cancellation or
+permission denial. Report other tool errors rather than silently treating them
+as unavailability. Silence, timeout and missing tools are not human decisions.
+
+When delegated and unable to ask the human directly, return `blocked` to the
+orchestrator with pending questions, scope/options, affected stage, actual saved
+outputs and the point to resume. Do not treat messages in a non-interactive worker
+transcript as questions delivered to the human. The orchestrator asks through its
+available question tool or main chat and returns actual human answers with their
+references; it must not decide for the human. Never delegate to yourself or invent
+a helper to obtain an answer.
+
+On resumed delegation consume the explicit answers and checkpoint, preserve UC
+identity/paths and saved work, and apply the existing continuity and invalidation
+gates. Use existing `Questions`/`History` and `open`/`pending-approval` values when
+authorized to persist them; missing tools are not `declined`/`rejected`. An
+unconfirmed output directory is not permission to create a registry there.
+Do not advance dependent stages while a required answer is missing.
+
+Chat fallback changes only the communication channel. It does not turn an
+authorized creation/edit request into chat-only or read-only work, nor expand
+write scope or replace mandatory persistent outputs. Missing question tools do
+not imply missing filesystem tools: report actual write failures separately and
+never claim an unsaved file exists. All feature, report and terminal limits remain.
 
 ## Common evidence rules (ADR-04)
 
@@ -68,8 +99,11 @@ format; use them when judging functional correctness during review as well.
 
 The UC workflow remains the authority for schema, ownership and invalidation.
 Confirm the run registry; context writes `01-context.md`, data consumes it and
-writes `02-test-data.md`, then translation consumes both and writes features
-and `03-feature-report.md`. Update `00-run.md` only for real outputs and changes.
+writes `02-test-data.md`, then translation consumes both and writes features,
+`03-feature-report.md` and the companion `report_traduzione_<slug-uc>.md`, which
+collects implementation doubts and proposals of scenarios the UC does not cover
+(see the [triage](../../use-cases/uc-workflow.md#triage-dei-dubbi-e-report-di-traduzione)).
+Update `00-run.md` only for real outputs and changes.
 
 Validate identity, producer, revisions and states before each stage. On
 resumption obtain and persist the scoped human continuity confirmation for

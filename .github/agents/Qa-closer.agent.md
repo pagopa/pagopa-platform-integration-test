@@ -1,6 +1,6 @@
 ---
 description: 'Use when: verified QA work needs scoped documentation and authorized commit/push/PR, or suite errors need Markdown report-only closure'
-model: GPT-5.4 mini
+model: GPT-6 Luna
 tools: [read/readFile, edit/createFile, edit/editFiles, search/fileSearch, read/terminalLastCommand, execute/runInTerminal, execute/getTerminalOutput, vscode/askQuestions]
 user-invocable: false
 
