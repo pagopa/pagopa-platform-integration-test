@@ -2,9 +2,11 @@
 name: ppa-pr
 description: >-
   Create a GitHub pull request for this project using the repository template,
-  mandatory reviewers, CI suite/skip labels, release labels, and explicit branch routing.
+  CODEOWNERS-based reviewer suggestions, CI suite/skip labels, release labels,
+  and explicit branch routing.
   Use when asked to open or create a PR, or when QA-closer reaches its PR creation
-  gate. Accept optional branches, title override, reviewer usernames, and context.
+  gate. Accept optional branches, title override, reviewer usernames/team slugs,
+  and context.
 ---
 
 # Create a project pull request
@@ -17,7 +19,7 @@ Preserve the calling agent's approval and test gates.
 
 - Optional source and target branches.
 - Optional English PR title override.
-- Optional comma-separated GitHub reviewer usernames.
+- Optional comma-separated GitHub reviewer usernames or team slugs.
 - Optional notes for the PR body.
 
 Ask for missing decisions through the available dedicated question tool.
@@ -53,10 +55,19 @@ Do not use prompt-specific input placeholders or require a particular model.
 
 2. **Resolve assignee and reviewers.**
    - Run `$ghUser = gh api user --jq ".login"` and use that login as assignee.
-   - If reviewer CSV was supplied, store it verbatim in `$reviewers`; otherwise
-     request it through the dedicated question tool.
-   - Reject empty or whitespace-only input. Split the CSV into trimmed,
-     nonempty usernames for the CLI. At least one reviewer is mandatory.
+   - If reviewer CSV was supplied, store it verbatim in `$reviewers`; otherwise,
+     inspect the applicable `CODEOWNERS` file in GitHub's precedence order:
+     `.github/CODEOWNERS`, root `CODEOWNERS`, then `docs/CODEOWNERS`.
+   - Extract and deduplicate the listed user accounts and team slugs. Include
+     them as examples in the dedicated question tool, and ask the user to select
+     one or more reviewers. Treat CODEOWNERS entries as suggestions only: do not
+     request every owner or choose reviewers automatically. If no applicable
+     file or owner handles are available, ask for reviewer names without examples.
+   - Accept usernames and team slugs as they appear in CODEOWNERS, including an
+     optional leading `@`; remove that prefix when preparing CLI arguments.
+     Reject empty or whitespace-only input. Split the CSV into trimmed,
+     nonempty reviewer logins/team slugs for the CLI. At least one reviewer is
+     mandatory.
    - Do not silently discard rejected reviewers or create a PR without them.
 
 3. **Collect the changes against the resolved target.**
