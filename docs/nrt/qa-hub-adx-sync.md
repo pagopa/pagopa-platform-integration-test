@@ -10,12 +10,16 @@ QA Hub PostgreSQL tables into their Azure Data Explorer (ADX) mirrors. The logic
 | `qachub.test_runs` | `QA_NRT_TEST_RUNS` |
 | `qachub.test_executions` | `QA_NRT_TEST_EXECUTIONS` |
 | `qachub.flaky_scenarios` | `QA_NRT_FLAKY_SCENARIOS` |
+| `qachub.flaky_registry` | `QA_NRT_FLAKY_REGISTRY` |
+| `qachub.flaky_scores` | `QA_NRT_FLAKY_SCORES` |
+| `qachub.flaky_recompute_status` | `QA_NRT_FLAKY_RECOMPUTE_STATUS` |
 
 ## Modes
 
 All windows are UTC days and apply to `test_runs.timestamp_start`. Executions follow their
-run. Suites and flaky scenarios are always reloaded in full: suites have no timestamp, and
-flaky status can change for scenarios inserted before the selected run window.
+run. Suites and all four flaky tables are always reloaded in full: their current state
+can change independently of the selected run window. Deletions in PostgreSQL are also
+reflected in ADX, including when a source table is empty.
 
 | Mode | Window | Trigger |
 |---|---|---|
@@ -35,14 +39,14 @@ pull requests do not trigger synchronization.
 
 1. Reads `qa-centralhub-database-url` from `pagopa-<d|u|p>-itn-qa-kv` with the runner's
    managed identity.
-2. Exports the four tables in one read-only `REPEATABLE READ` transaction to gzip
+2. Exports the seven tables in one read-only `REPEATABLE READ` transaction to gzip
    JSON-lines files.
-3. Checks that all eight target and staging tables already exist, then ingests each
+3. Checks that all fourteen target and staging tables already exist, then ingests each
    file with queued ingestion into its `<TABLE>_STAGING` table and waits until the
    staged row count matches. The script does not create or alter table schemas.
 4. Publishes:
-   - `snapshot` mode, suites, and flaky scenarios use `.replace extents`, an atomic
-     swap per table, not a transaction across the four tables.
+   - `snapshot` mode, suites, and all flaky tables use `.replace extents`, an atomic
+     swap per table, not a transaction across the seven tables.
    - The windowed modes soft-delete the rows in the window from the target tables
      (`.delete ... records`), then `.move extents` from staging. Rerunning the same
      window is idempotent.
@@ -56,12 +60,15 @@ pull requests do not trigger synchronization.
   `ManagedIdentityCredential()` with the Container Apps Job's system-assigned identity.
   They do not fall back to Azure CLI, OIDC deployment credentials, or client secrets.
   Key Vault authentication continues using the existing repository resolver.
-- **Tables and schemas**: infrastructure must precreate the four target tables and their
+- **Tables and schemas**: infrastructure must precreate the seven target tables and their
   matching staging tables in each enabled environment:
   - `QA_NRT_TEST_SUITES` and `QA_NRT_TEST_SUITES_STAGING`
   - `QA_NRT_TEST_RUNS` and `QA_NRT_TEST_RUNS_STAGING`
   - `QA_NRT_TEST_EXECUTIONS` and `QA_NRT_TEST_EXECUTIONS_STAGING`
   - `QA_NRT_FLAKY_SCENARIOS` and `QA_NRT_FLAKY_SCENARIOS_STAGING`
+  - `QA_NRT_FLAKY_REGISTRY` and `QA_NRT_FLAKY_REGISTRY_STAGING`
+  - `QA_NRT_FLAKY_SCORES` and `QA_NRT_FLAKY_SCORES_STAGING`
+  - `QA_NRT_FLAKY_RECOMPUTE_STATUS` and `QA_NRT_FLAKY_RECOMPUTE_STATUS_STAGING`
   - Each target and staging table must have the same exported columns, in the same
     order and with the matching ADX types.
   - In addition to their pre-existing columns, `QA_NRT_TEST_RUNS` and its staging table
