@@ -1,6 +1,87 @@
 ## Suite: checkout
 
-# 1. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
+# 1. Viene mostrato l'errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell'intervallo 302400000000000000-302409999999999999 -- @1.1
+- **status**: failed
+- **fullName**: `Attivazione pagamento Checkout: Viene mostrato l'errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell'intervallo 302400000000000000-302409999999999999`
+- **message**: AssertionError: Expected modal header to contain 'Non riusciamo a trovare l’avviso', but got: 'L’Ente Creditore sta avendo problemi nella risposta'
+- **trace**:
+```
+File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 245, in step_error_modal_header
+    assert expected_header in header_text, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+```
+### Root cause
+The application returned an generic EC error modal ('L’Ente Creditore sta avendo problemi nella risposta') instead of the specific unknown payment notice header ('Non riusciamo a trovare l’avviso').
+
+### Category
+application bug
+
+### Recommended action
+Verify EC mock or platform handling for invalid notice code interval 302400000000000000-302409999999999999 to ensure it maps to PAA_PAGAMENTO_SCONOSCIUTO correctly.
+
+---
+
+# 2. Un pagamento con configurazione carta "Wordline" viene completato con successo -- @1.2
+- **status**: failed
+- **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta "Wordline" viene completato con successo`
+- **message**: AssertionError: Expected 'Hai pagato' in result message, but got: 'Il pagamento non è andato a buon fine'
+- **trace**:
+```
+File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 309, in step_check_payment_success
+    assert "Hai pagato" in message_text, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+```
+### Root cause
+Payment failed during processing via Worldline card configuration in the authenticated checkout flow.
+
+### Category
+application bug
+
+### Recommended action
+Check NPG/Worldline gateway integration logs in the UAT environment to identify why the transaction was declined or failed to authorize.
+
+---
+
+# 3. Un pagamento con configurazione carta "Wordline" viene completato con successo -- @1.2
+- **status**: failed
+- **fullName**: `Attivazione pagamento Checkout: Un pagamento con configurazione carta "Wordline" viene completato con successo`
+- **message**: AssertionError: Expected 'Hai pagato' in result message, but got: 'Attendi la conferma del pagamento'
+- **trace**:
+```
+File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 309, in step_check_payment_success
+    assert "Hai pagato" in message_text, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+```
+### Root cause
+Async payment notification/outcome delayed; user UI remained on pending state ('Attendi la conferma del pagamento') instead of transitioning to success.
+
+### Category
+flaky
+
+### Recommended action
+Increase polling duration/retry logic for final payment status assertion when handling asynchronous payment authorization confirmations.
+
+---
+
+# 4. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
 - **status**: broken
 - **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta "Postepay" viene completato con successo`
 - **message**: RuntimeError: Timeout on locator '#psp-radio-PPAYITR1XXX' after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)
@@ -21,17 +102,17 @@ File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave
     ) from exc
 ```
 ### Root cause
-The PSP radio element `#psp-radio-PPAYITR1XXX` was not found on the PSP list page within the 5-second timeout window.
+PSP element `#psp-radio-PPAYITR1XXX` did not load or render within 5000 ms on the checkout PSP selection page.
 
 ### Category
-flaky
+environment
 
 ### Recommended action
-Increase the locator timeout for loading PSP selection options or ensure the target PSP is consistently available in UAT mock data.
+Check PSP configuration and availability for `PPAYITR1XXX` in the UAT bundle/checkout service.
 
 ---
 
-# 2. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
+# 5. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
 - **status**: broken
 - **fullName**: `Attivazione pagamento Checkout: Un pagamento con configurazione carta "Postepay" viene completato con successo`
 - **message**: RuntimeError: Timeout on locator '#psp-radio-PPAYITR1XXX' after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)
@@ -52,122 +133,33 @@ File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave
     ) from exc
 ```
 ### Root cause
-The PSP radio element `#psp-radio-PPAYITR1XXX` timed out waiting to appear on the PSP selection screen.
-
-### Category
-flaky
-
-### Recommended action
-Review page load synchronization before clicking the PSP locator and verify test environment PSP list rendering performance.
-
----
-
-# 3. Viene mostrato l'errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell'intervallo 302400000000000000-302409999999999999 -- @1.1
-- **status**: failed
-- **fullName**: `Attivazione pagamento Checkout: Viene mostrato l'errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell'intervallo 302400000000000000-302409999999999999`
-- **message**: AssertionError: Expected modal header to contain 'Non riusciamo a trovare l’avviso', but got: 'L’Ente Creditore sta avendo problemi nella risposta'
-- **trace**:
-```
-File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
-    match.run(runner.context)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
-    self.func(context, *args, **kwargs)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 245, in step_error_modal_header
-    assert expected_header in header_text, (
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-```
-### Root cause
-The application returned a generic creditor entity failure modal instead of the expected unknown notice error modal.
-
-### Category
-application bug
-
-### Recommended action
-Verify error mapping for `PAA_PAGAMENTO_SCONOSCIUTO` downstream responses in the Checkout backend service.
-
----
-
-# 4. Un pagamento con configurazione carta "Wordline" viene completato con successo -- @1.2
-- **status**: failed
-- **fullName**: `Attivazione pagamento Checkout: Un pagamento con configurazione carta "Wordline" viene completato con successo`
-- **message**: AssertionError: Expected 'Hai pagato' in result message, but got: 'Il pagamento non è andato a buon fine'
-- **trace**:
-```
-File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
-    match.run(runner.context)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
-    self.func(context, *args, **kwargs)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 309, in step_check_payment_success
-    assert "Hai pagato" in message_text, (
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-```
-### Root cause
-Payment transaction via the Wordline PSP provider failed during execution, leading to an unexpected failure screen.
+PSP element `#psp-radio-PPAYITR1XXX` failed to load in time on the PSP list page for standard checkout flow.
 
 ### Category
 environment
 
 ### Recommended action
-Check UAT Wordline gateway integration availability and mock response configurations for payment authorization.
-
----
-
-# 5. Un pagamento con configurazione carta "Wordline" viene completato con successo -- @1.2
-- **status**: failed
-- **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta "Wordline" viene completato con successo`
-- **message**: AssertionError: Expected 'Hai pagato' in result message, but got: 'Attendi la conferma del pagamento'
-- **trace**:
-```
-File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
-    match.run(runner.context)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
-    self.func(context, *args, **kwargs)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 309, in step_check_payment_success
-    assert "Hai pagato" in message_text, (
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-```
-### Root cause
-The payment stayed in a pending status ('Attendi la conferma del pagamento') instead of transitioning to the success state in time.
-
-### Category
-flaky
-
-### Recommended action
-Implement polling or increase wait timeout for asynchronous payment receipt confirmation on the completion page.
+Ensure Postepay PSP (`PPAYITR1XXX`) is correctly configured and returned by the payment-methods backend API in UAT.
 
 ---
 
 ## Common patterns
-- **PSP Selection UI Timing:** Failures #1 and #2 failed while waiting for `#psp-radio-PPAYITR1XXX` to be rendered in the DOM, indicating slow dynamic element loading on the PSP list page.
-- **Wordline Payment Outcome Asynchrony/Failures:** Failures #4 and #5 failed on checking final payment outcome for Wordline card configuration, resulting from backend gateway failure or slow asynchronous status updates.
+- **Missing/Unavailable PSP in UI (Postepay)**: Multiple tests fail locating `#psp-radio-PPAYITR1XXX` due to timeouts on the PSP selection screen.
+- **Payment Outcome Authorization Failures**: Wordline integration tests fail due to unexpected payment statuses (`Il pagamento non è andato a buon fine` / `Attendi la conferma del pagamento`).
 
 ## Suite: fdr3
 
-Execution completed successfully with 0 failures recorded; please verify that test runs ran to completion without unexpected execution skips.
+Execution of the 'FDR-3' suite was complete with 0 failures, and all scheduled tests were executed successfully.
 
 ## Suite: wisp
 
-# 1. L'utente paga un carrello con tre RPT con un versamento ciascuna
+# 1. Utente paga un pagamento singolo con un versamento e nessuna marca da bollo
 - **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con tre RPT con un versamento ciascuna`
+- **fullName**: `Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con un versamento e nessuna marca da bollo`
 - **message**: AssertionError: There are not events with business process receipt-ok.
 - **trace**:
 ```
 [... earlier frames omitted ...]
-    match.run(runner.context)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
-    self.func(context, *args, **kwargs)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "src/integration/wisp/steps/steps.py", line 172, in user_redirected_to_checkout
-    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
   File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 926, in check_wisp_session_timers_del_and_rts_were_sent
     check_event(context, 'receipt-ok', 'status', 'RT_SEND_SUCCESS')
     ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -175,37 +167,25 @@ Execution completed successfully with 0 failures recorded; please verify that te
     assert_show_message(len(needed_process_events) > 0,
     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                         f'There are not events with business process {business_process}.')
-                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.py", line 7, in assert_show_message
-    assert assertion_value, message
-           ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-The asynchronous event hub/database was missing the expected `receipt-ok` event (`RT_SEND_SUCCESS`) after processing multi-RPT cart payment.
+The expected event with business process `receipt-ok` and status `RT_SEND_SUCCESS` was not generated or found in event log during WISP session tear-down/validation.
 
 ### Category
-flaky
+application bug
 
 ### Recommended action
-Check event processing latency in the test environment and add retry/polling logic when querying event history for `receipt-ok`.
+Investigate RT (Ricevuta Telematica) generation and delivery services downstream of WISP to confirm why `RT_SEND_SUCCESS` events are missing.
 
 ---
 
-# 2. L'utente paga un carrello con due RPT, con quantita diverse di versamenti semplici e marche da bollo
+# 2. L'utente paga un carrello con singola RPT con un versamento semplice e una marca da bollo
 - **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con due RPT, con quantita diverse di versamenti semplici e marche da bollo`
+- **fullName**: `L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con singola RPT con un versamento semplice e una marca da bollo`
 - **message**: AssertionError: There are not events with business process receipt-ok.
 - **trace**:
 ```
 [... earlier frames omitted ...]
-    match.run(runner.context)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
-    self.func(context, *args, **kwargs)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "src/integration/wisp/steps/steps.py", line 172, in user_redirected_to_checkout
-    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
   File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 926, in check_wisp_session_timers_del_and_rts_were_sent
     check_event(context, 'receipt-ok', 'status', 'RT_SEND_SUCCESS')
     ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -213,66 +193,31 @@ Check event processing latency in the test environment and add retry/polling log
     assert_show_message(len(needed_process_events) > 0,
     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                         f'There are not events with business process {business_process}.')
-                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.py", line 7, in assert_show_message
-    assert assertion_value, message
-           ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-`RT_SEND_SUCCESS` status receipt-ok event was not registered within the assertion check timeframe for cart payments containing stamp duty.
+Missing `receipt-ok` business process event (`RT_SEND_SUCCESS`) following cart payment execution.
 
 ### Category
-flaky
+application bug
 
 ### Recommended action
-Ensure receipt notification services are running properly in the target environment and introduce polling to avoid race conditions.
-
----
-
-# 3. L'utente paga un carrello multibeneficiario con due RPT con un totale di tre versamenti
-- **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT: L'utente paga un carrello multibeneficiario con due RPT con un totale di tre versamenti`
-- **message**: AssertionError: There are not events with business process receipt-ok.
-- **trace**:
-```
-[... earlier frames omitted ...]
-    match.run(runner.context)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
-    self.func(context, *args, **kwargs)
-    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "src/integration/wisp/steps/steps.py", line 197, in user_redirected_to_checkout
-    steputils.check_wisp_session_timers_del_and_rts_were_sent(context)
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 926, in check_wisp_session_timers_del_and_rts_were_sent
-    check_event(context, 'receipt-ok', 'status', 'RT_SEND_SUCCESS')
-    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/integration/wisp/utility/steps_utils.py", line 431, in check_event
-    assert_show_message(len(needed_process_events) > 0,
-    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                        f'There are not events with business process {business_process}.')
-                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/utility/assertions.py", line 7, in assert_show_message
-    assert assertion_value, message
-           ^^^^^^^^^^^^^^^
-```
-### Root cause
-Event assertions failed due to missing `receipt-ok` event generation when processing multi-beneficiary RPT payment carts.
-
-### Category
-flaky
-
-### Recommended action
-Verify asynchronous RT transmission workers and update step assertion logic to retry event verification.
+Check event streaming/logging worker and backend RT dispatching logic for single RPT cart flows.
 
 ---
 
 ## Common patterns
-- **Missing `receipt-ok` Events Across Multi-RPT Flow Tests:** All 3 failures in `wisp` fail during `check_wisp_session_timers_del_and_rts_were_sent` waiting for `RT_SEND_SUCCESS`. This indicates either high event delivery latency in the environment or non-retried assertion checks during receipt processing for cart payments.
+- **Missing Receipt Success Events (`receipt-ok`)**: Both failing WISP tests fail at the exact same check (`check_wisp_session_timers_del_and_rts_were_sent`), missing `RT_SEND_SUCCESS` events across both single payment and cart scenarios.
 
 ## Cross-suite correlation
 
-- **Asynchronous Processing Delays & Race Conditions:** Both `checkout` (Failure #5) and `wisp` (Failures #1, #2, #3) exhibit issues related to timing and asynchronous processing (waiting for payment confirmation messages or receipt events `RT_SEND_SUCCESS`).
-  - *Recommended Action:* Introduce standard retry-with-timeout mechanisms across step definitions checking backend event persistence and status state changes.
-- **Provider Gateway / Mock Availability:** In `checkout`, failures in PSP selection and Wordline checkout completion suggest intermittent UAT environment instability or delayed responses from upstream integration mocks.
-  - *Recommended Action:* Monitor UAT dependency stability for integration test pipelines and adjust default UI step timeouts accordingly.
+Across the analyzed suites (`checkout`, `fdr3`, `wisp`), two distinct overarching failure patterns are identified:
+
+1. **Downstream Event & Receipt Generation Failures (WISP Suite)**
+   - **Pattern**: WISP scenarios fail consistently across different payload types (single vs cart) due to missing `receipt-ok` (`RT_SEND_SUCCESS`) events.
+   - **Shared Root Cause**: Failure in receipt generation/dispatching pipeline or delay in event publication to the event store inspected by the integration test harness.
+   - **Recommended Action**: Inspect event bus / event-hub ingestion and receipt delivery service health in UAT to ensure RT generation events are produced and persisted within test assertion timeouts.
+
+2. **PSP Routing & Gateway Provider Integration Failures (Checkout Suite)**
+   - **Pattern**: Specific payment gateways/PSPs consistently fail across different user contexts (authenticated vs unauthenticated). Postepay locator `#psp-radio-PPAYITR1XXX` fails with timeouts, while Wordline card payments fail to reach successful authorization/completion.
+   - **Shared Root Cause**: Incomplete PSP configuration or degraded external PSP gateway sandbox/mock integrations in the UAT environment.
+   - **Recommended Action**: Verify PSP catalogue availability for `PPAYITR1XXX` in `payment-methods` microservice and check gateway credentials/sandboxes for Wordline processing.
