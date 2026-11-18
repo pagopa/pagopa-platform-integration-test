@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>🤖 AI Analysis · TAS - CHECKOUT E2E · 2026-11-18_13:54:38</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body { background-color: #f5f8fa; padding: 2rem; }
+    .hero {
+      background-color: #6f42c1;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      border-radius: 0.5rem;
+    }
+    .content-card {
+      background: white;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    }
+    .content-card h2 { margin-top: 1.5rem; color: #6f42c1; }
+    .content-card h3 { color: #495057; }
+    .content-card pre {
+      background: #f1f3f5;
+      padding: 0.75rem;
+      border-radius: 0.35rem;
+      overflow-x: auto;
+      font-size: 0.9rem;
+    }
+    .hero code {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      padding: 0.15rem 0.4rem;
+      border-radius: 0.35rem;
+    }
+    .content-card code {
+      color: #ff61b0;
+      background: #fff0f7;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    footer code {
+      color: #6f42c1;
+      background: #f3ebff;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    .btn-secondary { background-color: #6c757d; border: none; }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <h1 class="display-6">🤖 AI Analysis · TAS - CHECKOUT E2E</h1>
+  <p class="lead mb-1">Run: <code>2026-11-18_13:54:38</code></p>
+  
+</header>
+
+<div class="container">
+  <div class="content-card">
+    <div id="analysis-content">
+      <div class="text-center text-muted">Rendering in corso...</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Powered by GitHub Models · Model: <code>gemini-3.5-flash-lite</code></p>
+</footer>
+
+<script>
+  const markdown = "# 1. Flusso lista PSP - indietro da /inserisci-carta (flusso carta con enablePspPage=true)\n- **status**: broken\n- **fullName**: `Navigazione Lineare per il flusso di Pagamento: Flusso lista PSP - indietro da /inserisci-carta (flusso carta con enablePspPage=true)`\n- **message**: RuntimeError: Timeout on locator \u0027button:has-text(\u0027Indietro\u0027)\u0027 after 5000 ms (url: https://dev.checkout.pagopa.it/)\n- **trace**:\n```\n  File \"src/e2e/checkout/steps/back_navigation.py\", line 88, in step_click_button\n    locate_and_click(page, BUTTON_SELECTORS[button_text])\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py\", line 129, in locate_and_click\n    raise RuntimeError(\n```\n### Root cause\nElement locator for the back button timed out due to page load delay or UI changes on the root URL.\n\n### Category\nenvironment\n\n### Recommended action\nIncrease the timeout threshold or ensure the element is fully rendered before clicking.\n\n---\n\n# 2. Un pagamento con configurazione carta \"Postepay\" viene completato con successo -- @1.1\n- **status**: broken\n- **fullName**: `Attivazione pagamento Checkout: Un pagamento con configurazione carta \"Postepay\" viene completato con successo`\n- **message**: RuntimeError: Timeout on locator \u0027#psp-radio-PPAYITR1XXX\u0027 after 5000 ms (url: https://dev.checkout.pagopa.it/lista-psp)\n- **trace**:\n```\n  File \"src/e2e/checkout/steps/checkout_npg.py\", line 188, in step_select_psp\n    locate_and_click(page, f\"#psp-radio-{psp_id}\")\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py\", line 129, in locate_and_click\n    raise RuntimeError(\n```\n### Root cause\nThe Postepay PSP radio button was not rendered within the 5-second timeout on the PSP selection page.\n\n### Category\napplication bug\n\n### Recommended action\nInvestigate backend API latency for loading available PSPs or adjust wait times.\n\n---\n\n# 3. Un pagamento con configurazione carta \"Wordline\" viene completato con successo -- @1.2\n- **status**: failed\n- **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta \"Wordline\" viene completato con successo`\n- **message**: AssertionError: Expected \u0027Hai pagato\u0027 in result message, but got: \u0027Il pagamento non \u00e8 andato a buon fine\u0027\n- **trace**:\n```\n  File \"src/e2e/checkout/steps/checkout_npg.py\", line 309, in step_check_payment_success\n    assert \"Hai pagato\" in message_text, (\n```\n### Root cause\nThe payment gateway rejected the transaction, returning a failure message instead of success.\n\n### Category\ntest data\n\n### Recommended action\nVerify the validity of the Worldline test credentials and mock responses in the staging environment.\n\n---\n\n# 4. Viene mostrato l\u0027errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell\u0027intervallo 302400000000000000-302409999999999999 -- @1.1\n- **status**: failed\n- **fullName**: `Attivazione pagamento Checkout: Viene mostrato l\u0027errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell\u0027intervallo 302400000000000000-302409999999999999`\n- **message**: AssertionError: Expected modal header to contain \u0027Non riusciamo a trovare l\u2019avviso\u0027, but got: \u0027L\u2019Ente Creditore sta avendo problemi nella risposta\u0027\n- **trace**:\n```\n  File \"src/e2e/checkout/steps/checkout_npg.py\", line 245, in step_error_modal_header\n    assert expected_header in header_text, (\n```\n### Root cause\nThe creditor institution (Ente Creditore) mock returned a generic upstream error instead of the expected not-found error.\n\n### Category\nenvironment\n\n### Recommended action\nCheck the stub/mock configuration for invalid notice codes in the dev environment.\n\n---\n\n# 5. Flusso lista PSP - indietro da /scegli-metodo (wallet salvato con enablePspPage=true)\n- **status**: broken\n- **fullName**: `Navigazione Lineare per il flusso di Pagamento: Flusso lista PSP - indietro da /scegli-metodo (wallet salvato con enablePspPage=true)`\n- **message**: RuntimeError: Timeout on locator \u0027button:has-text(\u0027Indietro\u0027)\u0027 after 5000 ms (url: https://dev.checkout.pagopa.it/)\n- **trace**:\n```\n  File \"src/e2e/checkout/steps/back_navigation.py\", line 88, in step_click_button\n    locate_and_click(page, BUTTON_SELECTORS[button_text])\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py\", line 129, in locate_and_click\n    raise RuntimeError(\n```\n### Root cause\nTimeout trying to locate the \u0027Indietro\u0027 button on the initial checkout page load.\n\n### Category\nenvironment\n\n### Recommended action\nEnsure environment stability and adequate network performance during test execution.\n\n---\n\n# 6. La lista PSP \u00e8 ordinata per nome in ordine crescente nella pagina di riepilogo\n- **status**: failed\n- **fullName**: `Ordinamento lista PSP in Checkout: La lista PSP \u00e8 ordinata per nome in ordine crescente nella pagina di riepilogo`\n- **message**: AssertionError: Name list not ascending at index 0: \u0027NEXI PAYMENTS S.P.A.\u0027 \u003e \u0027Mooney S.p.A.\u0027\nFull list: [\u0027NEXI PAYMENTS S.P.A.\u0027, \u0027Mooney S.p.A.\u0027, \u0027Intesa Sanpaolo S.p.A.\u0027]\n- **trace**:\n```\n  File \"src/e2e/checkout/steps/psp_sorting_npg.py\", line 301, in step_name_list_ascending\n    assert cmp \u003c= 0, (\n```\n### Root cause\nThe PSP list rendered on the summary page failed to sort alphabetically in ascending order.\n\n### Category\napplication bug\n\n### Recommended action\nFile a bug against the frontend sorting logic for the PSP summary page.\n\n---\n\n# 7. La lista PSP \u00e8 ordinata per nome in ordine decrescente nella pagina di riepilogo\n- **status**: failed\n- **fullName**: `Ordinamento lista PSP in Checkout: La lista PSP \u00e8 ordinata per nome in ordine decrescente nella pagina di riepilogo`\n- **message**: AssertionError: Name list not descending at index 0: \u0027Intesa Sanpaolo S.p.A.\u0027 \u003c \u0027Mooney S.p.A.\u0027\nFull list: [\u0027Intesa Sanpaolo S.p.A.\u0027, \u0027Mooney S.p.A.\u0027, \u0027NEXI PAYMENTS S.P.A.\u0027]\n- **trace**:\n```\n  File \"src/e2e/checkout/steps/psp_sorting_npg.py\", line 284, in step_name_list_descending\n    assert cmp \u003e= 0, (\n```\n### Root cause\nThe PSP list rendered on the summary page failed to sort alphabetically in descending order.\n\n### Category\napplication bug\n\n### Recommended action\nFile a bug against the frontend sorting logic for the PSP summary page.\n\n---\n\n# 8. Un pagamento con configurazione carta \"Postepay\" viene completato con successo -- @1.1\n- **status**: broken\n- **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta \"Postepay\" viene completato con successo`\n- **message**: RuntimeError: Timeout on locator \u0027#psp-radio-PPAYITR1XXX\u0027 after 5000 ms (url: https://dev.checkout.pagopa.it/lista-psp)\n- **trace**:\n```\n  File \"src/e2e/checkout/steps/checkout_npg.py\", line 188, in step_select_psp\n    locate_and_click(page, f\"#psp-radio-{psp_id}\")\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py\", line 129, in locate_and_click\n    raise RuntimeError(\n```\n### Root cause\nPostepay radio button element failed to load on the PSP list page within the allotted timeout.\n\n### Category\napplication bug\n\n### Recommended action\nInvestigate intermittent rendering issues or API delays when fetching PSP options.\n\n---\n\n## Common patterns\n- **UI Timeouts / Locators**: Multiple failures are caused by element timeouts (`locate_and_click`), specifically for navigation buttons and PSP radio options, pointing towards environment sluggishness or rendering delays.\n- **PSP Selection \u0026 Sorting**: Failures related to Postepay and PSP sorting indicate issues in the PSP integration layer and frontend data presentation.";
+  const target = document.getElementById('analysis-content');
+  if (markdown && markdown.trim().length > 0) {
+    target.innerHTML = marked.parse(markdown);
+  } else {
+    target.innerHTML = '<div class="alert alert-warning">Nessuna analisi disponibile per questa run.</div>';
+  }
+</script>
+
+</body>
+</html>
