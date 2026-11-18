@@ -1,0 +1,236 @@
+<testsuite name="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" tests="14" errors="0" failures="0" skipped="0" time="32.809174" timestamp="2026-11-18T10:43:24.738733" hostname="runnervmccnms"><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Inserimento codice avviso errato -- @1.1 " status="passed" time="1.996524"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_01 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Inserimento codice avviso errato -- @1.1 
+    Dato La pagina di checkout è aperta ... passed in 0.228s
+    E La lingua è impostata su "it" ... passed in 0.841s
+    Dato L’utente si trova sulla pagina "/inserisci-dati-avviso" ... passed in 0.138s
+    Quando L’utente Inserisce il codice avviso 12345678901234567890 all’interno della pagina ... passed in 0.451s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.231s
+    Allora Il campo "Codice Avviso" viene segnalato in rosso ... passed in 0.098s
+    E Viene mostrato il messaggio "Inserisci 18 cifre" sotto il campo "Codice Avviso" ... passed in 0.009s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Inserimento codice avviso errato -- @1.2 " status="passed" time="1.550318"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_01 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Inserimento codice avviso errato -- @1.2 
+    Dato La pagina di checkout è aperta ... passed in 0.229s
+    E La lingua è impostata su "it" ... passed in 0.839s
+    Dato L’utente si trova sulla pagina "/inserisci-dati-avviso" ... passed in 0.127s
+    Quando L’utente Inserisce il codice avviso 12345678 all’interno della pagina ... passed in 0.225s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.095s
+    Allora Il campo "Codice Avviso" viene segnalato in rosso ... passed in 0.029s
+    E Viene mostrato il messaggio "Inserisci 18 cifre" sotto il campo "Codice Avviso" ... passed in 0.006s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Inserimento codice avviso errato -- @1.3 " status="passed" time="1.865281"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_01 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Inserimento codice avviso errato -- @1.3 
+    Dato La pagina di checkout è aperta ... passed in 0.226s
+    E La lingua è impostata su "it" ... passed in 0.845s
+    Dato L’utente si trova sulla pagina "/inserisci-dati-avviso" ... passed in 0.123s
+    Quando L’utente Inserisce il codice avviso aaabbbcccdddeeefff all’interno della pagina ... passed in 0.420s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.129s
+    Allora Il campo "Codice Avviso" viene segnalato in rosso ... passed in 0.118s
+    E Viene mostrato il messaggio "Inserisci 18 cifre" sotto il campo "Codice Avviso" ... passed in 0.005s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Inserimento CF ente errato -- @1.1 " status="passed" time="1.577322"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_02 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Inserimento CF ente errato -- @1.1 
+    Dato La pagina di checkout è aperta ... passed in 0.228s
+    E La lingua è impostata su "it" ... passed in 0.841s
+    Dato L’utente si trova sulla pagina "/inserisci-dati-avviso" ... passed in 0.124s
+    Quando L’utente Inserisce il CF ente 1234567890 all’interno della pagina ... passed in 0.266s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.086s
+    Allora Il campo "Codice Fiscale Ente Creditore" viene segnalato in rosso ... passed in 0.030s
+    E Viene mostrato il messaggio "Inserisci 11 cifre" sotto il campo "Codice Fiscale Ente Creditore" ... passed in 0.003s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Inserimento CF ente errato -- @1.2 " status="passed" time="1.885495"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_02 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Inserimento CF ente errato -- @1.2 
+    Dato La pagina di checkout è aperta ... passed in 0.230s
+    E La lingua è impostata su "it" ... passed in 0.843s
+    Dato L’utente si trova sulla pagina "/inserisci-dati-avviso" ... passed in 0.142s
+    Quando L’utente Inserisce il CF ente 123456789012345 all’interno della pagina ... passed in 0.353s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.176s
+    Allora Il campo "Codice Fiscale Ente Creditore" viene segnalato in rosso ... passed in 0.128s
+    E Viene mostrato il messaggio "Inserisci 11 cifre" sotto il campo "Codice Fiscale Ente Creditore" ... passed in 0.014s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Inserimento CF ente errato -- @1.3 " status="passed" time="1.608365"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_02 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Inserimento CF ente errato -- @1.3 
+    Dato La pagina di checkout è aperta ... passed in 0.218s
+    E La lingua è impostata su "it" ... passed in 0.843s
+    Dato L’utente si trova sulla pagina "/inserisci-dati-avviso" ... passed in 0.130s
+    Quando L’utente Inserisce il CF ente aaabbbcccdd all’interno della pagina ... passed in 0.320s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.063s
+    Allora Il campo "Codice Fiscale Ente Creditore" viene segnalato in rosso ... passed in 0.031s
+    E Viene mostrato il messaggio "Inserisci 11 cifre" sotto il campo "Codice Fiscale Ente Creditore" ... passed in 0.003s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Inserimento indirizzo email non valido -- @1.1 " status="passed" time="3.021193"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_03 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Inserimento indirizzo email non valido -- @1.1 
+    Dato La pagina di checkout è aperta ... passed in 0.232s
+    E La lingua è impostata su "it" ... passed in 0.845s
+    Dato L’utente si trova sulla pagina "/inserisci-email" ... passed in 1.683s
+    Quando L’utente Inserisce l’indirizzo email aaaaaaaaaa in uno dei due campi email presenti nella pagina ... passed in 0.189s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.059s
+    Allora Il campo "Indirizzo email" viene segnalato in rosso ... passed in 0.012s
+    E Viene mostrato il messaggio "Inserisci un indirizzo email valido" sotto il campo "Indirizzo email" ... passed in 0.002s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Inserimento indirizzo email non valido -- @1.2 " status="passed" time="2.896128"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_03 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Inserimento indirizzo email non valido -- @1.2 
+    Dato La pagina di checkout è aperta ... passed in 0.225s
+    E La lingua è impostata su "it" ... passed in 0.846s
+    Dato L’utente si trova sulla pagina "/inserisci-email" ... passed in 1.572s
+    Quando L’utente Inserisce l’indirizzo email aaaaaaaaaa@ in uno dei due campi email presenti nella pagina ... passed in 0.187s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.053s
+    Allora Il campo "Indirizzo email" viene segnalato in rosso ... passed in 0.009s
+    E Viene mostrato il messaggio "Inserisci un indirizzo email valido" sotto il campo "Indirizzo email" ... passed in 0.004s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Inserimento indirizzo email non valido -- @1.3 " status="passed" time="3.010858"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_03 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Inserimento indirizzo email non valido -- @1.3 
+    Dato La pagina di checkout è aperta ... passed in 0.232s
+    E La lingua è impostata su "it" ... passed in 0.846s
+    Dato L’utente si trova sulla pagina "/inserisci-email" ... passed in 1.685s
+    Quando L’utente Inserisce l’indirizzo email mail@gmail in uno dei due campi email presenti nella pagina ... passed in 0.176s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.059s
+    Allora Il campo "Indirizzo email" viene segnalato in rosso ... passed in 0.011s
+    E Viene mostrato il messaggio "Inserisci un indirizzo email valido" sotto il campo "Indirizzo email" ... passed in 0.002s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori - indirizzo email diverso da ripeti" status="passed" time="3.389734"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_04 @runnable
+  Scenario: Inserimento dati - errori - indirizzo email diverso da ripeti
+    Dato La pagina di checkout è aperta ... passed in 0.225s
+    E La lingua è impostata su "it" ... passed in 0.849s
+    Dato L’utente si trova sulla pagina "/inserisci-email" ... passed in 1.694s
+    Quando L’utente inserisce un indirizzo email valido nel campo "Indirizzo Email" ... passed in 0.228s
+    E L’utente inserisce un indirizzo email valido ma diverso dal precedente nel campo "Ripeti di nuovo" ... passed in 0.321s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.058s
+    Allora Il campo "Ripeti di nuovo" viene segnalato in rosso ... passed in 0.012s
+    E Viene mostrato il messaggio "Gli indirizzi email non coincidono" sotto il campo "Ripeti di nuovo" ... passed in 0.003s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Click sul tasto continua con campo non compilato -- @1.1 " status="passed" time="1.656508"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_05 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Click sul tasto continua con campo non compilato -- @1.1 
+    Dato La pagina di checkout è aperta ... passed in 0.256s
+    E La lingua è impostata su "it" ... passed in 0.855s
+    Dato L’utente si trova sulla pagina "/inserisci-dati-avviso" ... passed in 0.132s
+    Quando L’utente lascia vuoto il solo campo "Codice Avviso" ... passed in 0.340s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.065s
+    Allora Viene mostrato il messaggio "Campo obbligatorio" sotto il campo "Codice Avviso" ... passed in 0.009s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Click sul tasto continua con campo non compilato -- @1.2 " status="passed" time="1.668774"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_05 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Click sul tasto continua con campo non compilato -- @1.2 
+    Dato La pagina di checkout è aperta ... passed in 0.237s
+    E La lingua è impostata su "it" ... passed in 0.839s
+    Dato L’utente si trova sulla pagina "/inserisci-dati-avviso" ... passed in 0.141s
+    Quando L’utente lascia vuoto il solo campo "Codice Fiscale Ente Creditore" ... passed in 0.342s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.101s
+    Allora Viene mostrato il messaggio "Campo obbligatorio" sotto il campo "Codice Fiscale Ente Creditore" ... passed in 0.008s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Click sul tasto continua con campo non compilato -- @1.3 " status="passed" time="3.476601"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_05 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Click sul tasto continua con campo non compilato -- @1.3 
+    Dato La pagina di checkout è aperta ... passed in 0.229s
+    E La lingua è impostata su "it" ... passed in 0.844s
+    Dato L’utente si trova sulla pagina "/inserisci-email" ... passed in 2.028s
+    Quando L’utente lascia vuoto il solo campo "Indirizzo email" ... passed in 0.321s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.050s
+    Allora Viene mostrato il messaggio "Campo obbligatorio" sotto il campo "Indirizzo email" ... passed in 0.004s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_006_Checkout - Validazione sintattica dei campi.Validazione sintattica dei campi nel funnel di Checkout" name="Inserimento dati - errori -  Click sul tasto continua con campo non compilato -- @1.4 " status="passed" time="3.206072"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @CheckoutValidazioneCampi_006_05 @runnable
+  Schema dello scenario: Inserimento dati - errori -  Click sul tasto continua con campo non compilato -- @1.4 
+    Dato La pagina di checkout è aperta ... passed in 0.231s
+    E La lingua è impostata su "it" ... passed in 0.848s
+    Dato L’utente si trova sulla pagina "/inserisci-email" ... passed in 1.822s
+    Quando L’utente lascia vuoto il solo campo "Ripeti di nuovo" ... passed in 0.239s
+    E L’utente clicca sul tasto "Continua" ... passed in 0.062s
+    Allora Viene mostrato il messaggio "Campo obbligatorio" sotto il campo "Ripeti di nuovo" ... passed in 0.004s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
