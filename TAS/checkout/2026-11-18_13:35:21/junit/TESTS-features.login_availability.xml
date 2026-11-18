@@ -1,0 +1,67 @@
+<testsuite name="features.login_availability.Disponibilità opzione login in tutte le fasi del flusso di pagamento" tests="4" errors="0" failures="0" skipped="0" time="8.138111" timestamp="2026-11-18T13:40:47.160223" hostname="runnervmccnms"><testcase classname="features.login_availability.Disponibilità opzione login in tutte le fasi del flusso di pagamento" name="Opzione login disponibile durante l'inserimento dei dati avviso" status="passed" time="1.232433"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_001_Checkout_scenario_01
+  Scenario: Opzione login disponibile durante l'inserimento dei dati avviso
+    Dato La pagina di checkout è aperta ... passed in 0.190s
+    E La lingua è impostata su "it" ... passed in 0.834s
+    Quando L'utente inserisce i dati dell'avviso ... passed in 0.143s
+    Allora Il pulsante di login è visibile e abilitato ... passed in 0.061s
+    E Il titolo del pulsante di login è "Accedi" ... passed in 0.004s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.login_availability.Disponibilità opzione login in tutte le fasi del flusso di pagamento" name="Opzione login disponibile durante l'inserimento dei dati di pagamento" status="passed" time="1.165402"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_001_Checkout_scenario_02
+  Scenario: Opzione login disponibile durante l'inserimento dei dati di pagamento
+    Dato La pagina di checkout è aperta ... passed in 0.193s
+    E La lingua è impostata su "it" ... passed in 0.373s
+    Dato L'utente inserisce i dati dell'avviso ... passed in 0.152s
+    Quando L'utente inserisce i dati di pagamento ... passed in 0.437s
+    Allora Il pulsante di login è visibile e abilitato ... passed in 0.008s
+    E Il titolo del pulsante di login è "Accedi" ... passed in 0.002s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.login_availability.Disponibilità opzione login in tutte le fasi del flusso di pagamento" name="Opzione login disponibile durante l'inserimento dell'email" status="passed" time="2.531517"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_001_Checkout_scenario_03
+  Scenario: Opzione login disponibile durante l'inserimento dell'email
+    Dato La pagina di checkout è aperta ... passed in 0.202s
+    E La lingua è impostata su "it" ... passed in 0.389s
+    Dato L'utente inserisce i dati dell'avviso ... passed in 0.145s
+    E L'utente inserisce i dati di pagamento ... passed in 0.431s
+    Quando L'utente inserisce l'email ... passed in 1.355s
+    Allora Il pulsante di login è visibile e abilitato ... passed in 0.009s
+    E Il titolo del pulsante di login è "Accedi" ... passed in 0.002s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.login_availability.Disponibilità opzione login in tutte le fasi del flusso di pagamento" name="Opzione login disponibile durante la selezione del metodo di pagamento" status="passed" time="3.20876"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_001_Checkout_scenario_04
+  Scenario: Opzione login disponibile durante la selezione del metodo di pagamento
+    Dato La pagina di checkout è aperta ... passed in 0.197s
+    E La lingua è impostata su "it" ... passed in 0.373s
+    Dato L'utente inserisce i dati dell'avviso ... passed in 0.146s
+    E L'utente inserisce i dati di pagamento ... passed in 0.427s
+    E L'utente inserisce l'email ... passed in 1.346s
+    Quando L'utente seleziona il metodo di pagamento ... passed in 0.712s
+    Allora Il pulsante di login è visibile e abilitato ... passed in 0.006s
+    E Il titolo del pulsante di login è "Accedi" ... passed in 0.002s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
