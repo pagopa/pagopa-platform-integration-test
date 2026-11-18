@@ -18,6 +18,12 @@ from src.conf.configuration import load_configurations
 # the location of the allure results when we execute the tests with the TAS
 ALLURE_RESULT_PATH = "allure-results"
 
+# Seconds to wait for the QA Hub when looking up a product version.
+REQUEST_TIMEOUT_SECONDS = 30
+
+# Version stored on a suite when the product version cannot be determined and no suite exists yet.
+UNKNOWN_SUITE_VERSION = "unknown"
+
 
 def get_gha_run_url() -> str | None:
     """Return the URL of the GitHub Actions run executing this script, if available.
@@ -180,24 +186,39 @@ def get_test_type_from_behave_path(behave_path: str | None) -> str | None:
     return parts[1] if len(parts) > 2 and parts[0] == 'src' else None
 
 
-def get_latest_saved_suite_version(test_object: str, config: Dynaconf) -> Test_suites:
-    # This function should implement the logic to retrieve the latest suite version and its uuid by test_object from the QA HUB API.
+def get_latest_saved_suite_version(
+    test_object: str,
+    config: Dynaconf,
+    test_object_version: str | None = None,
+    test_type: str | None = None,
+) -> Test_suites | None:
+    """Retrieve a saved suite of a test object from the QA HUB API.
+
+    Without filters the QA HUB returns the latest suite (ordered by version string). With
+    ``test_object_version`` and/or ``test_type`` it returns the exact matching suite, so callers can
+    check whether a given product version is already saved.
+
+    Returns None when no suite matches (404); raises for any other unexpected response.
+    """
     api = config.get("qa_hub_apis", None).get("latest_suite_version", None)
+    params = {"test_object": test_object}
+    if test_object_version is not None:
+        params["test_object_version"] = test_object_version
+    if test_type is not None:
+        params["test_type"] = test_type
     try:
         test_suite = requests.request(
             method=api.get("method"),
             url=api.get("url"),
-            params={"test_object": test_object}
+            params=params
         )
-
-        if test_suite.status_code != 200:
-            if test_suite.status_code == 400:
-                raise Exception(f"Failed to retrieve latest suite version for test_object: {test_object}. Response: {test_suite.text}")
-            elif test_suite.status_code == 404:
-                return None
-            
     except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as e:
         raise Exception(f"Failed to retrieve latest suite version for test_object: {test_object}. Error: {str(e)}")
+
+    if test_suite.status_code == 404:
+        return None
+    if test_suite.status_code != 200:
+        raise Exception(f"Failed to retrieve latest suite version for test_object: {test_object}. Response: {test_suite.status_code}: {test_suite.text}")
     return Test_suites(**test_suite.json())
 
 def save_test_suite(test_suite: Test_suites, config: Dynaconf):
@@ -257,24 +278,81 @@ def save_test_executions(test_executions: list[Test_executions],  config: Dynaco
     return [Test_executions(**te) for te in test_executions_out.json()]
 
 
-def get_current_product_version(test_object: str, config: Dynaconf) -> str:
-    version_api = config.get('product_versions_apis', None).get(test_object, None)
+def normalize_product_version(raw: str) -> str:
+    """Trim a version string and strip a leading ``Release `` and a leading ``v``/``V``."""
+    value = raw.strip()
+    if value.startswith("Release "):
+        value = value[len("Release "):].strip()
+    if value[:1] in ("v", "V"):
+        value = value[1:]
+    return value
 
-    if version_api is None:
-        print(f"[INFO][get_current_product_version] No path for the current product version for test_object: {test_object}. Setting default: 0.0.1")
-        return "0.0.1"
+
+def get_current_product_version(product_key: str | None, env: str, config: Dynaconf) -> str | None:
+    """Return the version of a product in an environment, as stored by the QA HUB status page.
+
+    The QA HUB keeps the last good version of each application per environment, so a recent read
+    failure still yields the last known version. Returns None (never a default version) when the
+    product has no key, is not cataloged, or the HUB cannot provide a version: the caller decides
+    how to handle an unknown version. A missing endpoint configuration raises ValueError.
+    """
+    api = config.get("qa_hub_apis", None).get("product_version", None)
+    if not api:
+        raise ValueError("Missing 'qa_hub_apis.product_version' configuration")
+    if not product_key:
+        print("[WARNING][get_current_product_version] No product_key for this suite: product version unknown.")
+        return None
 
     try:
-        current_product_obj = requests.request(method='GET',url=version_api)
+        response = requests.request(
+            method=api.get("method"),
+            url=api.get("url"),
+            headers={"Ocp-Apim-Subscription-Key": api.get("api_key", "")},
+            params={"product_key": product_key, "env": str(env).upper()},
+            timeout=REQUEST_TIMEOUT_SECONDS,
+        )
+    except requests.exceptions.RequestException as e:
+        print(f"[WARNING][get_current_product_version] QA HUB unreachable for product_key {product_key}: {type(e).__name__}. Product version unknown.")
+        return None
 
-        if current_product_obj.status_code != 200:
-            print(f"[INFO][get_current_product_version] Failed to get current product version for test_object: {test_object}. Setting default: 0.0.1. Response: {current_product_obj.status_code}: {current_product_obj.text}")
-            return "0.0.1"
+    if response.status_code != 200:
+        print(f"[WARNING][get_current_product_version] No version for product_key {product_key} in {env}. Response: {response.status_code}: {response.text}. Product version unknown.")
+        return None
 
-        return current_product_obj.json().get("version", "0.0.1")
-    except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as e:
-        print(f"[INFO][get_current_product_version] Failed to get current product version for test_object: {test_object}. Setting default: 0.0.1.")        
-        return "0.0.1"
+    body = response.json()
+    version = body.get("version") if isinstance(body, dict) else None
+    if not isinstance(version, str) or not normalize_product_version(version):
+        print(f"[WARNING][get_current_product_version] The QA HUB has no version for product_key {product_key} in {env}. Product version unknown.")
+        return None
+    if body.get("read_status") != "OK":
+        print(f"[WARNING][get_current_product_version] Last read for product_key {product_key} in {env} was {body.get('read_status')}; using the last known version.")
+    return normalize_product_version(version)
+
+
+def ensure_suite_version(test_suite: Test_suites, current_version: str | None, config: Dynaconf) -> Test_suites:
+    """Return the saved suite a run must be attached to, creating it when needed.
+
+    With a known product version the suite is looked up exactly by (test object, type, version) and
+    created only if that version was never saved; this also handles rollbacks. With an unknown
+    version the latest saved suite is reused, or a placeholder suite is created if there is none.
+    """
+    if current_version is None:
+        latest = get_latest_saved_suite_version(test_suite.test_object, config)
+        if latest is not None:
+            print(f"[WARNING][ensure_suite_version] Product version unknown for {test_suite.test_object}: reusing the latest saved suite version {latest.test_object_version}.")
+            return latest
+        print(f"[WARNING][ensure_suite_version] Product version unknown for {test_suite.test_object} and no suite saved yet: creating suite version '{UNKNOWN_SUITE_VERSION}'.")
+        current_version = UNKNOWN_SUITE_VERSION
+    else:
+        existing = get_latest_saved_suite_version(
+            test_suite.test_object, config, current_version, test_suite.test_type or None
+        )
+        if existing is not None:
+            return existing
+
+    print(f"[INFO][ensure_suite_version] Creating suite version {current_version} for test_object {test_suite.test_object}.")
+    test_suite.test_object_version = current_version
+    return save_test_suite(test_suite, config)
 
 
 def main():
@@ -341,26 +419,21 @@ def main():
                 continue
 
 
-            # get the actual product version
-            current_product_version = get_current_product_version(test_suite.test_object, full_config)
-            # get the latest product version saved in the database for this suite
-            latest_suite_version_obj = get_latest_saved_suite_version(test_suite.test_object, full_config)
+            # Resolve the suite definition: type and owner come from the configuration, the type falls
+            # back to the behave path of the NRT suite.
+            nrt_definition = nrt_suite or find_nrt_suite(test_suite.test_object.lower(), suites)
+            test_suite = populate_test_suite(full_config, test_suite)
+            if not test_suite.test_type and nrt_suite is not None:
+                test_suite.test_type = get_test_type_from_behave_path(nrt_suite.get('behave_path'))
 
-            # if latest_version is not None and is smaller than the current version of the test, then fully populate the suite 
-            # object and use the proper API to insert a new record in the DB.
-            if (latest_suite_version_obj is None) or (latest_suite_version_obj is not None and latest_suite_version_obj.test_object_version < current_product_version):
-                print(f"[INFO][main] No suite found for test_object {test_suite.test_object} or the latest version is outdated. Creating and saving a new suite version.")
-                test_suite.test_object_version = current_product_version
-                test_suite = populate_test_suite( full_config, test_suite)
-                if not test_suite.test_type and nrt_suite is not None:
-                    test_suite.test_type = get_test_type_from_behave_path(nrt_suite.get('behave_path'))
-                latest_suite_version_obj = save_test_suite(test_suite, full_config)
-                print(f"[INFO][main] Saved new suite version for test_object {test_suite.test_object}.")
-           
+            # The product version comes from the QA HUB status page (last version read per environment).
+            product_key = (nrt_definition or {}).get('product_key')
+            current_product_version = get_current_product_version(product_key, args.env, full_config)
+            latest_suite_version_obj = ensure_suite_version(test_suite, current_product_version, full_config)
 
             # Populate the test run object based on the summary.json file 
             test_run.suite_id = latest_suite_version_obj.id
-            test_version = (nrt_suite or find_nrt_suite(test_suite.test_object.lower(), suites) or {}).get('version')
+            test_version = (nrt_definition or {}).get('version')
             test_run = populate_test_run(test_run, summary_path, test_version, test_suite.test_object, nrt_suite.get('allure_subfolder') if nrt_suite else None)
             # Populating test executions based on the test cases JSON files
             test_executions = populate_test_executions(test_cases_dir, test_run.allure_url)
