@@ -1,26 +1,33 @@
 ## Suite: checkout
 
-# 1. Un pagamento con configurazione carta "Wordline" viene completato con successo -- @1.2
-- **status**: failed
-- **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta "Wordline" viene completato con successo`
-- **message**: AssertionError: Expected 'Hai pagato' in result message, but got: 'Il pagamento non è andato a buon fine'
+# 1. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
+- **status**: broken
+- **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta "Postepay" viene completato con successo`
+- **message**: RuntimeError: Timeout on locator '#psp-radio-PPAYITR1XXX' after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)
 - **trace**:
 ```
 File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
     match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
   File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
     self.func(context, *args, **kwargs)
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 309, in step_check_payment_success
-    assert "Hai pagato" in message_text, (
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 188, in step_select_psp
+    locate_and_click(page, f"#psp-radio-{psp_id}")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 129, in locate_and_click
+    raise RuntimeError(
+        f"Timeout on locator '{locator}' after {timeout} ms (url: {current_url})"
+    ) from exc
 ```
 ### Root cause
-Gateway payment execution failed for Wordline, resulting in a declined payment message.
+The element `#psp-radio-PPAYITR1XXX` was not loaded within 5000 ms on the PSP list page, likely due to PSP list loading delays or missing mock data.
 
 ### Category
-application bug
+flaky
 
 ### Recommended action
-Verify Wordline gateway integration status and check upstream payment service logs.
+Increase explicit wait timeout or verify PSP availability service response in UAT environment.
 
 ---
 
@@ -32,73 +39,26 @@ Verify Wordline gateway integration status and check upstream payment service lo
 ```
 File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
     match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
   File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
     self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 245, in step_error_modal_header
     assert expected_header in header_text, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ```
 ### Root cause
-The creditor institution (Ente Creditore) mock returned a generic system error instead of the expected unknown payment error.
-
-### Category
-test data
-
-### Recommended action
-Check the creditor institution simulator configuration for invalid notice code responses.
-
----
-
-# 3. Un pagamento con configurazione carta "Worldpay" viene completato con successo -- @1.3
-- **status**: failed
-- **fullName**: `Attivazione pagamento Checkout: Un pagamento con configurazione carta "Worldpay" viene completato con successo`
-- **message**: AssertionError: Expected 'Hai pagato' in result message, but got: 'Il pagamento non è andato a buon fine'
-- **trace**:
-```
-File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
-    match.run(runner.context)
-  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
-    self.func(context, *args, **kwargs)
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 309, in step_check_payment_success
-    assert "Hai pagato" in message_text, (
-```
-### Root cause
-Gateway payment execution failed for Worldpay, returning a declined transaction status.
+The API backend returned a generic Creditor Entity error instead of the specific unknown payment (`PAA_PAGAMENTO_SCONOSCIUTO`) error modal header.
 
 ### Category
 application bug
 
 ### Recommended action
-Inspect Worldpay PSP sandbox availability and API response logs.
+Verify node/gPD mapping for `PAA_PAGAMENTO_SCONOSCIUTO` fault codes and ensure proper modal translation handling.
 
 ---
 
-# 4. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
-- **status**: broken
-- **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta "Postepay" viene completato con successo`
-- **message**: RuntimeError: Timeout on locator '#psp-radio-PPAYITR1XXX' after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)
-- **trace**:
-```
-File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
-    match.run(runner.context)
-  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
-    self.func(context, *args, **kwargs)
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 188, in step_select_psp
-    locate_and_click(page, f"#psp-radio-{psp_id}")
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 129, in locate_and_click
-    raise RuntimeError(
-```
-### Root cause
-UI failed to render the Postepay PSP selection radio button within the given timeout on the PSP list page.
-
-### Category
-environment
-
-### Recommended action
-Verify frontend rendering performance and ensure the PSP list API returns Postepay correctly.
-
----
-
-# 5. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
+# 3. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
 - **status**: broken
 - **fullName**: `Attivazione pagamento Checkout: Un pagamento con configurazione carta "Postepay" viene completato con successo`
 - **message**: RuntimeError: Timeout on locator '#psp-radio-PPAYITR1XXX' after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)
@@ -106,27 +66,35 @@ Verify frontend rendering performance and ensure the PSP list API returns Postep
 ```
 File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
     match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
   File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
     self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 188, in step_select_psp
     locate_and_click(page, f"#psp-radio-{psp_id}")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 129, in locate_and_click
     raise RuntimeError(
+        f"Timeout on locator '{locator}' after {timeout} ms (url: {current_url})"
+    ) from exc
 ```
 ### Root cause
-UI failed to render the Postepay PSP selection radio button within the given timeout on the PSP list page.
+Target PSP option `#psp-radio-PPAYITR1XXX` failed to render within the 5-second timeout window during step selection.
 
 ### Category
-environment
+flaky
 
 ### Recommended action
-Verify frontend rendering performance and ensure the PSP list API returns Postepay correctly.
+Check backend PSP routing service response times in UAT and increase element wait timeout in test helper.
 
 ---
 
-### Common patterns
-- Payment gateway failures across different providers (Wordline, Worldpay) resulting in transaction rejections.
-- UI timeouts locating specific PSP elements on the checkout page.
+## Common patterns
+- **PSP Selection Timeouts**: Multiple tests failed waiting for `#psp-radio-PPAYITR1XXX` on `https://uat.checkout.pagopa.it/lista-psp`. This points to either slow frontend rendering/API responses or transient PSP availability issues in the UAT environment.
+
+---
 
 ## Cross-suite correlation
-- Failures in the checkout suite are localized to payment gateway execution errors and PSP selection UI timeouts, with no direct cross-suite correlations present in this run.
+- **Checkout Suite**:
+  - **Pattern 1: UI Locators Timeout (`#psp-radio-PPAYITR1XXX`)** — 2 occurrences (1.1, 1.3). *Action*: Review PSP list endpoint performance in UAT and bump UI step wait strategy.
+  - **Pattern 2: Error Modal Text Mismatch** — 1 occurrence (1.2). *Action*: File a ticket to review error handling mapping between backend fault responses and frontend modals.
