@@ -1,0 +1,65 @@
+{
+  "task_id": "2026-11-19-fdr-uc-to-feature-093800",
+  "agent": "qa-analyst",
+  "started_at": "2026-11-19T09:40:00+01:00",
+  "ended_at": "2026-11-19T09:52:00+01:00",
+  "request_summary": "Translate UC-FDR-001-v3 and UC-FDR-002-v3 into Gherkin feature files through the UC workflow (functional context, test data, feature assembly), one run per UC, stopping at the draft features and reports; no Python, test, commit, push or PR.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "First run: read the persona, the activity routing, the UC workflow, the three UC skills, the source policy, the Gherkin instructions and profile, the templates, the README sections on e2e suites and Gherkin conventions, both UCs and the functional and technical v3 documents; respected the exclusions (no source code, no existing features, references map not used as evidence); ran the keyword help for the Italian dictionary; checked file name and tags against the profile; planned one outline per UC with three combined Examples rows. Its first write failed because the parent directory did not exist, and it stopped as blocked without working around the limit."
+    },
+    {
+      "description": "Second run (new instance, same inputs, directories now present): created for each UC the run registry (revision 2, draft), the functional context (incomplete), the test data (ready: values documented, none verified on the environment), the feature report (incomplete, readiness draft) and a translation report with findings and scenario proposals (11 findings and 2 proposals for UC-FDR-001, 10 findings and none for UC-FDR-002)."
+    },
+    {
+      "description": "Created the two feature files under the agreed folder, each with one Background and one Scenario Outline (one definition) with six Examples rows covering the four outcomes, transfer indexes 1, 3 and 5, one and five payments and the boundary amounts; no empty cells, no data placeholders, no value for the maximum propagation time or the expected revision."
+    },
+    {
+      "description": "Recorded the open questions that keep both features in draft: maximum propagation time, time zone and precision of dates, the observable oracle of the postcondition 'not modifiable nor deletable' (left uncovered), approval of the references map (pending), and the expected revision after conversion (UC-FDR-002 only); gave coverage per acceptance criterion."
+    },
+    {
+      "description": "Orchestrator verification of these deliverables: listed the artifacts, read both feature files and the main reports, confirmed one outline definition and six Examples rows per feature and the open questions as reported, and compared the file-system times with the timestamps written inside the artifacts. No parser or dry run was executed.",
+      "tool": "functions.powershell"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "verified",
+    "detail": "Both feature files and the ten run artifacts exist and their content matches what the analyst reported (one outline definition and six Examples rows per feature, open questions, draft readiness). Drafts are the expected result while functional questions are open. Syntax validity by a parser or dry run was not checked, and the timestamps inside the artifacts are not reliable (see friction)."
+  },
+  "notes": "Two runs under the same request id. The first run, blocked, planned three combined Examples rows; the second run, a new instance without that plan, delivered six single-factor rows. The analyst reported no applicable lessons: its generated instructions have no active lessons.",
+  "friction": [
+    {
+      "description": "First run blocked: the analyst's tools can create files but not directories, its only allowed terminal command is the keyword help, and the UC workflow requires the run directories; the orchestrator created them and relaunched the work.",
+      "recovered": true
+    },
+    {
+      "description": "The template for the translation report required by the UC-to-feature skill does not exist in the repository; the analyst used the structure described in the skill and flagged the assumption in the report.",
+      "recovered": true
+    },
+    {
+      "description": "The section on doubt triage and translation report cited by the skill and by the routing workflow does not exist in the UC workflow document; the analyst applied the taxonomy described in the skills.",
+      "recovered": true
+    },
+    {
+      "description": "Naming gaps: the slug of the translation report is not defined (chosen from the UC identifier); the requested pattern for the feature name differed from the agreed output paths (the agreed paths were used); the feature folder sits under docs while the Gherkin instructions are scoped to the source tree.",
+      "recovered": true
+    },
+    {
+      "description": "The analyst created a stray duplicate of a run registry by mistake and could not delete it without a shell; the orchestrator removed it.",
+      "recovered": true
+    },
+    {
+      "description": "The registries were updated once at the end of the run instead of after each stage, as reported by the analyst.",
+      "recovered": false
+    },
+    {
+      "description": "Timestamps written into updated_at fields and History tables are estimates (no clock available) and do not match the file-system times: the last write was at 09:51 while the registries carry values up to 10:40. Not corrected.",
+      "recovered": false
+    }
+  ],
+  "playbook_bullets_selected": [],
+  "counted_for_playbook_at": "2026-11-19T11:06:03.475Z"
+}

@@ -1,0 +1,47 @@
+{
+  "task_id": "2026-11-17-fdr-uc-template-correction-105412",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-11-17T10:54:12.139+01:00",
+  "ended_at": "2026-11-17T10:59:03.277+01:00",
+  "request_summary": "Align both existing FDR UC drafts strictly with the supplied UC template, without added metadata or appendices.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Read the supplied docs/use-cases/UC-template.md and both current UC drafts. Confirmed the branch remained PQ-827-fdr-e2e-test-design and preserved the user-provided template and pre-existing changes.",
+      "tool": "functions.view"
+    },
+    {
+      "description": "Updated only UC-FDR-001.md and UC-FDR-002.md: retained the three template fields and six sections; removed added metadata, appendices and custom precondition/postcondition labels. Kept all twenty acceptance criteria per document, stable AF/EF/AC identities, explicit unresolved questions and inline source mappings.",
+      "tool": "functions.apply_patch"
+    },
+    {
+      "description": "Executed static validation against the actual supplied template block. Both documents passed exact heading and field-order equality, exclusion of extra metadata/sections/tables/prose blocks, section item counts, sequential identifiers, flow references, source identifiers and local-link checks. No test suite or live service was executed.",
+      "tool": "functions.powershell"
+    },
+    {
+      "description": "Reassessed the existing ppa-readme no-update-needed result for the template-only correction. The README remains unchanged and accurate because commands, configuration, runtime behaviour and the UC translation workflow did not change.",
+      "tool": "functions.skill"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "verified",
+    "detail": "Both saved drafts now match the supplied template structure exactly. JTBD assignment and functional clarifications remain unresolved and visible; structural validation does not establish development readiness. No feature files, code, tests or publication operations were produced."
+  },
+  "friction": [
+    {
+      "description": "The original draft included extra metadata and appendices. Its initial validation checked required headings but did not reject additions; explicit human feedback required exact-template correction and a stricter structural check.",
+      "recovered": true
+    }
+  ],
+  "corrects": {
+    "task_id": "2026-11-17-fdr-uc-authoring-103416",
+    "agent": "qa-orchestrator",
+    "reason": "The human explicitly required the supplied UC template without the additional structure present in the original drafts. This separate correction preserves the finalized original trace and records the verified alignment. The original trace had no seen or cited playbook bullets, so no counter adjustments are required.",
+    "counter_adjustments": []
+  },
+  "notes": "Only qa-orchestrator participated in this planning-document correction. Jira and UC identities, branch authorization and the approved draft scope were retained. No UC translation run or downstream implementation was started.",
+  "playbook_bullets_selected": [],
+  "counted_for_playbook_at": "2026-11-17T10:00:34.255Z"
+}

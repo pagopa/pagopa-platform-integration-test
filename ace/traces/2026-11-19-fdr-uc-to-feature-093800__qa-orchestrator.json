@@ -1,0 +1,85 @@
+{
+  "task_id": "2026-11-19-fdr-uc-to-feature-093800",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-11-19T09:38:00+01:00",
+  "ended_at": "2026-11-19T12:05:00+01:00",
+  "request_summary": "Translate the two FDR hybrid use cases (UC-FDR-001-v3 and UC-FDR-002-v3) into Gherkin feature files with the supplied Confluence tracking code; then, as follow-ups on the same deliverables, explain the Scenario Outline design, add the per-row failure reading to the v3 documents, and fuse the v3 functional, technical and references-map documents into one document that quotes the UCs and the features.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Applied session routing: read the orchestrator persona, the operations workflow and the session-routing workflow; checked the terminal type (PowerShell), the current branch (the Jira PQ-827 design branch: resume of existing work, no branch change) and the git status, preserving the pre-existing uncommitted changes; assigned the ACE request id before substantive work.",
+      "tool": "functions.powershell"
+    },
+    {
+      "description": "Studied the UC workflow contract, the UC-to-feature contract (with the context and test-data stages) and the Gherkin profile and instructions; read both UCs and the functional and technical v3 documents. Proposed the route to the human: workflow task id, one run per UC, suite token and output folder, progressive numbers, the open functional questions that keep the features in draft, and the caveat that one tracking code covers only one Confluence page. The human confirmed the route.",
+      "tool": "functions.view"
+    },
+    {
+      "description": "Delegated the translation of both UCs to the QA-analyst with identities, source documents, output paths, tracking code and stop point. The first run returned blocked because the analyst's tools cannot create the run and output directories; the orchestrator created the three directories with PowerShell. The first analyst instance could no longer be addressed, so a new instance was launched with the same inputs and completed the second run.",
+      "tool": "functions.task"
+    },
+    {
+      "description": "Verified the delegated outputs: listed the two feature files and the artifacts of both run directories (five per UC), removed a stray duplicate of a run registry that the analyst had reported, and confirmed with a full listing that only the ten expected artifacts remain. Read both feature files, the UC-FDR-001 registry, context, test-data, feature and translation reports and the UC-FDR-002 feature and translation reports. Compared the file-system times of the artifacts with the timestamps written inside them (see friction). No parser run or test execution was performed.",
+      "tool": "functions.powershell"
+    },
+    {
+      "description": "Answered the request to justify one Scenario Outline with several payment counts: re-read the feature, the test-data and feature reports and the document rows that define the variations. Explained that the variations come from the documents (each value at least once, no Cartesian product), that the payment count is the weakest dimension (in four rows out of six it only carries the other dimensions), and disclosed that the first analyst instance had planned three combined rows while the second delivered six single-factor rows with no recorded rationale.",
+      "tool": "functions.view"
+    },
+    {
+      "description": "Presented four options for the Examples (six, three, two or one rows) plus an optional split by tags between a base row and the others. Checked read-only the Gherkin profile limits (maximum 12 scenario definitions per file, optional label tags, the safe-outline rule), the pinned behave version, and by reading the behave source that tags on an Examples block propagate to the generated rows. The human chose to keep the six rows; the features were not changed.",
+      "tool": "functions.powershell"
+    },
+    {
+      "description": "On request, wrote what a failure of each of the six rows would demonstrate, grounded in the documented oracles, guards and variants, and added it to the v3 documents: a new section in the technical document (row composition, reading of failures, cross-readings), a failure table in the variants section of the functional document, and header, preamble and cross-reference updates. Verified line endings, heading structure and table column counts after the edits; the UCs and the features were not touched.",
+      "tool": "functions.edit"
+    },
+    {
+      "description": "Assessed the README impact of these additions: no update needed, because only documents under docs and draft features changed, no suite, command, configuration or CI behaviour changed, and the proposed e2e suite folder does not exist yet. No commit, push or PR.",
+      "tool": "functions.powershell"
+    },
+    {
+      "description": "On explicit request, fused the v3 functional rationale, the v3 technical data and the references map into one new document with links to both UCs and both features: every UC element is quoted from the UC files and mapped to the feature steps with coverage and open points, and both features are quoted in full. Sensitive values (test identities, passwords, subscription keys and the names of their variables, gateway hosts, registry data of the test body) were replaced by placeholders explained in a legend; material discarded between the first and third document versions was left out. A section credits the author of the existing fdr3 suite code and states that FDR3 publication reuses that code, adapted to produce the six flows of the first feature. Inspected the fdr3 helper, actions, hooks, payload template, steps and git history to state exactly what is reused (REST actions, creation body model, client setup, identifier generators) and what must be written (parametric payment generator with exact decimals, request body fixes, assertions on amounts).",
+      "tool": "functions.create"
+    },
+    {
+      "description": "Verified the unified document with read-only scripts: heading and cross-reference resolution; every cited identifier is defined and every defined identifier is cited; consistent columns in all tables; relative links resolve; 49 UC quotations identical to the UC files and every UC item cited; both Gherkin blocks identical to the feature files apart from the tracking line and every feature step cited; no retired identifier and none of the searched phrases of the discarded material; none of the known sensitive values; every placeholder defined and used; consistent line endings. Fixed the three issues found while checking: a placeholder defined but never used, an obsolete table and a mention of the development environment outside the UAT scope.",
+      "tool": "functions.powershell"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "verified",
+    "detail": "Both feature files and all run artifacts exist and were re-read; the features are drafts because three functional questions and the postcondition oracle are open, which is the state the UC workflow expects. The v3 document additions and the unified document were written and checked as listed in the actions. The human reacted positively to the delivered features and chose to keep the six Examples rows. No parser run, test, environment call, commit, push or PR occurred."
+  },
+  "notes": "Participants: the QA-analyst in two runs (the first blocked, the second completed) and the orchestrator for routing, directory preparation, verification and the documentation work. The follow-up requests in the same chat (design rationale, options, documentation additions, unified document) were treated as continuations of this ACE request. The planning documents were written on explicit request; the orchestrator wrote no test code and no feature file. Candidate lessons: (1) pre-create the run and output directories before delegating a UC-to-feature translation, because the analyst's tools cannot create directories; (2) when a delegate must be relaunched, pass its previous plan and decisions in the new prompt, otherwise the structure can change silently (here three combined Examples rows became six single-factor rows); (3) give the analyst the current date and time in the delegation, because it has no clock and estimates the timestamps it writes into registries. No playbook lesson was applicable: the playbooks are empty.",
+  "friction": [
+    {
+      "description": "The first analyst delegation ended blocked: its tools can create files but not directories and its only allowed terminal command is a keyword help, so the run and output directories had to be created by the orchestrator before the work could proceed.",
+      "recovered": true
+    },
+    {
+      "description": "A follow-up message to the first analyst instance failed because the instance no longer existed. A new instance was launched with the same inputs but without the first instance's plan (one outline with three combined Examples rows) and delivered six single-factor rows with no recorded rationale. The difference surfaced only when the human asked for the rationale; it was disclosed and the human chose to keep the six rows.",
+      "recovered": false
+    },
+    {
+      "description": "The timestamps the analyst wrote inside the run registries and reports (updated_at fields and History tables) are estimates that do not match the file-system times: the last artifact write was at 09:51 while the registries carry values up to 10:40. The delegation prompt gave no current time and the analyst has no clock. Left uncorrected because the artifacts belong to the analyst; reported to the human.",
+      "recovered": false
+    },
+    {
+      "description": "A search call used a tool that does not exist in this environment (a dedicated grep tool); repeated with PowerShell Select-String.",
+      "recovered": true
+    },
+    {
+      "description": "A PowerShell check failed with a parse error because a variable followed by a colon inside a double-quoted string was read as a scope-qualified variable; rewritten with braces around the variable name.",
+      "recovered": true
+    },
+    {
+      "description": "A first recursive listing of the ACE folder produced about 2.6 MB of output and was truncated by the tool; replaced by shallow, targeted listings and reads.",
+      "recovered": true
+    }
+  ],
+  "playbook_bullets_selected": [],
+  "counted_for_playbook_at": "2026-11-19T11:06:03.475Z"
+}

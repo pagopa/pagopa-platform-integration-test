@@ -1,0 +1,53 @@
+{
+  "task_id": "2026-11-17-fdr-v2-scope-cut-163100",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-11-17T16:31:00.061+01:00",
+  "ended_at": "2026-11-17T16:49:00.000+01:00",
+  "request_summary": "Clean the two FDR e2e planning documents of gaps and doubts not needed by the two main flows into separate v2 files, cross-check the existing UC drafts against them and create v2 UCs where the cuts affect them.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Re-read the orchestrator persona, operations workflow, session routing and scoped ACE instructions. Confirmed the branch remained PQ-827-fdr-e2e-test-design and that the pre-existing deletions, untracked sources and earlier drafts were preserved. The work stayed on planning documents and UC drafts: no feature files, code, tests or service calls.",
+      "tool": "functions.view"
+    },
+    {
+      "description": "Read both v1 planning documents, both v1 UC drafts, the supplied UC template and the UC workflow conventions. Fixed the cut criterion: keep what the success path of each UC needs; remove alternatives, exceptions other than the propagation failure, extensions, data variants that depended on open questions, and the gaps and doubts that existed only for them.",
+      "tool": "functions.view"
+    },
+    {
+      "description": "Created docs/fdr-e2e-ibrido-01-razionale-uc-v2.md and docs/fdr-e2e-ibrido-02-dati-tecnici-v2.md as separate files with stable identifiers: kept QF-03, QF-06 and QF-11 and the DM items needed by the main flows, merged DM-15 into DM-03; 48 v1 identifiers, DM-15 included, are no longer defined. The v1 documents were not modified.",
+      "tool": "functions.create"
+    },
+    {
+      "description": "Statically verified both v2 documents: relative links resolve, section references match headings, table column counts are consistent, no dangling reference to a removed identifier, no identifier absent from v1, and a line diff against v1 shows only the intended edits. A first run reported false positives caused by wrong patterns; the patterns were fixed and the check was rerun.",
+      "tool": "functions.powershell"
+    },
+    {
+      "description": "Assessed the impact of the cuts on the v1 UCs and created docs/use-cases/UC-FDR-001-v2.md and UC-FDR-002-v2.md using the supplied template exactly: three header fields, six sections, Nessuno for empty alternative flows, sequential identifiers. Validated the skeleton against the template block, the flow references, the source identifiers and the links with a script, and diffed both files against v1.",
+      "tool": "functions.create"
+    },
+    {
+      "description": "Assessed README impact for the four new documents: the README does not reference the FDR e2e documents or the FDR UC drafts and no command, configuration or behaviour changed, so no README update is needed.",
+      "tool": "functions.powershell"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "verified",
+    "detail": "Four new untracked documents were created and statically checked as listed in the actions; the v1 documents were left unchanged. The v2 UCs drop AF, EF and AC items that depended on removed scope. QF-03, QF-06 and QF-11 and the JTBD placeholder remain open. No test, service call, commit or push occurred."
+  },
+  "notes": "Only qa-orchestrator participated: UC drafting is outside the QA-analyst skills, as for the original drafts, and no delegation was needed. Earlier read-only analysis exchanges in the same conversation (reuse of fdr3 code, publication path, implementation gaps, cross-check of the documents, functional gaps) were not traced because the human had instructed no modifications at that point; this trace does not cover them.",
+  "friction": [
+    {
+      "description": "A search tool call failed at the start of the turn because that tool does not exist in this execution context; searches were redone with PowerShell Select-String.",
+      "recovered": true
+    },
+    {
+      "description": "The first static validation of the v2 documents flagged retained identifiers because the removed-identifier pattern and the definition pattern were wrong; both patterns were corrected and the check rerun before relying on it.",
+      "recovered": true
+    }
+  ],
+  "playbook_bullets_selected": [],
+  "counted_for_playbook_at": "2026-11-17T15:48:38.329Z"
+}

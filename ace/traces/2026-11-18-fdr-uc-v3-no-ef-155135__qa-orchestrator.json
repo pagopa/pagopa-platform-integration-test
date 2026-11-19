@@ -1,0 +1,45 @@
+{
+  "task_id": "2026-11-18-fdr-uc-v3-no-ef-155135",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-11-18T15:51:35.000+01:00",
+  "ended_at": "2026-11-18T15:57:00.000+01:00",
+  "request_summary": "Remove the exception flows from the v3 UCs because they are not reproducible or testable, keeping the references map aligned.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Decided the scope before editing: the human's rule applies to the v3 UCs, which are edited in place, while the v1 and v2 UCs and the rationale and technical documents stay untouched as historical or out of the request. The exception section follows the same convention as the alternative flows and contains Nessuno, as the supplied template requires for empty sections.",
+      "tool": "functions.powershell"
+    },
+    {
+      "description": "Replaced the exception section of docs/use-cases/UC-FDR-001-v3.md and UC-FDR-002-v3.md with Nessuno. Preconditions, steps, postconditions and acceptance criteria are unchanged, and the maximum-time criterion still survives as AC-09.",
+      "tool": "functions.edit"
+    },
+    {
+      "description": "Aligned docs/use-cases/mappa-riferimenti-UC-FDR-v3.md: the two exception sections became text only, the open-point and removed-detail rows no longer cite the exception, a new warning lists where the rationale and technical documents still treat the exception as in perimeter, and the note on the v2 crosswalk names the two rows that cite it.",
+      "tool": "functions.edit"
+    },
+    {
+      "description": "Revalidated by script with updated expectations: template skeleton, exception and alternative sections equal to Nessuno, absence of references and technical terms, parity with the v2 UCs apart from the removed exception, map row counts and column counts, resolution of every section and identifier reference, AC sources equal to v2, open questions equal to the rationale crosswalk once the exception is set aside, spelling and typography scan, and file modification times to prove that no other document changed.",
+      "tool": "functions.powershell"
+    },
+    {
+      "description": "Assessed README impact: the README links only the persistent UC workflow and does not mention the FDR planning documents, the UC drafts or the map, and no command, configuration or behaviour changed, so no update is needed.",
+      "tool": "functions.powershell"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "verified",
+    "detail": "Two UCs and one map were edited and statically checked as listed in the actions; every check passed. The rationale and technical documents were deliberately not edited and still treat the exception as in perimeter, which is reported to the human as a pending alignment. No test, environment call, commit or push occurred."
+  },
+  "notes": "Only qa-orchestrator participated, as for the earlier versions: UC drafting here is a planning-document activity done directly, with no delegation. The rationale crosswalk table still maps the removed exception row, so the map states that it holds for the v3 UCs except the rows citing it.",
+  "friction": [
+    {
+      "description": "The previous validation scripts assumed one exception row per UC and a mapping row for it; they had to be rewritten with new expectations (zero rows, exception cited only where its removal is explained, open questions compared after setting the exception aside) instead of simply rerun.",
+      "recovered": true
+    }
+  ],
+  "playbook_bullets_selected": [],
+  "counted_for_playbook_at": "2026-11-18T14:56:00.179Z"
+}

@@ -1,0 +1,53 @@
+{
+  "task_id": "2026-11-18-fdr-v3-consolidation-150437",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-11-18T15:04:37.549+01:00",
+  "ended_at": "2026-11-18T15:27:30.000+01:00",
+  "request_summary": "Decide whether the FDR e2e planning documents need consolidating into a v3 pair and produce it: verify contract-derived claims read-only, correct the v2 defects, consolidate knowledge from the earlier analyses, keep v1, v2 and the v2 UCs untouched.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Judged that a v3 was warranted: v2 had a verified defect (a WSDL-imported schema missing from the contract table) and the knowledge gathered after it lived only in chat. Kept the earlier convention of leaving prior versions untouched and writing separate files.",
+      "tool": "functions.sql"
+    },
+    {
+      "description": "Verified read-only, against the pinned commit of the public contract repository, the contract-derived claims of the technical document: file existence, import closure, SOAP binding, SOAPAction, addresses, namespaces, message elements, order, types and occurrences, flow XSD constraints and enumerations, OpenAPI operations, parameters, schemas, enums and field-to-XML mappings, and the latest numeric release branch. No call went to any test environment.",
+      "tool": "functions.powershell"
+    },
+    {
+      "description": "Read the WISP router, request helper and configuration key names (values hidden) and the fdr3 request helper and hooks. A first keyword search for log masking found nothing because the function is named differently; reading the module showed the inherited citation was misplaced and that the helper disables TLS verification and sets no timeout.",
+      "tool": "functions.view"
+    },
+    {
+      "description": "Created docs/fdr-e2e-ibrido-01-razionale-uc-v3.md and docs/fdr-e2e-ibrido-02-dati-tecnici-v3.md as separate files: decision register, UC crosswalk, working hypotheses for the three open questions, verification table, SOAP material inventory, readiness per direction, corrected WISP citation and five new implementation notes. Same scope as v2.",
+      "tool": "functions.create"
+    },
+    {
+      "description": "Statically validated both v3 documents: relative links, section references (same-document and cross-document), table column counts, identifier sets against v2 (twelve new, none removed, only the six intended mentions of removed identifiers), a line diff against v2, a spelling, quote and secret-pattern scan, and the crosswalk against both v2 UC files by script. Applied three wording corrections found in the diff review and re-ran the checks.",
+      "tool": "functions.powershell"
+    },
+    {
+      "description": "Assessed README impact: no reference to the FDR planning documents or UC drafts exists in the README and no command, configuration or behaviour changed, so no update is needed.",
+      "tool": "functions.powershell"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "verified",
+    "detail": "Two new untracked documents were created and statically checked as listed in the actions; v1, v2 and the v2 UCs were not modified. The contract-derived content was confirmed against the pinned commit with one formal correction and one new caution. QF-03, QF-06, QF-11 and the JTBD placeholder remain open. No test, environment call, commit or push occurred."
+  },
+  "notes": "Only qa-orchestrator participated: planning documents are outside the QA-analyst skills, as for the v2 work, and no delegation was needed. The read-only SOAP material check of the previous exchange is part of this continuation and is covered here. The v2 UCs were left unchanged because every identifier they cite is defined in the v3 rationale; their only reference to the rationale is a link to the v2 file.",
+  "friction": [
+    {
+      "description": "A PowerShell command failed to parse because a foreach statement was piped directly; it was rewritten to collect output first and rerun.",
+      "recovered": true
+    },
+    {
+      "description": "A keyword search for masking in the WISP helpers returned nothing and could have led to wrongly removing a correct claim; reading the module found the obfuscation function under another name.",
+      "recovered": true
+    }
+  ],
+  "playbook_bullets_selected": [],
+  "counted_for_playbook_at": "2026-11-18T14:27:43.038Z"
+}

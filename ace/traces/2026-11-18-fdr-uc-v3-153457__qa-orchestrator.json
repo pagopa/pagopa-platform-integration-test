@@ -1,0 +1,49 @@
+{
+  "task_id": "2026-11-18-fdr-uc-v3-153457",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-11-18T15:34:57.105+01:00",
+  "ended_at": "2026-11-18T15:48:00.000+01:00",
+  "request_summary": "Create the v3 UC pair from the v3 documents without document references, identifiers or technical detail in the UCs, plus a separate references map; stop and warn if a removed detail is missing from the documents.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Applied the human's stop condition before writing: searched the two v3 documents for the phrases that carry every detail to be removed from the UCs (37 checks), and searched the repository for tools that glob UC files in the use-cases folder. Nothing was missing and no tool globs that folder. Found that the technical document has no comparison-rule rows for three UC-specific acceptance criteria and recorded it as a warning instead of blocking.",
+      "tool": "functions.powershell"
+    },
+    {
+      "description": "Created docs/use-cases/UC-FDR-001-v3.md and UC-FDR-002-v3.md following the supplied UC template exactly, with short actor-level steps, generic acceptance criteria and no sources, identifiers, links or technical terms. Element counts equal the v2 UCs.",
+      "tool": "functions.create"
+    },
+    {
+      "description": "Created docs/use-cases/mappa-riferimenti-UC-FDR-v3.md: per-element mapping of preconditions, steps, exception, postconditions and acceptance criteria to the rationale and technical documents, open points with working hypotheses, the details removed from the v2 UCs with their new location, and document warnings.",
+      "tool": "functions.create"
+    },
+    {
+      "description": "Validated by script: template skeleton, absence of references and technical terms, leanness, parity with v2, row counts of the map against the UC elements, resolution of every section and identifier reference, equality of each AC source with its v2 source, and equality of the open questions with the rationale crosswalk. A validation helper mishandled single-row tables and was fixed and rerun; one sentence of the map about retry timing was found imprecise on review and corrected.",
+      "tool": "functions.powershell"
+    },
+    {
+      "description": "Assessed README impact: the README does not reference the FDR UC drafts, the planning documents or the new map, and no command, configuration or behaviour changed, so no update is needed.",
+      "tool": "functions.powershell"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "verified",
+    "detail": "Three new untracked documents were created and statically checked as listed in the actions; earlier documents and UCs were not modified. The v3 UCs are about 58 percent of the size of the v2 UCs. Open questions, the undefined successful-send outcome and the unassigned JTBD remain open and are listed in the map. No test, environment call, commit or push occurred."
+  },
+  "notes": "Only qa-orchestrator participated: UC drafting is a planning-document activity outside the QA-analyst skills, as for the earlier versions, and no delegation was needed. The rationale document still cites the v2 UCs; numbering is identical so its crosswalk table holds for the v3 UCs and this was checked by script.",
+  "friction": [
+    {
+      "description": "A validation helper returned a string instead of an array for single-row tables, which broke a character-level index; it was rewritten to return an array and the whole check rerun.",
+      "recovered": true
+    },
+    {
+      "description": "A sentence drafted for the map stated that platform retry limits were undocumented, which the technical document partly contradicts with estimates; found on rereading and corrected before closing.",
+      "recovered": true
+    }
+  ],
+  "playbook_bullets_selected": [],
+  "counted_for_playbook_at": "2026-11-18T14:47:53.555Z"
+}

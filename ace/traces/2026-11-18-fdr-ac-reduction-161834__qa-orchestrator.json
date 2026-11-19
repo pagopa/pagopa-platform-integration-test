@@ -1,0 +1,69 @@
+{
+  "task_id": "2026-11-18-fdr-ac-reduction-161834",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-11-18T16:18:34.000+01:00",
+  "ended_at": "2026-11-18T16:45:00.000+01:00",
+  "request_summary": "Reduce the acceptance criteria of the FDR hybrid e2e UCs to what is observable and needed by the tests: drop six criteria from UC-FDR-001, move the PSP-side create and publish checks to implementation guards, turn the legacy-format criterion into an XSD validation, and update the UCs, the references map and the two FDR e2e rationale and technical documents in place.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Read the two v3 UCs, the references map and, section by section, the v3 rationale and technical documents, then listed every line that cites the criteria, variants and exception to change. The earlier instruction not to read the e2e documents applied only to the previous explanation task, which this request replaced.",
+      "tool": "functions.view"
+    },
+    {
+      "description": "Decided the scope before editing: the human's list was applied to UC-FDR-001 as given. The common criteria and the direct analogues in UC-FDR-002 were extended by analogy (send success moved to a guard, detail criterion absorbed by the totals criterion, list criterion kept without the uniqueness clause) and recorded in the rationale as an assumption to confirm, because no question tool was available.",
+      "tool": "functions.edit"
+    },
+    {
+      "description": "Edited UC-FDR-001-v3 and UC-FDR-002-v3: acceptance criteria reduced to 8 and 7 and renumbered without gaps, and the legacy-format criterion now states validation against the XSD.",
+      "tool": "functions.edit"
+    },
+    {
+      "description": "Edited the rationale in place: decisions D-07 to D-11, a table of retired criteria with reasons, the exception section rewritten so that missing propagation is a failure of the availability criterion and not an exception, a new section on actor actions and guard checks, variants tied to retired criteria removed, the rule on propagation corrected to the three non-reconciled internal mechanisms, and the correspondence to the v3 UCs.",
+      "tool": "functions.edit"
+    },
+    {
+      "description": "Edited the technical document in place: oracle rules reduced to the kept criteria, a new section with the three guard checks, the serve-to columns and test-data variants aligned, the wait rules and timeout note updated for the undocumented historization batch cadence, and a new implementation note separating guard failures from criterion failures.",
+      "tool": "functions.edit"
+    },
+    {
+      "description": "Edited the references map: acceptance criteria tables with the previous numbering, open points renumbered, removed-details table extended, and the two warnings about the exception and the v2 references closed.",
+      "tool": "functions.edit"
+    },
+    {
+      "description": "Validated by script: line endings and single final newline on the five files, identifier definitions against references, retired identifiers only in retirement context, table column counts, relative links, section references, UC criteria numbering and map parity, and secret patterns. Re-read the rewritten sections of both documents. Ran git grep to confirm that no tracked file cites the changed documents.",
+      "tool": "functions.powershell"
+    },
+    {
+      "description": "Assessed README impact: the README links only the generic UC workflow and cites none of the changed files, and no command, configuration or behaviour changed, so no update is needed.",
+      "tool": "functions.powershell"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "verified",
+    "detail": "Five Markdown files were edited and statically checked as listed in the actions; every check passed after the false positives of the first scan were explained. The extension of the criteria to UC-FDR-002 is an assumption that the human has not yet confirmed. No test, environment call, commit or push occurred."
+  },
+  "notes": "Only qa-orchestrator participated, as for the earlier v3 work: the UC and document edits are planning activity done directly, with no delegation. This request closed the pending alignment that an earlier trace had reported, since the rationale and technical documents still treated the missing-propagation case as an exception.",
+  "friction": [
+    {
+      "description": "The first validation scan reported false positives: an identifier pattern matched inside the UC file names, implementation notes use a different list format than the identifier definitions, and commit hashes and XPath names looked like secrets. A CRLF-unaware regular expression also failed the criteria numbering check. The patterns were corrected and the two checks rerun.",
+      "recovered": true
+    },
+    {
+      "description": "No question tool was available to confirm whether the human's list for UC-FDR-001 also applied to UC-FDR-002, so the extension was applied by analogy and recorded as an assumption in the documents and in the final report.",
+      "recovered": true
+    },
+    {
+      "description": "A repository-wide recursive search for references to the changed documents did not finish in a reasonable time and was stopped; git grep on tracked files answered the same question immediately.",
+      "recovered": true
+    },
+    {
+      "description": "The delegation manifest step (prepare_delegation.js) was not run before the substantive work, so the privacy finalizer failed on the missing runtime directory. The manifest was prepared afterwards; it records no lessons, which matches what the orchestrator had actually been served.",
+      "recovered": true
+    }
+  ],
+  "playbook_bullets_selected": [],
+  "counted_for_playbook_at": "2026-11-18T15:41:27.791Z"
+}
