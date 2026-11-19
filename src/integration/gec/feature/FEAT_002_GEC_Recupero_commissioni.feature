@@ -115,9 +115,9 @@ Funzionalità: Recupero delle commissioni
   @happy_path
   @gec_002_08
   Scenario: Recupero delle commissioni con bin non esistente
-    Dato una richiesta di recupero commissioni "commissioni_bin_non_esistente"
+    Dato una richiesta di recupero commissioni "commissioni_bin_non_esistente_2"
     E un limite di risultati di 10
-    Quando il client invia la richiesta di "Recupero commissioni" con il payload "commissioni_bin_non_esistente"
+    Quando il client invia la richiesta di "Recupero commissioni" con il payload "commissioni_bin_non_esistente_2"
     Allora il sistema risponde con codice di stato 200
     E i valori del campo `onUs` delle opzioni bundle, dopo l'ordinamento previsto per l'API "V1", corrispondono ai seguenti:
       | onUs  |

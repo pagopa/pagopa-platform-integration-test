@@ -1,6 +1,373 @@
 TEST_DATA:
-  payload1: &payload1 |
+  commissioni_ci_importo_metodo_touchpoint: &commissioni_ci_importo_metodo_touchpoint |
     {
-      "some_field": "some_value",
-      "another_field": "another_value"
+      "paymentAmount": 799999999999998,
+      "primaryCreditorInstitution": "77777777777",
+      "bin": "309500",
+      "paymentMethod": "CP",
+      "touchpoint": "CHECKOUT",
+      "transferList": [
+        {
+          "creditorInstitution": "77777777777",
+          "transferCategory": "TAX1"
+        },
+        {
+          "creditorInstitution": "77777777778",
+          "transferCategory": "TAX2"
+        }
+      ]
+    }
+  commissioni_ci_importo_metodo_touchpoint_response: &commissioni_ci_importo_metodo_touchpoint_response |
+    {
+      "belowThreshold": false,
+      "bundleOptions": [
+        {
+          "taxPayerFee": 999999999999978,
+          "primaryCiIncurredFee": 20,
+          "paymentMethod": "ANY",
+          "touchpoint": "ANY",
+          "idBundle": "int-test-1",
+          "bundleName": "pacchetto 1",
+          "bundleDescription": "pacchetto 1",
+          "idCiBundle": "int-test-1",
+          "idPsp": "PPAYITR1XXX",
+          "idBrokerPsp": "88888888899",
+          "idChannel": "88888888899_01_ONUS",
+          "onUs": false,
+          "abi": "14156",
+          "pspBusinessName": "psp business name int-test-1"
+        }
+      ]
+    }
+  commissioni_ci_importo_metodo: &commissioni_ci_importo_metodo |
+    {
+      "paymentAmount": 799999999999988,
+      "primaryCreditorInstitution": "77777777777",
+      "bin": "309500",
+      "paymentMethod": "PO",
+      "transferList": [
+        {
+          "creditorInstitution": "77777777777",
+          "transferCategory": "TAX1"
+        },
+        {
+          "creditorInstitution": "77777777778",
+          "transferCategory": "TAX2"
+        }
+      ]
+    }
+  commissioni_ci_importo: &commissioni_ci_importo |
+    {
+        "paymentAmount": 799999999999998,
+        "primaryCreditorInstitution": "77777777777",
+        "bin": "309500",
+        "transferList": [
+          {
+            "creditorInstitution": "77777777777",
+            "transferCategory": "TAX1"
+          },
+          {
+            "creditorInstitution": "77777777778",
+            "transferCategory": "TAX2"
+          }
+        ]
+      }
+  commissioni_ci_importo_touchpoint: &commissioni_ci_importo_touchpoint |
+    {
+      "paymentAmount": 799999999999998,
+      "primaryCreditorInstitution": "77777777777",
+      "bin": "309500",
+      "touchpoint": "IO",
+      "transferList": [
+        {
+          "creditorInstitution": "77777777777",
+          "transferCategory": "TAX1"
+        },
+        {
+          "creditorInstitution": "77777777778",
+          "transferCategory": "TAX2"
+        }
+      ]
+    }
+  commissioni_ci_importo_touchpoint_timbro_digitale: &commissioni_ci_importo_touchpoint_timbro_digitale |
+    {
+      "paymentAmount": 799999999999998,
+      "primaryCreditorInstitution": "77777777777",
+      "bin": "309500",
+      "touchpoint": "IO",
+      "transferList": [
+        {
+          "creditorInstitution": "77777777777",
+          "transferCategory": "TAX1",
+          "digitalStamp": true
+        },
+        {
+          "creditorInstitution": "77777777778",
+          "transferCategory": "TAX2",
+          "digitalStamp": false
+        }
+      ]
+    }
+  commissioni_ci_importo_touchpoint_timbro_digitale_response: &commissioni_ci_importo_touchpoint_timbro_digitale_response |
+    {
+      "belowThreshold": false,
+      "bundleOptions":[
+        {
+          "taxPayerFee": 999999999999992,
+          "primaryCiIncurredFee": 0,
+          "paymentMethod": "ANY",
+          "touchpoint": "IO",
+          "idBundle": "int-test-7",
+          "bundleName": "pacchetto 7",
+          "bundleDescription": "pacchetto 7",
+          "idCiBundle": null,
+          "idPsp": "BPPIITRRXXX",
+          "idBrokerPsp": "88888888899",
+          "idChannel": "88888888899_01_ONUS",
+          "onUs": false,
+          "abi": "14156",
+          "pspBusinessName": "psp business name int-test-7"
+        }
+     ]
+    }
+  commissioni_ci_importo_touchpoint_oltre_limite: &commissioni_ci_importo_touchpoint_oltre_limite |
+    {
+      "paymentAmount": 799999999999998,
+      "primaryCreditorInstitution": "77777777777",
+      "bin": "309500",
+      "touchpoint": "IO",
+      "transferList": [
+        {
+          "creditorInstitution": "77777777777",
+          "transferCategory": "TAX1",
+          "digitalStamp": true
+        },
+        {
+          "creditorInstitution": "77777777778",
+          "transferCategory": "TAX2",
+          "digitalStamp": true
+        }
+      ]
+    }
+  commissioni_bin_non_esistente: &commissioni_bin_non_esistente |
+    {
+      "paymentAmount": 799999999999998,
+      "primaryCreditorInstitution": "77777777777",
+      "bin": "123456789",
+      "touchpoint": "IO",
+      "transferList": [
+        {
+          "creditorInstitution": "77777777777",
+          "transferCategory": "TAX1"
+        },
+        {
+          "creditorInstitution": "77777777778",
+          "transferCategory": "TAX2"
+        }
+      ]
+    }
+  commissioni_bin_non_esistente_response: &commissioni_bin_non_esistente_response |
+    {
+      "belowThreshold": false,
+      "bundleOptions":[]
+    }
+  commissioni_ci_importo_touchpoint_amex: &commissioni_ci_importo_touchpoint_amex |
+    {
+      "paymentAmount": 799999999999990,
+      "primaryCreditorInstitution": "77777777777",
+      "bin": "340000",
+      "paymentMethod": "CP",
+      "idPspList": null,
+      "transferList": [
+        {
+          "creditorInstitution": "77777777777",
+          "transferCategory": "TAX1"
+        },
+        {
+          "creditorInstitution": "77777777778",
+          "transferCategory": "TAX2"
+        }
+      ]
+    }
+  commissioni_ci_importo_touchpoint_amex_response: &commissioni_ci_importo_touchpoint_amex_response |
+    {
+      "belowThreshold": false,
+      "bundleOptions": [
+      {
+        "taxPayerFee": 999999999999990,
+        "primaryCiIncurredFee": 0,
+        "paymentMethod": "CP",
+        "touchpoint": "ANY",
+        "idBundle": "int-test-10",
+        "bundleName": "pacchetto 10",
+        "bundleDescription": "pacchetto 10",
+        "idCiBundle": null,
+        "idPsp": "UNCRITMM",
+        "idBrokerPsp": "88888888899",
+        "idChannel": "UNCRITMM_ONUS",
+        "onUs": true,
+        "abi": "AMREX",
+        "pspBusinessName": "psp business name int-test-10"
+        }
+      ]
+    }
+
+  commissioni_importo_metodo_touchpoint: *commissioni_ci_importo_metodo_touchpoint
+  commissioni_importo_metodo: &commissioni_importo_metodo |
+    {
+      "paymentAmount": 799999999999998,
+      "primaryCreditorInstitution": "77777777777",
+      "bin": "309500",
+      "paymentMethod": "CP",
+      "touchpoint": null,
+      "idPspList": null,
+      "transferList": [
+        {
+          "creditorInstitution": "77777777777",
+          "transferCategory": "TAX1"
+        },
+        {
+          "creditorInstitution": "77777777778",
+          "transferCategory": "TAX2"
+        }
+      ]
+    }
+  commissioni_ci_importo_metodo_psp: &commissioni_ci_importo_metodo_psp |
+    {
+      "paymentAmount": 799999999999998,
+      "primaryCreditorInstitution": "77777777777",
+      "bin": "309500",
+      "paymentMethod": "CP",
+      "touchpoint": null,
+      "idPspList": [{"idPsp":"PPAYITR1XXX"}],
+      "transferList": [
+        {
+          "creditorInstitution": "77777777777",
+          "transferCategory": "TAX1"
+        },
+        {
+          "creditorInstitution": "77777777778",
+          "transferCategory": "TAX2"
+        }
+      ]
+    }
+  commissioni_ci_importo_touchpoint_psp: &commissioni_ci_importo_touchpoint_psp |
+    {
+      "paymentAmount": 799999999999998,
+      "primaryCreditorInstitution": "77777777777",
+      "bin": "309500",
+      "paymentMethod": null,
+      "touchpoint": "IO",
+      "idPspList": [{"idPsp":"PPAYITR1XXX"}],
+      "transferList": [
+        {
+          "creditorInstitution": "77777777777",
+          "transferCategory": "TAX1"
+        },
+        {
+          "creditorInstitution": "77777777778",
+          "transferCategory": "TAX2"
+        }
+      ]
+    }
+  commissioni_ci_importo_touchpoint_timbro_digitale_singolo_psp: &commissioni_ci_importo_touchpoint_timbro_digitale_singolo_psp |
+    {
+      "paymentAmount": 799999999999998,
+      "primaryCreditorInstitution": "77777777777",
+      "bin": "309500",
+      "paymentMethod": null,
+      "touchpoint": "IO",
+      "idPspList": [{"idPsp":"BPPIITRRXXX"}],
+      "transferList": [
+        {
+          "creditorInstitution": "77777777777",
+          "transferCategory": "TAX1",
+          "digitalStamp": true
+        },
+        {
+          "creditorInstitution": "77777777778",
+          "transferCategory": "TAX2",
+          "digitalStamp": false
+        }
+      ]
+    }
+  commissioni_ci_importo_touchpoint_timbro_digitale_singolo_psp_response: *commissioni_ci_importo_touchpoint_timbro_digitale_response
+  commissioni_ci_importo_touchpoint_timbro_digitale_psp: &commissioni_ci_importo_touchpoint_timbro_digitale_psp |
+    {
+      "paymentAmount": 799999999999998,
+      "primaryCreditorInstitution": "77777777777",
+      "bin": "309500",
+      "paymentMethod": null,
+      "touchpoint": "IO",
+      "idPspList": [{"idPsp":"BPPIITRRXXX"}],
+      "transferList": [
+        {
+          "creditorInstitution": "77777777777",
+          "transferCategory": "TAX1",
+          "digitalStamp": true
+        },
+        {
+          "creditorInstitution": "77777777778",
+          "transferCategory": "TAX2",
+          "digitalStamp": true
+        }
+      ]
+    }
+  commissioni_oltre_limite: *commissioni_importo_metodo
+  commissioni_bin_non_esistente_2: &commissioni_bin_non_esistente_2 |
+    {
+      "paymentAmount": 799999999999998,
+      "primaryCreditorInstitution": "77777777777",
+      "bin": "123456789",
+      "paymentMethod": "CP",
+      "touchpoint": null,
+      "idPspList": null,
+      "transferList": [
+        {
+          "creditorInstitution": "77777777777",
+          "transferCategory": "TAX1"
+        },
+        {
+          "creditorInstitution": "77777777778",
+          "transferCategory": "TAX2"
+        }
+      ]
+    }
+  commissioni_ccp: &commissioni_ccp |
+    {
+      "paymentAmount": 61201,
+      "primaryCreditorInstitution": "77777777777",
+      "bin": "309500",
+      "paymentMethod": "CP",
+      "touchpoint": null,
+      "idPspList": null,
+      "transferList": [
+        {
+          "creditorInstitution": "77777777777",
+          "transferCategory": "TAX1"
+        },
+        {
+          "creditorInstitution": "77777777778",
+          "transferCategory": "TAX2"
+        }
+      ]
+    }
+  commissioni_amex: &commissioni_amex |
+    {
+      "paymentAmount": 799999999999998,
+      "primaryCreditorInstitution": "77777777777",
+      "bin": "340000",
+      "paymentMethod": "CP",
+      "touchpoint": "CHECKOUT",
+      "idPspList": null,
+      "transferList": [
+        {
+          "creditorInstitution": "77777777777",
+          "transferCategory": "TAX1"
+        },
+        {
+          "creditorInstitution": "77777777778",
+          "transferCategory": "TAX2"
+        }
+      ]
     }
