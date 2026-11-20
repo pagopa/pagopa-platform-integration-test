@@ -31,26 +31,68 @@ def _ensure_actor(context, name: str):
         setattr(context, name, SimpleNamespace(rest=SimpleNamespace(client=None)))
 
 def _populate_placeholder_vars(context):
-    """Expose configured global and FdR values to the placeholder resolver."""
+    """Expose configured global and GEC values to the placeholder resolver."""
     if not hasattr(context, "vars"):
         context.vars = {}
 
     global_conf = _config_value(context.config, "global_configuration")
     
     configured = {
-            "xxx": _config_value(global_conf, "xxx"),#TODO actual configuration
+        "environment": os.environ.get("TARGET_ENV", "dev"),
     }
 
     for key, value in configured.items():
         if value is not None:
             context.vars[key] = str(value)
-    LOGGER.info
+    
+    LOGGER.info("Placeholder variables populated: %s", list(configured.keys()))
+
 
 def before_all(context):
     """Hook to run before all tests."""
     LOGGER.info("Running before_all hook for GEC integration tests.")
+    
+    suite_path = os.path.dirname(os.path.abspath(__file__))
+    
     # Load configurations and common data
-    context.config = load_configurations(os.path.dirname(os.path.abspath(__file__)))
-    context.payload_templates = load_commondata("payload.yaml", os.path.dirname(os.path.abspath(__file__)))
+    context.config = load_configurations(suite_path)
+    context.config["suite_path"] = suite_path
+    
+    context.payload_templates = load_commondata("payload.yaml", suite_path)
+    
+    # Initialize GEC client
+    _ensure_actor(context, "gec")
+    gec_service_config = _config_value(context.config, "services", "gec")
+    if gec_service_config:
+        auth_config = _config_value(gec_service_config, "auth")
+        if auth_config:
+            auth = build_api_key_auth_from_config(auth_config)
+        else:
+            from src.utility.rest import NoAuthConfig
+            auth = NoAuthConfig()
+        context.gec.rest.client = build_rest_client(gec_service_config, auth)
+        LOGGER.info("GEC REST client initialized")
+    else:
+        LOGGER.warning("GEC service configuration not found")
+    
     # Populate placeholder variables
     _populate_placeholder_vars(context)
+    
+    LOGGER.info("before_all hook completed successfully")
+
+
+def before_scenario(context, scenario):
+    """Hook to run before each scenario."""
+    LOGGER.info("Starting scenario: %s", scenario.name)
+    # Initialize scenario-specific state
+    if not hasattr(context, "vars"):
+        context.vars = {}
+    context.response = None
+    # Reset request parameters for each scenario
+    context.vars["request_params"] = {}
+
+
+def after_scenario(context, scenario):
+    """Hook to run after each scenario."""
+    if hasattr(scenario, "status"):
+        LOGGER.info("Scenario %s finished with status: %s", scenario.name, scenario.status)
