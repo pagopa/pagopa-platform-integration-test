@@ -1,6 +1,6 @@
 # Utility (`src/utility`)
 
-Questa cartella contiene componenti condivisi per i test di integrazione/API: caricamento configurazioni, gestione secret e client HTTP riusabile.
+Questa cartella contiene componenti condivisi per i test di integrazione/API: caricamento configurazioni, gestione secret, client HTTP e Azure Storage.
 
 ## Struttura (esclusa `ebollo`)
 
@@ -8,6 +8,7 @@ Questa cartella contiene componenti condivisi per i test di integrazione/API: ca
 - `rest/`: client REST con supporto auth (none/basic/api key/oauth2).
 - `json/`: utility per conversione JSON, lettura (`get_attr`) e scrittura (`set_attr`) di valori via path.
 - `soap/`: client SOAP basato su `zeep` con supporto auth (none/basic/wsse), utility get/set su response e supporto a chiamate SOAP raw via zeep transport quando non e disponibile un WSDL.
+- `blob/`: Azure Storage utilities (Blob e Table Storage per test data management).
 - `data_generators.py`: generatori condivisi per stringhe casuali e identificativi applicativi (es. cart id).
 - `datetime_utils.py`: helper condivisi per date e timestamp in formato stringa.
 - `indexing.py`: mapping condiviso di cardinalita testuali verso indici numerici.
@@ -46,4 +47,6 @@ print(response.status_code)
 - `src/utility/rest/README.md`
 - `src/utility/json/README.md`
 - `src/utility/soap/README.md`
+- `src/utility/blob/README.md`
+
 
