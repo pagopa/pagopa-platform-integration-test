@@ -1,0 +1,148 @@
+{
+  "bundles": [
+    {
+      "idBundle": "int-test-1",
+      "name": "pacchetto 1",
+      "description": "pacchetto 1",
+      "paymentType": "CP",
+      "idPsp": "PPAYITR1XXX",
+      "idBrokerPsp": "88888888899",
+      "idChannel": "88888888899_01_ONUS",
+      "onUs": false,
+      "abi": "14156",
+      "taxPayerFee": 100,
+      "paymentAmount": 1000,
+      "minPaymentAmount": 100,
+      "maxPaymentAmount": 9999999,
+      "type": "GLOBAL",
+      "touchpoint": "ANY"
+    },
+    {
+      "idBundle": "int-test-2",
+      "name": "pacchetto 2",
+      "description": "pacchetto 2",
+      "paymentType": "PO",
+      "idPsp": "PPAYITR1XXX",
+      "idBrokerPsp": "88888888899",
+      "idChannel": "88888888899_01_ONUS",
+      "onUs": true,
+      "abi": "14156",
+      "taxPayerFee": 50,
+      "paymentAmount": 2000,
+      "minPaymentAmount": 200,
+      "maxPaymentAmount": 9999999,
+      "type": "STANDARD",
+      "touchpoint": "CHECKOUT"
+    },
+    {
+      "idBundle": "int-test-3",
+      "name": "pacchetto 3",
+      "description": "pacchetto 3",
+      "paymentType": "CP",
+      "idPsp": "PPAYITR2YYY",
+      "idBrokerPsp": "88888888899",
+      "idChannel": "88888888899_02_ONUS",
+      "onUs": false,
+      "abi": "05000",
+      "taxPayerFee": 150,
+      "paymentAmount": 3000,
+      "minPaymentAmount": 300,
+      "maxPaymentAmount": 9999999,
+      "type": "GLOBAL",
+      "touchpoint": "IO"
+    },
+    {
+      "idBundle": "int-test-cart-cart-7",
+      "name": "bundle 7",
+      "description": "bundle per ordinamento 7",
+      "paymentType": "CP",
+      "idPsp": "PSP_007",
+      "idBrokerPsp": "88888888899",
+      "idChannel": "88888888899_01",
+      "onUs": false,
+      "abi": "14156",
+      "taxPayerFee": 70,
+      "paymentAmount": 1000,
+      "type": "GLOBAL",
+      "touchpoint": "ANY"
+    },
+    {
+      "idBundle": "int-test-cart-cart-10",
+      "name": "bundle 10",
+      "description": "bundle per ordinamento 10",
+      "paymentType": "CP",
+      "idPsp": "PSP_010",
+      "idBrokerPsp": "88888888899",
+      "idChannel": "88888888899_02",
+      "onUs": false,
+      "abi": "05000",
+      "taxPayerFee": 100,
+      "paymentAmount": 1000,
+      "type": "GLOBAL",
+      "touchpoint": "ANY"
+    },
+    {
+      "idBundle": "int-test-cart-cart-11",
+      "name": "bundle 11",
+      "description": "bundle per ordinamento 11",
+      "paymentType": "CP",
+      "idPsp": "PSP_011",
+      "idBrokerPsp": "88888888899",
+      "idChannel": "88888888899_03",
+      "onUs": true,
+      "abi": "14156",
+      "taxPayerFee": 50,
+      "paymentAmount": 1000,
+      "type": "GLOBAL",
+      "touchpoint": "ANY"
+    }
+  ],
+  "ciBundles": [
+    {
+      "idCiBundle": "int-test-1",
+      "idBundle": "int-test-1",
+      "idPsp": "PPAYITR1XXX",
+      "idBrokerPsp": "88888888899",
+      "idChannel": "88888888899_01_ONUS",
+      "maxPaymentAmount": 9999999,
+      "minPaymentAmount": 100,
+      "taxPayerFee": 50,
+      "primaryCiIncurredFee": 20
+    },
+    {
+      "idCiBundle": "int-test-2",
+      "idBundle": "int-test-2",
+      "idPsp": "PPAYITR1XXX",
+      "idBrokerPsp": "88888888899",
+      "idChannel": "88888888899_01_ONUS",
+      "maxPaymentAmount": 9999999,
+      "minPaymentAmount": 100,
+      "taxPayerFee": 25,
+      "primaryCiIncurredFee": 10
+    }
+  ],
+  "touchpoints": [
+    {
+      "id": "ANY",
+      "name": "ANY"
+    },
+    {
+      "id": "CHECKOUT",
+      "name": "CHECKOUT"
+    },
+    {
+      "id": "IO",
+      "name": "IO"
+    }
+  ],
+  "paymenttypes": [
+    {
+      "id": "CP",
+      "name": "CARDS"
+    },
+    {
+      "id": "PO",
+      "name": "POSTAL"
+    }
+  ]
+}

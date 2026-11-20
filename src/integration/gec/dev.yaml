@@ -18,6 +18,11 @@ gec:
     key_name: Ocp-Apim-Subscription-Key
     key_value: $afm-subscription-key
     location: header
+  
+  # Azure Table Storage connection string (for issuer range management)
+  # Optional: if not provided, issuer range tests will be skipped
+  # Format: DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net
+  # azure_connection_string: $azure-storage-connection-string
 
 # Global test configuration
 global_configuration:
