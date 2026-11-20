@@ -48,6 +48,35 @@ def _populate_placeholder_vars(context):
     LOGGER.info("Placeholder variables populated: %s", list(configured.keys()))
 
 
+def _setup_azure_storage(context):
+    """Setup Azure Table Storage for issuer ranges (optional).
+    
+    If azure_connection_string is configured, initializes issuer entities.
+    If not configured or fails, continues without it (some tests may fail).
+    """
+    gec_config = getattr(context.config, "gec", None)
+    if not gec_config:
+        return
+    
+    azure_conn_str = _config_value(gec_config, "azure_connection_string")
+    if not azure_conn_str:
+        LOGGER.info("No Azure Storage connection string configured - skipping issuer range setup")
+        return
+    
+    try:
+        from src.integration.gec.azure_table_client import setup_issuer_ranges
+        
+        table_client = setup_issuer_ranges(azure_conn_str)
+        if table_client:
+            context.gec.azure_table_client = table_client
+            LOGGER.info("Azure Table Storage issuer ranges setup completed")
+    except ImportError:
+        LOGGER.warning("azure-data-tables package not installed - skipping issuer range setup")
+        LOGGER.info("Install with: pip install azure-data-tables")
+    except Exception as e:
+        LOGGER.warning(f"Azure Table Storage setup failed (tests may fail): {e}")
+
+
 def before_all(context):
     """Hook to run before all tests."""
     LOGGER.info("Running before_all hook for GEC integration tests.")
@@ -74,6 +103,9 @@ def before_all(context):
         LOGGER.info("GEC REST client initialized")
     else:
         LOGGER.warning("GEC service configuration not found")
+    
+    # Setup Azure Storage (optional)
+    _setup_azure_storage(context)
     
     # Populate placeholder variables
     _populate_placeholder_vars(context)

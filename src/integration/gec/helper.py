@@ -7,10 +7,12 @@ modules under src.integration.gec.steps. Functions are internal helpers
 
 import json
 import logging
+import os
 from src.utility.rest import build_rest_client
 from src.conf.configuration import load_commondata
 
 LOGGER = logging.getLogger("gec.helper")
+
 
 
 def _ensure_vars_container(context):
@@ -154,4 +156,90 @@ def _get_bundled_response(response_body: dict) -> list:
         bundles = []
     
     return bundles
+
+
+def _load_config_file(context, config_name: str, file_type: str = "json"):
+    """Load a configuration file (JSON or YAML).
+    
+    Args:
+        context: Behave context
+        config_name: Name of config file (without extension)
+        file_type: File type ('json' or 'yaml')
+    
+    Returns:
+        Parsed config data
+    """
+    suite_path = context.config.get("suite_path") if hasattr(context, "config") else "."
+    config_dir = os.path.join(suite_path, "config")
+    config_path = os.path.join(config_dir, f"{config_name}.{file_type}")
+    
+    if not os.path.exists(config_path):
+        raise AssertionError(f"Configuration file not found: {config_path}")
+    
+    try:
+        with open(config_path, "r") as f:
+            if file_type == "json":
+                return json.load(f)
+            elif file_type == "yaml":
+                import yaml
+                return yaml.safe_load(f)
+            else:
+                raise ValueError(f"Unsupported file type: {file_type}")
+    except Exception as e:
+        raise AssertionError(f"Failed to load config file {config_path}: {e}")
+
+
+def _upload_configuration(context, config_data: dict, section: str):
+    """Upload configuration to GEC API.
+    
+    Args:
+        context: Behave context
+        config_data: Configuration dict (expected to have section keys)
+        section: Section to upload ('bundles', 'paymentmethods', 'touchpoints', 'paymenttypes')
+    
+    Raises:
+        AssertionError: If upload fails
+    """
+    _ensure_vars_container(context)
+    
+    client = _get_client(context)
+    
+    # Map section to endpoint and expected status
+    section_map = {
+        "bundles": ("/configuration/bundles/add", 201),
+        "ciBundles": ("/configuration/cibundles/add", 201),
+        "touchpoints": ("/configuration/touchpoint/add", 201),
+        "paymenttypes": ("/configuration/paymenttypes/add", 201),
+        "paymentmethods": ("/configuration/paymentmethods/add", 201),
+    }
+    
+    if section not in section_map:
+        raise AssertionError(f"Unknown configuration section: {section}")
+    
+    endpoint, expected_status = section_map[section]
+    
+    # Get data for this section
+    if section not in config_data:
+        LOGGER.warning(f"Section '{section}' not found in configuration")
+        return
+    
+    upload_data = config_data[section]
+    
+    if not upload_data:
+        LOGGER.warning(f"No data to upload for section '{section}'")
+        return
+    
+    # Send request
+    try:
+        response = client.post(endpoint, json_body=upload_data)
+        
+        if response.status_code != expected_status:
+            raise AssertionError(
+                f"Upload failed for {section}: expected status {expected_status}, "
+                f"got {response.status_code}: {response.text}"
+            )
+        
+        LOGGER.info(f"Successfully uploaded {section} configuration ({len(upload_data)} items)")
+    except Exception as e:
+        raise AssertionError(f"Configuration upload failed for {section}: {e}")
 

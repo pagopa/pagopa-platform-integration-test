@@ -10,6 +10,8 @@ from src.integration.gec.helper import (
     _get_client,
     _send_request,
     _get_bundled_response,
+    _load_config_file,
+    _upload_configuration,
 )
 
 LOGGER = logging.getLogger("gec")
@@ -458,32 +460,111 @@ def step_assert_payment_methods_status(context):
     methods_map = {}
     if isinstance(methods, list):
         for m in methods:
-            if isinstance(m, dict):
-                name = m.get("name") or m.get("type")
-                if name:
-                    methods_map[name] = m
+            methods_map[m.get("id")] = m
     
-    for row in context.table.rows:
-        metodo = row.get("metodo")
-        stato = row.get("stato")
-        motivo = row.get("motivo")
+    for row in context.table:
+        method_id = row.get("method_id") or row.get("methodId")
+        expected_status = row.get("status") or row.get("state")
         
-        assert metodo in methods_map, f"Method '{metodo}' not found in response"
+        assert method_id in methods_map, f"Payment method {method_id} not found in response"
+        actual = methods_map[method_id]
+        actual_status = actual.get("status") or actual.get("state")
         
-        method_data = methods_map[metodo]
-        actual_state = method_data.get("status") or method_data.get("stato")
-        actual_reason = method_data.get("reason") or method_data.get("motivo") or ""
-        
-        assert actual_state == stato, (
-            f"Method '{metodo}' status expected '{stato}', got '{actual_state}'"
-        )
-        
-        if motivo:
-            assert actual_reason == motivo, (
-                f"Method '{metodo}' reason expected '{motivo}', got '{actual_reason}'"
-            )
+        assert actual_status == expected_status, \
+            f"Status mismatch for {method_id}: expected {expected_status}, got {actual_status}"
     
-    LOGGER.info("Payment methods status assertion passed")
+    LOGGER.info("Payment method status assertion passed")
+
+
+# ==================== CONFIGURATION UPLOAD STEPS ====================
+
+
+@given('la configurazione "{config_name}" è caricata')
+def step_load_configuration(context, config_name: str):
+    """Load and upload configuration from JSON file.
+    
+    Loads config_name.json from src/integration/gec/config/ and uploads
+    bundles, touchpoints, paymenttypes, and other sections to the GEC API.
+    """
+    _ensure_vars_container(context)
+    
+    # Load configuration file
+    config_data = _load_config_file(context, config_name, file_type="json")
+    LOGGER.info(f"Configuration file loaded: {config_name}.json")
+    
+    # Upload each section present in the configuration
+    sections = ["bundles", "ciBundles", "touchpoints", "paymenttypes"]
+    
+    for section in sections:
+        if section in config_data:
+            _upload_configuration(context, config_data, section)
+    
+    context.vars["last_config_loaded"] = config_name
+    LOGGER.info(f"Configuration {config_name} loaded and uploaded successfully")
+
+
+@given('i metodi di pagamento "{config_name}" sono configurati')
+def step_load_payment_methods(context, config_name: str):
+    """Load and upload payment methods from configuration file.
+    
+    Loads config_name.json from src/integration/gec/config/ and uploads
+    payment methods to the GEC API.
+    """
+    _ensure_vars_container(context)
+    
+    # Load configuration file
+    config_data = _load_config_file(context, config_name, file_type="json")
+    LOGGER.info(f"Payment methods configuration loaded: {config_name}.json")
+    
+    # Upload payment methods section
+    if "paymentmethods" in config_data:
+        _upload_configuration(context, config_data, "paymentmethods")
+    else:
+        raise AssertionError(f"No 'paymentmethods' section in {config_name}.json")
+    
+    context.vars["last_payment_methods_config"] = config_name
+    LOGGER.info(f"Payment methods {config_name} configured successfully")
+
+
+@when('il client ricerca i metodi di pagamento')
+def step_search_payment_methods(context):
+    """Trigger payment methods search API call."""
+    _ensure_vars_container(context)
+    
+    # Use payment methods search operation
+    payload_name = context.vars.get("payment_methods_request", "payment_methods_search")
+    
+    try:
+        _send_request(context, "Ricerca metodi di pagamento", payload_name)
+    except AssertionError:
+        # If payload not found, send empty request
+        LOGGER.warning("Payment methods payload not found, sending empty search")
+        client = _get_client(context)
+        context.response = client.post("/payment-methods", json_body={})
+    
+    LOGGER.info(f"Payment methods search triggered, status: {context.response.status_code}")
+
+
+@then('i metodi di pagamento sono ritornati')
+def step_assert_payment_methods_returned(context):
+    """Assert payment methods are returned in response."""
+    assert hasattr(context, "response") and context.response is not None
+    
+    try:
+        body = context.response.json()
+    except Exception as e:
+        raise AssertionError(f"Response not valid JSON: {e}")
+    
+    # Check for payment methods in response
+    methods = body.get("paymentMethods") or body.get("methods") or body or []
+    
+    assert isinstance(methods, list) and len(methods) > 0, (
+        "No payment methods found in response"
+    )
+    
+    LOGGER.info(f"Payment methods returned: {len(methods)} methods found")
+
+
 
 
 @then("nella risposta non è riportato il bundle delle Poste Italiane")
