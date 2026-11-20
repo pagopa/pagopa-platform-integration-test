@@ -8,19 +8,26 @@
 ```
 File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
     match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 188, in step_select_psp
     locate_and_click(page, f"#psp-radio-{psp_id}")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 129, in locate_and_click
     raise RuntimeError(
+        f"Timeout on locator '{locator}' after {timeout} ms (url: {current_url})"
+    ) from exc
 ```
 ### Root cause
-The PSP selection radio button for Postepay did not render within the 5-second timeout on the UAT page.
+The Postepay PSP option did not load within the 5-second timeout on the checkout page.
 
 ### Category
 environment
 
 ### Recommended action
-Increase the locator timeout or investigate UAT environment slowness/PSP availability issues.
+Increase the element wait timeout or verify the availability and response time of the PSP listing service in UAT.
 
 ---
 
@@ -32,43 +39,26 @@ Increase the locator timeout or investigate UAT environment slowness/PSP availab
 ```
 File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
     match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 245, in step_error_modal_header
     assert expected_header in header_text, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ```
 ### Root cause
-The creditor institution (EC) mock returned a generic error instead of the expected unknown payment error.
+The creditor institution (Ente Creditore) returned a generic error response instead of the expected unknown payment error.
 
 ### Category
 application bug
 
 ### Recommended action
-Verify the mock creditor institution configuration and backend error handling for invalid notice codes.
+Check backend integration handling for invalid notice codes to ensure proper error mapping.
 
 ---
 
-# 3. Un pagamento con configurazione carta "Wordline" viene completato con successo -- @1.2
-- **status**: failed
-- **fullName**: `Attivazione pagamento Checkout autenticato: Un pagamento con configurazione carta "Wordline" viene completato con successo`
-- **message**: AssertionError: Expected 'Hai pagato' in result message, but got: 'Il pagamento non è andato a buon fine'
-- **trace**:
-```
-File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
-    match.run(runner.context)
-  File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 309, in step_check_payment_success
-    assert "Hai pagato" in message_text, (
-```
-### Root cause
-The payment transaction was rejected or failed during processing with the Worldline gateway configuration.
-
-### Category
-environment
-
-### Recommended action
-Check NPG gateway logs and sandbox/UAT credentials for Worldline.
-
----
-
-# 4. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
+# 3. Un pagamento con configurazione carta "Postepay" viene completato con successo -- @1.1
 - **status**: broken
 - **fullName**: `Attivazione pagamento Checkout: Un pagamento con configurazione carta "Postepay" viene completato con successo`
 - **message**: RuntimeError: Timeout on locator '#psp-radio-PPAYITR1XXX' after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)
@@ -76,51 +66,101 @@ Check NPG gateway logs and sandbox/UAT credentials for Worldline.
 ```
 File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py", line 1329, in run
     match.run(runner.context)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py", line 188, in step_select_psp
     locate_and_click(page, f"#psp-radio-{psp_id}")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py", line 129, in locate_and_click
     raise RuntimeError(
+        f"Timeout on locator '{locator}' after {timeout} ms (url: {current_url})"
+    ) from exc
 ```
 ### Root cause
-The PSP selection radio button for Postepay timed out due to slow rendering or loading on the UAT page.
+Intermittent UI loading timeout for the Postepay PSP option on the checkout page.
 
 ### Category
-environment
+flaky
 
 ### Recommended action
-Investigate frontend performance or increase the explicit wait time for the PSP list elements.
+Add retry logic or increase the explicit wait timeout for PSP selection elements.
 
 ---
 
 ## Common patterns
-UI test failures in Checkout are primarily driven by environment timeouts loading specific PSP elements and intermittent gateway/mock failures.
+PSP selection timeouts indicate potential frontend performance bottlenecks or environment instability during test execution.
 
 ## Suite: fdr3
-No test failures found in the 'FDR-3' suite, and the execution completed successfully without any skipped tests.
+The FDR-3 execution was complete and no tests were unintentionally skipped.
 
 ## Suite: wisp
 
-# 1. Utente paga un pagamento singolo con due versamenti e nessuna marca da bollo
+# 1. L'utente paga un carrello con singola RPT senza versamento semplice e una marca da bollo
 - **status**: failed
-- **fullName**: `Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con due versamenti e nessuna marca da bollo`
+- **fullName**: `L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con singola RPT senza versamento semplice e una marca da bollo`
 - **message**: AssertionError: There are no events with business process receipt-ok and field status containing value [RT_SEND_SUCCESS].
 - **trace**:
 ```
 [... earlier frames omitted ...]
     assert assertion_value, message
+           ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-The expected receipt-ok event with status RT_SEND_SUCCESS was not generated by the workflow backend.
+Missing receipt generation event (`RT_SEND_SUCCESS`) for the cart payment process.
 
 ### Category
 application bug
 
 ### Recommended action
-Inspect WISP and Node backend logs to trace the RPT submission and receipt generation failure.
+Investigate the backend notification and receipt delivery pipeline for cart transactions.
 
 ---
 
-# 2. L'utente paga un carrello multibeneficiario con due RPT con un totale di tre versamenti
+# 2. Utente esegue un primo reindirizzamento, poi ripete il reindirizzamento e completa il flusso di pagamento
+- **status**: failed
+- **fullName**: `Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT: Utente esegue un primo reindirizzamento, poi ripete il reindirizzamento e completa il flusso di pagamento`
+- **message**: AssertionError: There are no events with business process receipt-ok and field status containing value [RT_SEND_SUCCESS].
+- **trace**:
+```
+[... earlier frames omitted ...]
+    assert assertion_value, message
+           ^^^^^^^^^^^^^^^
+```
+### Root cause
+Failure to generate the final receipt after repeated payment redirection flows.
+
+### Category
+application bug
+
+### Recommended action
+Verify state management during repeated redirect attempts to ensure receipt generation completes.
+
+---
+
+# 3. L'utente tenta di pagare un carrello con singola RPT inserita da ACA e in stato non valido
+- **status**: failed
+- **fullName**: `L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L'utente tenta di pagare un carrello con singola RPT inserita da ACA e in stato non valido`
+- **message**: AssertionError: There are no events with business process redirect and field status containing value [RT_SEND_SUCCESS].
+- **trace**:
+```
+[... earlier frames omitted ...]
+    assert assertion_value, message
+           ^^^^^^^^^^^^^^^
+```
+### Root cause
+The expected redirect or status validation event for invalid ACA cart positions was not triggered.
+
+### Category
+application bug
+
+### Recommended action
+Review validation logic for ACA-inserted carts in invalid states.
+
+---
+
+# 4. L'utente paga un carrello multibeneficiario con due RPT con un totale di tre versamenti
 - **status**: failed
 - **fullName**: `L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT: L'utente paga un carrello multibeneficiario con due RPT con un totale di tre versamenti`
 - **message**: AssertionError: There are no events with business process receipt-ok and field status containing value [RT_SEND_SUCCESS].
@@ -128,19 +168,62 @@ Inspect WISP and Node backend logs to trace the RPT submission and receipt gener
 ```
 [... earlier frames omitted ...]
     assert assertion_value, message
+           ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-Multi-beneficiary cart payment processing failed to complete with a successful receipt status.
+Multi-beneficiary cart payment failed to produce the success receipt event.
 
 ### Category
 application bug
 
 ### Recommended action
-Review cart payment orchestration logs in nodoInviaCarrelloRPT flows.
+Trace the multi-beneficiary payment orchestration to identify where receipt confirmation fails.
 
 ---
 
-# 3. L'utente tenta di pagare un carrello multibeneficiario inserito da ACA e in stato non valido
+# 5. L'utente paga un carrello multibeneficiario con due RPT con un totale di quattro versamenti
+- **status**: failed
+- **fullName**: `L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT: L'utente paga un carrello multibeneficiario con due RPT con un totale di quattro versamenti`
+- **message**: AssertionError: There are no events with business process receipt-ok and field status containing value [RT_SEND_SUCCESS].
+- **trace**:
+```
+[... earlier frames omitted ...]
+    assert assertion_value, message
+           ^^^^^^^^^^^^^^^
+```
+### Root cause
+Multi-beneficiary cart payment processing failed to complete successfully and generate a receipt.
+
+### Category
+application bug
+
+### Recommended action
+Inspect transaction logs for multi-RPT carts with four transfers to identify blocking errors.
+
+---
+
+# 6. L'utente paga un carrello con singola RPT con quattro versamenti
+- **status**: failed
+- **fullName**: `L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con singola RPT con quattro versamenti`
+- **message**: AssertionError: There are not events with business process receipt-ok.
+- **trace**:
+```
+[... earlier frames omitted ...]
+    assert assertion_value, message
+           ^^^^^^^^^^^^^^^
+```
+### Root cause
+Complete absence of `receipt-ok` business process events for single RPT carts with four transfers.
+
+### Category
+application bug
+
+### Recommended action
+Check transaction processing limits and error handling for carts with multiple transfers.
+
+---
+
+# 7. L'utente tenta di pagare un carrello multibeneficiario inserito da ACA e in stato non valido
 - **status**: failed
 - **fullName**: `L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L'utente tenta di pagare un carrello multibeneficiario inserito da ACA e in stato non valido`
 - **message**: AssertionError: There are no events with business process redirect and field status containing value [RT_SEND_SUCCESS].
@@ -148,59 +231,41 @@ Review cart payment orchestration logs in nodoInviaCarrelloRPT flows.
 ```
 [... earlier frames omitted ...]
     assert assertion_value, message
+           ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-The redirect business process did not emit the expected success status for an invalid cart state.
+Incorrect handling or missing event generation for invalid multi-beneficiary ACA carts.
 
 ### Category
 application bug
 
 ### Recommended action
-Verify validation logic for ACA-inserted multi-beneficiary carts in invalid states.
+Verify validation rules and event publishing for invalid ACA positions in multi-beneficiary carts.
 
 ---
 
-# 4. L'utente paga un carrello multibeneficiario con due RPT con un totale di quattro versamenti
+# 8. L'utente paga un carrello multibeneficiario con due RPT con un totale di cinque versamenti
 - **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT: L'utente paga un carrello multibeneficiario con due RPT con un totale di quattro versamenti`
+- **fullName**: `L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT: L'utente paga un carrello multibeneficiario con due RPT con un totale di cinque versamenti`
 - **message**: AssertionError: There are not events with business process receipt-ok.
 - **trace**:
 ```
 [... earlier frames omitted ...]
     assert assertion_value, message
+           ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-No receipt-ok events were recorded for the multi-RPT cart payment flow.
+High-transfer multi-beneficiary cart payments fail to generate receipts.
 
 ### Category
 application bug
 
 ### Recommended action
-Check event publisher and WISP notification flows for multi-RPT carts.
+Analyze backend capacity and execution flow for complex multi-RPT carts.
 
 ---
 
-# 5. Utente paga un pagamento singolo con cinque versamenti e nessuna marca da bollo
-- **status**: failed
-- **fullName**: `Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con cinque versamenti e nessuna marca da bollo`
-- **message**: AssertionError: There are no events with business process receipt-ok and field status containing value [RT_SEND_SUCCESS].
-- **trace**:
-```
-[... earlier frames omitted ...]
-    assert assertion_value, message
-```
-### Root cause
-Single payment with multiple installments failed to produce the success receipt event.
-
-### Category
-application bug
-
-### Recommended action
-Analyze payment receipt propagation for single payments with high installment counts.
-
----
-
-# 6. L'utente tenta di pagare un carrello con singola RPT inserita da ACA e in stato valido
+# 9. L'utente tenta di pagare un carrello con singola RPT inserita da ACA e in stato valido
 - **status**: failed
 - **fullName**: `L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L'utente tenta di pagare un carrello con singola RPT inserita da ACA e in stato valido`
 - **message**: AssertionError: There are no events with business process redirect and field status containing value [RT_SEND_SUCCESS].
@@ -208,219 +273,146 @@ Analyze payment receipt propagation for single payments with high installment co
 ```
 [... earlier frames omitted ...]
     assert assertion_value, message
+           ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-Redirect event status assertion failed for a valid ACA cart flow.
+Missing redirect or receipt success events for valid ACA-inserted single RPT carts.
 
 ### Category
 application bug
 
 ### Recommended action
-Verify ACA integration and cart redirection state transitions.
+Debug the redirect phase for valid ACA positions.
 
 ---
 
-# 7. L'utente paga un carrello con due RPT con almeno una marca da bollo gia esistente in GPD
+# 10. L'utente paga un carrello con due RPT con almeno una marca da bollo gia esistente in GPD
 - **status**: failed
 - **fullName**: `L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L'utente paga un carrello con due RPT con almeno una marca da bollo gia esistente in GPD`
-- **message**: AssertionError: There are not events with business process receipt-ok.
+- **message**: AssertionError: There are no events with business process receipt-ok and field status containing value [RT_SEND_SUCCESS].
 - **trace**:
 ```
 [... earlier frames omitted ...]
     assert assertion_value, message
+           ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-Cart payment involving pre-existing revenue stamps (marche da bollo) in GPD failed to complete.
+Duplicate stamp duty (marca da bollo) handling in GPD prevents successful receipt generation.
 
 ### Category
 application bug
 
 ### Recommended action
-Check GPD state synchronization and duplicate revenue stamp handling during cart payments.
+Verify GPD integration logic for pre-existing stamp duties within cart payments.
 
 ---
 
-# 8. L'utente paga un carrello con tre RPT, con quantita diverse di versamenti semplici e marche da bollo
+# 11. L'utente tenta di pagare un carrello con due RPT inserite da ACA e in stato non valido
 - **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con tre RPT, con quantita diverse di versamenti semplici e marche da bollo`
-- **message**: AssertionError: There are not events with business process receipt-ok.
-- **trace**:
-```
-[... earlier frames omitted ...]
-    assert assertion_value, message
-```
-### Root cause
-Complex cart with multiple RPTs and mixed revenue stamps failed to generate a receipt-ok event.
-
-### Category
-application bug
-
-### Recommended action
-Debug cart processing limits and breakdown handling for mixed versamenti and marche da bollo.
-
----
-
-# 9. L'utente tenta di pagare un carrello multibeneficiario gia esistente in GPD in stato non valido
-- **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L'utente tenta di pagare un carrello multibeneficiario gia esistente in GPD in stato non valido`
+- **fullName**: `L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L'utente tenta di pagare un carrello con due RPT inserite da ACA e in stato non valido`
 - **message**: AssertionError: There are no events with business process redirect and field status containing value [RT_SEND_SUCCESS].
 - **trace**:
 ```
 [... earlier frames omitted ...]
     assert assertion_value, message
+           ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-Existing multi-beneficiary cart in GPD with an invalid state failed to trigger the expected redirect error flow.
+Failure to trigger expected redirect/error flow for invalid two-RPT ACA carts.
 
 ### Category
 application bug
 
 ### Recommended action
-Review GPD state validation rules for multi-beneficiary carts.
+Check validation and error response handling for multi-RPT ACA positions.
 
 ---
 
-# 10. L'utente tenta di pagare un carrello con due RPT ma la chiusura del pagamento fallisce, poi ritenta con successo
+# 12. L'utente paga un carrello con due RPT, entrambe con un versamento semplice e una marca da bollo
 - **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L'utente tenta di pagare un carrello con due RPT ma la chiusura del pagamento fallisce, poi ritenta con successo`
-- **message**: AssertionError: There are no events with business process receipt-ko and field status containing value [RT_SEND_SUCCESS].
-- **trace**:
-```
-[... earlier frames omitted ...]
-    assert assertion_value, message
-```
-### Root cause
-The payment retry mechanism failed to properly register the initial receipt-ko event followed by success.
-
-### Category
-application bug
-
-### Recommended action
-Investigate retry logic and event logging for failed payment closures.
-
----
-
-# 11. L'utente paga un carrello con singola RPT con tre versamenti
-- **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con singola RPT con tre versamenti`
+- **fullName**: `L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con due RPT, entrambe con un versamento semplice e una marca da bollo`
 - **message**: AssertionError: There are no events with business process receipt-ok and field status containing value [RT_SEND_SUCCESS].
 - **trace**:
 ```
 [... earlier frames omitted ...]
     assert assertion_value, message
+           ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-Single RPT cart with three installments failed to complete successfully.
+Cart payment containing multiple RPTs with stamp duties fails to complete the receipt cycle.
 
 ### Category
 application bug
 
 ### Recommended action
-Check cart execution flow for single RPT multi-installment scenarios.
+Investigate transaction processing for multi-RPT carts involving stamp duties.
 
 ---
 
-# 12. Utente paga un pagamento singolo con quattro versamenti e nessuna marca da bollo
+# 13. Utente paga un pagamento singolo con due versamenti semplici e una marca da bollo
 - **status**: failed
-- **fullName**: `Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con quattro versamenti e nessuna marca da bollo`
-- **message**: AssertionError: There are not events with business process receipt-ok.
-- **trace**:
-```
-[... earlier frames omitted ...]
-    assert assertion_value, message
-```
-### Root cause
-Single payment with four installments did not emit a receipt-ok event.
-
-### Category
-application bug
-
-### Recommended action
-Verify event generation rules for single payments with multiple installments.
-
----
-
-# 13. L'utente paga un carrello con singola RPT con versamenti multipli gia esistente in GPD
-- **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L'utente paga un carrello con singola RPT con versamenti multipli gia esistente in GPD`
+- **fullName**: `Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con due versamenti semplici e una marca da bollo`
 - **message**: AssertionError: There are no events with business process receipt-ok and field status containing value [RT_SEND_SUCCESS].
 - **trace**:
 ```
 [... earlier frames omitted ...]
     assert assertion_value, message
+           ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-Cart with multiple installments pre-existing in GPD failed to complete.
+Single payment with multiple transfers and stamp duty fails to generate a success receipt.
 
 ### Category
 application bug
 
 ### Recommended action
-Inspect GPD debt position retrieval and cart execution integration.
+Check the receipt generation service for single payments with complex transfer structures.
 
 ---
 
-# 14. Utente paga un pagamento singolo con tre versamenti e nessuna marca da bollo
+# 14. L'utente paga un carrello con singola RPT con due versamenti
 - **status**: failed
-- **fullName**: `Utente paga un pagamento singolo senza marche da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con tre versamenti e nessuna marca da bollo`
+- **fullName**: `L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con singola RPT con due versamenti`
 - **message**: AssertionError: There are no events with business process receipt-ok and field status containing value [RT_SEND_SUCCESS].
 - **trace**:
 ```
 [... earlier frames omitted ...]
     assert assertion_value, message
+           ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-Single payment with three installments failed to produce a successful receipt event.
+Single RPT cart payment with two transfers fails to complete the receipt workflow.
 
 ### Category
 application bug
 
 ### Recommended action
-Trace payment execution and receipt generation for multi-installment single payments.
+Debug cart payment execution for multi-transfer single RPT scenarios.
 
 ---
 
-# 15. L'utente paga un carrello con singola RPT senza versamento semplice e una marca da bollo
+# 15. Utente tenta di pagare un pagamento singolo inserito da ACA e in stato non valido
 - **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con singola RPT senza versamento semplice e una marca da bollo`
-- **message**: AssertionError: There are not events with business process receipt-ok.
+- **fullName**: `Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT: Utente tenta di pagare un pagamento singolo inserito da ACA e in stato non valido`
+- **message**: AssertionError: There are no events with business process redirect and field status containing value [RT_SEND_SUCCESS].
 - **trace**:
 ```
 [... earlier frames omitted ...]
     assert assertion_value, message
+           ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-Cart containing only a revenue stamp and no simple installment failed to complete.
+Invalid ACA single payment fails to trigger the expected redirect or status event.
 
 ### Category
 application bug
 
 ### Recommended action
-Verify stamp-only cart processing logic in WISP.
+Verify error handling and event emission for invalid single payments from ACA.
 
 ---
 
-# 16. L'utente paga un carrello con three RPT per un totale di dieci versamenti
-- **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con tre RPT per un totale di dieci versamenti`
-- **message**: AssertionError: There are no events with business process receipt-ok and field status containing value [RT_SEND_SUCCESS].
-- **trace**:
-```
-[... earlier frames omitted ...]
-    assert assertion_value, message
-```
-### Root cause
-Large cart with 3 RPTs and 10 total installments failed to complete successfully.
-
-### Category
-application bug
-
-### Recommended action
-Check payload limits and processing timeouts for large cart transactions.
-
----
-
-# 17. L'utente tenta di pagare un carrello con due RPT gia esistenti in GPD in stato non valido
+# 16. L'utente tenta di pagare un carrello con due RPT gia esistenti in GPD in stato non valido
 - **status**: failed
 - **fullName**: `L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L'utente tenta di pagare un carrello con due RPT gia esistenti in GPD in stato non valido`
 - **message**: AssertionError: There are no events with business process redirect and field status containing value [RT_SEND_SUCCESS].
@@ -428,82 +420,105 @@ Check payload limits and processing timeouts for large cart transactions.
 ```
 [... earlier frames omitted ...]
     assert assertion_value, message
+           ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-Redirect validation failed for pre-existing GPD carts in invalid states.
+Existing invalid GPD cart positions fail to trigger proper redirect handling.
 
 ### Category
 application bug
 
 ### Recommended action
-Review GPD state validation handling for cart redirects.
+Review validation and redirect triggers for pre-existing invalid carts in GPD.
 
 ---
 
-# 18. L'utente paga un carrello con singola RPT senza marca da bollo gia esistente in GPD
+# 17. L'utente paga un carrello con quattro RPT con un versamento ciascuna
 - **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L'utente paga un carrello con singola RPT senza marca da bollo gia esistente in GPD`
-- **message**: AssertionError: Test execution details omitted for brevity.
+- **fullName**: `L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con quattro RPT con un versamento ciascuna`
+- **message**: AssertionError: There are no events with business process receipt-ok and field status containing value [RT_SEND_SUCCESS].
 - **trace**:
 ```
 [... earlier frames omitted ...]
     assert assertion_value, message
+           ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-Cart payment from existing GPD debt position failed to complete.
+Large cart structures (four RPTs) fail to complete the receipt generation phase.
 
 ### Category
 application bug
 
 ### Recommended action
-Inspect GPD integration and event emission for single RPT carts.
+Inspect backend transaction limits and asynchronous processing for large carts.
 
 ---
 
-# 19. Utente paga un pagamento singolo con un versamento e nessuna marca da bollo gia esistente in GPD
+# 18. L'utente paga un carrello con singola RPT con un versamento semplice e una marca da bollo
 - **status**: failed
-- **fullName**: `Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT: Utente paga un pagamento singolo con un versamento e nessuna marca da bollo gia esistente in GPD`
-- **message**: AssertionError: Test execution details omitted for brevity.
+- **fullName**: `L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT: L'utente paga un carrello con singola RPT con un versamento semplice e una marca da bollo`
+- **message**: AssertionError: There are no events with business process receipt-ok and field status containing value [RT_SEND_SUCCESS].
 - **trace**:
 ```
 [... earlier frames omitted ...]
     assert assertion_value, message
+           ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-Single payment from existing GPD debt position failed to generate receipt events.
+Single RPT cart with stamp duty fails to finalize receipt processing.
 
 ### Category
 application bug
 
 ### Recommended action
-Verify GPD synchronization for single payment flows.
+Verify stamp duty processing integration within cart payment flows.
 
 ---
 
-# 20. L'utente tenta di pagare un carrello con due RPT inserite da ACA e in stato non valido
+# 19. Utente paga un pagamento singolo con due versamenti semplici e due marche da bollo
 - **status**: failed
-- **fullName**: `L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT: L'utente tenta di pagare un carrello con due RPT inserite da ACA e in stato non valido`
-- **message**: AssertionError: Test execution details omitted for brevity.
+- **fullName**: `Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT: Utente paga un pagamento singolo con due versamenti semplici e due marche da bollo`
+- **message**: AssertionError: There are no events with business process receipt-ok and field status containing value [RT_SEND_SUCCESS].
 - **trace**:
 ```
 [... earlier frames omitted ...]
     assert assertion_value, message
+           ^^^^^^^^^^^^^^^
 ```
 ### Root cause
-ACA-inserted cart validation failed to produce the expected redirect error event.
+Single payment with multiple stamp duties fails to generate success receipts.
 
 ### Category
 application bug
 
 ### Recommended action
-Check ACA validation rules and error event emission.
+Debug multi-stamp duty handling for single payments.
+
+---
+
+# 20. Utente paga un pagamento singolo senza versamenti semplici e una marca da bollo gia esistente in GPD
+- **status**: failed
+- **fullName**: `Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT: Utente paga un pagamento singolo senza versamenti semplici e una marca da bollo gia esistente in GPD`
+- **message**: AssertionError: There are no events with business process receipt-ok and field status containing value [RT_SEND_SUCCESS].
+- **trace**:
+```
+[... earlier frames omitted ...]
+    assert assertion_value, message
+           ^^^^^^^^^^^^^^^
+```
+### Root cause
+Pre-existing stamp duty in GPD for single payments disrupts the final receipt event emission.
+
+### Category
+application bug
+
+### Recommended action
+Check GPD synchronization and receipt generation logic for pre-existing stamp duties.
 
 ---
 
 ## Common patterns
-The WISP test suite failures are heavily concentrated around missing event assertions (`receipt-ok`, `receipt-ko`, and `redirect` events with `RT_SEND_SUCCESS`), indicating a systemic issue where payment receipts or event notifications are not being properly dispatched or recorded during complex cart and multi-installment payment flows.
+The vast majority of WISP failures stem from missing `receipt-ok` (`RT_SEND_SUCCESS`) or redirect events across various payment flows (carts, multi-beneficiary, ACA-inserted positions, and stamp duties), pointing to a systemic backend issue in transaction finalization or event publishing.
 
 ## Cross-suite correlation
-- **Checkout Suite**: Suffers from UI element timeouts and environment/mock integration issues.
-- **WISP Suite**: Suffers from backend event emission failures (missing `receipt-ok`/`redirect` events), pointing to downstream notification or receipt processing issues in the platform integration layer.
-- **Correlation**: Both suites indicate integration-level friction, where Checkout relies on stable UI components and PSP mocks, while WISP relies on reliable backend event logging and receipt generation across complex cart and installment flows.
+Across the suites, Checkout experiences intermittent UI loading/timeout issues and error handling discrepancies, while WISP exhibits a widespread systemic failure in backend receipt generation and event publishing (`RT_SEND_SUCCESS`) across diverse payment scenarios. Addressing the WISP backend event emission pipeline is critical to resolving the bulk of the integration test failures.
