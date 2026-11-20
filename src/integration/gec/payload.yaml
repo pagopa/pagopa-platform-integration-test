@@ -558,3 +558,198 @@ TEST_DATA:
         }
       ]
     }
+
+  # FEAT_004 - getFeesMulti (richieste V2 senza PSP in path)
+  commissioni_v2_superiore: &commissioni_v2_superiore |
+    {
+      "bin": "309500",
+      "paymentMethod": "CP",
+      "touchpoint": "CHECKOUT",
+      "idPspList": null,
+      "paymentNotice": [
+        {
+          "primaryCreditorInstitution": "77777777777",
+          "paymentAmount": 899999999999999,
+          "transferList": [
+            {
+              "creditorInstitution": "77777777777",
+              "transferCategory": "TAX1"
+            }
+          ]
+        }
+      ]
+    }
+  commissioni_v2_superiore_un_psp: &commissioni_v2_superiore_un_psp |
+    {
+      "bin": "309500",
+      "paymentMethod": "CP",
+      "touchpoint": "CHECKOUT",
+      "idPspList": [{"idPsp":"PPAYITR1XXX"}],
+      "paymentNotice": [
+        {
+          "primaryCreditorInstitution": "77777777777",
+          "paymentAmount": 899999999999999,
+          "transferList": [
+            {
+              "creditorInstitution": "77777777777",
+              "transferCategory": "TAX1"
+            }
+          ]
+        }
+      ]
+    }
+  commissioni_v2_inferiore: &commissioni_v2_inferiore |
+    {
+      "bin": "309500",
+      "paymentMethod": "CP",
+      "touchpoint": "CHECKOUT",
+      "idPspList": null,
+      "paymentNotice": [
+        {
+          "primaryCreditorInstitution": "77777777777",
+          "paymentAmount": 899999999999997,
+          "transferList": [
+            {
+              "creditorInstitution": "77777777777",
+              "transferCategory": "TAX1"
+            }
+          ]
+        }
+      ]
+    }
+  commissioni_v2_senza_ci_bundle: &commissioni_v2_senza_ci_bundle |
+    {
+      "bin": "309500",
+      "paymentMethod": "CP",
+      "touchpoint": "CHECKOUT",
+      "idPspList": null,
+      "paymentNotice": [
+        {
+          "primaryCreditorInstitution": "77777777777",
+          "paymentAmount": 899999999998995,
+          "transferList": [
+            {
+              "creditorInstitution": "77777777777",
+              "transferCategory": "TAX1"
+            }
+          ]
+        },
+        {
+          "primaryCreditorInstitution": "77777777778",
+          "paymentAmount": 1000,
+          "transferList": [
+            {
+              "creditorInstitution": "77777777778",
+              "transferCategory": "TAX2"
+            }
+          ]
+        }
+      ]
+    }
+  commissioni_v2_ec_non_corrispondente: &commissioni_v2_ec_non_corrispondente |
+    {
+      "bin": "309500",
+      "paymentMethod": "CP",
+      "touchpoint": "CHECKOUT",
+      "idPspList": null,
+      "paymentNotice": [
+        {
+          "primaryCreditorInstitution": "77777777777",
+          "paymentAmount": 899999999998993,
+          "transferList": [
+            {
+              "creditorInstitution": "77777777777",
+              "transferCategory": "TAX1"
+            }
+          ]
+        },
+        {
+          "primaryCreditorInstitution": "77777777778",
+          "paymentAmount": 1000,
+          "transferList": [
+            {
+              "creditorInstitution": "77777777778",
+              "transferCategory": "TAX2"
+            }
+          ]
+        }
+      ]
+    }
+  commissioni_v2_un_avviso: &commissioni_v2_un_avviso |
+    {
+      "bin": "309500",
+      "paymentMethod": "CP",
+      "touchpoint": "CHECKOUT",
+      "idPspList": null,
+      "paymentNotice": [
+        {
+          "primaryCreditorInstitution": "88888888888",
+          "paymentAmount": 899999999999991,
+          "transferList": [
+            {
+              "creditorInstitution": "88888888888",
+              "transferCategory": "TAX1"
+            }
+          ]
+        }
+      ]
+    }
+  commissioni_v2_piu_avvisi: &commissioni_v2_piu_avvisi |
+    {
+      "bin": "309500",
+      "paymentMethod": "CP",
+      "touchpoint": "CHECKOUT",
+      "idPspList": null,
+      "paymentNotice": [
+        {
+          "primaryCreditorInstitution": "77777777777",
+          "paymentAmount": 899999999998991,
+          "transferList": [
+            {
+              "creditorInstitution": "77777777777",
+              "transferCategory": "TAX1"
+            }
+          ]
+        },
+        {
+          "primaryCreditorInstitution": "88888888888",
+          "paymentAmount": 1000,
+          "transferList": [
+            {
+              "creditorInstitution": "88888888888",
+              "transferCategory": "TAX1"
+            }
+          ]
+        }
+      ]
+    }
+  commissioni_v2_prodotto_cartesiano: &commissioni_v2_prodotto_cartesiano |
+    {
+      "bin": "309500",
+      "paymentMethod": "CP",
+      "touchpoint": "CHECKOUT",
+      "idPspList": null,
+      "paymentNotice": [
+        {
+          "primaryCreditorInstitution": "77777777777",
+          "paymentAmount": 899999999998989,
+          "transferList": [
+            {
+              "creditorInstitution": "77777777777",
+              "transferCategory": "TAX1"
+            }
+          ]
+        },
+        {
+          "primaryCreditorInstitution": "88888888888",
+          "paymentAmount": 1000,
+          "transferList": [
+            {
+              "creditorInstitution": "88888888888",
+              "transferCategory": "TAX1"
+            }
+          ]
+        }
+      ]
+    }
+  commissioni_v2_un_bundle_per_psp: *commissioni_v2_psp_un_solo_bundle
