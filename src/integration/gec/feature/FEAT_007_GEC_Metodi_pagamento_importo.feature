@@ -16,7 +16,10 @@ Funzionalità: Ricerca dei metodi di pagamento per importo
     Quando il client invia la richiesta di "Ricerca metodi di pagamento"
     Allora il sistema risponde con codice di stato 200
     E la risposta contiene i metodi di pagamento di test configurati
-    E solo il metodo "PAYPAL-test" è disabilitato per AMOUNT_OUT_OF_BOUND
+    E i metodi di pagamento di test hanno i seguenti stati:
+      | metodo      | stato    | motivo              |
+      | PAYPAL-test | DISABLED | AMOUNT_OUT_OF_BOUND |
+      | CARDS-test  | ENABLED  |                     |
     E il metodo "cart" è il primo della risposta
     E i metodi diversi da "cart" sono in ordine alfabetico
 
@@ -28,7 +31,10 @@ Funzionalità: Ricerca dei metodi di pagamento per importo
     Quando il client invia la richiesta di "Ricerca metodi di pagamento"
     Allora il sistema risponde con codice di stato 200
     E la risposta contiene i metodi di pagamento di test configurati
-    E entrambi i metodi di pagamento di test sono disabilitati per AMOUNT_OUT_OF_BOUND
+    E i metodi di pagamento di test hanno i seguenti stati:
+      | metodo      | stato    | motivo              |
+      | PAYPAL-test | DISABLED | AMOUNT_OUT_OF_BOUND |
+      | CARDS-test  | DISABLED | AMOUNT_OUT_OF_BOUND |
 
   @positive
   @gec_007_03
@@ -38,7 +44,10 @@ Funzionalità: Ricerca dei metodi di pagamento per importo
     Quando il client invia la richiesta di "Ricerca metodi di pagamento"
     Allora il sistema risponde con codice di stato 200
     E la risposta contiene i metodi di pagamento di test configurati
-    E entrambi i metodi di pagamento di test sono disabilitati per AMOUNT_OUT_OF_BOUND
+    E i metodi di pagamento di test hanno i seguenti stati:
+      | metodo      | stato    | motivo              |
+      | PAYPAL-test | DISABLED | AMOUNT_OUT_OF_BOUND |
+      | CARDS-test  | DISABLED | AMOUNT_OUT_OF_BOUND |
     E il metodo "cart" è il primo della risposta
     E i metodi diversi da "cart" sono in ordine alfabetico
 
@@ -50,6 +59,9 @@ Funzionalità: Ricerca dei metodi di pagamento per importo
     Quando il client invia la richiesta di "Ricerca metodi di pagamento"
     Allora il sistema risponde con codice di stato 200
     E la risposta contiene i metodi di pagamento di test configurati
-    E entrambi i metodi di pagamento di test sono abilitati
+    E i metodi di pagamento di test hanno i seguenti stati:
+      | metodo      | stato   | motivo |
+      | PAYPAL-test | ENABLED |        |
+      | CARDS-test  | ENABLED |        |
     E il metodo "cart" è il primo della risposta
     E i metodi diversi da "cart" sono in ordine alfabetico

@@ -15,11 +15,11 @@ Funzionalità: Recupero delle commissioni del PSP per più avvisi di pagamento
     Quando il client invia la richiesta di "Recupero commissioni V2" per il PSP "PPAYITR1XXX"
     Allora il sistema risponde con codice di stato 200
     E il sistema risponde con un solo bundle per ciascun PSP
-    E i valori del campo `idsCiBundle` delle opzioni bundle corrispondono ai seguenti:
+    E i valori del campo "idsCiBundle" delle opzioni bundle, nell'ordine restituito, corrispondono a:
       | idCiBundle      |
       | int-test-cart-1 |
     E per ogni opzione la commissione massima meno quella effettiva del cittadino è la somma di quelle effettive degli EC
-    E i codici EC di ciascuna opzione bundle, in ordine alfabetico, sono i seguenti:
+    E i codici EC delle commissioni di ciascuna opzione bundle, in ordine alfabetico, corrispondono a:
       | codice_ec   |
       | 77777777777 |
 
@@ -30,11 +30,11 @@ Funzionalità: Recupero delle commissioni del PSP per più avvisi di pagamento
     Quando il client invia la richiesta di "Recupero commissioni V2" per il PSP "PPAYITR1XXX"
     Allora il sistema risponde con codice di stato 200
     E il sistema risponde con un solo bundle per ciascun PSP
-    E i valori del campo `idsCiBundle` delle opzioni bundle corrispondono ai seguenti:
+    E i valori del campo "idsCiBundle" delle opzioni bundle, nell'ordine restituito, corrispondono a:
       | idCiBundle      |
       | int-test-cart-2 |
     E per ogni opzione la commissione massima meno quella effettiva del cittadino è la somma di quelle effettive degli EC
-    E i codici EC di ciascuna opzione bundle, in ordine alfabetico, sono i seguenti:
+    E i codici EC delle commissioni di ciascuna opzione bundle, in ordine alfabetico, corrispondono a:
       | codice_ec   |
       | 77777777777 |
 
@@ -45,10 +45,8 @@ Funzionalità: Recupero delle commissioni del PSP per più avvisi di pagamento
     Quando il client invia la richiesta di "Recupero commissioni V2" per il PSP "PPAYITR1XXX"
     Allora il sistema risponde con codice di stato 200
     E il sistema risponde con un solo bundle per ciascun PSP
-    E i valori del campo `idsCiBundle` delle opzioni bundle corrispondono ai seguenti:
-      | idCiBundle |
-    E i codici EC di ciascuna opzione bundle, in ordine alfabetico, sono i seguenti:
-      | codice_ec |
+    E le opzioni bundle non riportano valori per il campo "idsCiBundle"
+    E le commissioni delle opzioni bundle non riportano codici EC
 
   @positive
   @gec_003_04
@@ -57,10 +55,8 @@ Funzionalità: Recupero delle commissioni del PSP per più avvisi di pagamento
     Quando il client invia la richiesta di "Recupero commissioni V2" per il PSP "PPAYITR1XXX"
     Allora il sistema risponde con codice di stato 200
     E il sistema risponde con un solo bundle per ciascun PSP
-    E i valori del campo `idsCiBundle` delle opzioni bundle corrispondono ai seguenti:
-      | idCiBundle |
-    E i codici EC di ciascuna opzione bundle, in ordine alfabetico, sono i seguenti:
-      | codice_ec |
+    E le opzioni bundle non riportano valori per il campo "idsCiBundle"
+    E le commissioni delle opzioni bundle non riportano codici EC
 
   @positive
   @gec_003_05
@@ -69,11 +65,11 @@ Funzionalità: Recupero delle commissioni del PSP per più avvisi di pagamento
     Quando il client invia la richiesta di "Recupero commissioni V2" per il PSP "PPAYITR1XXX"
     Allora il sistema risponde con codice di stato 200
     E il sistema risponde con un solo bundle per ciascun PSP
-    E i valori del campo `idsCiBundle` delle opzioni bundle corrispondono ai seguenti:
+    E i valori del campo "idsCiBundle" delle opzioni bundle, nell'ordine restituito, corrispondono a:
       | idCiBundle      |
       | int-test-cart-6 |
     E per ogni opzione la commissione massima meno quella effettiva del cittadino è la somma di quelle effettive degli EC
-    E i codici EC di ciascuna opzione bundle, in ordine alfabetico, sono i seguenti:
+    E i codici EC delle commissioni di ciascuna opzione bundle, in ordine alfabetico, corrispondono a:
       | codice_ec   |
       | 88888888888 |
 
@@ -84,11 +80,11 @@ Funzionalità: Recupero delle commissioni del PSP per più avvisi di pagamento
     Quando il client invia la richiesta di "Recupero commissioni V2" per il PSP "PPAYITR1XXX"
     Allora il sistema risponde con codice di stato 200
     E il sistema risponde con un solo bundle per ciascun PSP
-    E i valori del campo `idsCiBundle` delle opzioni bundle corrispondono ai seguenti:
+    E i valori del campo "idsCiBundle" delle opzioni bundle, nell'ordine restituito, corrispondono a:
       | idCiBundle_1    | idCiBundle_2    |
       | int-test-cart-5 | int-test-cart-6 |
     E per ogni opzione la commissione massima meno quella effettiva del cittadino è la somma di quelle effettive degli EC
-    E i codici EC di ciascuna opzione bundle, in ordine alfabetico, sono i seguenti:
+    E i codici EC delle commissioni di ciascuna opzione bundle, in ordine alfabetico, corrispondono a:
       | codice_ec_1 | codice_ec_2 |
       | 77777777777 | 88888888888 |
 
@@ -99,11 +95,11 @@ Funzionalità: Recupero delle commissioni del PSP per più avvisi di pagamento
     Quando il client invia la richiesta di "Recupero commissioni V2" per il PSP "PPAYITR1XXX"
     Allora il sistema risponde con codice di stato 200
     E il sistema risponde con un solo bundle per ciascun PSP
-    E i valori del campo `idsCiBundle` delle opzioni bundle corrispondono ai seguenti:
+    E i valori del campo "idsCiBundle" delle opzioni bundle, nell'ordine restituito, corrispondono a:
       | idCiBundle_1    | idCiBundle_2    |
       | int-test-cart-7 | int-test-cart-8 |
     E per ogni opzione la commissione massima meno quella effettiva del cittadino è la somma di quelle effettive degli EC
-    E i codici EC di ciascuna opzione bundle, in ordine alfabetico, sono i seguenti:
+    E i codici EC delle commissioni di ciascuna opzione bundle, in ordine alfabetico, corrispondono a:
       | codice_ec_1 | codice_ec_2 |
       | 77777777777 | 88888888888 |
 
@@ -114,13 +110,13 @@ Funzionalità: Recupero delle commissioni del PSP per più avvisi di pagamento
     Quando il client invia la richiesta di "Recupero commissioni V2" per il PSP "PPAYITR1XXX"
     Allora il sistema risponde con codice di stato 200
     E il sistema risponde con un solo bundle per ciascun PSP
-    E i valori del campo `onUs` delle opzioni bundle, dopo l'ordinamento previsto per l'API "V2", corrispondono ai seguenti:
+    E i valori del campo "onUs" delle opzioni bundle, nell'ordine restituito, corrispondono a:
       | onUs |
       | true |
-    E i valori del campo `idsCiBundle` delle opzioni bundle corrispondono ai seguenti:
+    E i valori del campo "idsCiBundle" delle opzioni bundle, nell'ordine restituito, corrispondono a:
       | idCiBundle       |
       | int-test-cart-10 |
     E per ogni opzione la commissione massima meno quella effettiva del cittadino è la somma di quelle effettive degli EC
-    E i codici EC di ciascuna opzione bundle, in ordine alfabetico, sono i seguenti:
+    E i codici EC delle commissioni di ciascuna opzione bundle, in ordine alfabetico, corrispondono a:
       | codice_ec   |
       | 77777777777 |

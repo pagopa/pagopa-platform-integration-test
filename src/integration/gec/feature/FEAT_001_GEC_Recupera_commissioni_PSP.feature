@@ -14,7 +14,7 @@ Funzionalità: Recupero delle commissioni del PSP
     Dato una richiesta di recupero commissioni "commissioni_ci_importo_metodo_touchpoint"
     Quando il client invia la richiesta di "Recupero commissioni" per il PSP "PPAYITR1XXX" con il payload "commissioni_ci_importo_metodo_touchpoint" 
     Allora il sistema risponde con codice di stato 200
-    E il sistema risponde con un payload di commissioni "commissioni_ci_importo_metodo_touchpoint_response"
+    E il corpo della risposta corrisponde al payload "commissioni_ci_importo_metodo_touchpoint_response"
   
   @runnable
   @happy_path
@@ -65,7 +65,7 @@ Funzionalità: Recupero delle commissioni del PSP
     Dato una richiesta di recupero commissioni "commissioni_ci_importo_touchpoint_timbro_digitale"
     Quando il client invia la richiesta di "Recupero commissioni" per il PSP "BPPIITRRXXX" con il payload "commissioni_ci_importo_touchpoint_timbro_digitale"
     Allora il sistema risponde con codice di stato 200
-    E il sistema risponde con un payload di commissioni "commissioni_ci_importo_touchpoint_timbro_digitale_response"
+    E il corpo della risposta corrisponde al payload "commissioni_ci_importo_touchpoint_timbro_digitale_response"
     E i valori del campo `onUs` delle opzioni bundle, dopo l'ordinamento previsto per l'API "V1", corrispondono ai seguenti:
       | onUs  |
       | false |
@@ -93,7 +93,7 @@ Funzionalità: Recupero delle commissioni del PSP
     Dato una richiesta di recupero commissioni "commissioni_bin_non_esistente"
     Quando il client invia la richiesta di "Recupero commissioni" per il PSP "BPPIITRRXXX" con il payload "commissioni_bin_non_esistente"
     Allora il sistema risponde con codice di stato 200
-    E il sistema risponde con un payload di commissioni "commissioni_bin_non_esistente_response"
+    E il corpo della risposta corrisponde al payload "commissioni_bin_non_esistente_response"
 
   @runnable
   @happy_path
@@ -102,4 +102,4 @@ Funzionalità: Recupero delle commissioni del PSP
     Dato una richiesta di recupero commissioni "commissioni_ci_importo_touchpoint_amex"
     Quando il client invia la richiesta di "Recupero commissioni" per il PSP "UNCRITMM" con il payload "commissioni_ci_importo_touchpoint_amex"
     Allora il sistema risponde con codice di stato 200
-    E il sistema risponde con un payload di commissioni "commissioni_ci_importo_touchpoint_amex_response"
+    E il corpo della risposta corrisponde al payload "commissioni_ci_importo_touchpoint_amex_response"

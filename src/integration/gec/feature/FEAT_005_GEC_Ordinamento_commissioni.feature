@@ -12,11 +12,12 @@ Funzionalità: Ordinamento delle opzioni bundle nel recupero delle commissioni
   @gec_005_01
   Schema dello scenario: Ordinamento delle opzioni bundle per criterio e priorità onUsFirst
     Dato una richiesta di recupero commissioni "commissioni_v2_ordinamento"
-    E un ordinamento delle opzioni per "<criterio>" con onUsFirst <on_us_first>
+    E il parametro di richiesta "orderBy" è "<criterio>"
+    E il parametro di richiesta "onUsFirst" è "<on_us_first>"
     Quando il client invia la richiesta di "Recupero commissioni V2"
     Allora il sistema risponde con codice di stato 200
     E il sistema risponde con un solo bundle per ciascun PSP
-    E i valori del campo `idBundle` delle opzioni bundle, nell'ordine, corrispondono ai seguenti:
+    E i valori del campo "idBundle" delle prime opzioni bundle, nell'ordine restituito, corrispondono a:
       | id         |
       | <bundle_1> |
       | <bundle_2> |

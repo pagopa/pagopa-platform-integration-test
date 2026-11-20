@@ -66,7 +66,7 @@ Funzionalità: Ricerca dei metodi di pagamento per touchpoint e dispositivo uten
     E una richiesta di ricerca dei metodi di pagamento "<richiesta>"
     Quando il client invia la richiesta di "Ricerca metodi di pagamento"
     Allora il sistema risponde con codice di stato 400
-    E il dettaglio del corpo della risposta è "Invalid input format"
+    E il corpo della risposta corrisponde al payload "ricerca_metodi_input_non_valido_response"
 
     Esempi:
       | configurazione                     | richiesta                            |
