@@ -62,7 +62,7 @@ def before_all(context):
     
     # Initialize GEC client
     _ensure_actor(context, "gec")
-    gec_service_config = _config_value(context.config, "services", "gec")
+    gec_service_config = getattr(context.config, "gec", None)
     if gec_service_config:
         auth_config = _config_value(gec_service_config, "auth")
         if auth_config:
