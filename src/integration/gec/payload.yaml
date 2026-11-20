@@ -753,3 +753,24 @@ TEST_DATA:
       ]
     }
   commissioni_v2_un_bundle_per_psp: *commissioni_v2_psp_un_solo_bundle
+
+  # FEAT_005 - ordinamento (stessa richiesta per i 4 esempi dello schema)
+  commissioni_v2_ordinamento: &commissioni_v2_ordinamento |
+    {
+      "bin": "309500",
+      "paymentMethod": "CP",
+      "touchpoint": "IO",
+      "idPspList": null,
+      "paymentNotice": [
+        {
+          "primaryCreditorInstitution": "77777777777",
+          "paymentAmount": 899999999999999,
+          "transferList": [
+            {
+              "creditorInstitution": "77777777777",
+              "transferCategory": "TAX1"
+            }
+          ]
+        }
+      ]
+    }
