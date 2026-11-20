@@ -53,6 +53,7 @@ def _setup_azure_storage(context):
     
     If azure_connection_string is configured, initializes issuer entities.
     If not configured or fails, continues without it (some tests may fail).
+    Uses the utility/blob/azure_table module for consistency.
     """
     gec_config = getattr(context.config, "gec", None)
     if not gec_config:
@@ -64,14 +65,17 @@ def _setup_azure_storage(context):
         return
     
     try:
-        from src.integration.gec.azure_table_client import setup_issuer_ranges
+        from src.utility.blob import build_issuer_table_client
+        from src.integration.gec.azure_table_client import ISSUER_ENTITIES
         
-        table_client = setup_issuer_ranges(azure_conn_str)
+        table_client = build_issuer_table_client(azure_conn_str)
         if table_client:
+            # Setup pre-defined issuer entities (idempotent)
+            table_client.setup_issuer_ranges(ISSUER_ENTITIES)
             context.gec.azure_table_client = table_client
             LOGGER.info("Azure Table Storage issuer ranges setup completed")
-    except ImportError:
-        LOGGER.warning("azure-data-tables package not installed - skipping issuer range setup")
+    except ImportError as e:
+        LOGGER.warning(f"Azure Tables not installed: {e}")
         LOGGER.info("Install with: pip install azure-data-tables")
     except Exception as e:
         LOGGER.warning(f"Azure Table Storage setup failed (tests may fail): {e}")
