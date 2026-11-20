@@ -903,3 +903,101 @@ TEST_DATA:
       "status": 400,
       "detail": "Invalid input format"
     }
+  ricerca_metodi_importo_1200: &ricerca_metodi_importo_1200 |
+    {
+      "userTouchpoint": "IO",
+      "userDevice": "IOS",
+      "totalAmount": 1200,
+      "paymentNotice": [
+        {
+          "paymentAmount": 1200,
+          "primaryCreditorInstitution": "BPPIITRRZZZ",
+          "transferList": [
+            {
+              "creditorInstitution": "BPPIITRRZZZ",
+              "transferCategory": "TAX1"
+            },
+            {
+              "creditorInstitution": "77777777778",
+              "transferCategory": "TAX2"
+            }
+          ]
+        }
+      ],
+      "allCCp": true,
+      "targetKey": "string"
+    }
+  ricerca_metodi_importo_200: &ricerca_metodi_importo_200 |
+    {
+      "userTouchpoint": "IO",
+      "userDevice": "IOS",
+      "totalAmount": 200,
+      "paymentNotice": [
+        {
+          "paymentAmount": 200,
+          "primaryCreditorInstitution": "BPPIITRRZZZ",
+          "transferList": [
+            {
+              "creditorInstitution": "BPPIITRRZZZ",
+              "transferCategory": "TAX1"
+            },
+            {
+              "creditorInstitution": "77777777778",
+              "transferCategory": "TAX2"
+            }
+          ]
+        }
+      ],
+      "allCCp": true,
+      "targetKey": "string"
+    }
+  ricerca_metodi_importo_negativo: &ricerca_metodi_importo_negativo |
+    {
+      "userTouchpoint": "IO",
+      "userDevice": "IOS",
+      "bin": "309500",
+      "totalAmount": -10,
+      "paymentNotice": [
+        {
+          "paymentAmount": 10,
+          "primaryCreditorInstitution": "BPPIITRRZZZ",
+          "transferList": [
+            {
+              "creditorInstitution": "BPPIITRRZZZ",
+              "transferCategory": "TAX1"
+            },
+            {
+              "creditorInstitution": "77777777778",
+              "transferCategory": "TAX2"
+            }
+          ]
+        }
+      ],
+      "allCCp": true,
+      "targetKey": "string"
+    }
+  ricerca_metodi_importo_5: &ricerca_metodi_importo_5 |
+    {
+      "userTouchpoint": "IO",
+      "userDevice": "IOS",
+      "bin": "309500",
+      "totalAmount": 5,
+      "paymentNotice": [
+        {
+          "paymentAmount": 5,
+          "primaryCreditorInstitution": "BPPIITRRZZZ",
+          "transferList": [
+            {
+              "creditorInstitution": "BPPIITRRZZZ",
+              "transferCategory": "TAX1"
+            },
+            {
+              "creditorInstitution": "77777777778",
+              "transferCategory": "TAX2"
+            }
+          ]
+        }
+      ],
+      "allCCp": true,
+      "targetKey": "string"
+    }
