@@ -774,3 +774,132 @@ TEST_DATA:
         }
       ]
     }
+
+  # FEAT_006 / FEAT_007 - ricerca metodi di pagamento
+  ricerca_metodi_touchpoint_io_ios: &ricerca_metodi_touchpoint_io_ios |
+    {
+      "userTouchpoint": "IO",
+      "userDevice": "IOS",
+      "totalAmount": 0,
+      "paymentNotice": [
+        {
+          "paymentAmount": 1200,
+          "primaryCreditorInstitution": "BPPIITRRZZZ",
+          "transferList": [
+            {
+              "creditorInstitution": "BPPIITRRZZZ",
+              "transferCategory": "TAX1"
+            },
+            {
+              "creditorInstitution": "77777777778",
+              "transferCategory": "TAX2"
+            }
+          ]
+        }
+      ],
+      "allCCp": true,
+      "targetKey": "string"
+    }
+  ricerca_metodi_device_web: &ricerca_metodi_device_web |
+    {
+      "userTouchpoint": "IO",
+      "userDevice": "WEB",
+      "totalAmount": 0,
+      "paymentNotice": [
+        {
+          "paymentAmount": 1200,
+          "primaryCreditorInstitution": "BPPIITRRZZZ",
+          "transferList": [
+            {
+              "creditorInstitution": "BPPIITRRZZZ",
+              "transferCategory": "TAX1"
+            },
+            {
+              "creditorInstitution": "77777777778",
+              "transferCategory": "TAX2"
+            }
+          ]
+        }
+      ],
+      "allCCp": true,
+      "targetKey": "string"
+    }
+  ricerca_metodi_senza_device: &ricerca_metodi_senza_device |
+    {
+      "userTouchpoint": "IO",
+      "totalAmount": 0,
+      "paymentNotice": [
+        {
+          "paymentAmount": 1200,
+          "primaryCreditorInstitution": "BPPIITRRZZZ",
+          "transferList": [
+            {
+              "creditorInstitution": "BPPIITRRZZZ",
+              "transferCategory": "TAX1"
+            },
+            {
+              "creditorInstitution": "77777777778",
+              "transferCategory": "TAX2"
+            }
+          ]
+        }
+      ],
+      "allCCp": true,
+      "targetKey": "string"
+    }
+  ricerca_metodi_touchpoint_non_valido: &ricerca_metodi_touchpoint_non_valido |
+    {
+      "userTouchpoint": "IOp",
+      "userDevice": "IOS",
+      "bin": "309500",
+      "totalAmount": 0,
+      "paymentNotice": [
+        {
+          "paymentAmount": 1200,
+          "primaryCreditorInstitution": "BPPIITRRZZZ",
+          "transferList": [
+            {
+              "creditorInstitution": "BPPIITRRZZZ",
+              "transferCategory": "TAX1"
+            },
+            {
+              "creditorInstitution": "77777777778",
+              "transferCategory": "TAX2"
+            }
+          ]
+        }
+      ],
+      "allCCp": true,
+      "targetKey": "string"
+    }
+  ricerca_metodi_device_non_valido: &ricerca_metodi_device_non_valido |
+    {
+      "userTouchpoint": "IO",
+      "userDevice": "IOSs",
+      "bin": "309500",
+      "totalAmount": 0,
+      "paymentNotice": [
+        {
+          "paymentAmount": 1200,
+          "primaryCreditorInstitution": "BPPIITRRZZZ",
+          "transferList": [
+            {
+              "creditorInstitution": "BPPIITRRZZZ",
+              "transferCategory": "TAX1"
+            },
+            {
+              "creditorInstitution": "77777777778",
+              "transferCategory": "TAX2"
+            }
+          ]
+        }
+      ],
+      "allCCp": true,
+      "targetKey": "string"
+    }
+  ricerca_metodi_input_non_valido_response: &ricerca_metodi_input_non_valido_response |
+    {
+      "title": "BAD REQUEST",
+      "status": 400,
+      "detail": "Invalid input format"
+    }
