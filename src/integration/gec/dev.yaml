@@ -1,0 +1,42 @@
+# GEC (AFM - Gestione Commissioni) DEV Configuration
+# Data source: pagopa-afm-calculator .env.dev
+
+gec:
+  # API endpoints - v1 and v2 calcolatore commissioni
+  url: https://api.dev.platform.pagopa.it/afm/calculator-service/v1
+  url_v2: https://api.dev.platform.pagopa.it/afm/calculator-service/v2
+  
+  # API query extension
+  extension: "?maxOccurrences=10"
+  
+  # Request timeout (in ms)
+  timeout: 5000
+  
+  # Authentication
+  auth:
+    type: api-key
+    key_name: Ocp-Apim-Subscription-Key
+    key_value: $afm-subscription-key
+    location: header
+
+# Global test configuration
+global_configuration:
+  # PSP di test (Poste Italiane su DEV)
+  psp_id: "BPPIITRRZZZ"
+  
+  # Channel IDs for Poste
+  channel_id: "17103880000_01"
+  channel_payment_id: "17103880000_02"
+  
+  # Payment methods per test
+  payment_method_paypal: "PAYPAL-test"
+  payment_method_cards: "CARDS-test"
+  
+  # Test CI/Primary Creditor Institution (da payload.yaml)
+  primary_creditor_institution: "77777777777"
+  
+  # ABI specifici
+  amex_abi: "AMREX"
+  
+  # Environment
+  environment: "dev"
