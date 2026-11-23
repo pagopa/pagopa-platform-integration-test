@@ -1,0 +1,39 @@
+name: Check QA Hub feature conventions
+
+# Controlla le convenzioni dei feature file gestiti da QA Hub (prima riga `# qa-hub: ...`).
+# I file non gestiti sono ignorati dallo script.
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "**/*.feature"
+      - ".github/scripts/check_feature_conventions.py"
+
+permissions:
+  contents: read
+
+jobs:
+  check_feature_conventions:
+    name: Check feature conventions
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+
+      - name: Self-test
+        run: python .github/scripts/test_check_feature_conventions.py
+
+      - name: Check changed feature files
+        shell: bash
+        run: |
+          git diff -z --name-only --diff-filter=d "origin/${{ github.base_ref }}...HEAD" -- '*.feature' \
+            | xargs -0 -r python .github/scripts/check_feature_conventions.py
