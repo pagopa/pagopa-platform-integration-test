@@ -1,5 +1,5 @@
 {
-  "paymentmethods": [
+  "paymentmethods":[
     {
       "id": "1ac430fb-d628-4337-8ddd-f5ae9ea33cfb",
       "payment_method_id": "PAYPAL-test",
@@ -8,29 +8,58 @@
         "EN": "Paypal",
         "IT": "Paypal"
       },
-      "status": "ENABLED",
-      "user_touchpoint": ["IO", "CHECKOUT"],
+      "description": {
+        "IT": "paga in 3 rate",
+        "EN": "pay in 3 installments"
+      },
+      "user_touchpoint": ["IO","CHECKOUT"],
       "user_device": ["IOS", "ANDROID", "WEB"],
+      "status": "ENABLED",
+      "payment_method_types": ["APP"],
+      "validity_date_from": "1995-01-13",
       "range_amount": {
-        "min": 1,
-        "max": 10000
-      }
+        "min": 10,
+        "max": 100000
+      },
+      "metadata": {
+        "installments": "true"
+      },
+      "payment_method_asset": "https://assets.cdn.platform.pagopa.it/apm/paypal.png",
+      "method_management": "NOT_ONBOARDABLE"
     },
     {
-      "id": "2bd540fc-e739-5448-9eee-g6bf9fb44dgh",
+      "id": "aeb73467-ec75-4eb5-a67f-8ae4bda1ef5c",
       "payment_method_id": "CARDS-test",
-      "group": "CARDS",
+      "group": "CP",
       "name": {
-        "EN": "Cards",
-        "IT": "Carte"
+        "IT": "Carte",
+        "EN": "CARDS"
+      },
+      "description": {
+        "IT": "Carta di debito o credito",
+        "EN": "Debit or Credit card"
       },
       "status": "ENABLED",
-      "user_touchpoint": ["IO", "CHECKOUT"],
-      "user_device": ["IOS", "ANDROID", "WEB"],
+      "payment_method_types": ["CARTE"],
+      "metadata": {
+        "installments": "true"
+      },
+      "user_touchpoint": [
+        "IO",
+        "CHECKOUT"
+      ],
+      "user_device": [
+        "IOS",
+        "ANDROID",
+        "WEB"
+      ],
+      "validity_date_from": "2005-03-23",
       "range_amount": {
-        "min": 1,
-        "max": 10000
-      }
+        "min": 0,
+        "max": 999999999
+      },
+      "method_management": "ONBOARDABLE",
+      "payment_method_asset": "https://assets.cdn.platform.pagopa.it/creditcard/generic.png"
     }
   ]
 }

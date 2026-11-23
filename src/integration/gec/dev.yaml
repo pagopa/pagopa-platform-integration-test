@@ -6,7 +6,7 @@ gec:
   url: https://api.dev.platform.pagopa.it/afm/calculator-service/v1
   url_v2: https://api.dev.platform.pagopa.it/afm/calculator-service/v2
   
-  # API query extension
+  # API query extension (default for V2)
   extension: "?maxOccurrences=10"
   
   # Request timeout (in ms)
@@ -19,17 +19,34 @@ gec:
     key_value: $afm-subscription-key
     location: header
   
+  # Marketplace API for payment methods upload
+  marketplace_host: https://api.dev.platform.pagopa.it/afm/marketplace-service/v1
+  marketplace_key: $marketplace-subscription-key
+
   # Azure Table Storage connection string (for issuer range management)
   # Optional: if not provided, issuer range tests will be skipped
   # Format: DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net
-  # azure_connection_string: $azure-storage-connection-string
+  azure_connection_string: $azure-storage-connection-string
+
+  # Configuration API endpoints
+  configuration_host: https://api.dev.platform.pagopa.it/afm/configuration
 
 # Global test configuration
 global_configuration:
   # PSP di test (Poste Italiane su DEV)
+  id_psp_poste: "BPPIITRRZZZ"
   psp_id: "BPPIITRRZZZ"
   
-  # Channel IDs for Poste
+  # Channel IDs for Poste (multiple channels)
+  poste_channel_ids:
+    - "17103880000_01"
+  poste_pay_channel_ids:
+    - "17103880000_02"
+
+  # Marketplace channel for Poste
+  poste_marketplace_channel: "17103880000_01"
+
+  # Channel IDs for primary test PSP
   channel_id: "17103880000_01"
   channel_payment_id: "17103880000_02"
   
@@ -43,5 +60,14 @@ global_configuration:
   # ABI specifici
   amex_abi: "AMREX"
   
+  # AllCcp filter flag (enable new filter logic for Poste)
+  all_ccp_new_filter_enabled: false
+
+  # PSP blacklist for filtering
+  psp_blacklist: []
+
+  # Issuer range table name in Azure Storage
+  issuer_range_table: "pagopadweuafmsaissuerrangetable"
+
   # Environment
   environment: "dev"

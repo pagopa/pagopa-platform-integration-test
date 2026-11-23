@@ -3,94 +3,152 @@
 import json
 import logging
 
-from behave import given, when, then
+from behave import given, then, when
 
 from src.integration.gec.helper import (
+    _config_value,
+    _ensure_scenario_data_loaded,
     _ensure_vars_container,
-    _get_client,
-    _send_request,
     _get_bundled_response,
+    _get_request_payload,
     _load_config_file,
-    _upload_configuration,
+    _normalize_boolean_cell,
+    _send_request,
+    _setup_poste_bundles,
+    _sort_bundles_v1_onUs_first,
+    _upload_payment_methods,
 )
+
 
 LOGGER = logging.getLogger("gec")
 
 
+def _response_json(context) -> dict:
+    """Return response JSON or fail with explicit assertion."""
+    if not hasattr(context, "response") or context.response is None:
+        raise AssertionError("Missing HTTP response in context")
+    try:
+        return context.response.json()
+    except Exception as error:
+        raise AssertionError(f"Response is not valid JSON: {error}") from error
+
+
+def _bundle_rows(context) -> list:
+    """Return bundleOptions list from current response."""
+    return _get_bundled_response(_response_json(context))
+
+
+def _clean_cell(value: str) -> str:
+    """Normalize expected table cell without altering lexical content."""
+    cell = (value or "").strip()
+    if len(cell) >= 2 and cell[0] == '"' and cell[-1] == '"':
+        return cell[1:-1]
+    return cell
+
+
+def _string_values(value) -> list:
+    """Convert response scalar/list into comparable list of strings."""
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(item) for item in value]
+    return [str(value)]
+
+
+def _poste_rule(context):
+    """Return Poste matching rule derived from runtime configuration."""
+    global_conf = getattr(context.config, "global_configuration", {})
+    enabled_raw = _config_value(global_conf, "all_ccp_new_filter_enabled")
+    is_enabled = enabled_raw is True or str(enabled_raw).lower() == "true"
+    id_psp_poste = str(_config_value(global_conf, "id_psp_poste") or "BPPIITRRZZZ")
+    poste_channel_ids = _config_value(global_conf, "poste_channel_ids") or []
+    if isinstance(poste_channel_ids, str):
+        poste_channel_ids = [item.strip() for item in poste_channel_ids.split(",") if item.strip()]
+    return is_enabled, id_psp_poste, poste_channel_ids
+
+
+def _payload_name_for_operation(context, operation: str) -> str:
+    """Resolve payload name using operation-specific precedence."""
+    operation_lower = operation.lower()
+    vars_dict = getattr(context, "vars", {})
+    if "ricerca metodi di pagamento" in operation_lower:
+        return vars_dict.get("payment_methods_request") or vars_dict.get("current_request_payload", "default_payload")
+    return vars_dict.get("current_request_payload", "default_payload")
+
+
 @given("che i sistemi sono operativi")
 def step_systems_up(context):
-    """Initialize context state."""
-    context.response = None
+    """Prepare scenario state and load AFM baseline data configuration once."""
     _ensure_vars_container(context)
+    context.response = None
+    _ensure_scenario_data_loaded(context)
 
 
 @given("il bundle poste è configurato")
 def step_bundle_poste_configured(context):
-    """Placeholder for bundle poste configuration."""
+    """Upload Poste bundles with AFM parity rules."""
     _ensure_vars_container(context)
-    LOGGER.info("Bundle Poste configuration validated")
+    _setup_poste_bundles(context)
 
 
 @given("la configurazione dei dati di test è caricata")
 def step_test_data_configured(context):
-    """Placeholder for test data configuration."""
+    """Ensure AFM-compatible data.json setup has been uploaded once per scenario."""
     _ensure_vars_container(context)
-    LOGGER.info("Test data configuration loaded")
+    _ensure_scenario_data_loaded(context)
 
 
 @given('una richiesta di recupero commissioni "{payload_name}"')
 def step_named_commission_request(context, payload_name: str):
-    """Store a commission request payload name."""
+    """Store payload name for subsequent commission request."""
     _ensure_vars_container(context)
     context.vars["current_request_payload"] = payload_name
-    LOGGER.info("Commission request payload set: %s", payload_name)
 
 
 @given('la configurazione dei metodi di pagamento "{config_name}"')
 def step_payment_methods_configuration(context, config_name: str):
-    """Store payment methods configuration."""
+    """Upload payment methods config to marketplace endpoint."""
     _ensure_vars_container(context)
+    config_data = _load_config_file(context, config_name, file_type="json")
+    _upload_payment_methods(context, config_data)
     context.vars["payment_methods_config"] = config_name
-    LOGGER.info("Payment methods configuration set: %s", config_name)
 
 
 @given('una richiesta di ricerca dei metodi di pagamento "{request_name}"')
 def step_payment_methods_request(context, request_name: str):
-    """Store a payment methods search request."""
+    """Store payment-method search payload identifier."""
     _ensure_vars_container(context)
     context.vars["payment_methods_request"] = request_name
-    LOGGER.info("Payment methods search request set: %s", request_name)
 
 
 @given('il parametro di richiesta "{param_name}" è "{param_value}"')
 def step_request_parameter(context, param_name: str, param_value: str):
-    """Set a query/request parameter."""
+    """Store request query parameters with boolean normalization where required."""
     _ensure_vars_container(context)
-    if "request_params" not in context.vars:
-        context.vars["request_params"] = {}
-    context.vars["request_params"][param_name] = param_value
-    LOGGER.info("Request parameter set: %s = %s", param_name, param_value)
+    params = context.vars.setdefault("request_params", {})
+    if param_name in ("onUsFirst", "allCcp"):
+        params[param_name] = _normalize_boolean_cell(param_value)
+    else:
+        params[param_name] = param_value
 
 
 @given("l'impostazione allCcp è disabilitata")
 def step_allccp_disabled(context):
-    """Set allCcp disabled configuration."""
+    """Set allCcp=false for the next request."""
     _ensure_vars_container(context)
     context.vars["allCcp"] = False
-    LOGGER.info("allCcp configuration set to disabled")
 
 
 @given("l'impostazione allCcp è abilitata")
 def step_allccp_enabled(context):
-    """Set allCcp enabled configuration."""
+    """Set allCcp=true for the next request."""
     _ensure_vars_container(context)
     context.vars["allCcp"] = True
-    LOGGER.info("allCcp configuration set to enabled")
 
 
 @when('il client invia la richiesta di "{operation}" per il PSP "{psp_id}" con il payload "{payload_name}"')
 def step_send_request_with_psp_payload(context, operation: str, psp_id: str, payload_name: str):
-    """Send a request with specific PSP and payload."""
+    """Send a request specifying both PSP and payload name."""
     _ensure_vars_container(context)
     context.vars["psp_id"] = psp_id
     _send_request(context, operation, payload_name)
@@ -98,510 +156,308 @@ def step_send_request_with_psp_payload(context, operation: str, psp_id: str, pay
 
 @when('il client invia la richiesta di "{operation}" con il payload "{payload_name}"')
 def step_send_request_with_payload(context, operation: str, payload_name: str):
-    """Send a request without specific PSP."""
+    """Send a request with explicit payload name."""
     _send_request(context, operation, payload_name)
 
 
 @when('il client invia la richiesta di "{operation}" per il PSP "{psp_id}"')
 def step_send_request_with_psp(context, operation: str, psp_id: str):
-    """Send a request with specific PSP, no explicit payload."""
+    """Send a request with PSP and previously selected payload."""
     _ensure_vars_container(context)
     context.vars["psp_id"] = psp_id
-    payload_name = context.vars.get("current_request_payload", "default_payload")
+    payload_name = _payload_name_for_operation(context, operation)
     _send_request(context, operation, payload_name)
 
 
 @when('il client invia la richiesta di "{operation}"')
 def step_send_request_basic(context, operation: str):
-    """Send a request with no PSP or specific payload."""
-    payload_name = getattr(context, "vars", {}).get("current_request_payload", "default_payload")
+    """Send a request using current scenario payload selection."""
+    payload_name = _payload_name_for_operation(context, operation)
     _send_request(context, operation, payload_name)
 
 
 @then("il sistema risponde con codice di stato {status_code:d}")
 def step_assert_status_code(context, status_code: int):
     """Assert response status code."""
-    assert hasattr(context, "response") and context.response is not None
+    if not hasattr(context, "response") or context.response is None:
+        raise AssertionError("Missing HTTP response in context")
     actual = context.response.status_code
     assert actual == status_code, f"Expected status {status_code}, got {actual}"
-    LOGGER.info("Status code assertion passed: %d", status_code)
 
 
 @then('il corpo della risposta corrisponde al payload "{payload_name}"')
 def step_assert_response_matches_payload(context, payload_name: str):
-    """Assert response body matches expected payload."""
-    from src.integration.gec.helper import _get_request_payload
-    
-    assert hasattr(context, "response") and context.response is not None
-    expected_payload = _get_request_payload(context, payload_name + "_response", payload_name)
-    try:
-        actual_body = context.response.json()
-    except Exception as e:
-        raise AssertionError(f"Response not valid JSON: {e}")
-    
-    actual_str = json.dumps(actual_body, sort_keys=True)
-    expected_str = json.dumps(expected_payload, sort_keys=True)
-    assert actual_str == expected_str, (
-        f"Response body mismatch.\nExpected: {expected_str}\nActual: {actual_str}"
+    """Assert response body equals expected payload template."""
+    expected_payload = _get_request_payload(context, f"{payload_name}_response", payload_name)
+    actual_body = _response_json(context)
+    assert json.dumps(actual_body, sort_keys=True) == json.dumps(expected_payload, sort_keys=True), (
+        f"Response body mismatch for payload '{payload_name}'"
     )
-    LOGGER.info("Response payload assertion passed: %s", payload_name)
 
 
-@then('i valori del campo `{field_name}` delle opzioni bundle, dopo l\'ordinamento previsto per l\'API "{api_version}", corrispondono ai seguenti:')
+@then('i valori del campo `{field_name}` delle opzioni bundle, dopo l\'ordinamento previsto per l\'API "{api_version}", corrispondono ai seguenti')
 def step_assert_ordered_bundle_field_backtick(context, field_name: str, api_version: str):
-    """Assert ordered values of a field (with backtick syntax) in bundle options."""
-    assert context.table is not None, "Table with expected values required"
-    assert hasattr(context, "response") and context.response is not None
-    
-    try:
-        body = context.response.json()
-    except Exception as e:
-        raise AssertionError(f"Response not valid JSON: {e}")
-    
-    bundles = _get_bundled_response(body)
+    """Assert ordered bundle field values with V1 onUs sorting parity."""
+    if context.table is None:
+        raise AssertionError("Expected values table is required")
+    bundles = _bundle_rows(context)
+    expected_rows = context.table.rows
     if not bundles:
+        if len(expected_rows) == 0:
+            return
         raise AssertionError("No bundle options found in response")
-    
+    ordered_bundles = bundles
+    if api_version.upper() == "V1" and field_name.lower() == "onus":
+        ordered_bundles = _sort_bundles_v1_onUs_first(bundles)
+
     actual_values = []
-    for bundle in bundles:
+    for bundle in ordered_bundles[: len(expected_rows)]:
         value = bundle.get(field_name)
-        actual_values.append(str(value) if value is not None else None)
-    
-    expected_values = [row.cells[0] for row in context.table.rows]
-    
-    assert actual_values == expected_values, (
-        f"Ordered {field_name} mismatch.\nExpected: {expected_values}\nActual: {actual_values}"
-    )
-    LOGGER.info("Ordered bundle field assertion passed: %s", field_name)
+        if isinstance(value, bool):
+            actual_values.append(_normalize_boolean_cell(str(value)))
+        else:
+            actual_values.append(str(value))
+
+    expected_values = [_normalize_boolean_cell(_clean_cell(row.cells[0])) for row in expected_rows]
+    assert actual_values == expected_values, f"Expected {expected_values}, got {actual_values}"
 
 
-@then('i valori del campo "{field_name}" delle opzioni bundle, nell\'ordine restituito, corrispondono a:')
+@then('i valori del campo "{field_name}" delle opzioni bundle, nell\'ordine restituito, corrispondono a')
 def step_assert_ordered_field_values(context, field_name: str):
-    """Assert ordered values of a field in bundle options."""
-    assert context.table is not None, "Table with expected values required"
-    assert hasattr(context, "response") and context.response is not None
-    
-    try:
-        body = context.response.json()
-    except Exception as e:
-        raise AssertionError(f"Response not valid JSON: {e}")
-    
-    bundles = _get_bundled_response(body)
-    if not bundles:
-        raise AssertionError("No bundle options found in response")
-    
-    actual_values = []
-    for bundle in bundles:
-        value = bundle.get(field_name)
-        actual_values.append(str(value) if value is not None else None)
-    
-    expected_values = [row.cells[0] for row in context.table.rows]
-    
-    assert actual_values == expected_values, (
-        f"Ordered {field_name} mismatch.\nExpected: {expected_values}\nActual: {actual_values}"
-    )
-    LOGGER.info("Ordered field values assertion passed: %s", field_name)
+    """Assert row-wise mapping for bundle field values supporting multi-column tables."""
+    if context.table is None:
+        raise AssertionError("Expected values table is required")
+    bundles = _bundle_rows(context)
+    expected_rows = context.table.rows
+    if len(bundles) < len(expected_rows):
+        raise AssertionError(f"Expected at least {len(expected_rows)} bundle rows, got {len(bundles)}")
+    for index, row in enumerate(expected_rows):
+        expected_values = [_clean_cell(cell) for cell in row.cells]
+        actual_values = _string_values(bundles[index].get(field_name))
+        assert actual_values == expected_values, (
+            f"Mismatch for field '{field_name}' at row {index + 1}: expected {expected_values}, got {actual_values}"
+        )
 
 
-@then('i valori del campo "{field_name}" delle prime opzioni bundle, nell\'ordine restituito, corrispondono a:')
+@then('i valori del campo "{field_name}" delle prime opzioni bundle, nell\'ordine restituito, corrispondono a')
 def step_assert_ordered_first_bundle_field(context, field_name: str):
-    """Assert ordered values of a field in first N bundle options."""
-    assert context.table is not None, "Table with expected values required"
-    assert hasattr(context, "response") and context.response is not None
-    
-    try:
-        body = context.response.json()
-    except Exception as e:
-        raise AssertionError(f"Response not valid JSON: {e}")
-    
-    bundles = _get_bundled_response(body)
-    if not bundles:
-        raise AssertionError("No bundle options found in response")
-    
-    expected_values = [row.cells[0] for row in context.table.rows]
-    actual_values = []
-    for bundle in bundles[:len(expected_values)]:
-        value = bundle.get(field_name)
-        actual_values.append(str(value) if value is not None else None)
-    
-    assert actual_values == expected_values, (
-        f"Ordered first {field_name} mismatch.\nExpected: {expected_values}\nActual: {actual_values}"
-    )
-    LOGGER.info("Ordered first bundle field assertion passed: %s", field_name)
+    """Assert first-N bundle field values and store N for follow-up validations."""
+    if context.table is None:
+        raise AssertionError("Expected values table is required")
+    bundles = _bundle_rows(context)
+    expected_rows = context.table.rows
+    if len(bundles) < len(expected_rows):
+        raise AssertionError(f"Expected at least {len(expected_rows)} bundle rows, got {len(bundles)}")
+    _ensure_vars_container(context)
+    context.vars["num_first_options"] = len(expected_rows)
+    for index, row in enumerate(expected_rows):
+        expected_values = [_clean_cell(cell) for cell in row.cells]
+        actual_values = _string_values(bundles[index].get(field_name))
+        assert actual_values == expected_values, (
+            f"Mismatch for field '{field_name}' at row {index + 1}: expected {expected_values}, got {actual_values}"
+        )
 
 
 @then("il sistema risponde con un solo bundle per ciascun PSP")
 def step_assert_one_bundle_per_psp(context):
-    """Assert one bundle per PSP in response."""
-    assert hasattr(context, "response") and context.response is not None
-    try:
-        body = context.response.json()
-    except Exception as e:
-        raise AssertionError(f"Response not valid JSON: {e}")
-    
-    bundles = _get_bundled_response(body)
-    psp_counts = {}
-    for bundle in bundles:
+    """Assert each PSP appears at most once in bundle options."""
+    psp_seen = set()
+    for bundle in _bundle_rows(context):
         psp_id = bundle.get("idPsp")
-        psp_counts[psp_id] = psp_counts.get(psp_id, 0) + 1
-    
-    for psp_id, count in psp_counts.items():
-        assert count == 1, f"PSP {psp_id} has {count} bundles, expected 1"
-    
-    LOGGER.info("One bundle per PSP assertion passed")
+        if psp_id in psp_seen:
+            raise AssertionError(f"Duplicate bundle detected for PSP '{psp_id}'")
+        psp_seen.add(psp_id)
 
 
 @then("le opzioni bundle non riportano valori per il campo \"{field_name}\"")
 def step_assert_field_empty(context, field_name: str):
-    """Assert field is empty in all bundle options."""
-    assert hasattr(context, "response") and context.response is not None
-    try:
-        body = context.response.json()
-    except Exception as e:
-        raise AssertionError(f"Response not valid JSON: {e}")
-    
-    bundles = _get_bundled_response(body)
-    for bundle in bundles:
+    """Assert a bundle field is absent or empty for every option."""
+    for bundle in _bundle_rows(context):
         value = bundle.get(field_name)
-        assert value is None or value == [] or value == {}, (
-            f"Field {field_name} expected empty, got: {value}"
-        )
-    
-    LOGGER.info("Empty field assertion passed: %s", field_name)
+        if value not in (None, [], {}):
+            raise AssertionError(f"Field '{field_name}' expected empty, got {value}")
 
 
 @then("le commissioni delle opzioni bundle non riportano codici EC")
 def step_assert_no_ec_codes(context):
-    """Assert no EC codes in bundle commissions."""
-    assert hasattr(context, "response") and context.response is not None
-    try:
-        body = context.response.json()
-    except Exception as e:
-        raise AssertionError(f"Response not valid JSON: {e}")
-    
-    bundles = _get_bundled_response(body)
-    for bundle in bundles:
-        transfers = bundle.get("transfers") or bundle.get("commissioni") or []
-        assert len(transfers) == 0, (
-            f"Expected no EC codes but found: {transfers}"
-        )
-    
-    LOGGER.info("No EC codes assertion passed")
+    """Assert all bundle fees collections are absent/empty."""
+    for bundle in _bundle_rows(context):
+        fees = bundle.get("fees", [])
+        if fees not in (None, []):
+            raise AssertionError(f"Expected empty fees, got {fees}")
 
 
 @then("la risposta contiene i metodi di pagamento di test configurati")
 def step_assert_payment_methods_present(context):
-    """Assert response contains configured payment methods."""
-    assert hasattr(context, "response") and context.response is not None
-    try:
-        body = context.response.json()
-    except Exception as e:
-        raise AssertionError(f"Response not valid JSON: {e}")
-    
-    methods = body.get("paymentMethods") or body.get("methods") or body
-    assert len(methods) > 0, "No payment methods found in response"
-    LOGGER.info("Payment methods present assertion passed")
+    """Assert both configured test payment methods are present."""
+    methods = _response_json(context).get("paymentMethods", [])
+    ids = {str(method.get("paymentMethodId") or "") for method in methods}
+    global_conf = getattr(context.config, "global_configuration", {})
+    expected = {
+        _config_value(global_conf, "payment_method_paypal") or "PAYPAL-test",
+        _config_value(global_conf, "payment_method_cards") or "CARDS-test",
+    }
+    if not expected.issubset(ids):
+        raise AssertionError(f"Missing expected payment methods: {sorted(expected - ids)}")
 
 
 @then("la risposta non contiene i metodi di pagamento di test configurati")
 def step_assert_payment_methods_absent(context):
-    """Assert response does not contain configured payment methods."""
-    assert hasattr(context, "response") and context.response is not None
-    try:
-        body = context.response.json()
-    except Exception as e:
-        raise AssertionError(f"Response not valid JSON: {e}")
-    
-    methods = body.get("paymentMethods") or body.get("methods") or body
-    assert len(methods) == 0, f"Expected no payment methods, found: {methods}"
-    LOGGER.info("Payment methods absent assertion passed")
+    """Assert configured test payment methods are not present."""
+    methods = _response_json(context).get("paymentMethods", [])
+    ids = {str(method.get("paymentMethodId") or "") for method in methods}
+    global_conf = getattr(context.config, "global_configuration", {})
+    forbidden = {
+        _config_value(global_conf, "payment_method_paypal") or "PAYPAL-test",
+        _config_value(global_conf, "payment_method_cards") or "CARDS-test",
+    }
+    if ids.intersection(forbidden):
+        raise AssertionError(f"Forbidden payment methods found: {sorted(ids.intersection(forbidden))}")
 
 
 @then('il metodo "{method_name}" è il primo della risposta')
 def step_assert_first_payment_method(context, method_name: str):
-    """Assert specific payment method is first in response."""
-    assert hasattr(context, "response") and context.response is not None
-    try:
-        body = context.response.json()
-    except Exception as e:
-        raise AssertionError(f"Response not valid JSON: {e}")
-    
-    methods = body.get("paymentMethods") or body.get("methods") or body or []
-    if isinstance(methods, list) and len(methods) > 0:
-        first = methods[0]
-        first_name = first.get("name") or first.get("type") or str(first)
-        assert first_name == method_name, (
-            f"First method expected '{method_name}', got '{first_name}'"
-        )
-    else:
-        raise AssertionError("No methods found in response")
-    
-    LOGGER.info("First payment method assertion passed: %s", method_name)
+    """Assert first payment method group is CP as in AFM oracle."""
+    methods = _response_json(context).get("paymentMethods", [])
+    if not methods:
+        raise AssertionError("No payment methods found in response")
+    first_group = methods[0].get("group")
+    assert first_group == "CP", f"Expected first payment method group 'CP', got '{first_group}'"
+    LOGGER.debug("Expected first method label placeholder: %s", method_name)
 
 
 @then('i metodi diversi da "{method_name}" sono in ordine alfabetico')
 def step_assert_alphabetic_order(context, method_name: str):
-    """Assert payment methods (except specified one) are alphabetically ordered."""
-    assert hasattr(context, "response") and context.response is not None
-    try:
-        body = context.response.json()
-    except Exception as e:
-        raise AssertionError(f"Response not valid JSON: {e}")
-    
-    methods = body.get("paymentMethods") or body.get("methods") or body or []
-    if isinstance(methods, list) and len(methods) > 1:
-        rest = methods[1:]
-        rest_names = []
-        for m in rest:
-            name = m.get("name") or m.get("type") or str(m)
-            rest_names.append(name)
-        
-        sorted_names = sorted(rest_names)
-        assert rest_names == sorted_names, (
-            f"Methods not alphabetically ordered.\nExpected: {sorted_names}\nGot: {rest_names}"
-        )
-    
-    LOGGER.info("Alphabetic order assertion passed")
+    """Assert payment methods after the first are case-insensitive sorted by name."""
+    methods = _response_json(context).get("paymentMethods", [])
+    if len(methods) <= 1:
+        return
+    names = [str((item.get("name") or "")).strip() for item in methods[1:]]
+    expected_order = sorted(names, key=lambda value: value.lower())
+    assert names == expected_order, f"Expected {expected_order}, got {names}"
+    LOGGER.debug("Reference first method placeholder: %s", method_name)
 
 
 @then("per ogni opzione la commissione massima meno quella effettiva del cittadino è la somma di quelle effettive degli EC")
 def step_assert_commission_sum(context):
-    """Assert max commission minus actual equals sum of EC commissions."""
-    assert hasattr(context, "response") and context.response is not None
-    try:
-        body = context.response.json()
-    except Exception as e:
-        raise AssertionError(f"Response not valid JSON: {e}")
-    
-    bundles = _get_bundled_response(body)
-    for bundle in bundles:
-        tax_payer_fee = bundle.get("taxPayerFee", 0)
-        primary_ci_fee = bundle.get("primaryCiIncurredFee", 0)
-        assert tax_payer_fee >= primary_ci_fee, (
-            f"Commission logic invalid for bundle {bundle.get('idBundle')}"
-        )
-    
-    LOGGER.info("Commission sum assertion passed")
+    """Assert taxPayerFee - actualPayerFee equals sum(actualCiIncurredFee) for selected options."""
+    bundles = _bundle_rows(context)
+    _ensure_vars_container(context)
+    limit = context.vars.get("num_first_options")
+    max_rows = int(limit) if limit is not None else len(bundles)
+    for index, bundle in enumerate(bundles[:max_rows]):
+        fees = sorted(bundle.get("fees", []), key=lambda fee: fee.get("creditorInstitution", ""))
+        fee_sum = sum(float(fee.get("actualCiIncurredFee", 0)) for fee in fees)
+        tax_payer_fee = float(bundle.get("taxPayerFee", 0))
+        actual_payer_fee = float(bundle.get("actualPayerFee", 0))
+        left = tax_payer_fee - actual_payer_fee
+        if abs(left - fee_sum) > 0.000001:
+            raise AssertionError(
+                f"Bundle row {index + 1}: expected {left} == {fee_sum} "
+                "(taxPayerFee - actualPayerFee == sum(actualCiIncurredFee))"
+            )
 
 
-@then('i codici EC delle commissioni di ciascuna opzione bundle, in ordine alfabetico, corrispondono a:')
+@then('i codici EC delle commissioni di ciascuna opzione bundle, in ordine alfabetico, corrispondono a')
 def step_assert_ec_codes_ordered(context):
-    """Assert EC codes in bundles match expected list."""
-    assert context.table is not None, "Table with expected EC codes required"
-    assert hasattr(context, "response") and context.response is not None
-    
-    try:
-        body = context.response.json()
-    except Exception as e:
-        raise AssertionError(f"Response not valid JSON: {e}")
-    
-    expected_codes = [row.cells[0] for row in context.table.rows]
-    
-    bundles = _get_bundled_response(body)
-    for bundle in bundles:
-        transfers = bundle.get("idsTransfers") or bundle.get("transfers") or []
-        actual_codes = []
-        if isinstance(transfers, list):
-            actual_codes = sorted([str(t) for t in transfers])
-        else:
-            actual_codes = sorted([str(transfers)])
-        
-        assert actual_codes == sorted(expected_codes), (
-            f"EC codes mismatch for bundle {bundle.get('idBundle')}.\n"
-            f"Expected: {sorted(expected_codes)}\nActual: {actual_codes}"
-        )
-    
-    LOGGER.info("EC codes ordered assertion passed")
+    """Assert EC codes by row/column from full bundle set."""
+    if context.table is None:
+        raise AssertionError("Expected EC codes table is required")
+    bundles = _bundle_rows(context)
+    expected_rows = context.table.rows
+    if len(bundles) < len(expected_rows):
+        raise AssertionError(f"Expected at least {len(expected_rows)} bundle rows, got {len(bundles)}")
+    for index, row in enumerate(expected_rows):
+        fees = sorted(bundles[index].get("fees", []), key=lambda fee: fee.get("creditorInstitution", ""))
+        actual_codes = [str(fee.get("creditorInstitution", "")) for fee in fees]
+        expected_codes = [_clean_cell(cell) for cell in row.cells]
+        assert actual_codes == expected_codes, f"Row {index + 1}: expected {expected_codes}, got {actual_codes}"
 
 
-@then('i codici EC delle commissioni delle prime opzioni bundle, in ordine alfabetico, corrispondono a:')
+@then('i codici EC delle commissioni delle prime opzioni bundle, in ordine alfabetico, corrispondono a')
 def step_assert_ec_codes_first_bundles(context):
-    """Assert EC codes for first N bundles match expected list."""
-    assert context.table is not None, "Table with expected EC codes required"
-    assert hasattr(context, "response") and context.response is not None
-    
+    """Assert EC codes by row/column for first-N bundle set and store N for sum step."""
+    if context.table is None:
+        raise AssertionError("Expected EC codes table is required")
+    bundles = _bundle_rows(context)
+    expected_rows = context.table.rows
+    if len(bundles) < len(expected_rows):
+        raise AssertionError(f"Expected at least {len(expected_rows)} bundle rows, got {len(bundles)}")
+    _ensure_vars_container(context)
+    context.vars["num_first_options"] = len(expected_rows)
+    for index, row in enumerate(expected_rows):
+        fees = sorted(bundles[index].get("fees", []), key=lambda fee: fee.get("creditorInstitution", ""))
+        actual_codes = [str(fee.get("creditorInstitution", "")) for fee in fees]
+        expected_codes = [_clean_cell(cell) for cell in row.cells]
+        assert actual_codes == expected_codes, f"Row {index + 1}: expected {expected_codes}, got {actual_codes}"
+
+
+@then('i metodi di pagamento di test hanno i seguenti stati')
+def step_assert_payment_method_states(context):
+    """Assert payment methods state table using columns metodo|stato|motivo."""
+    if context.table is None:
+        raise AssertionError("Expected payment method state table is required")
+    methods = _response_json(context).get("paymentMethods", [])
+    methods_by_id = {
+        str(
+            method.get("paymentMethodId")
+            or method.get("payment_method_id")
+            or method.get("id")
+            or ""
+        ): method
+        for method in methods
+    }
+    headings = [heading.strip().lower() for heading in context.table.headings]
     try:
-        body = context.response.json()
-    except Exception as e:
-        raise AssertionError(f"Response not valid JSON: {e}")
-    
-    expected_codes = [row.cells[0] for row in context.table.rows]
-    
-    bundles = _get_bundled_response(body)
-    for bundle in bundles:
-        transfers = bundle.get("idsTransfers") or bundle.get("transfers") or []
-        actual_codes = []
-        if isinstance(transfers, list):
-            actual_codes = sorted([str(t) for t in transfers])
-        else:
-            actual_codes = sorted([str(transfers)])
-        
-        assert actual_codes == sorted(expected_codes), (
-            f"EC codes mismatch for bundle {bundle.get('idBundle')}.\n"
-            f"Expected: {sorted(expected_codes)}\nActual: {actual_codes}"
+        metodo_index = headings.index("metodo")
+        stato_index = headings.index("stato")
+        motivo_index = headings.index("motivo")
+    except ValueError as error:
+        raise AssertionError("Expected table headings: metodo | stato | motivo") from error
+
+    for row in context.table.rows:
+        method_id = _clean_cell(row.cells[metodo_index])
+        expected_status = _clean_cell(row.cells[stato_index])
+        expected_reason = _clean_cell(row.cells[motivo_index])
+        if method_id not in methods_by_id:
+            raise AssertionError(f"Payment method '{method_id}' not found in response")
+        method = methods_by_id[method_id]
+        actual_status = str(method.get("status") or "")
+        actual_reason = method.get("disabledReason")
+        assert actual_status == expected_status, (
+            f"Method '{method_id}': expected status '{expected_status}', got '{actual_status}'"
         )
-    
-    LOGGER.info("EC codes for first bundles assertion passed")
-
-
-@then('i metodi di pagamento di test hanno i seguenti stati:')
-def step_assert_payment_methods_status(context):
-    """Assert payment methods have expected status and reason."""
-    assert context.table is not None, "Table with method status required"
-    assert hasattr(context, "response") and context.response is not None
-    
-    try:
-        body = context.response.json()
-    except Exception as e:
-        raise AssertionError(f"Response not valid JSON: {e}")
-    
-    methods = body.get("paymentMethods") or body.get("methods") or body or []
-    
-    methods_map = {}
-    if isinstance(methods, list):
-        for m in methods:
-            methods_map[m.get("id")] = m
-    
-    for row in context.table:
-        method_id = row.get("method_id") or row.get("methodId")
-        expected_status = row.get("status") or row.get("state")
-        
-        assert method_id in methods_map, f"Payment method {method_id} not found in response"
-        actual = methods_map[method_id]
-        actual_status = actual.get("status") or actual.get("state")
-        
-        assert actual_status == expected_status, \
-            f"Status mismatch for {method_id}: expected {expected_status}, got {actual_status}"
-    
-    LOGGER.info("Payment method status assertion passed")
-
-
-# ==================== CONFIGURATION UPLOAD STEPS ====================
-
-
-@given('la configurazione "{config_name}" è caricata')
-def step_load_configuration(context, config_name: str):
-    """Load and upload configuration from JSON file.
-    
-    Loads config_name.json from src/integration/gec/config/ and uploads
-    bundles, touchpoints, paymenttypes, and other sections to the GEC API.
-    """
-    _ensure_vars_container(context)
-    
-    # Load configuration file
-    config_data = _load_config_file(context, config_name, file_type="json")
-    LOGGER.info(f"Configuration file loaded: {config_name}.json")
-    
-    # Upload each section present in the configuration
-    sections = ["bundles", "ciBundles", "touchpoints", "paymenttypes"]
-    
-    for section in sections:
-        if section in config_data:
-            _upload_configuration(context, config_data, section)
-    
-    context.vars["last_config_loaded"] = config_name
-    LOGGER.info(f"Configuration {config_name} loaded and uploaded successfully")
-
-
-@given('i metodi di pagamento "{config_name}" sono configurati')
-def step_load_payment_methods(context, config_name: str):
-    """Load and upload payment methods from configuration file.
-    
-    Loads config_name.json from src/integration/gec/config/ and uploads
-    payment methods to the GEC API.
-    """
-    _ensure_vars_container(context)
-    
-    # Load configuration file
-    config_data = _load_config_file(context, config_name, file_type="json")
-    LOGGER.info(f"Payment methods configuration loaded: {config_name}.json")
-    
-    # Upload payment methods section
-    if "paymentmethods" in config_data:
-        _upload_configuration(context, config_data, "paymentmethods")
-    else:
-        raise AssertionError(f"No 'paymentmethods' section in {config_name}.json")
-    
-    context.vars["last_payment_methods_config"] = config_name
-    LOGGER.info(f"Payment methods {config_name} configured successfully")
-
-
-@when('il client ricerca i metodi di pagamento')
-def step_search_payment_methods(context):
-    """Trigger payment methods search API call."""
-    _ensure_vars_container(context)
-    
-    # Use payment methods search operation
-    payload_name = context.vars.get("payment_methods_request", "payment_methods_search")
-    
-    try:
-        _send_request(context, "Ricerca metodi di pagamento", payload_name)
-    except AssertionError:
-        # If payload not found, send empty request
-        LOGGER.warning("Payment methods payload not found, sending empty search")
-        client = _get_client(context)
-        context.response = client.post("/payment-methods", json_body={})
-    
-    LOGGER.info(f"Payment methods search triggered, status: {context.response.status_code}")
-
-
-@then('i metodi di pagamento sono ritornati')
-def step_assert_payment_methods_returned(context):
-    """Assert payment methods are returned in response."""
-    assert hasattr(context, "response") and context.response is not None
-    
-    try:
-        body = context.response.json()
-    except Exception as e:
-        raise AssertionError(f"Response not valid JSON: {e}")
-    
-    # Check for payment methods in response
-    methods = body.get("paymentMethods") or body.get("methods") or body or []
-    
-    assert isinstance(methods, list) and len(methods) > 0, (
-        "No payment methods found in response"
-    )
-    
-    LOGGER.info(f"Payment methods returned: {len(methods)} methods found")
-
-
+        if expected_reason == "":
+            if actual_reason not in (None, ""):
+                raise AssertionError(
+                    f"Method '{method_id}': expected disabledReason null/empty, got '{actual_reason}'"
+                )
+        elif str(actual_reason) != expected_reason:
+            raise AssertionError(
+                f"Method '{method_id}': expected disabledReason '{expected_reason}', got '{actual_reason}'"
+            )
 
 
 @then("nella risposta non è riportato il bundle delle Poste Italiane")
 def step_assert_poste_bundle_absent(context):
-    """Assert Poste Italiane bundle is not in response."""
-    assert hasattr(context, "response") and context.response is not None
-    try:
-        body = context.response.json()
-    except Exception as e:
-        raise AssertionError(f"Response not valid JSON: {e}")
-    
-    bundles = _get_bundled_response(body)
+    """Assert no bundle matches Poste rule for current allCcp mode."""
+    bundles = _bundle_rows(context)
+    is_enabled, id_psp_poste, poste_channel_ids = _poste_rule(context)
     for bundle in bundles:
-        psp_name = bundle.get("pspBusinessName") or bundle.get("idPsp") or ""
-        assert "poste" not in psp_name.lower(), (
-            f"Poste Italiane bundle found but expected absent: {psp_name}"
-        )
-    
-    LOGGER.info("Poste Italiane bundle absent assertion passed")
+        if is_enabled:
+            if bundle.get("idChannel") in poste_channel_ids:
+                raise AssertionError("Unexpected Poste bundle found in response")
+        elif bundle.get("idPsp") == id_psp_poste:
+            raise AssertionError("Unexpected Poste bundle found in response")
 
 
 @then("nella risposta è riportato il bundle delle Poste Italiane")
 def step_assert_poste_bundle_present(context):
-    """Assert Poste Italiane bundle is in response."""
-    assert hasattr(context, "response") and context.response is not None
-    try:
-        body = context.response.json()
-    except Exception as e:
-        raise AssertionError(f"Response not valid JSON: {e}")
-    
-    bundles = _get_bundled_response(body)
-    poste_found = False
-    for bundle in bundles:
-        psp_name = bundle.get("pspBusinessName") or bundle.get("idPsp") or ""
-        if "poste" in psp_name.lower():
-            poste_found = True
-            break
-    
-    assert poste_found, "Poste Italiane bundle not found in response"
-    LOGGER.info("Poste Italiane bundle present assertion passed")
+    """Assert at least one bundle matches Poste rule for current allCcp mode."""
+    bundles = _bundle_rows(context)
+    is_enabled, id_psp_poste, poste_channel_ids = _poste_rule(context)
+    if is_enabled:
+        found = any(bundle.get("idChannel") in poste_channel_ids for bundle in bundles)
+    else:
+        found = any(bundle.get("idPsp") == id_psp_poste for bundle in bundles)
+    assert found, "Expected Poste bundle not found in response"

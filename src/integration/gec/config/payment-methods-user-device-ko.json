@@ -1,36 +1,64 @@
 {
-  "paymentmethods": [
+  "paymentmethods":[
     {
-      "id": "3ce651gd-f840-6559-9fff-h7cg0gc55ehi",
+      "id": "1ac430fb-d628-4337-8ddd-f5ae9ea33cfb",
       "payment_method_id": "PAYPAL-test",
       "group": "PPAL",
       "name": {
-        "EN": "Paypal Device KO",
-        "IT": "Paypal Device KO"
+        "EN": "Paypal",
+        "IT": "Paypal"
       },
+      "description": {
+        "IT": "paga in 3 rate",
+        "EN": "pay in 3 installments"
+      },
+      "user_touchpoint": ["IO","CHECKOUT"],
+      "user_device": ["IOS", "ANDROID"],
       "status": "ENABLED",
-      "user_touchpoint": ["CHECKOUT"],
-      "user_device": ["DESKTOP"],
+      "payment_method_types": ["APP"],
+      "validity_date_from": "1995-01-13",
       "range_amount": {
-        "min": 1,
-        "max": 10000
-      }
+        "min": 10,
+        "max": 100000
+      },
+      "metadata": {
+        "installments": "true"
+      },
+      "payment_method_asset": "https://assets.cdn.platform.pagopa.it/apm/paypal.png",
+      "method_management": "NOT_ONBOARDABLE"
     },
     {
-      "id": "4df762he-g951-7660-9ggg-i8dh1hd66fij",
+      "id": "aeb73467-ec75-4eb5-a67f-8ae4bda1ef5c",
       "payment_method_id": "CARDS-test",
-      "group": "CARDS",
+      "group": "CP",
       "name": {
-        "EN": "Cards Device Restricted",
-        "IT": "Carte Device Restricted"
+        "IT": "Carte",
+        "EN": "CARDS"
+      },
+      "description": {
+        "IT": "Carta di debito o credito",
+        "EN": "Debit or Credit card"
       },
       "status": "ENABLED",
-      "user_touchpoint": ["IO"],
-      "user_device": ["SMARTWATCH"],
+      "payment_method_types": ["CARTE"],
+      "metadata": {
+        "installments": "true"
+      },
+      "user_touchpoint": [
+        "IO",
+        "CHECKOUT"
+      ],
+      "user_device": [
+        "IOS",
+        "ANDROID"
+      ],
+      "validity_date_from": "2005-03-23",
       "range_amount": {
-        "min": 1,
-        "max": 10000
-      }
+        "min": 0,
+        "max": 999999999
+      },
+      "method_management": "ONBOARDABLE",
+      "payment_method_asset": "https://assets.cdn.platform.pagopa.it/creditcard/generic.png"
     }
   ]
 }

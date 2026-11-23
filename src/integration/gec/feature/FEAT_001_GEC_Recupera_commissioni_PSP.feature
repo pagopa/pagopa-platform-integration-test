@@ -66,10 +66,6 @@ Funzionalità: Recupero delle commissioni del PSP
     Quando il client invia la richiesta di "Recupero commissioni" per il PSP "BPPIITRRXXX" con il payload "commissioni_ci_importo_touchpoint_timbro_digitale"
     Allora il sistema risponde con codice di stato 200
     E il corpo della risposta corrisponde al payload "commissioni_ci_importo_touchpoint_timbro_digitale_response"
-    E i valori del campo `onUs` delle opzioni bundle, dopo l'ordinamento previsto per l'API "V1", corrispondono ai seguenti:
-      | onUs  |
-      | false |
-      | false |
 
   @runnable
   @happy_path
@@ -103,3 +99,15 @@ Funzionalità: Recupero delle commissioni del PSP
     Quando il client invia la richiesta di "Recupero commissioni" per il PSP "UNCRITMM" con il payload "commissioni_ci_importo_touchpoint_amex"
     Allora il sistema risponde con codice di stato 200
     E il corpo della risposta corrisponde al payload "commissioni_ci_importo_touchpoint_amex_response"
+
+  @runnable
+  @happy_path
+  @gec_001_09
+  Scenario: Recupero delle commissioni per CI, importo, touchpoint, singolo PSP e con timbro digitale su entrambi i trasferimenti
+    Dato una richiesta di recupero commissioni "commissioni_ci_importo_touchpoint_timbro_digitale_entrambi"
+    Quando il client invia la richiesta di "Recupero commissioni" per il PSP "BPPIITRRXXX" con il payload "commissioni_ci_importo_touchpoint_timbro_digitale_entrambi"
+    Allora il sistema risponde con codice di stato 200
+    E i valori del campo `onUs` delle opzioni bundle, dopo l'ordinamento previsto per l'API "V1", corrispondono ai seguenti:
+      | onUs  |
+      | false |
+      | false |

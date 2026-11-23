@@ -1,0 +1,82 @@
+# GEC (AFM - Gestione Commissioni) UAT Configuration
+# Data source: pagopa-afm-calculator .env.uat
+
+gec:
+  # API endpoints - v1 and v2 calcolatore commissioni
+  url: https://api.uat.platform.pagopa.it/afm/calculator-service/v1
+  url_v2: https://api.uat.platform.pagopa.it/afm/calculator-service/v2
+
+  # API query extension (default for V2)
+  extension: "?maxOccurrences=10"
+
+  # Request timeout (in ms)
+  timeout: 5000
+
+  # Authentication
+  auth:
+    type: api-key
+    key_name: Ocp-Apim-Subscription-Key
+    key_value: $tas-gec-calculator-subscription-key
+    location: header
+
+  # Marketplace API for payment methods upload
+  marketplace_host: https://api.uat.platform.pagopa.it/afm/marketplace-service/v1
+  marketplace_key: $marketplace-subscription-key
+
+  # Azure Table Storage connection string (for issuer range management)
+  # Optional: if not provided, issuer range tests will be skipped
+  # Format: DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net
+  azure_connection_string: $azure-storage-connection-string
+
+  # Configuration API endpoints
+  configuration_host: https://api.uat.platform.pagopa.it/afm/configuration
+
+# Global test configuration
+global_configuration:
+  # PSP di test (Poste Italiane su UAT)
+  id_psp_poste: "BPPIITRRXXX"
+  psp_id: "BPPIITRRXXX"
+
+  # Channel IDs for Poste (multiple channels)
+  poste_channel_ids:
+    - "97103880585_07"
+    - "97103880585_07_ONUS"
+    - "97103880585_21"
+    - "97103880585_25"
+    - "97103880585_26"
+  poste_pay_channel_ids:
+    - "97103880585_37"
+    - "97103880585_37_ONUS"
+    - "97103880585_35"
+    - "97103880585_31"
+    - "97103880585_36"
+    - "97103880585_38"
+
+  # Marketplace channel for Poste
+  poste_marketplace_channel: "17103880000_01"
+
+  # Channel IDs for primary test PSP
+  channel_id: "17103880000_01"
+  channel_payment_id: "17103880000_02"
+
+  # Payment methods per test
+  payment_method_paypal: "PAYPAL-test"
+  payment_method_cards: "CARDS-test"
+
+  # Test CI/Primary Creditor Institution (da payload.yaml)
+  primary_creditor_institution: "77777777777"
+
+  # ABI specifici
+  amex_abi: "AMREX"
+
+  # AllCcp filter flag (enable new filter logic for Poste)
+  all_ccp_new_filter_enabled: false
+
+  # PSP blacklist for filtering
+  psp_blacklist: []
+
+  # Issuer range table name in Azure Storage
+  issuer_range_table: "pagopauweuafmsaissuerrangetable"
+
+  # Environment
+  environment: "uat"

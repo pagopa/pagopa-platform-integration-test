@@ -130,7 +130,7 @@ TEST_DATA:
         }
      ]
     }
-  commissioni_ci_importo_touchpoint_oltre_limite: &commissioni_ci_importo_touchpoint_oltre_limite |
+  commissioni_ci_importo_touchpoint_timbro_digitale_entrambi: &commissioni_ci_importo_touchpoint_timbro_digitale_entrambi |
     {
       "paymentAmount": 799999999999998,
       "primaryCreditorInstitution": "77777777777",
@@ -146,6 +146,23 @@ TEST_DATA:
           "creditorInstitution": "77777777778",
           "transferCategory": "TAX2",
           "digitalStamp": true
+        }
+      ]
+    }
+  commissioni_ci_importo_touchpoint_oltre_limite: &commissioni_ci_importo_touchpoint_oltre_limite |
+    {
+      "paymentAmount": 799999999999998,
+      "primaryCreditorInstitution": "77777777777",
+      "bin": "309500",
+      "touchpoint": "IO",
+      "transferList": [
+        {
+          "creditorInstitution": "77777777777",
+          "transferCategory": "TAX1"
+        },
+        {
+          "creditorInstitution": "77777777778",
+          "transferCategory": "TAX2"
         }
       ]
     }
