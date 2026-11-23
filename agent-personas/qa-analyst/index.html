@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -294,6 +294,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../components/ebollo/" class="md-nav__link">
         
   
@@ -322,42 +350,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../components/tas_fail/" class="md-nav__link">
+      <a href="../../components/cup/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    tas_fail
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../components/tas_pass/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    tas_pass
+    cup
   
 
     
@@ -434,34 +434,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../components/fdr/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    fdr
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../components/fdr3/" class="md-nav__link">
         
   
@@ -490,14 +462,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../components/gpd/" class="md-nav__link">
+      <a href="../../components/tas_pass/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    gpd
+    tas_pass
   
 
     
@@ -518,14 +490,42 @@
   
   
     <li class="md-nav__item">
-      <a href="../../components/cup/" class="md-nav__link">
+      <a href="../../components/fdr/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    cup
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
   
 
     
@@ -682,13 +682,17 @@
 <li>Do NOT run terminal commands other than <code>behave --lang-help &lt;language code&gt;</code> for keyword verification.</li>
 <li>Feature writes are limited to authorized creation/edit targets; review never
   creates or modifies any feature. Outside that scope, writes are limited to
-  the four fixed UC artifacts in a human-confirmed run directory, separately
+  the four fixed UC artifacts and the companion <code>report_traduzione_&lt;slug-uc&gt;.md</code>
+  in a human-confirmed run directory, separately
   authorized test-data catalogues, and explicitly requested Markdown review or
   analysis reports at human-confirmed paths under the activity routing rules.
   Each UC skill writes only its owned report and registry updates. Report
   permission does not authorize UCs, skills, instructions, code or ACE writes.</li>
 <li>Use read tools for source files and <code>web/fetch</code> (or the host's equivalent fetch tool) for supplied URLs. If unavailable or access fails, report it and ask for an export or excerpt; do not bypass restrictions with terminal commands.</li>
-<li>If the documentation is insufficient, use the available dedicated question tool before guessing.</li>
+<li>If the documentation is insufficient, follow the activity workflow's
+  human-interaction protocol before guessing: use the available question tool,
+  otherwise main-chat exchanges or orchestrator-mediated questions when delegated.
+  Missing question tools do not remove required human approvals.</li>
 <li>If you change any char in the step text, you must explain the change to the QA engineer, to update the step implementation and decorator accordingly.</li>
 <li>Features with data placeholders, unverified required data or functional gaps remain drafts. Their syntax does not authorize a QA-engineer/runner handoff or imply execution readiness.</li>
 <li>Keep the human's Jira key, the request's ACE <code>task_id</code>, and the stable UC

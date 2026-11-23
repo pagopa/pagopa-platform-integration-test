@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -294,6 +294,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../components/ebollo/" class="md-nav__link">
         
   
@@ -322,42 +350,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../components/tas_fail/" class="md-nav__link">
+      <a href="../../../components/cup/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    tas_fail
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../components/tas_pass/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    tas_pass
+    cup
   
 
     
@@ -434,34 +434,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../components/fdr/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    fdr
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../../components/fdr3/" class="md-nav__link">
         
   
@@ -490,14 +462,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../components/gpd/" class="md-nav__link">
+      <a href="../../../components/tas_pass/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    gpd
+    tas_pass
   
 
     
@@ -518,14 +490,42 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../components/cup/" class="md-nav__link">
+      <a href="../../../components/fdr/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    cup
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
   
 
     
@@ -577,6 +577,17 @@
     <span class="md-ellipsis">
       
         Select the activity (ADR-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#human-interaction-and-harness-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Human interaction and harness compatibility
       
     </span>
   </a>
@@ -652,8 +663,8 @@
 request comes directly from the user or from the orchestrator. These activity
 modes are independent of the orchestrator's branch/session modes.</p>
 <h2 id="select-the-activity-adr-02">Select the activity (ADR-02)</h2>
-<p>Use the explicit intent; ask through the dedicated question tool only when the
-action, files, or output scope is ambiguous. Supplied feature files alone do
+<p>Use the explicit intent; ask through the human-interaction protocol below only
+when the action, files, or output scope is ambiguous. Supplied feature files alone do
 not authorize editing. An explicit correction request authorizes its stated
 scope without a second generic permission question.</p>
 <table>
@@ -678,7 +689,7 @@ scope without a second generic permission question.</p>
 <tr>
 <td>Create from a team-template UC</td>
 <td>Read <a href="../../../use-cases/uc-workflow/">uc-workflow.md</a> and apply <a href="../../../.github/skills/uc-to-feature/SKILL.md">uc-to-feature</a></td>
-<td>Agreed features and the fixed UC reports/registry</td>
+<td>Agreed features, the fixed UC reports/registry and the translation report <code>report_traduzione_&lt;slug-uc&gt;.md</code></td>
 </tr>
 <tr>
 <td>Create from other documentation or an explicitly supplied migration suite</td>
@@ -695,6 +706,32 @@ activity before applying fixes proposed during a review.</p>
 <p>Direct <code>/uc-scenario-context</code> and <code>/uc-test-data</code> requests stop after their own
 report. <code>/uc-to-feature</code> in <code>assemble-only</code> consumes current existing reports;
 it does not run retrieval stages to repair prerequisites.</p>
+<h2 id="human-interaction-and-harness-compatibility">Human interaction and harness compatibility</h2>
+<p>Use the dedicated question tool when available in the current execution context.
+If absent, or the host reports it unavailable or unsupported, use main-chat
+exchanges when running directly with the human: state the question, exact scope,
+relevant options and consequences, then wait for an explicit human answer before
+dependent actions. Do not use chat fallback to bypass a refusal, cancellation or
+permission denial. Report other tool errors rather than silently treating them
+as unavailability. Silence, timeout and missing tools are not human decisions.</p>
+<p>When delegated and unable to ask the human directly, return <code>blocked</code> to the
+orchestrator with pending questions, scope/options, affected stage, actual saved
+outputs and the point to resume. Do not treat messages in a non-interactive worker
+transcript as questions delivered to the human. The orchestrator asks through its
+available question tool or main chat and returns actual human answers with their
+references; it must not decide for the human. Never delegate to yourself or invent
+a helper to obtain an answer.</p>
+<p>On resumed delegation consume the explicit answers and checkpoint, preserve UC
+identity/paths and saved work, and apply the existing continuity and invalidation
+gates. Use existing <code>Questions</code>/<code>History</code> and <code>open</code>/<code>pending-approval</code> values when
+authorized to persist them; missing tools are not <code>declined</code>/<code>rejected</code>. An
+unconfirmed output directory is not permission to create a registry there.
+Do not advance dependent stages while a required answer is missing.</p>
+<p>Chat fallback changes only the communication channel. It does not turn an
+authorized creation/edit request into chat-only or read-only work, nor expand
+write scope or replace mandatory persistent outputs. Missing question tools do
+not imply missing filesystem tools: report actual write failures separately and
+never claim an unsaved file exists. All feature, report and terminal limits remain.</p>
 <h2 id="common-evidence-rules-adr-04">Common evidence rules (ADR-04)</h2>
 <p>Read the <a href="../../../.github/skills/uc-scenario-context/source-policy.md">shared source policy</a>
 for source admission, reading tools, approval, provenance, privacy and failures.
@@ -733,8 +770,11 @@ format; use them when judging functional correctness during review as well.</p>
 <h2 id="uc-execution-and-resumption">UC execution and resumption</h2>
 <p>The UC workflow remains the authority for schema, ownership and invalidation.
 Confirm the run registry; context writes <code>01-context.md</code>, data consumes it and
-writes <code>02-test-data.md</code>, then translation consumes both and writes features
-and <code>03-feature-report.md</code>. Update <code>00-run.md</code> only for real outputs and changes.</p>
+writes <code>02-test-data.md</code>, then translation consumes both and writes features,
+<code>03-feature-report.md</code> and the companion <code>report_traduzione_&lt;slug-uc&gt;.md</code>, which
+collects implementation doubts and proposals of scenarios the UC does not cover
+(see the <a href="../../../use-cases/uc-workflow/#triage-dei-dubbi-e-report-di-traduzione">triage</a>).
+Update <code>00-run.md</code> only for real outputs and changes.</p>
 <p>Validate identity, producer, revisions and states before each stage. On
 resumption obtain and persist the scoped human continuity confirmation for
 inputs, reports and registered features; matching revisions do not establish

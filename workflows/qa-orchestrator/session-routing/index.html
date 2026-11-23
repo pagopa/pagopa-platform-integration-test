@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -294,6 +294,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../components/ebollo/" class="md-nav__link">
         
   
@@ -322,42 +350,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../components/tas_fail/" class="md-nav__link">
+      <a href="../../../components/cup/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    tas_fail
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../components/tas_pass/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    tas_pass
+    cup
   
 
     
@@ -434,34 +434,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../components/fdr/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    fdr
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../../components/fdr3/" class="md-nav__link">
         
   
@@ -490,14 +462,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../components/gpd/" class="md-nav__link">
+      <a href="../../../components/tas_pass/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    gpd
+    tas_pass
   
 
     
@@ -518,14 +490,42 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../components/cup/" class="md-nav__link">
+      <a href="../../../components/fdr/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    cup
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
   
 
     
@@ -685,7 +685,9 @@ actually requires it, not as a prerequisite for questions or exploration.</p>
    Check command exit codes; on failure, report the error and stop Git actions.</li>
 <li>Determine the requested workflow from explicit user intent:
    <strong>1: New work</strong>, <strong>2: Resume work</strong>, or <strong>3: Exploration</strong>.
-   If unclear, ask the user to choose through the dedicated question tool.
+   If unclear, ask the user to choose through the
+   <a href="../operations/#human-interaction-and-harness-compatibility">human-interaction protocol</a>:
+   use the available question tool, otherwise ask in the main chat and wait.
    Do not equate a missing Jira key with an invalid request.</li>
 <li>Follow the matrix below. Ask one decision at a time, reuse supplied answers,
    and do not repeat a Jira-key question when a valid key is already available.

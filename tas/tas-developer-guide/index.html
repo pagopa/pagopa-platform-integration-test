@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -294,6 +294,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../components/ebollo/" class="md-nav__link">
         
   
@@ -322,42 +350,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../components/tas_fail/" class="md-nav__link">
+      <a href="../../components/cup/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    tas_fail
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../components/tas_pass/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    tas_pass
+    cup
   
 
     
@@ -434,34 +434,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../components/fdr/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    fdr
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../components/fdr3/" class="md-nav__link">
         
   
@@ -490,14 +462,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../components/gpd/" class="md-nav__link">
+      <a href="../../components/tas_pass/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    gpd
+    tas_pass
   
 
     
@@ -518,14 +490,42 @@
   
   
     <li class="md-nav__item">
-      <a href="../../components/cup/" class="md-nav__link">
+      <a href="../../components/fdr/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    cup
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
   
 
     
@@ -639,6 +639,67 @@
     <span class="md-ellipsis">
       
         Quick reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-integration-guide-what-do-i-need-to-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick integration guide: what do I need to set?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick integration guide: what do I need to set?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parameter-names-gha-vs-ado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameter names: GHA vs ADO
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caller-side-syntax-gha-vs-ado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Caller-side syntax: GHA vs ADO
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#non-blocking-runs-the-tas_blocking-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-blocking runs: the tas_blocking pattern
       
     </span>
   </a>
@@ -1054,6 +1115,258 @@ Both <strong>Option 1 (ADO)</strong> and <strong>Option 2 (GHA action)</strong> 
 </tr>
 </tbody>
 </table>
+<hr />
+<h2 id="quick-integration-guide-what-do-i-need-to-set">Quick integration guide: what do I need to set?</h2>
+<p>Once you have picked Option 1 (ADO) or Option 2 (GHA action), use this section to find
+your use case and see <strong>what to set and where</strong>. The same table works for both platforms:
+the TAS parameters are the same, only the spelling differs
+(<code>snake_case</code> on GHA, <code>camelCase</code> on ADO, see <a href="#parameter-names-gha-vs-ado">Parameter names</a>).</p>
+<p>Every setting belongs to one of three groups. The last two are <strong>not</strong> part of the TAS
+contract: they live in your own pipeline.</p>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>What it is</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>TAS parameter</strong></td>
+<td>Passed to the action/template, understood by the TAS</td>
+<td><code>mode</code>, <code>ref</code>, <code>tags</code>, <code>allure</code>, <code>isQualityGateRun</code></td>
+</tr>
+<tr>
+<td><strong>Caller input forwarded to TAS</strong></td>
+<td>An input of <em>your</em> workflow/pipeline that you pass on to a TAS parameter, to make it selectable at run time</td>
+<td><code>tas_mode</code> → <code>mode</code>, <code>tas_ref</code> → <code>ref</code></td>
+</tr>
+<tr>
+<td><strong>Caller control</strong></td>
+<td>Decided only by your pipeline, the TAS never sees it</td>
+<td><code>tas_blocking</code>, <code>needs</code> / <code>dependsOn</code>, <code>continue-on-error</code> / <code>continueOnError</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="use-cases">Use cases</h3>
+<table>
+<thead>
+<tr>
+<th>Use case</th>
+<th>TAS parameters</th>
+<th>Caller pipeline (not TAS)</th>
+<th>What you get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Gate</strong>: tests must pass before the next step (e.g. deploy)</td>
+<td><code>mode: sync</code> (default)</td>
+<td>The next job/stage depends on the TAS one (<code>needs</code> / <code>dependsOn</code>), with the default success condition</td>
+<td>Pipeline stops if any scenario fails. Counters and <code>run_url</code> available</td>
+</tr>
+<tr>
+<td><strong>Advisory</strong>: run the tests, never block, but see the failure</td>
+<td><code>mode: sync</code></td>
+<td>Make the TAS step non-blocking (<code>continue-on-error</code> / <code>continueOnError</code>), typically driven by a caller input such as <code>tas_blocking</code> (see <a href="#non-blocking-runs-the-tas_blocking-pattern">below</a>)</td>
+<td>Pipeline proceeds, the failure is reported but does not stop anything</td>
+</tr>
+<tr>
+<td><strong>Fire and forget</strong>: start the tests, do not wait</td>
+<td><code>mode: async</code></td>
+<td>Nothing to gate: the step only reflects the dispatch</td>
+<td><code>correlation_id</code> only. The test result is visible in the TAS run, not in your pipeline</td>
+</tr>
+<tr>
+<td><strong>Dispatch only</strong>, you handle the rest</td>
+<td><code>mode: raw</code></td>
+<td>Polling/waiting is entirely yours</td>
+<td><code>correlation_id</code>, no Python needed on the agent</td>
+</tr>
+<tr>
+<td><strong>Run tests from a feature branch</strong></td>
+<td><code>ref: &lt;branch-or-tag&gt;</code></td>
+<td>Optionally expose a <code>tas_ref</code> input and forward it to <code>ref</code></td>
+<td>Tests run from that ref instead of <code>main</code></td>
+</tr>
+<tr>
+<td><strong>Choose sync/async at run time</strong></td>
+<td><code>mode</code></td>
+<td>Optionally expose a <code>tas_mode</code> input and forward it to <code>mode</code></td>
+<td>One pipeline, both behaviours</td>
+</tr>
+<tr>
+<td><strong>Run an e2e suite or filter scenarios</strong></td>
+<td><code>test_type</code> / <code>testType</code>, <code>suite</code>, <code>tags</code> (e.g. <code>@e2e</code>)</td>
+<td>none</td>
+<td>Only the matching scenarios run</td>
+</tr>
+<tr>
+<td><strong>Classify the run as Quality Gate</strong></td>
+<td><code>isQualityGateRun: true</code></td>
+<td>none</td>
+<td>Results are published and ingested as QG instead of TAS</td>
+</tr>
+<tr>
+<td><strong>Get Allure results</strong></td>
+<td><code>allure: true</code></td>
+<td>Render the HTML yourself (<code>allure generate</code>)</td>
+<td><code>allure-results/</code> inside the artifact</td>
+</tr>
+<tr>
+<td><strong>Run on prod</strong></td>
+<td>not supported (TAS targets <code>dev</code> / <code>uat</code>)</td>
+<td>Skip the TAS job on prod and let downstream jobs accept a skipped result</td>
+<td>Pipeline proceeds as before</td>
+</tr>
+<tr>
+<td><strong>GHA, tests already on <code>main</code>, no PAT</strong></td>
+<td>none (use Option 3, <code>workflow_call</code>)</td>
+<td>none</td>
+<td>Synchronous run with native outputs</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Why <code>async</code> does not combine with a failure policy.</strong> In <code>async</code> and <code>raw</code> the step only
+knows whether the <em>dispatch</em> worked, never whether the tests passed. Making it non-blocking
+only changes what happens if the dispatch itself fails. If you want "do not block but tell
+me about test failures", use <code>sync</code> with a non-blocking step.</p>
+</blockquote>
+<h3 id="parameter-names-gha-vs-ado">Parameter names: GHA vs ADO</h3>
+<table>
+<thead>
+<tr>
+<th>Meaning</th>
+<th>GHA action input</th>
+<th>ADO template parameter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test category</td>
+<td><code>test_type</code></td>
+<td><code>testType</code></td>
+</tr>
+<tr>
+<td>Suite</td>
+<td><code>suite</code></td>
+<td><code>suite</code></td>
+</tr>
+<tr>
+<td>Environment</td>
+<td><code>environment</code></td>
+<td><code>environment</code></td>
+</tr>
+<tr>
+<td>Mode</td>
+<td><code>mode</code></td>
+<td><code>mode</code></td>
+</tr>
+<tr>
+<td>TAS branch/tag</td>
+<td><code>ref</code></td>
+<td><code>ref</code></td>
+</tr>
+<tr>
+<td>Behave tag filter</td>
+<td><code>tags</code></td>
+<td><code>tags</code></td>
+</tr>
+<tr>
+<td>Allure results</td>
+<td><code>allure</code> (string <code>'true'</code>/<code>'false'</code>)</td>
+<td><code>allure</code> (boolean)</td>
+</tr>
+<tr>
+<td>Quality Gate run</td>
+<td><code>isQualityGateRun</code> (string <code>'true'</code>/<code>'false'</code>)</td>
+<td><code>isQualityGateRun</code> (boolean)</td>
+</tr>
+<tr>
+<td>GitHub PAT</td>
+<td><code>github_token</code></td>
+<td><code>githubToken</code></td>
+</tr>
+<tr>
+<td>Output prefix / step reference</td>
+<td>step <code>id:</code> (e.g. <code>tas</code>)</td>
+<td><code>stepName</code> (default <code>tas</code>)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="caller-side-syntax-gha-vs-ado">Caller-side syntax: GHA vs ADO</h3>
+<p>These are the pieces of the table above that belong to your pipeline.</p>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>GitHub Actions</th>
+<th>Azure DevOps</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gate the next step on the tests</td>
+<td>Next job <code>needs: [&lt;tas_job&gt;]</code>; it runs only if the TAS job succeeded</td>
+<td>Next stage <code>dependsOn: &lt;tas_stage&gt;</code> with <code>condition: succeeded()</code></td>
+</tr>
+<tr>
+<td>Make the TAS step non-blocking</td>
+<td><code>continue-on-error: &lt;expr&gt;</code> on the TAS step</td>
+<td><code>continueOnError: &lt;expr&gt;</code> on the job that wraps the template (a steps template cannot take it directly)</td>
+</tr>
+<tr>
+<td>Read the real outcome of a non-blocking step</td>
+<td><code>steps.&lt;id&gt;.outcome</code> (<code>failure</code> even when <code>continue-on-error</code> keeps the job green); <code>needs.&lt;job&gt;.result</code> would report success</td>
+<td>The job shows as <em>succeeded with issues</em>; read it with <code>dependencies.&lt;job&gt;.result</code></td>
+</tr>
+<tr>
+<td>Read the TAS results</td>
+<td><code>steps.&lt;id&gt;.outputs.&lt;name&gt;</code> (<code>run_url</code>, <code>outcome</code>, <code>passed</code>, ...)</td>
+<td><code>stageDependencies.&lt;stage&gt;.&lt;job&gt;.outputs['&lt;stepName&gt;.&lt;NAME&gt;']</code> (<code>RUN_URL</code>, <code>CORRELATION_ID</code>, ...)</td>
+</tr>
+<tr>
+<td>Skip TAS on prod</td>
+<td><code>if: &lt;env&gt; != 'prod'</code> on the TAS job; downstream <code>if</code> accepts <code>skipped</code></td>
+<td><code>condition: ne(&lt;env&gt;, 'prod')</code> on the TAS stage; downstream condition accepts a skipped stage</td>
+</tr>
+</tbody>
+</table>
+<h3 id="non-blocking-runs-the-tas_blocking-pattern">Non-blocking runs: the <code>tas_blocking</code> pattern</h3>
+<p>The TAS action/template has <strong>no</strong> "do not fail" option on purpose: whether a failure stops
+your pipeline is a decision of the caller. A pattern used by <code>pagopa-fdr</code>
+(<code>04_release_and_deploy.yml</code>) is a boolean <em>caller</em> input <code>tas_blocking</code> (default <code>true</code>)
+wired to <code>continue-on-error</code>. It is <strong>not</strong> passed to the TAS.</p>
+<pre><code class="language-yaml"># GitHub Actions
+- name: Run TAS
+  id: tas
+  continue-on-error: ${{ format('{0}', inputs.tas_blocking) == 'false' }}
+  uses: pagopa/pagopa-platform-integration-test/.github/actions/tas-integration-tests@main
+  with:
+    mode: ${{ inputs.tas_mode || 'sync' }}   # caller input forwarded to a TAS parameter
+    ref:  ${{ inputs.tas_ref  || 'main' }}   # caller input forwarded to a TAS parameter
+    # ...
+</code></pre>
+<p>Two details are easy to get wrong:</p>
+<ul>
+<li><strong>Write the comparison with <code>format()</code>.</strong> On events that have no inputs (<code>merge_group</code>,
+  <code>pull_request</code>) <code>inputs.tas_blocking</code> is <code>null</code>, and <code>null == false</code> is <em>true</em> in GitHub
+  expressions. A plain <code>inputs.tas_blocking == false</code> would silently make the automatic runs
+  non-blocking and disable the gate.</li>
+<li><strong>Make the ignored failure visible.</strong> With <code>continue-on-error</code> the job is green. Export
+  <code>steps.&lt;id&gt;.outcome</code> as a job output and/or emit a warning or step summary, otherwise a
+  failing test suite goes unnoticed.</li>
+</ul>
+<blockquote>
+<p><strong>ADO equivalent (to be validated on a real pipeline).</strong> Declare a boolean pipeline
+parameter (for example <code>tasBlocking</code>, default <code>true</code>) and set
+<code>continueOnError: ${{ not(parameters.tasBlocking) }}</code> on the job that wraps the template.
+ADO parameters are resolved at compile time and always have a value, so the <code>null</code>
+pitfall above does not apply. Check that the downstream stage condition (<code>succeeded()</code>)
+accepts a job that ended <em>succeeded with issues</em> in your project before relying on it.</p>
+</blockquote>
 <hr />
 <h2 id="the-target-branch-question">The target branch question</h2>
 <p>A crucial aspect to consider when choosing an integration option is the ability to specify

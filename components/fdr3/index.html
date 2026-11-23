@@ -13,17 +13,17 @@
         <link rel="canonical" href="https://pagopa.github.io/pagopa-platform-integration-test/components/fdr3/">
       
       
-        <link rel="prev" href="../fdr/">
+        <link rel="prev" href="../tas_mixed/">
       
       
-        <link rel="next" href="../gpd/">
+        <link rel="next" href="../tas_pass/">
       
       
         
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -300,6 +300,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../ebollo/" class="md-nav__link">
         
   
@@ -328,42 +356,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../tas_fail/" class="md-nav__link">
+      <a href="../cup/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    tas_fail
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tas_pass/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    tas_pass
+    cup
   
 
     
@@ -420,34 +420,6 @@
     
   
     tas_mixed
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../fdr/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    fdr
   
 
     
@@ -528,10 +500,21 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#cancellazione-di-un-flusso-di-rendicontazione" class="md-nav__link">
+  <a href="#aggiunta-di-pagamenti-a-un-flusso-di-rendicontazione" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Cancellazione di un flusso di rendicontazione
+        Aggiunta di pagamenti a un flusso di rendicontazione
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rimozione-di-pagamenti-da-un-flusso-di-rendicontazione" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rimozione di pagamenti da un flusso di rendicontazione
       
     </span>
   </a>
@@ -550,32 +533,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#recupero-fdr-pubblicati-per-organizzazione" class="md-nav__link">
+  <a href="#workflow-di-creazione-e-gestione-delle-revisioni-di-un-flusso-di-rendicontazione" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Recupero FdR pubblicati per organizzazione
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#verifica-paginazione-per-le-api-organizzazione" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Verifica paginazione per le API organizzazione
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#verifica-paginazione-per-le-api-psp" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Verifica paginazione per le API PSP
+        Workflow di creazione e gestione delle revisioni di un flusso di rendicontazione
       
     </span>
   </a>
@@ -605,10 +566,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#aggiunta-di-pagamenti-a-un-flusso-di-rendicontazione" class="md-nav__link">
+  <a href="#cancellazione-di-un-flusso-di-rendicontazione" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Aggiunta di pagamenti a un flusso di rendicontazione
+        Cancellazione di un flusso di rendicontazione
       
     </span>
   </a>
@@ -616,21 +577,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#workflow-di-creazione-e-gestione-delle-revisioni-di-un-flusso-di-rendicontazione" class="md-nav__link">
+  <a href="#verifica-paginazione-per-le-api-psp" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Workflow di creazione e gestione delle revisioni di un flusso di rendicontazione
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#rimozione-di-pagamenti-da-un-flusso-di-rendicontazione" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Rimozione di pagamenti da un flusso di rendicontazione
+        Verifica paginazione per le API PSP
       
     </span>
   </a>
@@ -642,6 +592,28 @@
     <span class="md-ellipsis">
       
         Cancellazione di FdR creati
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verifica-paginazione-per-le-api-organizzazione" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verifica paginazione per le API organizzazione
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recupero-fdr-pubblicati-per-organizzazione" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recupero FdR pubblicati per organizzazione
       
     </span>
   </a>
@@ -675,14 +647,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../gpd/" class="md-nav__link">
+      <a href="../tas_pass/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    gpd
+    tas_pass
   
 
     
@@ -703,14 +675,42 @@
   
   
     <li class="md-nav__item">
-      <a href="../cup/" class="md-nav__link">
+      <a href="../fdr/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    cup
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
   
 
     
@@ -758,10 +758,21 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#cancellazione-di-un-flusso-di-rendicontazione" class="md-nav__link">
+  <a href="#aggiunta-di-pagamenti-a-un-flusso-di-rendicontazione" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Cancellazione di un flusso di rendicontazione
+        Aggiunta di pagamenti a un flusso di rendicontazione
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rimozione-di-pagamenti-da-un-flusso-di-rendicontazione" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rimozione di pagamenti da un flusso di rendicontazione
       
     </span>
   </a>
@@ -780,32 +791,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#recupero-fdr-pubblicati-per-organizzazione" class="md-nav__link">
+  <a href="#workflow-di-creazione-e-gestione-delle-revisioni-di-un-flusso-di-rendicontazione" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Recupero FdR pubblicati per organizzazione
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#verifica-paginazione-per-le-api-organizzazione" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Verifica paginazione per le API organizzazione
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#verifica-paginazione-per-le-api-psp" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Verifica paginazione per le API PSP
+        Workflow di creazione e gestione delle revisioni di un flusso di rendicontazione
       
     </span>
   </a>
@@ -835,10 +824,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#aggiunta-di-pagamenti-a-un-flusso-di-rendicontazione" class="md-nav__link">
+  <a href="#cancellazione-di-un-flusso-di-rendicontazione" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Aggiunta di pagamenti a un flusso di rendicontazione
+        Cancellazione di un flusso di rendicontazione
       
     </span>
   </a>
@@ -846,21 +835,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#workflow-di-creazione-e-gestione-delle-revisioni-di-un-flusso-di-rendicontazione" class="md-nav__link">
+  <a href="#verifica-paginazione-per-le-api-psp" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Workflow di creazione e gestione delle revisioni di un flusso di rendicontazione
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#rimozione-di-pagamenti-da-un-flusso-di-rendicontazione" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Rimozione di pagamenti da un flusso di rendicontazione
+        Verifica paginazione per le API PSP
       
     </span>
   </a>
@@ -872,6 +850,28 @@
     <span class="md-ellipsis">
       
         Cancellazione di FdR creati
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verifica-paginazione-per-le-api-organizzazione" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verifica paginazione per le API organizzazione
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recupero-fdr-pubblicati-per-organizzazione" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recupero FdR pubblicati per organizzazione
       
     </span>
   </a>
@@ -910,17 +910,17 @@
 
 
 <h1 id="fdr3-features">fdr3 features:</h1>
-<h2 id="cancellazione-di-un-flusso-di-rendicontazione"><a href="FEAT_003_FdR3_Cancella_flusso/">Cancellazione di un flusso di rendicontazione</a></h2>
+<h2 id="aggiunta-di-pagamenti-a-un-flusso-di-rendicontazione"><a href="FEAT_001_FdR3_Aggiungi_pagamenti/">Aggiunta di pagamenti a un flusso di rendicontazione</a></h2>
+<h2 id="rimozione-di-pagamenti-da-un-flusso-di-rendicontazione"><a href="FEAT_004_FdR3_Cancella_pagamenti/">Rimozione di pagamenti da un flusso di rendicontazione</a></h2>
 <h2 id="verifica-ko-della-pubblicazione-fdr"><a href="FEAT_008_FdR3_Pubblicazione_KO/">Verifica KO della pubblicazione FdR</a></h2>
-<h2 id="recupero-fdr-pubblicati-per-organizzazione"><a href="FEAT_011_FdR3_Recupero_FdR_Pubblicati_Organizzazione/">Recupero FdR pubblicati per organizzazione</a></h2>
-<h2 id="verifica-paginazione-per-le-api-organizzazione"><a href="FEAT_009_FdR3_Paginazione_Organizzazione/">Verifica paginazione per le API organizzazione</a></h2>
-<h2 id="verifica-paginazione-per-le-api-psp"><a href="FEAT_010_FdR3_Paginazione_PSP/">Verifica paginazione per le API PSP</a></h2>
+<h2 id="workflow-di-creazione-e-gestione-delle-revisioni-di-un-flusso-di-rendicontazione"><a href="FEAT_002_FdR3_Pubblicazione/">Workflow di creazione e gestione delle revisioni di un flusso di rendicontazione</a></h2>
 <h2 id="rimozione-di-pagamenti-da-un-fdr"><a href="FEAT_007_FdR3_Cancella_pagamenti_KO/">Rimozione di pagamenti da un FdR</a></h2>
 <h2 id="verifica-ko-dei-pagamenti"><a href="FEAT_005_FdR3_Aggiungi_pagamenti_KO/">Verifica KO dei pagamenti</a></h2>
-<h2 id="aggiunta-di-pagamenti-a-un-flusso-di-rendicontazione"><a href="FEAT_001_FdR3_Aggiungi_pagamenti/">Aggiunta di pagamenti a un flusso di rendicontazione</a></h2>
-<h2 id="workflow-di-creazione-e-gestione-delle-revisioni-di-un-flusso-di-rendicontazione"><a href="FEAT_002_FdR3_Pubblicazione/">Workflow di creazione e gestione delle revisioni di un flusso di rendicontazione</a></h2>
-<h2 id="rimozione-di-pagamenti-da-un-flusso-di-rendicontazione"><a href="FEAT_004_FdR3_Cancella_pagamenti/">Rimozione di pagamenti da un flusso di rendicontazione</a></h2>
+<h2 id="cancellazione-di-un-flusso-di-rendicontazione"><a href="FEAT_003_FdR3_Cancella_flusso/">Cancellazione di un flusso di rendicontazione</a></h2>
+<h2 id="verifica-paginazione-per-le-api-psp"><a href="FEAT_010_FdR3_Paginazione_PSP/">Verifica paginazione per le API PSP</a></h2>
 <h2 id="cancellazione-di-fdr-creati"><a href="FEAT_006_FdR3_Cancella_FdR_KO/">Cancellazione di FdR creati</a></h2>
+<h2 id="verifica-paginazione-per-le-api-organizzazione"><a href="FEAT_009_FdR3_Paginazione_Organizzazione/">Verifica paginazione per le API organizzazione</a></h2>
+<h2 id="recupero-fdr-pubblicati-per-organizzazione"><a href="FEAT_011_FdR3_Recupero_FdR_Pubblicati_Organizzazione/">Recupero FdR pubblicati per organizzazione</a></h2>
 <hr>
 <h2 id="allure-test-report"><a href="https://pagopa.github.io/pagopa-platform-integration-test/fdr3-tests">Allure Test report</a></h2>
 

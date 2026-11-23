@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -294,6 +294,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../components/gpd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gpd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../components/ebollo/" class="md-nav__link">
         
   
@@ -322,42 +350,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../components/tas_fail/" class="md-nav__link">
+      <a href="../../components/cup/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    tas_fail
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../components/tas_pass/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    tas_pass
+    cup
   
 
     
@@ -434,34 +434,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../components/fdr/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    fdr
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../components/fdr3/" class="md-nav__link">
         
   
@@ -490,14 +462,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../components/gpd/" class="md-nav__link">
+      <a href="../../components/tas_pass/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    gpd
+    tas_pass
   
 
     
@@ -518,14 +490,42 @@
   
   
     <li class="md-nav__item">
-      <a href="../../components/cup/" class="md-nav__link">
+      <a href="../../components/fdr/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    cup
+    fdr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../components/tas_fail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tas_fail
   
 
     
@@ -697,12 +697,25 @@ QA Hub PostgreSQL tables into their Azure Data Explorer (ADX) mirrors. The logic
 <td><code>qachub.flaky_scenarios</code></td>
 <td><code>QA_NRT_FLAKY_SCENARIOS</code></td>
 </tr>
+<tr>
+<td><code>qachub.flaky_registry</code></td>
+<td><code>QA_NRT_FLAKY_REGISTRY</code></td>
+</tr>
+<tr>
+<td><code>qachub.flaky_scores</code></td>
+<td><code>QA_NRT_FLAKY_SCORES</code></td>
+</tr>
+<tr>
+<td><code>qachub.flaky_recompute_status</code></td>
+<td><code>QA_NRT_FLAKY_RECOMPUTE_STATUS</code></td>
+</tr>
 </tbody>
 </table>
 <h2 id="modes">Modes</h2>
 <p>All windows are UTC days and apply to <code>test_runs.timestamp_start</code>. Executions follow their
-run. Suites and flaky scenarios are always reloaded in full: suites have no timestamp, and
-flaky status can change for scenarios inserted before the selected run window.</p>
+run. Suites and all four flaky tables are always reloaded in full: their current state
+can change independently of the selected run window. Deletions in PostgreSQL are also
+reflected in ADX, including when a source table is empty.</p>
 <table>
 <thead>
 <tr>
@@ -743,14 +756,14 @@ pull requests do not trigger synchronization.</p>
 <ol>
 <li>Reads <code>qa-centralhub-database-url</code> from <code>pagopa-&lt;d|u|p&gt;-itn-qa-kv</code> with the runner's
    managed identity.</li>
-<li>Exports the four tables in one read-only <code>REPEATABLE READ</code> transaction to gzip
+<li>Exports the seven tables in one read-only <code>REPEATABLE READ</code> transaction to gzip
    JSON-lines files.</li>
-<li>Checks that all eight target and staging tables already exist, then ingests each
+<li>Checks that all fourteen target and staging tables already exist, then ingests each
    file with queued ingestion into its <code>&lt;TABLE&gt;_STAGING</code> table and waits until the
    staged row count matches. The script does not create or alter table schemas.</li>
 <li>Publishes:</li>
-<li><code>snapshot</code> mode, suites, and flaky scenarios use <code>.replace extents</code>, an atomic
-     swap per table, not a transaction across the four tables.</li>
+<li><code>snapshot</code> mode, suites, and all flaky tables use <code>.replace extents</code>, an atomic
+     swap per table, not a transaction across the seven tables.</li>
 <li>The windowed modes soft-delete the rows in the window from the target tables
      (<code>.delete ... records</code>), then <code>.move extents</code> from staging. Rerunning the same
      window is idempotent.</li>
@@ -764,12 +777,15 @@ pull requests do not trigger synchronization.</p>
   <code>ManagedIdentityCredential()</code> with the Container Apps Job's system-assigned identity.
   They do not fall back to Azure CLI, OIDC deployment credentials, or client secrets.
   Key Vault authentication continues using the existing repository resolver.</li>
-<li><strong>Tables and schemas</strong>: infrastructure must precreate the four target tables and their
+<li><strong>Tables and schemas</strong>: infrastructure must precreate the seven target tables and their
   matching staging tables in each enabled environment:</li>
 <li><code>QA_NRT_TEST_SUITES</code> and <code>QA_NRT_TEST_SUITES_STAGING</code></li>
 <li><code>QA_NRT_TEST_RUNS</code> and <code>QA_NRT_TEST_RUNS_STAGING</code></li>
 <li><code>QA_NRT_TEST_EXECUTIONS</code> and <code>QA_NRT_TEST_EXECUTIONS_STAGING</code></li>
 <li><code>QA_NRT_FLAKY_SCENARIOS</code> and <code>QA_NRT_FLAKY_SCENARIOS_STAGING</code></li>
+<li><code>QA_NRT_FLAKY_REGISTRY</code> and <code>QA_NRT_FLAKY_REGISTRY_STAGING</code></li>
+<li><code>QA_NRT_FLAKY_SCORES</code> and <code>QA_NRT_FLAKY_SCORES_STAGING</code></li>
+<li><code>QA_NRT_FLAKY_RECOMPUTE_STATUS</code> and <code>QA_NRT_FLAKY_RECOMPUTE_STATUS_STAGING</code></li>
 <li>Each target and staging table must have the same exported columns, in the same
     order and with the matching ADX types.</li>
 <li>In addition to their pre-existing columns, <code>QA_NRT_TEST_RUNS</code> and its staging table
