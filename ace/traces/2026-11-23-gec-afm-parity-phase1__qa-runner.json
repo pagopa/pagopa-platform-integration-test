@@ -1,0 +1,36 @@
+{
+  "task_id": "2026-11-23-gec-afm-parity-phase1",
+  "agent": "qa-runner",
+  "started_at": "2026-11-23T16:40:00Z",
+  "ended_at": "2026-11-23T16:47:00Z",
+  "request_summary": "Controlli statici della suite GEC (compilazione, JSON, YAML, behave --dry-run) con approvazione esplicita dell'utente, senza eseguire scenari.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "primo run: compilazione in memoria di 11 file, json.load di 7 config e bundle_poste.json (utf-8-sig), yaml.safe_load di 3 YAML: passed; behave --dry-run --format steps.usage: failed, 54 step undefined e 6 unused, causa ':' finale nei decoratori",
+      "tool": "powershell"
+    },
+    {
+      "description": "secondo run dopo il round 5 (controlli 1 e 4): compilazione passed, dry-run passed con exit 0, 0 undefined/unused/ambigui, 31 definizioni e 308 usi; confronto di git status invariato per src",
+      "tool": "powershell"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "verified",
+    "detail": "Piani approvati eseguiti, esito e codici di uscita letti dai comandi reali. Copertura statica soltanto: nessuno scenario, hook o chiamata a DEV/UAT."
+  },
+  "notes": "Interprete C:\\Python314\\python.exe, Python 3.14.3, behave 1.2.6. Il run con Start-Process e redirect su file ha evitato il NativeCommandError di 2>&1. L'output steps.usage supera 70 KB e non stampa i totali. Lavoro svolto sotto task_id 2026-11-20-gec-afm-parity-phase1, riregistrato con questo ID per la chiusura ACE.",
+  "friction": [
+    {
+      "description": "Il primo script e fallito perche Get-Command python restituiva 3 percorsi; ripetuto con il primo percorso senza eseguire alcun controllo due volte.",
+      "recovered": true
+    },
+    {
+      "description": "Preflight non pianificato (versioni, import, scansione degli import) segnalato come tale; 2>&1 ha generato NativeCommandError nel primo run.",
+      "recovered": true
+    }
+  ],
+  "counted_for_playbook_at": "2026-11-23T16:51:04.200Z"
+}

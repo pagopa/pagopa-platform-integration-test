@@ -1,0 +1,60 @@
+{
+  "task_id": "2026-11-23-gec-afm-parity-phase1",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-11-20T09:00:00Z",
+  "ended_at": "2026-11-23T16:55:00Z",
+  "request_summary": "Portare nella suite GEC (Python/Behave) la parita con i test AFM (Node/Cucumber): scenari, step, dati, config e hook; riprendere il lavoro in nuova sessione dal handout.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "ripresa da handout sul branch PQ-835-gec-implementazione-test (workflow 2), lettura di persona, session-routing, operations e istruzioni ACE; checkpoint su branch e working tree",
+      "tool": "view, powershell"
+    },
+    {
+      "description": "delegato al QA-engineer il round 2 (15 difetti): esito blocked, nessuno strumento di scrittura disponibile nella sessione delegata da CLI; l'implementazione e stata poi eseguita dall'utente invocando l'agente direttamente in VS Code Chat (round 2-5)",
+      "tool": "task"
+    },
+    {
+      "description": "review read-only delegata al QA-engineer dopo i round 2 e 3; verificati di persona due difetti (payload ricerca metodi non usato, BOM in bundle_poste.json con byte 239,187,191) e il difetto di stato condiviso context.vars (creato in before_all, azzerato solo in parte da before_scenario)",
+      "tool": "task, powershell"
+    },
+    {
+      "description": "riletti i 6 decoratori step-tabella dopo il round 5 (nessun ':' finale rimasto) e il before_scenario dopo il round 4",
+      "tool": "powershell"
+    },
+    {
+      "description": "controlli statici delegati al QA-runner con approvazione esplicita dell'utente: compilazione, json.load, yaml.safe_load e behave --dry-run; il primo dry-run ha trovato 54 step undefined (colon finale nei decoratori), il secondo run (controlli 1 e 4) e passato con exit 0",
+      "tool": "task"
+    },
+    {
+      "description": "assessment README (ppa-readme): chiavi documentate presenti in dev.yaml e uat.yaml; corretti i link assoluti al PC locale in link relativi in src/integration/gec/<URL>",
+      "tool": "powershell, edit"
+    },
+    {
+      "description": "il privacy addon e fallito per il task_id originale 2026-11-20-gec-afm-parity-phase1 (assenza di manifest di delegazione); su scelta dell'utente la chiusura ACE e stata riregistrata con il nuovo task_id 2026-11-23-gec-afm-parity-phase1 tramite prepare_delegation.js",
+      "tool": "powershell"
+    }
+  ],
+  "outcome": {
+    "status": "partial",
+    "evaluated_by": "verified",
+    "detail": "Implementazione GEC allineata ad AFM, rivista read-only e con controlli statici tutti passed (compilazione, JSON, YAML, dry-run con 0 step undefined/unused/ambigui). Stato implemented-not-run: nessuno scenario eseguito, nessuna prova a runtime verso DEV/UAT; commit, push e PR non autorizzati."
+  },
+  "notes": "Verifiche concrete riportate in actions: grep/hex sul BOM e sui decoratori, lettura di environment.py, output reale del dry-run del runner. Il lavoro operativo e iniziato con task_id 2026-11-20-gec-afm-parity-phase1; qui e riportato con un nuovo ID solo per la chiusura ACE. AFM-TO-GEC-INVERSE-ANALYSIS.md e SINTESI-INVERSA-ITALIANO.md contenevano affermazioni false e non sono stati usati.",
+  "friction": [
+    {
+      "description": "QA-engineer delegato da CLI privo di strumenti di scrittura: 4 tentativi blocked in totale; aggirato facendo eseguire i round direttamente dall'utente in VS Code Chat.",
+      "recovered": true
+    },
+    {
+      "description": "Il task_id originale non aveva manifest di delegazione nel runtime ACE, quindi il privacy addon e fallito due volte (cartella delegations mancante, poi nessun manifest); recuperato con nuovo task_id e manifest generati da prepare_delegation.js.",
+      "recovered": true
+    },
+    {
+      "description": "Mojibake nella visualizzazione PowerShell dei file UTF-8 con accenti, risolto controllando i byte.",
+      "recovered": true
+    }
+  ],
+  "counted_for_playbook_at": "2026-11-23T16:51:04.200Z"
+}

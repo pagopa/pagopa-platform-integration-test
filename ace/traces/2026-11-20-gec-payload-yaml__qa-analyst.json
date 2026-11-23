@@ -1,0 +1,29 @@
+{
+  "task_id": "2026-11-20-gec-payload-yaml",
+  "agent": "qa-analyst",
+  "started_at": "2026-11-20T10:42:00Z",
+  "ended_at": "2026-11-20T10:52:00Z",
+  "request_summary": "Aggiungere a payload.yaml i payload JSON dei 9 sorgenti upstream, allineati ai nomi chiave dei feature FEAT_003-007.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "letti payload.yaml, baseline e feature nuovi, e i 9 sorgenti completi",
+      "tool": "read_file"
+    },
+    {
+      "description": "aggiunte 33 chiavi in coda a payload.yaml con alias YAML per i payload identici",
+      "tool": "edit"
+    },
+    {
+      "description": "verificata per ricerca l'unicita delle 51 chiavi e riletta la giunzione tra voci vecchie e nuove"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "pagopa-platform-integration-test-auto",
+    "detail": "Catalogo popolato senza modificare feature ne chiavi esistenti; la validita YAML/JSON e stata poi confermata dall'orchestratore."
+  },
+  "friction": [],
+  "counted_for_playbook_at": "2026-11-20T09:42:03.232Z"
+}

@@ -1,0 +1,31 @@
+{
+  "task_id": "2026-11-20-gec-step-merge-analysis",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-11-20T14:00:00Z",
+  "ended_at": "2026-11-20T14:20:00Z",
+  "request_summary": "Analizzare tutti i feature GEC e gli step upstream per proporre un elenco di step accomunabili da decidere caso per caso.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "scaricati i file upstream delle step definition in cartella temporanea e preparati i manifest ACE; delegata a QA-analyst una review in sola lettura",
+      "tool": "run_in_terminal"
+    },
+    {
+      "description": "letto il report dell'analyst e verificato con git status che nessun file del repository e stato modificato dall'analisi",
+      "tool": "run_in_terminal"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "verified",
+    "detail": "Review in sola lettura completata con 15 proposte e 7 decisioni; nessuna modifica applicata in attesa delle decisioni dell'utente."
+  },
+  "friction": [
+    {
+      "description": "Il comando di preparazione ha restituito exit code 1 solo per il grep finale senza righe; nessun problema reale.",
+      "recovered": true
+    }
+  ],
+  "counted_for_playbook_at": "2026-11-20T10:27:09.756Z"
+}
