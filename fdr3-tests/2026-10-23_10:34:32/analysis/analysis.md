@@ -1,1 +1,0 @@
-Although no test failures were detected in the 'FDR-3' suite, QA should review the execution logs to confirm the run completed fully and that no tests were unintentionally skipped or filtered out.
