@@ -7,31 +7,38 @@ Funzionalità: Esecuzione del flusso di pagamento
         Dato che i sistemi sono operativi
 
     @runnable
-    @pos_002_01 @integration
-    Scenario: Creazione della posizione debitoria con IUV generato dal POS Gateway
+    @pos_002_01 
+    @integration
+    @positive
+    Scenario: Flusso di pagamento con type "TO_CREATE"
         Quando il Gestionale EC invia la richiesta di avvio del flusso di pagamento con type "TO_CREATE" 
         Allora il Gestionale EC ottiene l'esito dell'operazione di pagamento con status "200"
         E la posizione debitoria risulta creata e con status "PAID" 
       
     @runnable
-    @pos_002_02 @integration
-    Scenario: Creazione della posizione debitoria con IUV fornito dall'Ente
+    @pos_002_02
+    @integration
+    @positive
+    Scenario: Flusso di pagamento con type "TO_CREATE_PROVIDED_IUV"
         Quando il Gestionale EC invia la richiesta di avvio del flusso di pagamento con type "TO_CREATE_PROVIDED_IUV" e con uno IUV 
         Allora il Gestionale EC ottiene l'esito dell'operazione di pagamento con status "200"
         E la posizione debitoria risulta creata con lo IUV fornito e con status "PAID" 
 
 
     @runnable
-    @pos_002_03 @integration
-    Scenario: Attivazione del pagamento su una posizione debitoria esistente
+    @pos_002_03 
+    @integration
+    @positive
+    Scenario: Flusso di pagamento con type "CI_PROVIDED"
         Quando il Gestionale EC invia la richiesta di avvio del flusso di pagamento con type "CI_PROVIDED" e fornisce un notice_number 
         Allora il Gestionale EC ottiene l'esito dell'operazione di pagamento con status "200"
         E lo stato della posizione debitoria è "PAID"
 
     
     @runnable
+    @pos_002_04 
+    @integration
     @negative
-    @pos_002_04 @integration
     Scenario: Creazione della posizione debitoria fallita per IUV non valido
         Quando il Gestionale EC invia la richiesta di avvio del flusso di pagamento con type "TO_CREATE_PROVIDED_IUV" e con uno IUV errato "111111"
         Allora il Gestionale EC ottiene l'esito dell'operazione di pagamento con status "400"
@@ -39,8 +46,9 @@ Funzionalità: Esecuzione del flusso di pagamento
 
     
     @runnable
+    @pos_002_05 
+    @integration
     @negative
-    @pos_002_05 @integration
     Scenario: Attivazione del pagamento fallita per notice_number non valido
         Quando il Gestionale EC invia la richiesta di avvio del flusso di pagamento con type "CI_PROVIDED" e notice_number errato 
         Allora il Gestionale EC ottiene l'esito dell'operazione di pagamento con status "400"
