@@ -208,11 +208,14 @@ def test_suites_query_is_never_windowed():
 
 
 @pytest.mark.parametrize("mode", sync.MODES)
-def test_flaky_scenarios_query_is_always_full(mode):
-    """Export all flaky statuses even when inserted before the selected runs window."""
+@pytest.mark.parametrize("spec", [
+    sync.FLAKY_SCENARIOS, sync.FLAKY_REGISTRY, sync.FLAKY_SCORES, sync.FLAKY_RECOMPUTE_STATUS,
+])
+def test_flaky_tables_query_is_always_full(mode, spec):
+    """Export all mutable flaky state regardless of the selected runs window."""
     window = sync.compute_window(mode, date(2026, 9, 1), date(2026, 9, 30), TODAY)
-    sql, params = sync.build_select_query(sync.FLAKY_SCENARIOS, window)
-    assert sql == f"SELECT {sync.FLAKY_SCENARIOS.select_list} FROM qachub.flaky_scenarios f"
+    sql, params = sync.build_select_query(spec, window)
+    assert sql == f"SELECT {spec.select_list} FROM qachub.{spec.pg_table} f"
     assert params == {}
 
 
@@ -235,7 +238,7 @@ def test_added_columns_have_expected_adx_types():
 
 @pytest.mark.parametrize("mode", sync.MODES)
 def test_publish_stages_all_tables_and_replaces_flaky_status(mode):
-    """Stage four tables before publishing, fully replacing even an empty flaky export."""
+    """Stage all tables before publishing, fully replacing even empty flaky exports."""
     window = sync.compute_window(mode, date(2026, 9, 1), date(2026, 9, 30), TODAY)
     exports = {spec.adx_table: sync.ExportResult(spec) for spec in sync.TABLES}
     publisher = MagicMock()
@@ -246,6 +249,9 @@ def test_publish_stages_all_tables_and_replaces_flaky_status(mode):
         expected.stage(exports[spec.adx_table], 60)
     expected.replace_all(sync.SUITES)
     expected.replace_all(sync.FLAKY_SCENARIOS)
+    expected.replace_all(sync.FLAKY_REGISTRY)
+    expected.replace_all(sync.FLAKY_SCORES)
+    expected.replace_all(sync.FLAKY_RECOMPUTE_STATUS)
     if window.is_snapshot:
         expected.replace_all(sync.RUNS)
         expected.replace_all(sync.EXECUTIONS)
@@ -271,6 +277,22 @@ def test_serialize_row_converts_driver_types():
         [row_id, datetime(2026, 10, 14, 12, 0, tzinfo=timezone.utc), Decimal("3"), {"a": [1]}],
     )
     assert json.loads(line) == {"id": str(row_id), "ts": "2026-10-14T12:00:00+00:00", "qty": 3, "report": {"a": [1]}}
+
+
+def test_serialize_flaky_scores_preserves_rates_and_dynamic_outcomes():
+    """Export nullable values, decimal rates, JSON outcomes, and suite IDs."""
+    suite_id = uuid.uuid4()
+    values = [
+        "object", "api", "scenario", "uat", 42, 2, "flaky",
+        Decimal("0.1250"), Decimal("0.9876"), 10, None,
+        [{"status": "failed"}, {"status": "passed"}], suite_id, _utc(2026, 10, 14),
+    ]
+    result = json.loads(sync.serialize_row((name for name, _ in sync.FLAKY_SCORES.columns), values))
+    assert result["flip_rate"] == 0.125
+    assert result["retry_pass_rate"] == 0.9876
+    assert result["recent_outcomes"] == [{"status": "failed"}, {"status": "passed"}]
+    assert result["last_failure_at"] is None
+    assert result["last_suite_id"] == str(suite_id)
 
 
 @pytest.mark.parametrize("flag", [True, False, None])

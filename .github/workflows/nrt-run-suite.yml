@@ -86,7 +86,7 @@ jobs:
         if: inputs.needs_playwright
         id: install_playwright
         run: |
-          pip install playwright==1.55.0
+          pip install playwright==1.61.0
           python -m playwright install --with-deps chrome
 
       - name: Materialize NRT environment secrets

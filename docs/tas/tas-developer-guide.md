@@ -73,6 +73,108 @@ flowchart TD
 
 ---
 
+## Quick integration guide: what do I need to set?
+
+Once you have picked Option 1 (ADO) or Option 2 (GHA action), use this section to find
+your use case and see **what to set and where**. The same table works for both platforms:
+the TAS parameters are the same, only the spelling differs
+(`snake_case` on GHA, `camelCase` on ADO, see [Parameter names](#parameter-names-gha-vs-ado)).
+
+Every setting belongs to one of three groups. The last two are **not** part of the TAS
+contract: they live in your own pipeline.
+
+| Group | What it is | Examples |
+|---|---|---|
+| **TAS parameter** | Passed to the action/template, understood by the TAS | `mode`, `ref`, `tags`, `allure`, `isQualityGateRun` |
+| **Caller input forwarded to TAS** | An input of *your* workflow/pipeline that you pass on to a TAS parameter, to make it selectable at run time | `tas_mode` → `mode`, `tas_ref` → `ref` |
+| **Caller control** | Decided only by your pipeline, the TAS never sees it | `tas_blocking`, `needs` / `dependsOn`, `continue-on-error` / `continueOnError` |
+
+### Use cases
+
+| Use case | TAS parameters | Caller pipeline (not TAS) | What you get |
+|---|---|---|---|
+| **Gate**: tests must pass before the next step (e.g. deploy) | `mode: sync` (default) | The next job/stage depends on the TAS one (`needs` / `dependsOn`), with the default success condition | Pipeline stops if any scenario fails. Counters and `run_url` available |
+| **Advisory**: run the tests, never block, but see the failure | `mode: sync` | Make the TAS step non-blocking (`continue-on-error` / `continueOnError`), typically driven by a caller input such as `tas_blocking` (see [below](#non-blocking-runs-the-tas_blocking-pattern)) | Pipeline proceeds, the failure is reported but does not stop anything |
+| **Fire and forget**: start the tests, do not wait | `mode: async` | Nothing to gate: the step only reflects the dispatch | `correlation_id` only. The test result is visible in the TAS run, not in your pipeline |
+| **Dispatch only**, you handle the rest | `mode: raw` | Polling/waiting is entirely yours | `correlation_id`, no Python needed on the agent |
+| **Run tests from a feature branch** | `ref: <branch-or-tag>` | Optionally expose a `tas_ref` input and forward it to `ref` | Tests run from that ref instead of `main` |
+| **Choose sync/async at run time** | `mode` | Optionally expose a `tas_mode` input and forward it to `mode` | One pipeline, both behaviours |
+| **Run an e2e suite or filter scenarios** | `test_type` / `testType`, `suite`, `tags` (e.g. `@e2e`) | none | Only the matching scenarios run |
+| **Classify the run as Quality Gate** | `isQualityGateRun: true` | none | Results are published and ingested as QG instead of TAS |
+| **Get Allure results** | `allure: true` | Render the HTML yourself (`allure generate`) | `allure-results/` inside the artifact |
+| **Run on prod** | not supported (TAS targets `dev` / `uat`) | Skip the TAS job on prod and let downstream jobs accept a skipped result | Pipeline proceeds as before |
+| **GHA, tests already on `main`, no PAT** | none (use Option 3, `workflow_call`) | none | Synchronous run with native outputs |
+
+> **Why `async` does not combine with a failure policy.** In `async` and `raw` the step only
+> knows whether the *dispatch* worked, never whether the tests passed. Making it non-blocking
+> only changes what happens if the dispatch itself fails. If you want "do not block but tell
+> me about test failures", use `sync` with a non-blocking step.
+
+### Parameter names: GHA vs ADO
+
+| Meaning | GHA action input | ADO template parameter |
+|---|---|---|
+| Test category | `test_type` | `testType` |
+| Suite | `suite` | `suite` |
+| Environment | `environment` | `environment` |
+| Mode | `mode` | `mode` |
+| TAS branch/tag | `ref` | `ref` |
+| Behave tag filter | `tags` | `tags` |
+| Allure results | `allure` (string `'true'`/`'false'`) | `allure` (boolean) |
+| Quality Gate run | `isQualityGateRun` (string `'true'`/`'false'`) | `isQualityGateRun` (boolean) |
+| GitHub PAT | `github_token` | `githubToken` |
+| Output prefix / step reference | step `id:` (e.g. `tas`) | `stepName` (default `tas`) |
+
+### Caller-side syntax: GHA vs ADO
+
+These are the pieces of the table above that belong to your pipeline.
+
+| Need | GitHub Actions | Azure DevOps |
+|---|---|---|
+| Gate the next step on the tests | Next job `needs: [<tas_job>]`; it runs only if the TAS job succeeded | Next stage `dependsOn: <tas_stage>` with `condition: succeeded()` |
+| Make the TAS step non-blocking | `continue-on-error: <expr>` on the TAS step | `continueOnError: <expr>` on the job that wraps the template (a steps template cannot take it directly) |
+| Read the real outcome of a non-blocking step | `steps.<id>.outcome` (`failure` even when `continue-on-error` keeps the job green); `needs.<job>.result` would report success | The job shows as *succeeded with issues*; read it with `dependencies.<job>.result` |
+| Read the TAS results | `steps.<id>.outputs.<name>` (`run_url`, `outcome`, `passed`, ...) | `stageDependencies.<stage>.<job>.outputs['<stepName>.<NAME>']` (`RUN_URL`, `CORRELATION_ID`, ...) |
+| Skip TAS on prod | `if: <env> != 'prod'` on the TAS job; downstream `if` accepts `skipped` | `condition: ne(<env>, 'prod')` on the TAS stage; downstream condition accepts a skipped stage |
+
+### Non-blocking runs: the `tas_blocking` pattern
+
+The TAS action/template has **no** "do not fail" option on purpose: whether a failure stops
+your pipeline is a decision of the caller. A pattern used by `pagopa-fdr`
+(`04_release_and_deploy.yml`) is a boolean *caller* input `tas_blocking` (default `true`)
+wired to `continue-on-error`. It is **not** passed to the TAS.
+
+```yaml
+# GitHub Actions
+- name: Run TAS
+  id: tas
+  continue-on-error: ${{ format('{0}', inputs.tas_blocking) == 'false' }}
+  uses: pagopa/pagopa-platform-integration-test/.github/actions/tas-integration-tests@main
+  with:
+    mode: ${{ inputs.tas_mode || 'sync' }}   # caller input forwarded to a TAS parameter
+    ref:  ${{ inputs.tas_ref  || 'main' }}   # caller input forwarded to a TAS parameter
+    # ...
+```
+
+Two details are easy to get wrong:
+
+- **Write the comparison with `format()`.** On events that have no inputs (`merge_group`,
+  `pull_request`) `inputs.tas_blocking` is `null`, and `null == false` is *true* in GitHub
+  expressions. A plain `inputs.tas_blocking == false` would silently make the automatic runs
+  non-blocking and disable the gate.
+- **Make the ignored failure visible.** With `continue-on-error` the job is green. Export
+  `steps.<id>.outcome` as a job output and/or emit a warning or step summary, otherwise a
+  failing test suite goes unnoticed.
+
+> **ADO equivalent (to be validated on a real pipeline).** Declare a boolean pipeline
+> parameter (for example `tasBlocking`, default `true`) and set
+> `continueOnError: ${{ not(parameters.tasBlocking) }}` on the job that wraps the template.
+> ADO parameters are resolved at compile time and always have a value, so the `null`
+> pitfall above does not apply. Check that the downstream stage condition (`succeeded()`)
+> accepts a job that ended *succeeded with issues* in your project before relying on it.
+
+---
+
 ## The target branch question
 
 A crucial aspect to consider when choosing an integration option is the ability to specify

@@ -18,6 +18,15 @@ on:
         options:
           - dev
           - uat
+      correlation_id:
+        description: Optional id from the caller (e.g. the Central Hub) used to locate this run
+        required: false
+        type: string
+        default: ''
+
+# The caller-provided id makes the run discoverable by name; scheduled and manual runs
+# without it evaluate to an empty string and keep GitHub's default title.
+run-name: ${{ inputs.correlation_id != '' && format('nrt-{0}', inputs.correlation_id) || '' }}
 
 permissions:
   contents: read
@@ -400,7 +409,7 @@ jobs:
             --arg status "$status_text" \
             --arg url "$WORKFLOW_URL" \
             '[
-              {type:"header", text:{type:"plain_text", text:("🧪 NRT BETA TEST · " + ($env | ascii_upcase) + " · " + $status), emoji:true}},
+              {type:"header", text:{type:"plain_text", text:("🧪 NRT · " + ($env | ascii_upcase) + " · " + $status), emoji:true}},
               {type:"context", elements:[{type:"mrkdwn", text:("<" + $url + "|Open workflow run>")}]},
               {type:"divider"}
             ]')
@@ -416,6 +425,10 @@ jobs:
             test_outcome=$(jq -r '.test_outcome' "$outcome")
             job_outcome=$(jq -r '.job_outcome' "$outcome")
             summary_file="nrt-reports/${report_artifact}/widgets/summary.json"
+            # download-artifact extracts a single matched artifact at the root of the path, without a subdirectory
+            if [ ! -f "$summary_file" ] && [ -f "nrt-reports/widgets/summary.json" ]; then
+              summary_file="nrt-reports/widgets/summary.json"
+            fi
 
             if [ -f "$summary_file" ]; then
               passed=$(jq -r '(.statistic | if type == "array" then .[0] else . end).passed // 0' "$summary_file")
@@ -476,7 +489,7 @@ jobs:
 
           payload=$(jq -cn \
             --argjson blocks "$blocks" \
-            --arg text "NRT BETA TEST ${TARGET_ENV:-unknown}: $status_text" \
+            --arg text "NRT ${TARGET_ENV:-unknown}: $status_text" \
             '{text:$text, blocks:$blocks}')
           curl --silent --show-error --fail-with-body --max-time 20 \
             -H 'Content-Type: application/json' \

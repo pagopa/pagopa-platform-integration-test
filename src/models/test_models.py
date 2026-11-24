@@ -44,6 +44,7 @@ class Test_runs:
     qa_issue: str | None = None
     qa_issue_status: str | None = None
     gha_run_url: str | None = None
+    note: str | None = None
 
 
 @dataclass
