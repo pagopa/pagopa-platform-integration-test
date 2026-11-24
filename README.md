@@ -72,6 +72,8 @@ pagopa-platform-integration-test/
   ├── workflows/                   # workflow GitHub Actions
   ├── scripts/                     # script di pubblicazione report
   ├── templates/                   # template HTML storico report
+  ├── gherkin-manifest.yml         # manifest dei feature file letto da QA Central Hub
+  ├── gherkin-synopses.json        # sinossi AI delle feature (dato derivato)
   └── html/                        # dashboard GitHub Pages
 ```
 
@@ -881,6 +883,20 @@ Riferimenti: `.github/workflows/wisp-tests.yml`, `.github/workflows/fdr-tests.ym
   rate e success rate, poi passa i dati al workflow di notifica.
 
 
+### Manifest Gherkin e sinossi AI
+
+Il workflow `gherkin-manifest-sync.yml` mantiene il manifest `.github/gherkin-manifest.yml`, letto da QA Central Hub (Knowledge Base > Gherkin Feature Files), e il file delle sinossi `.github/gherkin-synopses.json`.
+
+- Trigger: una PR chiusa e unita su `main`, oppure l'avvio manuale (`workflow_dispatch`). Il job iniziale valuta i criteri: la sincronizzazione parte se manca uno dei due file, oppure se la PR modifica un `.feature` sotto `src/`, il manifest o le sinossi. Negli altri casi il job di sincronizzazione viene saltato e il motivo compare nel riepilogo del job. L'input `force_synopses` rigenera tutte le sinossi non bloccate.
+- Manifest: `.github/scripts/gherkin_manifest_sync.py` lo rigenera dall'albero `src/<tipo>/<suite>/` (solo i `.feature` sotto una cartella `features`). Conserva id, stime e flag `enabled` già scritti, rimuove le voci dei file non più presenti, valida il risultato e scrive il file solo se cambia. Il bot committa su `main` solo in quel caso.
+- Sinossi: `.github/scripts/gherkin_synopsis.py` genera per ogni feature attiva una sinossi globale, con le API Gemini già usate dall'analisi dei report. Il numero massimo di parole dipende dal numero di scenari: 30 con uno scenario, 80 da 12 scenari in su. Al modello arriva solo il testo del feature, senza tag e commenti. Una sinossi si rigenera solo se manca, se cambia il testo o se cambia `PROMPT_VERSION` (costante dello script). Un guasto dell'AI non blocca il manifest.
+- Correzioni a mano: nel manifest si possono cambiare `label`, `enabled` e `estimate_days`, oltre al flag `enabled` delle suite. Un `id` non va mai cambiato o riusato. Nel file delle sinossi, `"locked": true` su una voce la protegge dalla rigenerazione.
+- Esecuzione locale: `python .github/scripts/gherkin_manifest_sync.py --dry-run` mostra il riepilogo senza scrivere; `--check` esce con codice 1 se il manifest non è allineato. `python .github/scripts/gherkin_synopsis.py --dry-run` elenca le sinossi da generare senza chiamare l'API.
+- Riferimenti: campi del manifest e regole nel template di QA Central Hub (`docs/gherkin-feature-files/reference/manifest/gherkin-manifest.template.yml` del repository `pagopa-qa-centralhub`); contratto del file delle sinossi in [`docs/gherkin-manifest-sync/export/gherkin-synopses.contract.md`](docs/gherkin-manifest-sync/export/gherkin-synopses.contract.md).
+- Il workflow `syncFeatureFile.yaml`, che aggiornava le pagine Confluence dai feature file, è deprecato da PQ-845: non parte più alla chiusura delle PR, resta solo l'avvio manuale.
+
+Riferimenti: `.github/workflows/gherkin-manifest-sync.yml`, `.github/scripts/gherkin_manifest_sync.py`, `.github/scripts/gherkin_synopsis.py`, `.github/templates/feature-synopsis-prompt.txt`.
+
 ### Documentazione GitHub Pages
 
 Al push su `main`, `landing_pages.yaml` esegue `scenario_parser.py`, genera pagine MkDocs a
@@ -1281,5 +1297,6 @@ Riferimenti: `src/api/utility/http_client.py`, `src/api/utility/api_test_environ
 | Comandi WISP/FdR | `.github/workflows/wisp-tests.yml`, `.github/workflows/fdr-tests.yml`, `.github/workflows/run_behave_tests.yml` |
 | Report Allure e dashboard | `.github/scripts/process_reports.py`, `.github/scripts/notify_slack.py`, `.github/scripts/create_report_page.py`, `.github/html/index.html`, `.github/templates/history-index-template.html`, `.github/workflows/create_report_page.yml` |
 | CI e workflow riusabile | `.github/workflows/*.yml`, `scripts/tas_orchestrator.py`, `docs/examples/*` |
+| Manifest Gherkin e sinossi AI | `.github/workflows/gherkin-manifest-sync.yml`, `.github/scripts/gherkin_manifest_sync.py`, `.github/scripts/gherkin_synopsis.py`, `.github/templates/feature-synopsis-prompt.txt`, `.github/nrt-suites.json` |
 | Documentazione scenari | `scenario_parser.py`, `.github/workflows/landing_pages.yaml` |
 | Convenzioni di contributo | `.github/PULL_REQUEST_TEMPLATE.md`, `.github/workflows/check_pr.yml`, regole operative di progetto |

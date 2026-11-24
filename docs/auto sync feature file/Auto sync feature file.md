@@ -1,5 +1,7 @@
 # Auto Sync Feature File Documentation
 
+> **Deprecato (PQ-845).** L'aggiornamento automatico delle pagine Confluence dai feature file è spento: il workflow `syncFeatureFile.yaml` non parte più sulle PR unite. Il manifest `.github/gherkin-manifest.yml` e le sinossi `.github/gherkin-synopses.json` sono mantenuti da `.github/workflows/gherkin-manifest-sync.yml` (vedi la sezione del README e `docs/gherkin-manifest-sync/implementation-plan.md`). Il resto del documento resta come riferimento storico.
+
 ## Introduzione e Finalità
 
 Lo script `create_feature_page.py` ha lo scopo di sincronizzare automaticamente il contenuto di un file `.feature` Gherkin (in lingua italiana) con una pagina Confluence esistente, tramite GitHub Actions. Ad ogni esecuzione, lo script legge il feature file, ne interpreta la struttura riga per riga, costruisce un corpo HTML strutturato e lo carica sulla pagina Confluence corrispondente, sovrascrivendo il contenuto esistente, preservando solo l'header già presente sulla pagina.

@@ -1,10 +1,10 @@
-name: Sync Feature File between github and confluence
+# DEPRECATED (PQ-845): replaced by .github/workflows/gherkin-manifest-sync.yml.
+# It no longer runs when a pull request is merged; only the manual workflow_dispatch trigger is kept.
+# Removal of this workflow and of its script is planned for a follow-up pull request.
+
+name: [DEPRECATED] Sync Feature File between github and confluence
 
 on:
-  pull_request:
-    branches:
-      - main
-    types: [closed]
   workflow_dispatch:
 
 permissions:

@@ -1,3 +1,6 @@
+# DEPRECATED (PQ-845): no workflow runs this script any more. It is replaced by
+# .github/scripts/gherkin_manifest_sync.py and .github/workflows/gherkin-manifest-sync.yml.
+# Kept as a historical reference until it is removed in a follow-up pull request.
 
 import requests
 from requests.auth import HTTPBasicAuth

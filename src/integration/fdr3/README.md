@@ -41,7 +41,7 @@ Dal repository root:
 
 ```powershell
 behave src\integration\fdr3 --dry-run --no-capture
-behave src\integration\fdr3\feature\FEAT_001_FdR3_Aggiungi_pagamenti.feature --tags=@runnable --no-capture
+behave src\integration\fdr3\features\FEAT_001_FdR3_Aggiungi_pagamenti.feature --tags=@runnable --no-capture
 ```
 
 Il dry-run deve terminare con `0 undefined`. Per stampare request e response:
