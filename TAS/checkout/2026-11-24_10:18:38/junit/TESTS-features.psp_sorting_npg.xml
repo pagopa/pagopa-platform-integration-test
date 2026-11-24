@@ -1,0 +1,151 @@
+<testsuite name="features.psp_sorting_npg.Ordinamento lista PSP in Checkout" tests="6" errors="0" failures="0" skipped="0" time="31.333141" timestamp="2026-11-24T10:24:12.311698" hostname="runnervm0hi8g"><testcase classname="features.psp_sorting_npg.Ordinamento lista PSP in Checkout" name="La lista PSP è ordinata per commissione in ordine crescente nella pagina di riepilogo" status="passed" time="6.699112"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_005_Checkout_scenario_01
+  Scenario: La lista PSP è ordinata per commissione in ordine crescente nella pagina di riepilogo
+    Dato La pagina di checkout è aperta ... passed in 0.226s
+    E La lingua è impostata su "it" ... passed in 0.378s
+    E L'utente inserisce un codice avviso valido con prefisso "30202" ... passed in 0.000s
+    E L'utente inserisce un codice fiscale valido del pagatore ... passed in 0.000s
+    Quando L'utente inserisce le informazioni dell'avviso ... passed in 0.503s
+    E L'utente clicca il pulsante verifica ... passed in 0.063s
+    E L'utente clicca il pulsante paga nella pagina di riepilogo ... passed in 0.835s
+    E L'utente inserisce e conferma l'email ... passed in 0.694s
+    E L'utente seleziona il metodo di pagamento "PPAL" ... passed in 0.841s
+    E L'utente seleziona il PSP con id radio "BCITITMM" ... passed in 1.312s
+    E L'utente clicca il pulsante continua della lista PSP ... passed in 0.078s
+    E L'utente clicca il pulsante modifica PSP nella pagina di riepilogo ... passed in 1.339s
+    E L'utente clicca il pulsante "ordina per commissione" ... passed in 0.029s
+    E L'utente clicca il pulsante "ordina per commissione" ... passed in 0.034s
+    Allora La lista delle commissioni PSP è ordinata in ordine crescente ... passed in 0.012s
+    E L'utente annulla il pagamento ... passed in 0.355s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.psp_sorting_npg.Ordinamento lista PSP in Checkout" name="La lista PSP è ordinata per commissione in ordine decrescente nella pagina di riepilogo" status="passed" time="6.069674"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_005_Checkout_scenario_02
+  Scenario: La lista PSP è ordinata per commissione in ordine decrescente nella pagina di riepilogo
+    Dato La pagina di checkout è aperta ... passed in 0.215s
+    E La lingua è impostata su "it" ... passed in 0.389s
+    E L'utente inserisce un codice avviso valido con prefisso "30202" ... passed in 0.000s
+    E L'utente inserisce un codice fiscale valido del pagatore ... passed in 0.000s
+    Quando L'utente inserisce le informazioni dell'avviso ... passed in 0.516s
+    E L'utente clicca il pulsante verifica ... passed in 0.053s
+    E L'utente clicca il pulsante paga nella pagina di riepilogo ... passed in 0.819s
+    E L'utente inserisce e conferma l'email ... passed in 0.695s
+    E L'utente seleziona il metodo di pagamento "PPAL" ... passed in 0.325s
+    E L'utente seleziona il PSP con id radio "BCITITMM" ... passed in 1.312s
+    E L'utente clicca il pulsante continua della lista PSP ... passed in 0.076s
+    E L'utente clicca il pulsante modifica PSP nella pagina di riepilogo ... passed in 0.234s
+    E L'utente clicca il pulsante "ordina per commissione" ... passed in 0.070s
+    Allora La lista delle commissioni PSP è ordinata in ordine decrescente ... passed in 0.014s
+    E L'utente annulla il pagamento ... passed in 1.351s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.psp_sorting_npg.Ordinamento lista PSP in Checkout" name="La lista PSP è ordinata per nome in ordine decrescente nella pagina di riepilogo" status="passed" time="4.037806"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_005_Checkout_scenario_03
+  Scenario: La lista PSP è ordinata per nome in ordine decrescente nella pagina di riepilogo
+    Dato La pagina di checkout è aperta ... passed in 0.215s
+    E La lingua è impostata su "it" ... passed in 0.370s
+    E L'utente inserisce un codice avviso valido con prefisso "30202" ... passed in 0.000s
+    E L'utente inserisce un codice fiscale valido del pagatore ... passed in 0.000s
+    Quando L'utente inserisce le informazioni dell'avviso ... passed in 0.515s
+    E L'utente clicca il pulsante verifica ... passed in 0.060s
+    E L'utente clicca il pulsante paga nella pagina di riepilogo ... passed in 0.351s
+    E L'utente inserisce e conferma l'email ... passed in 0.696s
+    E L'utente seleziona il metodo di pagamento "PPAL" ... passed in 0.257s
+    E L'utente seleziona il PSP con id radio "BCITITMM" ... passed in 0.813s
+    E L'utente clicca il pulsante continua della lista PSP ... passed in 0.079s
+    E L'utente clicca il pulsante modifica PSP nella pagina di riepilogo ... passed in 0.232s
+    E L'utente clicca il pulsante "ordina per nome" ... passed in 0.072s
+    Allora La lista dei nomi PSP è ordinata in ordine alfabetico decrescente ... passed in 0.014s
+    E L'utente annulla il pagamento ... passed in 0.363s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.psp_sorting_npg.Ordinamento lista PSP in Checkout" name="La lista PSP è ordinata per nome in ordine crescente nella pagina di riepilogo" status="passed" time="4.648222"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_005_Checkout_scenario_04
+  Scenario: La lista PSP è ordinata per nome in ordine crescente nella pagina di riepilogo
+    Dato La pagina di checkout è aperta ... passed in 0.222s
+    E La lingua è impostata su "it" ... passed in 0.369s
+    E L'utente inserisce un codice avviso valido con prefisso "30202" ... passed in 0.000s
+    E L'utente inserisce un codice fiscale valido del pagatore ... passed in 0.000s
+    Quando L'utente inserisce le informazioni dell'avviso ... passed in 0.485s
+    E L'utente clicca il pulsante verifica ... passed in 0.061s
+    E L'utente clicca il pulsante paga nella pagina di riepilogo ... passed in 0.350s
+    E L'utente inserisce e conferma l'email ... passed in 0.697s
+    E L'utente seleziona il metodo di pagamento "PPAL" ... passed in 0.327s
+    E L'utente seleziona il PSP con id radio "BCITITMM" ... passed in 1.310s
+    E L'utente clicca il pulsante continua della lista PSP ... passed in 0.078s
+    E L'utente clicca il pulsante modifica PSP nella pagina di riepilogo ... passed in 0.236s
+    E L'utente clicca il pulsante "ordina per nome" ... passed in 0.087s
+    E L'utente clicca il pulsante "ordina per nome" ... passed in 0.047s
+    Allora La lista dei nomi PSP è ordinata in ordine alfabetico crescente ... passed in 0.014s
+    E L'utente annulla il pagamento ... passed in 0.365s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.psp_sorting_npg.Ordinamento lista PSP in Checkout" name="La lista PSP è ordinata per nome nella pagina di selezione PSP" status="passed" time="4.728319"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_005_Checkout_scenario_05
+  Scenario: La lista PSP è ordinata per nome nella pagina di selezione PSP
+    Dato La pagina di checkout è aperta ... passed in 0.215s
+    E La lingua è impostata su "it" ... passed in 0.395s
+    E L'utente inserisce un codice avviso valido con prefisso "30202" ... passed in 0.000s
+    E L'utente inserisce un codice fiscale valido del pagatore ... passed in 0.000s
+    Quando L'utente inserisce le informazioni dell'avviso ... passed in 0.530s
+    E L'utente clicca il pulsante verifica ... passed in 0.069s
+    E L'utente clicca il pulsante paga nella pagina di riepilogo ... passed in 0.836s
+    E L'utente inserisce e conferma l'email ... passed in 0.711s
+    E L'utente seleziona il metodo di pagamento "PPAL" ... passed in 0.328s
+    E La pagina di selezione PSP è caricata ... passed in 1.287s
+    E L'utente clicca il pulsante ordina lista PSP ... passed in 0.030s
+    E L'utente seleziona l'opzione radio "ordina per nome" ... passed in 0.256s
+    E L'utente clicca il pulsante mostra risultati ... passed in 0.054s
+    Allora La lista dei nomi PSP è ordinata in ordine alfabetico crescente ... passed in 0.015s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.psp_sorting_npg.Ordinamento lista PSP in Checkout" name="La lista PSP è ordinata per commissione nella pagina di selezione PSP" status="passed" time="5.150008"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @smoke @positive @FEAT_005_Checkout_scenario_06
+  Scenario: La lista PSP è ordinata per commissione nella pagina di selezione PSP
+    Dato La pagina di checkout è aperta ... passed in 0.214s
+    E La lingua è impostata su "it" ... passed in 0.368s
+    E L'utente inserisce un codice avviso valido con prefisso "30202" ... passed in 0.000s
+    E L'utente inserisce un codice fiscale valido del pagatore ... passed in 0.000s
+    Quando L'utente inserisce le informazioni dell'avviso ... passed in 0.527s
+    E L'utente clicca il pulsante verifica ... passed in 0.055s
+    E L'utente clicca il pulsante paga nella pagina di riepilogo ... passed in 0.834s
+    E L'utente inserisce e conferma l'email ... passed in 0.696s
+    E L'utente seleziona il metodo di pagamento "PPAL" ... passed in 0.807s
+    E La pagina di selezione PSP è caricata ... passed in 1.289s
+    E L'utente clicca il pulsante ordina lista PSP ... passed in 0.033s
+    E L'utente seleziona l'opzione radio "ordina per importo" ... passed in 0.256s
+    E L'utente clicca il pulsante mostra risultati ... passed in 0.055s
+    Allora La lista delle commissioni PSP è ordinata in ordine crescente ... passed in 0.016s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
