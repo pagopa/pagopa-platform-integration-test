@@ -1,193 +1,180 @@
-# Gherkin manifest: the suites and feature files that QA Central Hub shows under
-# Knowledge Base > Gherkin Feature Files, with the data that only this repository can give.
+# Gherkin manifest: suites and feature files for QA Central Hub's
+# Knowledge Base > Gherkin Feature Files, with repository-owned data.
 #
 # GENERATED FILE: .github/scripts/gherkin_manifest_sync.py rewrites it (workflow
 # .github/workflows/gherkin-manifest-sync.yml). Comments written here are lost on the next run.
-# Hand-editable fields: suites[].label, suites[].enabled, features[].estimate_days and
-# features[].enabled. Never change or reuse an id: the portal ties the data typed by hand to it.
-# 'enabled' is written only when it is false: a missing 'enabled' means true (the default),
-# for suites and for features alike. 'enabled: false' hides the suite or the single feature.
-# Field rules: docs/gherkin-feature-files/reference/manifest/gherkin-manifest.template.yml
-# in the pagopa-qa-centralhub repository.
+# The only hand-editable field is suites[].label. Feature ids come from the QA Hub
+# header of each file. QA Central Hub owns feature status and estimates.
+# See the README section 'Manifest Gherkin e sinossi AI' for field ownership.
 
 version: 1
 
 suites:
   - id: "auth-service"
     root: "src/api/auth-service"
-    enabled: false
     features:
-      - id: "FEAT_008_Checkout"
+      - id: "FEAT_001_AuthService"
         path: "features/auth_service.feature"
 
   - id: "cart"
     root: "src/api/cart"
-    enabled: false
     features:
-      - id: "FEAT_007_Checkout"
+      - id: "FEAT_001_Cart"
         path: "features/cart.feature"
 
   - id: "checkout-npg"
     root: "src/api/checkout-npg"
-    enabled: false
     features:
-      - id: "FEAT_009_Checkout"
+      - id: "FEAT_001_CheckoutNpg"
         path: "features/checkout_npg_authorization.feature"
-      - id: "FEAT_010_Checkout"
+      - id: "FEAT_002_CheckoutNpg"
         path: "features/checkout_npg_card_data.feature"
-      - id: "FEAT_011_Checkout"
+      - id: "FEAT_003_CheckoutNpg"
         path: "features/checkout_npg_payment_methods.feature"
-      - id: "FEAT_012_Checkout"
+      - id: "FEAT_004_CheckoutNpg"
         path: "features/checkout_npg_payment_verification.feature"
-      - id: "FEAT_013_Checkout"
+      - id: "FEAT_005_CheckoutNpg"
         path: "features/checkout_npg_session.feature"
-      - id: "FEAT_014_Checkout"
+      - id: "FEAT_006_CheckoutNpg"
         path: "features/checkout_npg_transactions.feature"
 
   - id: "ecommerce-cdc"
     root: "src/api/ecommerce-cdc"
-    enabled: false
     features:
-      - id: "FEAT_015_Checkout"
+      - id: "FEAT_001_EcommerceCdc"
         path: "features/ecommerce_cdc.feature"
 
   - id: "checkout"
     label: "Checkout E2E"
     root: "src/e2e/checkout"
     features:
-      - id: "FEAT_003_Checkout"
-        path: "features/checkout_npg.feature"
-      - id: "FEAT_004_Checkout"
-        path: "features/checkout_npg_auth.feature"
-      - id: "CheckoutBackNavigation_005"
-        path: "features/FEAT_005_Checkout - Back Navigation Control.feature"
-      - id: "CheckoutValidazioneCampi_006"
-        path: "features/FEAT_006_Checkout - Validazione sintattica dei campi.feature"
       - id: "FEAT_001_Checkout"
-        path: "features/login_availability.feature"
-      - id: "FEAT_005_Checkout"
-        path: "features/psp_sorting_npg.feature"
+        path: "features/checkout_npg.feature"
       - id: "FEAT_002_Checkout"
+        path: "features/checkout_npg_auth.feature"
+      - id: "FEAT_005_Checkout"
+        path: "features/FEAT_005_Checkout - Back Navigation Control.feature"
+      - id: "FEAT_006_Checkout"
+        path: "features/FEAT_006_Checkout - Validazione sintattica dei campi.feature"
+      - id: "FEAT_003_Checkout"
+        path: "features/login_availability.feature"
+      - id: "FEAT_004_Checkout"
+        path: "features/psp_sorting_npg.feature"
+      - id: "FEAT_007_Checkout"
         path: "features/spid_auth.feature"
 
   - id: "cup"
     root: "src/integration/cup"
-    enabled: false
     features:
-      - id: "FEAT_001_CUP_Creazione_di_una_posizione_debitoria_per_CUP"
+      - id: "FEAT_001_CUP"
         path: "features/creazione_posizione_debitoria.feature"
 
   - id: "ebollo"
     root: "src/integration/ebollo"
-    enabled: false
     features:
-      - id: "citizen_buys_ebollo"
+      - id: "FEAT_001_EBollo"
         path: "features/citizen_buys_ebollo.feature"
-      - id: "reporting_thorugh_API_call"
+      - id: "FEAT_002_EBollo"
         path: "features/reporting_thorugh_API_call.feature"
-      - id: "reporting_through_broadcast_station"
+      - id: "FEAT_003_EBollo"
         path: "features/reporting_through_broadcast_station.feature"
 
   - id: "fdr"
     root: "src/integration/fdr"
-    enabled: false
     features:
-      - id: "Fdr3_001"
+      - id: "FEAT_001_FdR3"
         path: "features/FEAT_001_FdR3_Creazione di un flusso di rendicontazione.feature"
-      - id: "Fdr3_002"
+      - id: "FEAT_002_FdR3"
         path: "features/FEAT_002_Fdr3_Aggiunta pagamenti ad un FdR esistente.feature"
-      - id: "PubblicazioneFdR_003"
+      - id: "FEAT_003_FdR3"
         path: "features/FEAT_003_FdR3_Pubblicazione di un FdR.feature"
-      - id: "CancellazioneDiUnooPiuPagamentiFdR_004"
+      - id: "FEAT_004_FdR3"
         path: "features/FEAT_004_FdR3_Cancellazione di uno o più pagamenti.feature"
-      - id: "FEAT_005_FdR3_Recupero_degli_fdR_da_parte_degli_EC"
+      - id: "FEAT_005_FdR3"
         path: "features/FEAT_005_FdR3_Recupero degli fdR da parte degli EC.feature"
-      - id: "CancellazioneDiUnFdR_006"
+      - id: "FEAT_006_FdR3"
         path: "features/FEAT_006_FdR3_Cancellazione del flusso completo.feature"
-      - id: "ConversioneDaJSONaXML_007"
+      - id: "FEAT_007_Convertitore"
         path: "features/FEAT_007_Convertitore_JSON_to_XML.feature"
-      - id: "ConversioneDaXMLaJSON_008"
+      - id: "FEAT_008_Convertitore"
         path: "features/FEAT_008_Convertitore_XML_to_JSON.feature"
-      - id: "FdR1CreazioneFdR_009"
+      - id: "FEAT_009_FdR1"
         path: "features/FEAT_009_FdR1_Creazione di un flusso di Rendicontazione.feature"
-      - id: "RecuperoFdR1_010"
+      - id: "FEAT_010_FdR1"
         path: "features/FEAT_010_FdR1_Recupero degli fdr da parte dell'EC.feature"
 
   - id: "fdr3"
     label: "FDR-3"
     root: "src/integration/fdr3"
     features:
-      - id: "fdr3_001_Aggiungi_pagamenti"
+      - id: "FEAT_001_FdR3"
         path: "features/FEAT_001_FdR3_Aggiungi_pagamenti.feature"
-      - id: "fdr3_002_Crea_revisione"
+      - id: "FEAT_002_FdR3"
         path: "features/FEAT_002_FdR3_Pubblicazione.feature"
-      - id: "fdr3_003_Cancellazione_flusso"
+      - id: "FEAT_003_FdR3"
         path: "features/FEAT_003_FdR3_Cancella_flusso.feature"
-      - id: "fdr3_004_Rimozione_pagamenti"
+      - id: "FEAT_004_FdR3"
         path: "features/FEAT_004_FdR3_Cancella_pagamenti.feature"
-      - id: "fdr3_005_Verifica_KO_pagamenti"
+      - id: "FEAT_005_FdR3"
         path: "features/FEAT_005_FdR3_Aggiungi_pagamenti_KO.feature"
-      - id: "fdr3_006_Cancellazione_FdR"
+      - id: "FEAT_006_FdR3"
         path: "features/FEAT_006_FdR3_Cancella_FdR_KO.feature"
-      - id: "fdr3_007_Cancellazione_pagamenti"
+      - id: "FEAT_007_FdR3"
         path: "features/FEAT_007_FdR3_Cancella_pagamenti_KO.feature"
-      - id: "fdr3_008_Pubblicazione_KO"
+      - id: "FEAT_008_FdR3"
         path: "features/FEAT_008_FdR3_Pubblicazione_KO.feature"
-      - id: "fdr3_009_Verifica_Paginazione_Organizzazione"
+      - id: "FEAT_009_FdR3"
         path: "features/FEAT_009_FdR3_Paginazione_Organizzazione.feature"
-      - id: "fdr3_010_Verifica_paginazione_PSP"
+      - id: "FEAT_010_FdR3"
         path: "features/FEAT_010_FdR3_Paginazione_PSP.feature"
-      - id: "fdr3_011_Recupero_FdR_Pubblicati_Organizzazione"
+      - id: "FEAT_011_FdR3"
         path: "features/FEAT_011_FdR3_Recupero_FdR_Pubblicati_Organizzazione.feature"
 
   - id: "tas_fail"
     root: "src/integration/tas_fail"
-    enabled: false
     features:
-      - id: "TAS_Fail_002"
+      - id: "FEAT_001_TasFail"
         path: "features/flusso_pagamento.feature"
-      - id: "TAS_Fail_003"
+      - id: "FEAT_002_TasFail"
         path: "features/rendicontazione.feature"
-      - id: "TAS_Fail_001"
+      - id: "FEAT_003_TasFail"
         path: "features/verifiche_sistema.feature"
 
   - id: "tas_mixed"
     root: "src/integration/tas_mixed"
-    enabled: false
     features:
-      - id: "TAS_Mixed_002"
+      - id: "FEAT_001_TasMixed"
         path: "features/flusso_pagamento.feature"
-      - id: "TAS_Mixed_003"
+      - id: "FEAT_002_TasMixed"
         path: "features/rendicontazione.feature"
-      - id: "TAS_Mixed_001"
+      - id: "FEAT_003_TasMixed"
         path: "features/verifiche_sistema.feature"
 
   - id: "tas_pass"
     root: "src/integration/tas_pass"
-    enabled: false
     features:
-      - id: "TAS_Pass_002"
+      - id: "FEAT_001_TasPass"
         path: "features/flusso_pagamento.feature"
-      - id: "TAS_Pass_003"
+      - id: "FEAT_002_TasPass"
         path: "features/rendicontazione.feature"
-      - id: "TAS_Pass_001"
+      - id: "FEAT_003_TasPass"
         path: "features/verifiche_sistema.feature"
 
   - id: "wisp"
     label: "WISP"
     root: "src/integration/wisp"
     features:
-      - id: "NodoInviaCarrelloRPT_ExistingPaymentPosition_006"
+      - id: "FEAT_001_Wisp"
         path: "features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_existingPaymentPosition.feature"
-      - id: "NodoInviaCarrelloRPT_MultiBeneficiario_007"
+      - id: "FEAT_002_Wisp"
         path: "features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_multibeneficiary.feature"
-      - id: "NodoInviaCarrelloRPT_NoStamp_004"
+      - id: "FEAT_003_Wisp"
         path: "features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_noStamp.feature"
-      - id: "NodoInviaCarrelloRPT_WithStamp_005"
+      - id: "FEAT_004_Wisp"
         path: "features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_withStamp.feature"
-      - id: "NodoInviaRPT_ExistingPaymentPosition_003"
+      - id: "FEAT_005_Wisp"
         path: "features/nodoInviaRPT/nodoInviaRPT_existingPaymentPosition.feature"
-      - id: "NodoInviaRPT_NoStamp_001"
+      - id: "FEAT_006_Wisp"
         path: "features/nodoInviaRPT/nodoInviaRPT_noStamp.feature"
-      - id: "NodoInviaRPT_WithStamp_002"
+      - id: "FEAT_007_Wisp"
         path: "features/nodoInviaRPT/nodoInviaRPT_withStamp.feature"

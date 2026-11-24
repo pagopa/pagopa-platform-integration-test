@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -33,10 +34,12 @@ def write(path: Path, text: str) -> Path:
     return path
 
 
-def feature(tag: str | None = None, keyword: str = "Funzionalità:") -> str:
-    """Return a minimal feature file text, with an optional first tag."""
+def feature(tag: str | None = None, keyword: str = "Funzionalità:", code: str | None = None) -> str:
+    """Return a minimal feature file with a QA Hub header and an optional first tag."""
+    if code is None:
+        code = tag if tag and re.fullmatch(r"FEAT_(?!000)[0-9]{3}_[A-Za-z][A-Za-z0-9]{1,19}", tag) else "FEAT_001_Test"
     head = f"@{tag}\n" if tag else ""
-    return f"{head}{keyword} Esempio\n\n  Scenario: uno\n    Given qualcosa\n"
+    return f"# qa-hub: {code}\n# language: it\n{head}{keyword} Esempio\n\n  Scenario: uno\n    Given qualcosa\n"
 
 
 def write_registry(repo: Path, entries: list[dict]) -> None:
@@ -45,7 +48,7 @@ def write_registry(repo: Path, entries: list[dict]) -> None:
 
 
 def base_repo(repo: Path) -> Path:
-    """Create a repository with one enabled suite (checkout, listed in the registry) and one feature."""
+    """Create a repository with one registered checkout suite and one feature."""
     write(repo / "src/e2e/checkout/features/login.feature", feature("FEAT_001_Checkout"))
     write_registry(repo, [{"id": "checkout", "label": "Checkout E2E", "behave_path": "src/e2e/checkout"}])
     return repo
@@ -73,102 +76,51 @@ def suite_by_id(manifest: dict, suite_id: str) -> dict:
     return next(suite for suite in manifest["suites"] if suite["id"] == suite_id)
 
 
-# ---------------------------------------------------------------- candidate id from tags
+# ---------------------------------------------------------------- feature id from QA Hub header
 
 
-def test_candidate_is_first_tag_before_keyword(sync, tmp_path):
-    """The first tag before the Feature keyword is the candidate id, without '@'."""
-    path = write(tmp_path / "a.feature", "@FEAT_001_X @runnable\nFunzionalità: x\n")
-    assert sync._tag_candidate(path) == "FEAT_001_X"
+def test_header_id_is_authoritative_over_feature_tags(sync, tmp_path):
+    """The QA Hub header supplies the id even when the feature tag differs."""
+    path = write(tmp_path / "a.feature", "# qa-hub: FEAT_001_Checkout\n@OLD_ID\nFunzionalità: x\n")
+    assert sync._feature_id_from_header(path) == "FEAT_001_Checkout"
 
 
 @pytest.mark.parametrize("keyword", ["Feature:", "Funzionalita:", "funzionalità :"])
-def test_candidate_accepts_supported_keywords(sync, tmp_path, keyword):
-    """Feature keywords are recognised in English and Italian, with or without accents and case."""
-    path = write(tmp_path / "a.feature", f"@TAG_OK\n{keyword} x\n")
-    assert sync._tag_candidate(path) == "TAG_OK"
+def test_header_id_does_not_depend_on_the_feature_keyword(sync, tmp_path, keyword):
+    """The QA Hub id is read from the header regardless of the Gherkin language."""
+    path = write(tmp_path / "a.feature", f"# qa-hub: FEAT_001_Test\n{keyword} x\n")
+    assert sync._feature_id_from_header(path) == "FEAT_001_Test"
 
 
-def test_candidate_skips_language_comments_and_blank_lines(sync, tmp_path):
-    """Comment lines and blank lines before the first tag do not stop the search."""
-    path = write(tmp_path / "a.feature", "# language: en\n#<123456>\n\n@EN_TAG\nFeature: x\n")
-    assert sync._tag_candidate(path) == "EN_TAG"
-
-
-def test_candidate_ignores_scenario_tags_after_keyword(sync, tmp_path):
-    """Tags that appear after the Feature keyword belong to scenarios and give no candidate."""
-    path = write(tmp_path / "a.feature", "Funzionalità: x\n\n  @scenario_tag\n  Scenario: s\n")
-    assert sync._tag_candidate(path) is None
-
-
-def test_candidate_rejected_when_first_tag_is_not_a_valid_id(sync, tmp_path):
-    """A first tag with parentheses or quotes is discarded instead of being used as id."""
-    path = write(tmp_path / "a.feature", '@Crea_FdR(id_fdr="x")\nFunzionalità: x\n')
-    assert sync._tag_candidate(path) is None
-
-
-def test_candidate_reads_file_with_byte_order_mark(sync, tmp_path):
-    """A UTF-8 byte order mark at the start of the file does not hide the first tag."""
+def test_header_id_reads_file_with_byte_order_mark(sync, tmp_path):
+    """A UTF-8 byte order mark at the start of the file does not hide the header."""
     path = tmp_path / "a.feature"
-    path.write_bytes(b"\xef\xbb\xbf@BOM_TAG\nFeature: x\n")
-    assert sync._tag_candidate(path) == "BOM_TAG"
+    path.write_bytes(b"\xef\xbb\xbf# qa-hub: FEAT_001_Test\nFeature: x\n")
+    assert sync._feature_id_from_header(path) == "FEAT_001_Test"
 
 
-# ---------------------------------------------------------------- fallback id from file name
-
-
-def test_fallback_replaces_unsafe_runs_with_single_underscore(sync):
-    """Spaces and apostrophes in the file name collapse into single underscores."""
-    name = "FEAT_005_FdR3_Recupero degli fdR da parte dell'EC.feature"
-    assert sync._fallback_feature_id(name) == "FEAT_005_FdR3_Recupero_degli_fdR_da_parte_dell_EC"
-
-
-def test_fallback_is_at_most_80_characters_and_never_empty(sync):
-    """The fallback is truncated to 80 characters and becomes 'feature' when nothing is left."""
-    assert len(sync._fallback_feature_id("a" * 120 + ".feature")) == 80
-    assert sync._fallback_feature_id("é.feature") == "feature"
-
-
-# ---------------------------------------------------------------- id collisions
-
-
-def test_identical_candidates_all_fall_back_to_file_names(sync):
-    """Files that share a tag all use their file-name fallback, so no id is chosen by order."""
-    paths = ["features/citizen_buys_ebollo.feature", "features/reporting.feature", "features/other.feature"]
-    assigned = sync._assign_feature_ids(paths, {path: "eBollo" for path in paths}, set())
-    assert assigned == {
-        "features/citizen_buys_ebollo.feature": "citizen_buys_ebollo",
-        "features/reporting.feature": "reporting",
-        "features/other.feature": "other",
-    }
-
-
-def test_reserved_candidate_is_skipped_and_unique_one_is_used(sync):
-    """A candidate equal to a reserved id (ignoring case) falls back; a free candidate is used."""
-    assigned = sync._assign_feature_ids(
-        ["features/a.feature", "features/b.feature"],
-        {"features/a.feature": "TAG", "features/b.feature": "tag_b"},
-        {"tag"},
-    )
-    assert assigned == {"features/a.feature": "a", "features/b.feature": "tag_b"}
-
-
-def test_fallback_collision_gets_numeric_suffix(sync):
-    """A fallback that is already taken receives the suffix _2."""
-    assigned = sync._assign_feature_ids(["features/dup.feature"], {"features/dup.feature": None}, {"DUP"})
-    assert assigned == {"features/dup.feature": "dup_2"}
+@pytest.mark.parametrize(
+    "header",
+    ["", "# qa-hub: FEAT_000_Test", "# qa-hub: FEAT_01_Test", "# qa-hub: FEAT_001_A"],
+)
+def test_invalid_or_missing_header_is_rejected(sync, tmp_path, header):
+    """Missing and malformed headers fail instead of falling back to tags or filenames."""
+    path = write(tmp_path / "a.feature", f"{header}\n@VALID_TAG\nFeature: x\n")
+    with pytest.raises(sync.ManifestError, match="first line must be"):
+        sync._feature_id_from_header(path)
 
 
 # ---------------------------------------------------------------- discovery
 
 
-def test_discovery_keeps_only_files_below_a_features_folder(sync, tmp_path):
-    """Files under a features folder at any depth are found; singular, outside, hidden and cache folders are not."""
+def test_discovery_keeps_only_files_below_the_suite_features_folder(sync, tmp_path):
+    """Only files in the suite-root features folder are found; nested and ignored paths behave consistently."""
     base = tmp_path / "src/integration/wisp"
     write(base / "features/a.feature", feature())
     write(base / "features/sub/b/c.feature", feature())
     write(base / "feature/single.feature", feature())
     write(base / "other/d.feature", feature())
+    write(base / "other/features/ignored.feature", feature())
     write(base / "features/.hidden/e.feature", feature())
     write(base / "features/__pycache__/f.feature", feature())
     suites = sync.discover_suites(tmp_path)
@@ -202,16 +154,17 @@ def test_colliding_folder_names_use_type_prefix(sync, tmp_path):
     assert {"api-wisp", "integration-wisp"} <= ids
 
 
-def test_registry_decides_label_and_activation(sync, tmp_path):
-    """A suite in the NRT registry gets its label and is enabled; other new suites are disabled."""
+def test_registry_supplies_label_without_controlling_activation(sync, tmp_path):
+    """Registered and unregistered suites are listed without any activation flag."""
     base_repo(tmp_path)
     write(tmp_path / "src/api/cart/features/cart.feature", feature("FEAT_007"))
     assert run_sync(sync, tmp_path) == 0
     manifest = read_manifest(tmp_path)
     checkout = suite_by_id(manifest, "checkout")
     cart = suite_by_id(manifest, "cart")
-    assert checkout["label"] == "Checkout E2E" and "enabled" not in checkout
-    assert cart["enabled"] is False and "label" not in cart
+    assert checkout["label"] == "Checkout E2E"
+    assert "label" not in cart
+    assert "enabled" not in checkout and "enabled" not in cart
 
 
 def test_missing_or_broken_registry_is_tolerated_with_warning(sync, tmp_path, capsys):
@@ -247,8 +200,8 @@ def test_added_file_appears_and_deleted_file_is_removed(sync, tmp_path):
     assert ids == ["FEAT_002_Checkout"]
 
 
-def test_disabled_entry_is_removed_when_its_file_is_gone(sync, tmp_path):
-    """A hand-disabled entry whose file was deleted is removed, like any dead entry."""
+def test_legacy_disabled_entry_is_removed_when_its_file_is_gone(sync, tmp_path):
+    """A legacy disabled entry is removed when its file is gone."""
     base_repo(tmp_path)
     run_sync(sync, tmp_path)
     edit_manifest(tmp_path, lambda data: suite_by_id(data, "checkout")["features"][0].update(enabled=False))
@@ -259,13 +212,13 @@ def test_disabled_entry_is_removed_when_its_file_is_gone(sync, tmp_path):
     assert ids == ["FEAT_009_Checkout"]
 
 
-def test_renamed_file_keeps_id_estimate_and_enabled(sync, tmp_path):
-    """A file moved to another folder with the same tag keeps its id, estimate and enabled flag."""
+def test_renamed_file_keeps_id_and_drops_retired_fields(sync, tmp_path):
+    """A moved feature keeps its id but no longer exports status or estimate."""
     base_repo(tmp_path)
     run_sync(sync, tmp_path)
 
     def hand_edit(data):
-        """Give the feature an estimate and disable it, as a person would."""
+        """Create a legacy feature entry with hub-owned fields."""
         entry = suite_by_id(data, "checkout")["features"][0]
         entry.update(estimate_days=0.5, enabled=False)
 
@@ -279,9 +232,46 @@ def test_renamed_file_keeps_id_estimate_and_enabled(sync, tmp_path):
     assert entry == {
         "id": "FEAT_001_Checkout",
         "path": "features/moved/login_renamed.feature",
-        "estimate_days": 0.5,
-        "enabled": False,
     }
+
+
+def test_header_id_change_removes_legacy_status_and_estimate(sync, tmp_path):
+    """A changed header id is adopted while suite and feature hub-owned fields are removed."""
+    base_repo(tmp_path)
+    run_sync(sync, tmp_path)
+    def add_legacy_fields(data):
+        """Add the fields present in older manifests."""
+        suite = suite_by_id(data, "checkout")
+        suite["enabled"] = False
+        suite["features"][0].update(estimate_days=0.5, enabled=False)
+
+    edit_manifest(tmp_path, add_legacy_fields)
+    path = tmp_path / "src/e2e/checkout/features/login.feature"
+    write(path, feature("FEAT_001_Checkout", code="FEAT_007_Checkout"))
+
+    assert run_sync(sync, tmp_path) == 0
+    suite = suite_by_id(read_manifest(tmp_path), "checkout")
+    assert suite["label"] == "Checkout E2E"
+    assert "enabled" not in suite
+    entry = suite["features"][0]
+    assert entry == {
+        "id": "FEAT_007_Checkout",
+        "path": "features/login.feature",
+    }
+
+
+def test_discovered_feature_without_header_fails_without_writing(sync, tmp_path):
+    """A discovered file without a QA Hub header is an error, not a filename/tag fallback."""
+    base_repo(tmp_path)
+    manifest_path = tmp_path / MANIFEST
+    original = manifest_path.read_bytes() if manifest_path.exists() else None
+    write(
+        tmp_path / "src/e2e/checkout/features/unmanaged.feature",
+        "@OLD_ID\nFunzionalità: feature senza header\n",
+    )
+
+    assert run_sync(sync, tmp_path) == 2
+    assert not manifest_path.exists() if original is None else manifest_path.read_bytes() == original
 
 
 def test_test_type_is_dropped_and_second_run_is_stable(sync, tmp_path):
@@ -339,8 +329,8 @@ def test_manual_suite_is_only_pruned_and_does_not_claim_files(sync, tmp_path):
 def test_hand_written_label_and_feature_order_are_preserved(sync, tmp_path):
     """A label typed by hand survives regeneration, and features are sorted by path ignoring case."""
     base_repo(tmp_path)
-    write(tmp_path / "src/e2e/checkout/features/Zeta.feature", feature("Z_1"))
-    write(tmp_path / "src/e2e/checkout/features/alfa.feature", feature("A_1"))
+    write(tmp_path / "src/e2e/checkout/features/Zeta.feature", feature("FEAT_002_Zeta"))
+    write(tmp_path / "src/e2e/checkout/features/alfa.feature", feature("FEAT_003_Alfa"))
     run_sync(sync, tmp_path)
     edit_manifest(tmp_path, lambda data: suite_by_id(data, "checkout").update(label="Custom"))
     assert run_sync(sync, tmp_path) == 0
@@ -385,27 +375,6 @@ def test_quote_escapes_backslash_and_double_quote(sync):
     assert sync._quote('a"b\\c') == '"a\\"b\\\\c"'
 
 
-def test_render_writes_enabled_only_when_false_and_no_test_type(sync):
-    """Only 'enabled: false' is written, estimates keep their decimal point, and no test_type appears."""
-    suites = [
-        {"id": "a", "root": "src/x", "features": [{"id": "F", "path": "features/f.feature"}]},
-        {
-            "id": "b",
-            "root": "src/y",
-            "enabled": False,
-            "features": [{"id": "G", "path": "features/g.feature", "enabled": False, "estimate_days": 1.5}],
-        },
-    ]
-    text = sync.render_manifest(suites)
-    assert text.endswith("\n") and not text.endswith("\n\n")
-    assert "\r" not in text
-    yaml_lines = [line for line in text.splitlines() if not line.lstrip().startswith("#")]
-    assert sum(1 for line in yaml_lines if line.strip() == "enabled: false") == 2
-    assert "estimate_days: 1.5" in text
-    assert "test_type" not in text
-    assert sync.validate_manifest(yaml.safe_load(text)) == []
-
-
 # ---------------------------------------------------------------- validation
 
 
@@ -439,11 +408,9 @@ VALIDATION_CASES = [
     ("path without .feature", lambda d: d["suites"][0]["features"][0].update(path="features/a.txt")),
     ("path with a leading slash", lambda d: d["suites"][0]["features"][0].update(path="/features/a.feature")),
     ("test_type present", lambda d: d["suites"][0]["features"][0].update(test_type="AUTOMATICO")),
-    ("estimate above 365", lambda d: d["suites"][0]["features"][0].update(estimate_days=365.01)),
-    ("estimate with 3 decimals", lambda d: d["suites"][0]["features"][0].update(estimate_days=1.234)),
-    ("negative estimate", lambda d: d["suites"][0]["features"][0].update(estimate_days=-1)),
-    ("enabled given as text", lambda d: d["suites"][0].update(enabled="false")),
-    ("no enabled suite", lambda d: d["suites"][0].update(enabled=False)),
+    ("retired estimate", lambda d: d["suites"][0]["features"][0].update(estimate_days=1)),
+    ("retired suite status", lambda d: d["suites"][0].update(enabled=False)),
+    ("retired feature status", lambda d: d["suites"][0]["features"][0].update(enabled=False)),
     ("full path repeated in another suite", lambda d: d["suites"].append(
         {"id": "other", "root": "src/integration/wisp", "features": [{"id": "Y", "path": "features/a.feature"}]})),
 ]
@@ -494,13 +461,12 @@ def test_second_consecutive_run_does_not_modify_the_file(sync, tmp_path, capsys)
 
 @pytest.mark.skipif(not (REPO_ROOT / "src").is_dir(), reason="src/ is not part of this checkout")
 def test_real_repository_produces_the_expected_manifest_in_memory(sync):
-    """On the real src/ tree the result has 13 suites, 57 features, 3 enabled suites and valid unique ids."""
+    """On the real src/ tree all 13 suites and 57 features have valid unique ids."""
     discovered = sync.discover_suites(REPO_ROOT)
     registry = sync.load_registry(REPO_ROOT / REGISTRY)
     suites, _changes = sync.reconcile_suites([], discovered, REPO_ROOT, registry)
     assert len(suites) == 13
     assert sum(len(suite["features"]) for suite in suites) == 57
-    assert sorted(suite["id"] for suite in suites if suite.get("enabled", True)) == ["checkout", "fdr3", "wisp"]
     assert sync.validate_manifest({"version": 1, "suites": suites}) == []
     for suite in suites:
         ids = [entry["id"].casefold() for entry in suite["features"]]

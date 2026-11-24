@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """Keep .github/gherkin-manifest.yml aligned with the feature files under src/.
 
-The manifest tells QA Central Hub which suites and feature files to show. This
+The manifest describes suites and feature files for QA Central Hub. This
 script regenerates it from the repository tree: it discovers the .feature files
-under src/<type>/<suite>/ that sit in a folder named exactly 'features', keeps the
-hand-written data of entries already listed (ids, estimates, enabled flags), drops
-dead entries, validates the result before writing it, and writes the file only
-when its content changed.
+under src/<type>/<suite>/features/, keeps
+suite labels, derives feature ids from their headers, drops dead entries, and
+validates the result before writing it only when its content changed.
 
 Exit codes: 0 success or nothing to change; 1 with --check when the manifest is
 out of date; 2 on error (invalid existing manifest, invalid result, I/O failure).
@@ -16,14 +15,12 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 import os
 import re
 import sys
 from collections import Counter
 from dataclasses import dataclass
-from decimal import Decimal
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 from typing import Any
 
 import yaml
@@ -34,28 +31,25 @@ FEATURES_FOLDER = "features"
 DEFAULT_MANIFEST = ".github/gherkin-manifest.yml"
 DEFAULT_REGISTRY = ".github/nrt-suites.json"
 MANIFEST_MAX_BYTES = 256 * 1024
-MAX_ESTIMATE_DAYS = 365
 
 SUITE_ID_PATTERN = re.compile(r"[a-z0-9_-]{1,64}")
 FEATURE_ID_PATTERN = re.compile(r"[A-Za-z0-9_-]{1,80}")
-FEATURE_KEYWORD_PATTERN = re.compile(r"(funzionalità|funzionalita|feature)\s*:", re.IGNORECASE)
+FEATURE_CODE_PATTERN = re.compile(r"FEAT_(?!000)[0-9]{3}_[A-Za-z][A-Za-z0-9]{1,19}")
+FEATURE_CODE_HEADER_PATTERN = re.compile(r"#\s*qa-hub:\s*(\S+)\s*")
 
 ALLOWED_ROOT_KEYS = {"version", "suites"}
-ALLOWED_SUITE_KEYS = {"id", "label", "root", "enabled", "features"}
-ALLOWED_FEATURE_KEYS = {"id", "path", "estimate_days", "enabled"}
+ALLOWED_SUITE_KEYS = {"id", "label", "root", "features"}
+ALLOWED_FEATURE_KEYS = {"id", "path"}
 
 HEADER_LINES = [
-    "# Gherkin manifest: the suites and feature files that QA Central Hub shows under",
-    "# Knowledge Base > Gherkin Feature Files, with the data that only this repository can give.",
+    "# Gherkin manifest: suites and feature files for QA Central Hub's",
+    "# Knowledge Base > Gherkin Feature Files, with repository-owned data.",
     "#",
     "# GENERATED FILE: .github/scripts/gherkin_manifest_sync.py rewrites it (workflow",
     "# .github/workflows/gherkin-manifest-sync.yml). Comments written here are lost on the next run.",
-    "# Hand-editable fields: suites[].label, suites[].enabled, features[].estimate_days and",
-    "# features[].enabled. Never change or reuse an id: the portal ties the data typed by hand to it.",
-    "# 'enabled' is written only when it is false: a missing 'enabled' means true (the default),",
-    "# for suites and for features alike. 'enabled: false' hides the suite or the single feature.",
-    "# Field rules: docs/gherkin-feature-files/reference/manifest/gherkin-manifest.template.yml",
-    "# in the pagopa-qa-centralhub repository.",
+    "# The only hand-editable field is suites[].label. Feature ids come from the QA Hub",
+    "# header of each file. QA Central Hub owns feature status and estimates.",
+    "# See the README section 'Manifest Gherkin e sinossi AI' for field ownership.",
     "",
 ]
 
@@ -135,21 +129,23 @@ def _folder_exists(repo_root: Path, root: str) -> bool:
 
 
 def _find_feature_files(suite_dir: Path) -> list[str]:
-    """List the .feature files below suite_dir that have an ancestor folder named exactly 'features'.
+    """List feature files under the suite's canonical features directory.
 
     The result holds POSIX paths relative to suite_dir, sorted without regard to case.
     Hidden folders and __pycache__ are skipped at every depth.
     """
     found: list[str] = []
-    for dirpath, dirnames, filenames in os.walk(suite_dir):
+    features_dir = suite_dir / FEATURES_FOLDER
+    if not features_dir.is_dir():
+        return found
+    for dirpath, dirnames, filenames in os.walk(features_dir):
         dirnames[:] = [name for name in dirnames if not _is_ignored_name(name)]
         relative_dir = Path(dirpath).relative_to(suite_dir)
         for filename in filenames:
             if not filename.endswith(FEATURE_SUFFIX):
                 continue
             relative = relative_dir / filename
-            if FEATURES_FOLDER in relative.parts[:-1]:
-                found.append(relative.as_posix())
+            found.append(relative.as_posix())
     return sorted(found, key=str.casefold)
 
 
@@ -177,89 +173,40 @@ def discover_suites(repo_root: Path) -> list[DiscoveredSuite]:
     return suites
 
 
-def _tag_candidate(feature_file: Path) -> str | None:
-    """Return the first tag before the Feature keyword, without '@', when it is a valid feature id.
-
-    Blank and comment lines before the keyword are skipped, and only the first tag
-    line counts. Returns None when there is no such tag or its first token is not a
-    valid id. A file that is not UTF-8 raises ManifestError, because it cannot be
-    identified reliably.
-    """
+def _feature_id_from_header(feature_file: Path) -> str:
+    """Read the canonical feature id from the required first-line QA Hub header."""
     try:
         text = feature_file.read_text(encoding="utf-8-sig")
     except UnicodeDecodeError as exc:
         raise ManifestError(f"{feature_file}: not valid UTF-8 ({exc.reason})") from exc
-    for raw_line in text.splitlines():
-        line = raw_line.strip()
-        if FEATURE_KEYWORD_PATTERN.match(line):
-            return None
-        if line.startswith("@"):
-            token = line.split()[0][1:]
-            return token if FEATURE_ID_PATTERN.fullmatch(token) else None
-    return None
-
-
-def _fallback_feature_id(file_name: str) -> str:
-    """Build a feature id from a file name: no extension, unsafe runs become '_', at most 80 characters."""
-    stem = file_name[: -len(FEATURE_SUFFIX)] if file_name.endswith(FEATURE_SUFFIX) else file_name
-    cleaned = re.sub(r"[^A-Za-z0-9_-]+", "_", stem).strip("_")[:80].strip("_")
-    return cleaned or "feature"
-
-
-def _unique_feature_id(base: str, taken: set[str]) -> str:
-    """Return base, or base with a numeric suffix, that is not in taken; taken holds casefolded ids."""
-    if base.casefold() not in taken:
-        return base
-    number = 2
-    while True:
-        suffix = f"_{number}"
-        candidate = base[: 80 - len(suffix)] + suffix
-        if candidate.casefold() not in taken:
-            return candidate
-        number += 1
-
-
-def _assign_feature_ids(
-    new_paths: list[str], candidates: dict[str, str | None], reserved: set[str]
-) -> dict[str, str]:
-    """Give every new feature path an id: its tag candidate when usable, otherwise the file-name fallback.
-
-    A candidate is used only when no other new file shares it (compared without
-    case) and no live entry of the suite already holds it. Fallback ids get a
-    numeric suffix on collision. Ids of existing entries are never changed here.
-    """
-    counts = Counter(candidates[path].casefold() for path in new_paths if candidates[path])
-    taken = {item.casefold() for item in reserved}
-    assigned: dict[str, str] = {}
-    for path in new_paths:
-        candidate = candidates[path]
-        if candidate and counts[candidate.casefold()] == 1 and candidate.casefold() not in taken:
-            assigned[path] = candidate
-            taken.add(candidate.casefold())
-    for path in new_paths:
-        if path not in assigned:
-            assigned[path] = _unique_feature_id(_fallback_feature_id(PurePosixPath(path).name), taken)
-            taken.add(assigned[path].casefold())
-    return assigned
+    lines = text.splitlines()
+    first_line = lines[0].strip() if lines else ""
+    match = FEATURE_CODE_HEADER_PATTERN.fullmatch(first_line)
+    if match is None or not FEATURE_CODE_PATTERN.fullmatch(match.group(1)):
+        raise ManifestError(
+            f"{feature_file}: first line must be '# qa-hub: FEAT_<NNN>_<Scope>' "
+            "with a non-zero three-digit number and a 2-20 character scope"
+        )
+    return match.group(1)
 
 
 def load_registry(registry_path: Path) -> dict[str, dict[str, Any]]:
     """Read the NRT suite registry keyed by normalized behave_path.
 
     A missing or unreadable registry is treated as empty and reported as a warning,
-    because it only decides the label and the activation of new suites.
+    because it supplies the ids and labels of registered suites.
     """
     if not registry_path.is_file():
-        _warn(f"registry {registry_path} not found: new suites are added disabled")
+        _warn(f"registry {registry_path} not found: registry ids and labels are unavailable")
         return {}
     try:
         data = json.loads(registry_path.read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:
-        _warn(f"registry {registry_path} unreadable ({exc}): new suites are added disabled")
+        _warn(f"registry {registry_path} unreadable ({exc}): registry ids and labels are unavailable")
         return {}
     suites = data.get("suites") if isinstance(data, dict) else None
     if not isinstance(suites, list):
-        _warn(f"registry {registry_path} has no 'suites' list: new suites are added disabled")
+        _warn(f"registry {registry_path} has no 'suites' list: registry ids and labels are unavailable")
         return {}
     registry: dict[str, dict[str, Any]] = {}
     for item in suites:
@@ -280,14 +227,25 @@ def load_registry(registry_path: Path) -> dict[str, dict[str, Any]]:
 
 
 def _drop_retired_keys(data: Any) -> None:
-    """Remove the retired test_type key from loaded features; the manifest no longer carries it (D26)."""
+    """Remove legacy fields now owned by the hub before validating an existing manifest."""
     if not isinstance(data, dict) or not isinstance(data.get("suites"), list):
         return
+    removed = 0
     for suite in data["suites"]:
-        if isinstance(suite, dict) and isinstance(suite.get("features"), list):
+        if not isinstance(suite, dict):
+            continue
+        if "enabled" in suite:
+            del suite["enabled"]
+            removed += 1
+        if isinstance(suite.get("features"), list):
             for feature in suite["features"]:
                 if isinstance(feature, dict):
-                    feature.pop("test_type", None)
+                    for key in ("test_type", "estimate_days", "enabled"):
+                        if key in feature:
+                            del feature[key]
+                            removed += 1
+    if removed:
+        _info(f"retired manifest fields to remove: {removed}")
 
 
 def read_manifest(manifest_path: Path) -> dict[str, Any] | None:
@@ -343,19 +301,6 @@ def _feature_path_problem(value: Any) -> str | None:
     return None
 
 
-def _estimate_problem(value: Any) -> str | None:
-    """Return why an estimate is invalid: a finite number from 0 to 365 with at most 2 decimals."""
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
-        return "must be a number"
-    if isinstance(value, float) and not math.isfinite(value):
-        return "must be a finite number"
-    if value < 0 or value > MAX_ESTIMATE_DAYS:
-        return f"must be between 0 and {MAX_ESTIMATE_DAYS}"
-    if isinstance(value, float) and Decimal(repr(value)).as_tuple().exponent < -2:
-        return "must have at most 2 decimals"
-    return None
-
-
 def _is_exact_int(value: Any, expected: int) -> bool:
     """Tell whether value is the integer expected; booleans are not accepted as integers."""
     return isinstance(value, int) and not isinstance(value, bool) and value == expected
@@ -370,8 +315,8 @@ def _describe_suite(suite: dict[str, Any], position: int) -> str:
 def validate_manifest(data: Any) -> list[str]:
     """Return the rule violations of a manifest structure; an empty list means it is valid.
 
-    The rules follow the QA Central Hub manifest contract: strict keys, id patterns,
-    safe relative paths, unique ids and paths, estimates, and at least one enabled suite.
+    The rules check strict keys, id patterns, safe relative paths, and unique ids
+    and paths. Status and estimates are not part of this manifest.
     """
     if not isinstance(data, dict):
         return ["the manifest must be a mapping"]
@@ -387,7 +332,6 @@ def validate_manifest(data: Any) -> list[str]:
 
     suite_ids: set[str] = set()
     full_paths: set[str] = set()
-    enabled_suites = 0
     for position, suite in enumerate(suites, start=1):
         if not isinstance(suite, dict):
             errors.append(f"suite #{position} must be a mapping")
@@ -419,12 +363,6 @@ def validate_manifest(data: Any) -> list[str]:
                 problem = _relative_path_problem(root)
                 if problem:
                     errors.append(f"{where}: root {problem}")
-
-        enabled = suite.get("enabled", True)
-        if not isinstance(enabled, bool):
-            errors.append(f"{where}: enabled must be true or false")
-        elif enabled:
-            enabled_suites += 1
 
         features = suite.get("features")
         if not isinstance(features, list):
@@ -459,15 +397,6 @@ def validate_manifest(data: Any) -> list[str]:
                     errors.append(f"{here}: the path '{full_path}' appears twice")
                 full_paths.add(full_path)
 
-            if "estimate_days" in feature:
-                problem = _estimate_problem(feature["estimate_days"])
-                if problem:
-                    errors.append(f"{here}: estimate_days {problem}")
-            if "enabled" in feature and not isinstance(feature["enabled"], bool):
-                errors.append(f"{here}: enabled must be true or false")
-
-    if enabled_suites == 0:
-        errors.append("at least one suite must be enabled")
     return errors
 
 
@@ -481,18 +410,36 @@ def reconcile_features(
 ) -> tuple[list[dict[str, Any]], list[str]]:
     """Reconcile the feature entries of one suite with the files on disk.
 
-    Live entries (file present) keep every field. Dead entries are removed, except
-    when a new file has the same tag id, in which case the entry moves to the new
-    path. Managed suites (discovered_suite given) get entries for new files, skipping
-    paths claimed by other suites; manual suites only lose their dead entries.
+    Live entries follow the file header. Dead entries are removed, except when a
+    new file has the same header id, in which case the entry moves to the new
+    path. Manual suites only lose dead entries.
     Returns the sorted entries and the change messages.
     """
     live: list[dict[str, Any]] = []
     dead: list[dict[str, Any]] = []
+    feature_ids = (
+        {
+            path: _feature_id_from_header(discovered_suite.directory / path)
+            for path in discovered_suite.feature_paths
+        }
+        if discovered_suite is not None
+        else {}
+    )
+    changes: list[str] = []
     for entry in entries:
         target = repo_root / _join_root(root, entry["path"])
-        (live if target.is_file() else dead).append(entry)
-    changes: list[str] = []
+        if not target.is_file():
+            dead.append(entry)
+            continue
+        live_entry = dict(entry)
+        new_id = feature_ids.get(entry["path"])
+        if new_id is not None and live_entry["id"] != new_id:
+            changes.append(
+                f"feature '{suite_id}/{live_entry['id']}' id updated to '{new_id}' "
+                f"from header at '{entry['path']}'"
+            )
+            live_entry["id"] = new_id
+        live.append(live_entry)
 
     if discovered_suite is None:
         for entry in dead:
@@ -507,12 +454,10 @@ def reconcile_features(
         for path in discovered_suite.feature_paths
         if path not in listed and _join_root(root, path) not in claimed
     ]
-    candidates = {path: _tag_candidate(discovered_suite.directory / path) for path in new_paths}
-
     still_dead: list[dict[str, Any]] = []
     for entry in dead:
         key = entry["id"].casefold()
-        matches = [path for path in new_paths if candidates[path] and candidates[path].casefold() == key]
+        matches = [path for path in new_paths if feature_ids[path].casefold() == key]
         if len(matches) == 1:
             changes.append(
                 f"feature '{suite_id}/{entry['id']}' moved: '{entry['path']}' -> '{matches[0]}'"
@@ -525,11 +470,10 @@ def reconcile_features(
     for entry in still_dead:
         changes.append(f"feature '{suite_id}/{entry['id']}' removed: '{entry['path']}' not found")
 
-    reserved = {entry["id"] for entry in live}
-    assigned = _assign_feature_ids(new_paths, {path: candidates[path] for path in new_paths}, reserved)
     for path in new_paths:
-        live.append({"id": assigned[path], "path": path})
-        changes.append(f"feature '{suite_id}/{assigned[path]}' added: '{path}'")
+        feature_id = feature_ids[path]
+        live.append({"id": feature_id, "path": path})
+        changes.append(f"feature '{suite_id}/{feature_id}' added: '{path}'")
     return sorted(live, key=lambda item: item["path"].casefold()), changes
 
 
@@ -543,8 +487,8 @@ def reconcile_suites(
 
     Existing suites keep their ids and labels. Suites whose folder is gone, or that
     end up with no feature, are removed. Discovered suites that are not in the
-    manifest are appended in root order: enabled when listed in the NRT registry,
-    disabled otherwise. Raises ManifestError when two suites cannot get distinct ids.
+    manifest are appended in root order. The registry supplies known ids and labels.
+    Raises ManifestError when two suites cannot get distinct ids.
     """
     discovered_by_root = {suite.root: suite for suite in discovered}
     claimed: dict[str, str] = {}
@@ -608,15 +552,10 @@ def reconcile_suites(
             continue
         taken[suite_id.casefold()] = suite.root
         new_suite: dict[str, Any] = {"id": suite_id, "root": suite.root, "features": features}
-        if registry_entry is not None:
-            if registry_entry["label"]:
-                new_suite["label"] = registry_entry["label"]
-            status = "enabled"
-        else:
-            new_suite["enabled"] = False
-            status = "disabled, not in the NRT registry"
+        if registry_entry is not None and registry_entry["label"]:
+            new_suite["label"] = registry_entry["label"]
         created.append(new_suite)
-        changes.append(f"suite '{suite_id}' added: {len(features)} features, {status}")
+        changes.append(f"suite '{suite_id}' added: {len(features)} features")
         changes.extend(feature_changes)
 
     created.sort(key=lambda item: item["root"].casefold())
@@ -628,17 +567,8 @@ def _quote(value: str) -> str:
     return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
 
-def _number(value: int | float) -> str:
-    """Render an estimate without quotes, keeping floats with a decimal point."""
-    return repr(value) if isinstance(value, float) else str(value)
-
-
 def render_manifest(suites: list[dict[str, Any]]) -> str:
-    """Write the manifest text by hand so that quoting, field order and blank lines stay stable.
-
-    Only 'enabled: false' is written, because true is the default. The 'test_type'
-    key is never written.
-    """
+    """Render the manifest with stable quoting, field order and blank lines."""
     lines = list(HEADER_LINES)
     lines += ["version: 1", "", "suites:"]
     for position, suite in enumerate(suites):
@@ -649,8 +579,6 @@ def render_manifest(suites: list[dict[str, Any]]) -> str:
             lines.append(f"    label: {_quote(suite['label'])}")
         if suite.get("root"):
             lines.append(f"    root: {_quote(suite['root'])}")
-        if suite.get("enabled", True) is False:
-            lines.append("    enabled: false")
         features = suite["features"]
         if not features:
             lines.append("    features: []")
@@ -659,10 +587,6 @@ def render_manifest(suites: list[dict[str, Any]]) -> str:
         for feature in features:
             lines.append(f"      - id: {_quote(feature['id'])}")
             lines.append(f"        path: {_quote(feature['path'])}")
-            if "estimate_days" in feature:
-                lines.append(f"        estimate_days: {_number(feature['estimate_days'])}")
-            if feature.get("enabled", True) is False:
-                lines.append("        enabled: false")
     return "\n".join(lines) + "\n"
 
 
@@ -696,8 +620,7 @@ def run(repo_root: Path, manifest: str, registry: str, check: bool, dry_run: boo
     old_bytes = manifest_path.read_bytes() if manifest_path.exists() else None
     changed = old_bytes != encoded
     feature_total = sum(len(suite["features"]) for suite in suites)
-    enabled_total = sum(1 for suite in suites if suite.get("enabled", True))
-    _info(f"suites: {len(suites)} ({enabled_total} enabled), features: {feature_total}")
+    _info(f"suites: {len(suites)}, features: {feature_total}")
     for change in changes:
         _info(change)
     if not changed:

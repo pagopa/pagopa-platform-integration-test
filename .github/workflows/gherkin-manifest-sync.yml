@@ -1,5 +1,5 @@
 # Keeps .github/gherkin-manifest.yml and .github/gherkin-synopses.json aligned with src/ (PQ-845).
-# The first job decides whether the sync is needed (D25); the second regenerates and pushes to main.
+# The first job decides whether sync is needed; the second proposes generated changes through a PR.
 # Scripts: .github/scripts/gherkin_manifest_sync.py and .github/scripts/gherkin_synopsis.py.
 name: Sync Gherkin manifest
 
@@ -10,12 +10,6 @@ on:
     types:
       - closed
   workflow_dispatch:
-    inputs:
-      force_synopses:
-        description: 'Regenerate every synopsis that is not locked (use after a PROMPT_VERSION change)'
-        required: false
-        type: boolean
-        default: false
 
 # No permission at workflow level: each job declares its own below.
 permissions: {}
@@ -23,6 +17,7 @@ permissions: {}
 concurrency:
   group: gherkin-manifest-sync
   cancel-in-progress: false
+  queue: max
 
 jobs:
   evaluate_trigger:
@@ -49,6 +44,10 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_CHANGED_FILES: ${{ github.event.pull_request.changed_files }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
           REPO: ${{ github.repository }}
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -67,6 +66,13 @@ jobs:
             exit 0
           fi
 
+          if [ "$PR_AUTHOR" = "github-actions[bot]" ] \
+            && [ "$PR_HEAD_REPO" = "$REPO" ] \
+            && [[ "$PR_HEAD_REF" =~ ^automation/gherkin-sync/run-[0-9]+-[0-9]+$ ]]; then
+            decide false "generated sync PR already reviewed"
+            exit 0
+          fi
+
           for file in .github/gherkin-manifest.yml .github/gherkin-synopses.json; do
             if [ ! -f "$file" ]; then
               decide true "missing $file"
@@ -74,16 +80,42 @@ jobs:
             fi
           done
 
-          PR_FILES="$RUNNER_TEMP/pr-files.txt"
-          if ! gh api "repos/$REPO/pulls/$PR_NUMBER/files" --paginate \
-            --jq '.[] | .filename, (.previous_filename // empty)' > "$PR_FILES"; then
-            decide true "PR file list not available"
+          if ! [[ "$PR_CHANGED_FILES" =~ ^[0-9]+$ ]]; then
+            if ! PR_CHANGED_FILES="$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '.changed_files')"; then
+              decide true "PR file count not available"
+              exit 0
+            fi
+          fi
+          if ! [[ "$PR_CHANGED_FILES" =~ ^[0-9]+$ ]]; then
+            decide true "invalid PR file count"
             exit 0
           fi
 
-          if grep -Eq '^(src/.+\.feature|\.github/gherkin-manifest\.yml|\.github/gherkin-synopses\.json)$' "$PR_FILES"; then
+          PR_FILES="$RUNNER_TEMP/pr-files.json"
+          if ! gh api "repos/$REPO/pulls/$PR_NUMBER/files" --paginate --slurp > "$PR_FILES"; then
+            decide true "PR file list not available"
+            exit 0
+          fi
+          if ! jq -e --argjson expected "$PR_CHANGED_FILES" '
+            type == "array" and all(.[]; type == "array")
+            and ([.[][]] | length) == $expected
+            and all(.[][]; (.filename | type == "string") and (.status | type == "string"))
+          ' "$PR_FILES" > /dev/null; then
+            decide true "PR file list incomplete or invalid"
+            exit 0
+          fi
+          if jq -e '
+            [.[][] | .filename, (.previous_filename // empty)]
+            | any(.[]; test("^(src/.+\\.feature|\\.github/gherkin-manifest\\.yml|\\.github/gherkin-synopses\\.json)$"))
+          ' "$PR_FILES" > /dev/null; then
             decide true "the PR changes feature, manifest or synopsis files"
             exit 0
+          else
+            result=$?
+            if [ "$result" -ne 1 ]; then
+              decide true "PR file selection failed"
+              exit 0
+            fi
           fi
 
           decide false "no criterion met"
@@ -96,12 +128,13 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - name: Checkout main
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
         with:
           ref: main
-          fetch-depth: 1
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@7f4fc3e22c37d6ff65e88745f38bd3157c663f7c # v4
@@ -113,9 +146,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyyaml
 
+      - name: Prepare cumulative sync branch
+        id: prepare
+        uses: actions/github-script@d556feaca394842dc55e4734bf3bb9f685482fa0 # v6.3.3
+        with:
+          script: |
+            const { prepareSyncBranch } = require('./.github/scripts/gherkin-sync-pr.js');
+            await prepareSyncBranch({ github, context, core });
+
       - name: Regenerate manifest
+        id: manifest
         shell: bash
         run: |
+          set -euo pipefail
           python .github/scripts/gherkin_manifest_sync.py | tee -a "$GITHUB_STEP_SUMMARY"
 
       # Copy of the model discovery in .github/workflows/ai-report-analysis.yml (D22).
@@ -181,30 +224,83 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.REPORT_ANALYSIS_GEMINI_API_KEY }}
           AVAILABLE_MODELS: ${{ steps.catalog.outputs.available_models }}
           MODEL_LIMITS: ${{ steps.catalog.outputs.model_limits }}
-          FORCE_SYNOPSES: ${{ github.event.inputs.force_synopses || 'false' }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_CHANGED_FILES: ${{ github.event.pull_request.changed_files }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          PUBLISHED_BASE: ${{ steps.prepare.outputs.base_sha }}
+          PENDING_HEAD: ${{ steps.prepare.outputs.branch_head }}
+          PUBLISHED_REVIEWS: ${{ steps.prepare.outputs.published_reviews }}
+          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
         run: |
+          set -euo pipefail
           args=()
-          if [ "$FORCE_SYNOPSES" = "true" ]; then
-            args+=(--force)
+          completion="$RUNNER_TEMP/gherkin-synopsis-complete-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          if [ -e "$completion" ]; then
+            echo "Synopsis completion marker already exists: $completion" >&2
+            exit 1
           fi
+          args+=(--completion-marker "$completion" --published-base "$PUBLISHED_BASE" --pending-head "$PENDING_HEAD")
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            if ! [[ "$PR_CHANGED_FILES" =~ ^[0-9]+$ ]]; then
+              PR_CHANGED_FILES="$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '.changed_files')"
+            fi
+            if ! [[ "$PR_CHANGED_FILES" =~ ^[0-9]+$ ]]; then
+              echo "PR changed-file count is unavailable" >&2
+              exit 1
+            fi
+            PR_FILES="$RUNNER_TEMP/pr-files.json"
+            gh api "repos/$REPO/pulls/$PR_NUMBER/files" --paginate --slurp > "$PR_FILES"
+            args+=(--pr-files-file "$PR_FILES" --pr-files-count "$PR_CHANGED_FILES")
+            reviews="$RUNNER_TEMP/gherkin-published-reviews-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT.json"
+            if [ -e "$reviews" ]; then
+              echo "Published review metadata already exists: $reviews" >&2
+              exit 1
+            fi
+            printf '%s\n' "$PUBLISHED_REVIEWS" > "$reviews"
+            args+=(--published-reviews "$reviews")
+            git fetch --no-tags origin "$PR_BASE_SHA" "$PR_HEAD_SHA" "$PR_MERGE_SHA"
+            PR_BASE="$(git merge-base "$PR_BASE_SHA" "$PR_HEAD_SHA")"
+            args+=(--pr-base "$PR_BASE" --pr-head "$PR_HEAD_SHA" \
+              --pr-merge "$PR_MERGE_SHA")
+          fi
+          set +e
           python3 .github/scripts/gherkin_synopsis.py "${args[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
+          statuses=("${PIPESTATUS[@]}")
+          set -e
+          python_status="${statuses[0]}"
+          if [ "${statuses[1]}" -ne 0 ]; then
+            echo "Could not capture synopsis output in the job summary" >&2
+            exit 1
+          fi
+          if [ ! -f "$completion" ] || [ "$(<"$completion")" != "$python_status" ]; then
+            echo "Synopsis preparation did not complete safely; changes will not be published" >&2
+            exit 1
+          fi
+          echo "safe_to_publish=true" >> "$GITHUB_OUTPUT"
+          exit "$python_status"
 
-      - name: Commit and push when changed
+      - name: Stop if synopsis preparation was unsafe
+        if: steps.synopses.outputs.safe_to_publish != 'true'
         shell: bash
         run: |
-          FILES=(.github/gherkin-manifest.yml .github/gherkin-synopses.json)
-          if [ -z "$(git status --porcelain -- "${FILES[@]}")" ]; then
-            echo "No change in the manifest or synopses: nothing to commit"
-            exit 0
-          fi
+          echo "Synopsis preparation was unsafe; no PR update was published" >&2
+          exit 1
 
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          for file in "${FILES[@]}"; do
-            if [ -f "$file" ]; then
-              git add -- "$file"
-            fi
-          done
-          git commit -m "chore: sync gherkin manifest and synopses"
-          git pull --rebase origin main
-          git push
+      - name: Create or update sync PR
+        id: publish
+        if: steps.synopses.outputs.safe_to_publish == 'true'
+        uses: actions/github-script@d556feaca394842dc55e4734bf3bb9f685482fa0 # v6.3.3
+        env:
+          SYNC_BRANCH: ${{ steps.prepare.outputs.branch }}
+          SYNC_PR_NUMBER: ${{ steps.prepare.outputs.pr_number }}
+          SYNC_BASE_SHA: ${{ steps.prepare.outputs.base_sha }}
+          MANIFEST_OUTCOME: ${{ steps.manifest.outcome }}
+          SYNOPSIS_OUTCOME: ${{ steps.synopses.outcome }}
+        with:
+          script: |
+            const { publishSyncPullRequest } = require('./.github/scripts/gherkin-sync-pr.js');
+            await publishSyncPullRequest({ github, context, core });

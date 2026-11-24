@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 """Generate and maintain the AI synopses of the Gherkin feature files.
 
-The script reads the manifest written by gherkin_manifest_sync.py and, for every
-active feature, cleans the feature file (tags and comments are never sent to the
-model) and asks Gemini for one short synopsis through gemini_analysis.py. Results go
-to .github/gherkin-synopses.json, keyed by suite id and feature id. A feature is
-regenerated only when its cleaned text, the prompt version or the --force flag
-requires it; entries with "locked": true are never touched.
+The script reads the manifest written by gherkin_manifest_sync.py and cleans each
+feature file (tags and comments are never sent to the model). It asks Gemini for
+missing synopses and for changed feature text when the feature belongs to the
+merged PR. Results go to .github/gherkin-synopses.json, keyed by suite id and
+feature id. Explicit published and pending-review edits take precedence over AI generation.
 
-Exit codes: 0 success, nothing to do, or no GEMINI_API_KEY (the run is skipped);
+Exit codes: 0 success, nothing to do, or no GEMINI_API_KEY (AI generation is skipped);
 1 when at least one feature failed (the file still holds the progress made);
-2 on a configuration error (missing or invalid manifest, prompt template or synopses
-file, invalid model settings), which leaves every file untouched.
+2 on an input, configuration or file error; publication must not proceed.
 """
 
 from __future__ import annotations
@@ -23,6 +21,7 @@ import importlib.util
 import json
 import os
 import re
+import subprocess
 import sys
 import time
 from collections import Counter
@@ -86,12 +85,11 @@ class Engine:
 
 @dataclass(frozen=True)
 class ManifestFeature:
-    """A feature listed in the manifest, with its full repository path and whether it is active."""
+    """A feature listed in the manifest, with its full repository path."""
 
     suite_id: str
     feature_id: str
     path: str
-    active: bool
 
 
 @dataclass(frozen=True)
@@ -119,13 +117,15 @@ class Target:
 class Plan:
     """What a run decides before any AI call: targets, entries to keep, and the notes to print."""
 
-    active_total: int
+    feature_total: int
+    prompt_version: str
     targets: list[Target]
     entries: dict[tuple[str, str], dict[str, Any]]
     removed: list[tuple[str, str]]
     kept: int
-    locked: int
-    disabled: int
+    edited_in_pr: int
+    newer_published: int
+    pending_manual: int
     skipped: list[str]
 
 
@@ -179,7 +179,14 @@ class RunOptions:
     pause_seconds: float
     max_output_tokens: int
     thinking_level: str
-    force: bool
+    pr_files_file: Path | None
+    pr_files_count: int | None
+    pr_base: str | None
+    pr_head: str | None
+    pr_merge: str | None
+    published_base: str | None
+    pending_head: str | None
+    published_reviews: Path | None
     dry_run: bool
 
 
@@ -370,16 +377,6 @@ def read_feature_text(path: Path) -> str:
     return clean_feature_text(path.read_text(encoding="utf-8-sig"))
 
 
-def _flag(mapping: dict[str, Any], key: str, where: str) -> bool:
-    """Return the boolean under key, or True when the key is absent (the manifest default); other types are errors."""
-    if key not in mapping:
-        return True
-    value = mapping[key]
-    if not isinstance(value, bool):
-        raise SynopsisError(f"{where}: '{key}' must be true or false")
-    return value
-
-
 def _text_field(mapping: dict[str, Any], key: str, where: str) -> str:
     """Return a required non-empty text field, or raise SynopsisError naming where it was expected."""
     value = mapping.get(key)
@@ -389,11 +386,11 @@ def _text_field(mapping: dict[str, Any], key: str, where: str) -> str:
 
 
 def load_manifest_features(manifest_path: Path) -> list[ManifestFeature]:
-    """Read the manifest with yaml.safe_load and list each feature with its full path and active flag.
+    """Read the manifest with yaml.safe_load and list each feature with its full path.
 
-    A feature is active when its suite and the feature itself are enabled. The checks are defensive
-    only (the manifest sync script validates the file in depth). Raises SynopsisError when the file
-    is missing, unreadable, not YAML or has an unexpected shape.
+    The checks are defensive only (the manifest sync script validates the file in
+    depth). Raises SynopsisError when the file is missing, unreadable, not YAML,
+    has duplicate paths, or has an unexpected shape.
     """
     if not manifest_path.is_file():
         raise SynopsisError(f"manifest not found: {manifest_path}")
@@ -408,6 +405,7 @@ def load_manifest_features(manifest_path: Path) -> list[ManifestFeature]:
         raise SynopsisError(f"manifest has no 'suites' list: {manifest_path}")
     features: list[ManifestFeature] = []
     seen: set[tuple[str, str]] = set()
+    seen_paths: set[str] = set()
     for position, suite in enumerate(suites, start=1):
         if not isinstance(suite, dict):
             raise SynopsisError(f"manifest suite #{position} is not a mapping")
@@ -417,7 +415,6 @@ def load_manifest_features(manifest_path: Path) -> list[ManifestFeature]:
         if not isinstance(root, str):
             raise SynopsisError(f"{where_suite}: 'root' must be a text")
         root = root.rstrip("/")
-        suite_enabled = _flag(suite, "enabled", where_suite)
         suite_features = suite.get("features")
         if not isinstance(suite_features, list):
             raise SynopsisError(f"{where_suite}: 'features' must be a list")
@@ -432,15 +429,44 @@ def load_manifest_features(manifest_path: Path) -> list[ManifestFeature]:
             seen.add(key)
             relative = _text_field(feature, "path", where_feature)
             full_path = f"{root}/{relative}" if root else relative
-            feature_enabled = _flag(feature, "enabled", where_feature)
-            features.append(
-                ManifestFeature(suite_id, feature_id, full_path, suite_enabled and feature_enabled)
-            )
+            if full_path in seen_paths:
+                raise SynopsisError(f"{where_feature}: path '{full_path}' listed twice")
+            seen_paths.add(full_path)
+            features.append(ManifestFeature(suite_id, feature_id, full_path))
     return features
 
 
+def load_changed_features(path: Path | None, expected_count: int | None) -> dict[str, str]:
+    """Map current feature paths to their previous paths from complete GitHub PR metadata."""
+    if path is None:
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError) as exc:
+        raise SynopsisError(f"PR file list unreadable or invalid: {path}: {exc}") from exc
+    if not isinstance(data, list) or any(not isinstance(page, list) for page in data):
+        raise SynopsisError(f"PR file list must be an array of pages: {path}")
+    files = [item for page in data for item in page]
+    if len(files) != expected_count:
+        raise SynopsisError(f"PR file list is incomplete: expected {expected_count}, got {len(files)}")
+    changed: dict[str, str] = {}
+    for item in files:
+        if not isinstance(item, dict):
+            raise SynopsisError(f"PR file list contains a non-object entry: {path}")
+        filename = item.get("filename")
+        status = item.get("status")
+        if not isinstance(filename, str) or not filename or not isinstance(status, str) or not status:
+            raise SynopsisError(f"PR file list contains an entry without filename or status: {path}")
+        if status != "removed" and filename.startswith("src/") and filename.endswith(".feature"):
+            previous = item.get("previous_filename", filename)
+            if not isinstance(previous, str) or not previous:
+                raise SynopsisError(f"PR file list contains an invalid previous filename: {path}")
+            changed[filename] = previous
+    return changed
+
+
 def _check_entry(entry: Any, where: str) -> dict[str, Any]:
-    """Validate one synopsis entry against the schema and return it; raise SynopsisError otherwise."""
+    """Validate one synopsis entry against the schema, or raise SynopsisError."""
     if not isinstance(entry, dict):
         raise SynopsisError(f"{where}: the entry is not a mapping")
     for key in ("path", "content_hash", "model", "synopsis"):
@@ -448,8 +474,10 @@ def _check_entry(entry: Any, where: str) -> dict[str, Any]:
             raise SynopsisError(f"{where}: '{key}' must be a text")
     if not HASH_PATTERN.fullmatch(entry["content_hash"]):
         raise SynopsisError(f"{where}: 'content_hash' must be 'sha256:' and 64 hexadecimal digits")
-    if "locked" in entry and not isinstance(entry["locked"], bool):
-        raise SynopsisError(f"{where}: 'locked' must be true or false")
+    if "prompt_version" in entry and not (
+        isinstance(entry["prompt_version"], str) and entry["prompt_version"]
+    ):
+        raise SynopsisError(f"{where}: 'prompt_version' must be a non-empty text")
     return entry
 
 
@@ -461,23 +489,281 @@ def load_synopses_file(path: Path) -> SynopsisDocument:
     if not path.is_file():
         return SynopsisDocument(prompt_version=None, entries={})
     try:
-        data = json.loads(path.read_text(encoding="utf-8-sig"))
+        text = path.read_text(encoding="utf-8-sig")
     except (OSError, ValueError) as exc:
         raise SynopsisError(f"synopses file is not valid JSON, left untouched: {path}: {exc}") from exc
+    return parse_synopses(text, str(path))
+
+
+def parse_synopses(text: str, source: str) -> SynopsisDocument:
+    """Parse and validate a current or historical synopsis document without writing it."""
+    try:
+        data = json.loads(text)
+    except ValueError as exc:
+        raise SynopsisError(f"synopses file is not valid JSON, left untouched: {source}: {exc}") from exc
     if not isinstance(data, dict) or not _is_exact_int(data.get("version"), SCHEMA_VERSION):
-        raise SynopsisError(f"synopses file has an unknown 'version', left untouched: {path}")
+        raise SynopsisError(f"synopses file has an unknown 'version', left untouched: {source}")
     prompt_version = data.get("prompt_version")
     suites = data.get("suites")
-    if not isinstance(prompt_version, str) or not isinstance(suites, dict):
-        raise SynopsisError(f"synopses file has an invalid shape, left untouched: {path}")
+    if not isinstance(prompt_version, str) or not prompt_version or not isinstance(suites, dict):
+        raise SynopsisError(f"synopses file has an invalid shape, left untouched: {source}")
     entries: dict[tuple[str, str], dict[str, Any]] = {}
     for suite_id, features in suites.items():
         if not isinstance(features, dict):
-            raise SynopsisError(f"synopses suite '{suite_id}' is not a mapping, left untouched: {path}")
+            raise SynopsisError(f"synopses suite '{suite_id}' is not a mapping, left untouched: {source}")
         for feature_id, entry in features.items():
             where = f"synopsis '{suite_id}/{feature_id}'"
             entries[(suite_id, feature_id)] = _check_entry(entry, where)
     return SynopsisDocument(prompt_version=prompt_version, entries=entries)
+
+
+def read_revision_file(repo_root: Path, revision: str, path: str) -> str | None:
+    """Read a Git blob without changing the worktree; only a genuinely absent path returns None."""
+    try:
+        listed = subprocess.run(
+            ["git", "--no-pager", "ls-tree", "-z", "--name-only", revision, "--", path],
+            cwd=repo_root, capture_output=True, text=True, encoding="utf-8", check=True,
+        )
+        if not listed.stdout:
+            return None
+        blob = subprocess.run(
+            ["git", "--no-pager", "show", f"{revision}:{path}"],
+            cwd=repo_root, capture_output=True, text=True, encoding="utf-8-sig", check=True,
+        )
+    except (OSError, UnicodeError, subprocess.CalledProcessError) as exc:
+        raise SynopsisError(f"cannot read PR snapshot {revision}:{path}") from exc
+    return blob.stdout
+
+
+def index_synopses_by_path(
+    document: SynopsisDocument,
+) -> dict[tuple[str, str], tuple[tuple[str, str], dict[str, Any]]]:
+    """Index entries by suite and path, rejecting ambiguous identities."""
+    indexed: dict[tuple[str, str], tuple[tuple[str, str], dict[str, Any]]] = {}
+    for key, entry in document.entries.items():
+        path_key = (key[0], entry["path"])
+        if path_key in indexed:
+            raise SynopsisError(f"multiple synopses for suite '{key[0]}' and path '{entry['path']}'")
+        indexed[path_key] = (key, entry)
+    return indexed
+
+
+def synopsis_text_changes(
+    before: SynopsisDocument, after: SynopsisDocument, features: list[ManifestFeature],
+) -> dict[tuple[str, str], str]:
+    """Map synopsis text edits to current features and the paths in the later snapshot."""
+    before_by_path = index_synopses_by_path(before)
+    after_by_path = index_synopses_by_path(after)
+    changed_keys: dict[tuple[str, str], str] = {}
+    changed_paths: set[tuple[str, str]] = set()
+    matched: set[tuple[str, str]] = set()
+    for key, entry in after.entries.items():
+        previous = before_by_path.get((key[0], entry["path"]))
+        if previous is None:
+            same_id = before.entries.get(key)
+            if same_id is not None and (key[0], same_id["path"]) not in after_by_path:
+                previous = (key, same_id)
+        if previous is not None:
+            matched.add(previous[0])
+            if previous[1]["synopsis"] == entry["synopsis"]:
+                continue
+        changed_keys[key] = entry["path"]
+        changed_paths.add((key[0], entry["path"]))
+    for key, entry in before.entries.items():
+        if key not in matched:
+            changed_keys[key] = entry["path"]
+            changed_paths.add((key[0], entry["path"]))
+    edited: dict[tuple[str, str], str] = {}
+    manifest_paths = {(feature.suite_id, feature.path) for feature in features}
+    for feature in features:
+        key = (feature.suite_id, feature.feature_id)
+        path_key = (feature.suite_id, feature.path)
+        if path_key not in changed_paths and (
+            key not in changed_keys or (feature.suite_id, changed_keys[key]) in manifest_paths
+        ):
+            continue
+        head_match = after_by_path.get(path_key)
+        head_entry = head_match[1] if head_match is not None else after.entries.get(key)
+        edited[key] = head_entry["path"] if head_entry is not None else feature.path
+    return edited
+
+
+def load_revision_synopses(repo_root: Path, revision: str, path: str) -> SynopsisDocument:
+    """Read and validate a synopsis document at a commit, allowing an absent file."""
+    text = read_revision_file(repo_root, revision, path)
+    return SynopsisDocument(None, {}) if text is None else parse_synopses(text, f"{revision}:{path}")
+
+
+def load_pr_changes(
+    repo_root: Path, options: RunOptions, features: list[ManifestFeature],
+) -> tuple[set[str], dict[tuple[str, str], str | None]]:
+    """Compare PR snapshots and retain edited features' PR-head text as the hash baseline."""
+    metadata = (
+        _resolve(repo_root, options.pr_files_file)
+        if options.pr_files_file is not None else None
+    )
+    paths = load_changed_features(metadata, options.pr_files_count)
+    if options.pr_base is None or options.pr_head is None:
+        return set(), {}
+    try:
+        synopsis_path = _resolve(repo_root, options.synopses).relative_to(repo_root).as_posix()
+    except ValueError as exc:
+        raise SynopsisError("the PR synopses file must be inside the repository") from exc
+    before = load_revision_synopses(repo_root, options.pr_base, synopsis_path)
+    after = load_revision_synopses(repo_root, options.pr_head, synopsis_path)
+    edited: dict[tuple[str, str], str | None] = {}
+    for key, head_path in synopsis_text_changes(before, after, features).items():
+        text = read_revision_file(repo_root, options.pr_head, head_path)
+        edited[key] = clean_feature_text(text) if text is not None else None
+    changed_features: set[str] = set()
+    for path, previous in paths.items():
+        old_text = read_revision_file(repo_root, options.pr_base, previous)
+        new_text = read_revision_file(repo_root, options.pr_head, path)
+        if new_text is None:
+            raise SynopsisError(f"PR head does not contain listed feature: {path}")
+        if old_text is None or clean_feature_text(old_text) != clean_feature_text(new_text):
+            changed_features.add(path)
+    return changed_features, edited
+
+
+def load_published_overrides(
+    repo_root: Path,
+    options: RunOptions,
+    features: list[ManifestFeature],
+    edited_synopses: dict[tuple[str, str], str | None],
+) -> tuple[
+    dict[tuple[str, str], dict[str, Any] | None],
+    set[tuple[str, str]],
+    str | None,
+    dict[tuple[str, str], tuple[str, str]],
+]:
+    """Protect published text edits after the triggering merge, including edits later reverted."""
+    if options.pr_merge is None or options.published_base is None:
+        return {}, set(), None, {}
+    try:
+        synopsis_path = _resolve(repo_root, options.synopses).relative_to(repo_root).as_posix()
+    except ValueError as exc:
+        raise SynopsisError("the published synopses file must be inside the repository") from exc
+    try:
+        ancestor = subprocess.run(
+            ["git", "--no-pager", "merge-base", "--is-ancestor", options.pr_merge, options.published_base],
+            cwd=repo_root, capture_output=True, text=True, encoding="utf-8", check=False,
+        )
+        if ancestor.returncode == 1:
+            raise SynopsisError("the triggering PR merge is not an ancestor of the published base")
+        if ancestor.returncode != 0:
+            raise SynopsisError("cannot verify the triggering PR merge against the published base")
+        history = subprocess.run(
+            [
+                "git", "--no-pager", "rev-list", "--first-parent", "--reverse", "--ancestry-path",
+                f"{options.pr_merge}..{options.published_base}", "--", synopsis_path,
+            ],
+            cwd=repo_root, capture_output=True, text=True, encoding="utf-8", check=True,
+        )
+    except (OSError, UnicodeError, subprocess.CalledProcessError) as exc:
+        raise SynopsisError("cannot inspect published synopsis history") from exc
+    reviews: dict[str, list[str]] = {}
+    if options.published_reviews is not None:
+        path = _resolve(repo_root, options.published_reviews)
+        try:
+            data = json.loads(path.read_text(encoding="utf-8-sig"))
+        except (OSError, ValueError) as exc:
+            raise SynopsisError(f"published review metadata unreadable or invalid: {path}") from exc
+        revisions = set(history.stdout.splitlines())
+        if not isinstance(data, dict) or any(
+            revision not in revisions
+            or not isinstance(commits, list)
+            or any(
+                not isinstance(commit, str) or not re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", commit)
+                for commit in commits
+            )
+            for revision, commits in data.items()
+        ):
+            raise SynopsisError("published review metadata contains invalid revisions or commits")
+        reviews = data
+    source = load_revision_synopses(repo_root, options.pr_merge, synopsis_path)
+    previous = source
+    newer: set[tuple[str, str]] = set()
+    references: dict[tuple[str, str], tuple[str, str]] = {}
+    for revision in history.stdout.splitlines():
+        current = load_revision_synopses(repo_root, revision, synopsis_path)
+        changes: dict[tuple[str, str], str] = {}
+        if revision in reviews:
+            for commit in reviews[revision]:
+                before_review = load_revision_synopses(repo_root, f"{commit}^1", synopsis_path)
+                after_review = load_revision_synopses(repo_root, commit, synopsis_path)
+                changes.update(synopsis_text_changes(before_review, after_review, features))
+        else:
+            changes = synopsis_text_changes(previous, current, features)
+        newer.update(changes)
+        references.update({key: (revision, path) for key, path in changes.items()})
+        previous = current
+    published = load_revision_synopses(repo_root, options.published_base, synopsis_path)
+    published_by_path = index_synopses_by_path(published)
+    source_by_path = index_synopses_by_path(source)
+    manifest_paths = {(feature.suite_id, feature.path) for feature in features}
+    overrides: dict[tuple[str, str], dict[str, Any] | None] = {}
+    for feature in features:
+        key = (feature.suite_id, feature.feature_id)
+        if key not in newer and key not in edited_synopses:
+            continue
+        if key not in references:
+            source_match = source_by_path.get((feature.suite_id, feature.path))
+            if source_match is None:
+                same_id = source.entries.get(key)
+                if same_id is not None and (feature.suite_id, same_id["path"]) not in manifest_paths:
+                    source_match = (key, same_id)
+            source_path = source_match[1]["path"] if source_match is not None else feature.path
+            references[key] = (options.pr_merge, source_path)
+        match = published_by_path.get((feature.suite_id, feature.path))
+        if match is None:
+            same_id = published.entries.get(key)
+            if same_id is not None and (feature.suite_id, same_id["path"]) not in manifest_paths:
+                match = (key, same_id)
+        overrides[key] = match[1] if match is not None else None
+    return overrides, newer, published.prompt_version, references
+
+
+def load_pending_manual_edits(
+    repo_root: Path, options: RunOptions, features: list[ManifestFeature],
+) -> set[tuple[str, str]]:
+    """Find synopsis texts edited by non-bot commits on the cumulative PR branch."""
+    if options.published_base is None or options.pending_head is None:
+        return set()
+    try:
+        synopsis_path = _resolve(repo_root, options.synopses).relative_to(repo_root).as_posix()
+    except ValueError as exc:
+        raise SynopsisError("the pending synopses file must be inside the repository") from exc
+    try:
+        ancestor = subprocess.run(
+            ["git", "--no-pager", "merge-base", "--is-ancestor", options.published_base, options.pending_head],
+            cwd=repo_root, capture_output=True, text=True, encoding="utf-8", check=False,
+        )
+        if ancestor.returncode == 1:
+            raise SynopsisError("the published base is not an ancestor of the pending branch")
+        if ancestor.returncode != 0:
+            raise SynopsisError("cannot verify the pending branch against the published base")
+        history = subprocess.run(
+            [
+                "git", "--no-pager", "rev-list", "--first-parent", "--reverse",
+                f"{options.published_base}..{options.pending_head}", "--", synopsis_path,
+            ],
+            cwd=repo_root, capture_output=True, text=True, encoding="utf-8", check=True,
+        )
+        manual: set[tuple[str, str]] = set()
+        for revision in history.stdout.splitlines():
+            author = subprocess.run(
+                ["git", "--no-pager", "show", "-s", "--format=%an%x00%ae", revision],
+                cwd=repo_root, capture_output=True, text=True, encoding="utf-8", check=True,
+            ).stdout.rstrip("\n")
+            if author == "github-actions[bot]\0github-actions[bot]@users.noreply.github.com":
+                continue
+            before = load_revision_synopses(repo_root, f"{revision}^1", synopsis_path)
+            after = load_revision_synopses(repo_root, revision, synopsis_path)
+            manual.update(synopsis_text_changes(before, after, features))
+    except (OSError, UnicodeError, subprocess.CalledProcessError) as exc:
+        raise SynopsisError("cannot inspect pending synopsis review edits") from exc
+    return manual
 
 
 def load_prompt_template(path: Path) -> str:
@@ -495,52 +781,120 @@ def load_prompt_template(path: Path) -> str:
 
 
 def make_entry(
-    path: str, content_hash: str, model: str, synopsis: str, locked: bool = False
+    path: str,
+    content_hash: str,
+    model: str,
+    synopsis: str,
+    prompt_version: str | None = None,
 ) -> dict[str, Any]:
-    """Build one synopsis entry in the fixed key order of the schema; 'locked' appears only when true."""
+    """Build one synopsis entry, including a prompt version override when needed."""
     entry: dict[str, Any] = {"path": path, "content_hash": content_hash, "model": model, "synopsis": synopsis}
-    if locked:
-        entry["locked"] = True
+    if prompt_version is not None:
+        entry["prompt_version"] = prompt_version
     return entry
 
 
 def _carry_over(current: dict[str, Any], path: str) -> dict[str, Any]:
-    """Copy an existing entry to a path (the current one or a moved one), keeping its hash, model, synopsis and lock."""
+    """Copy an existing entry to a path, keeping its synopsis, hash and prompt version."""
     return make_entry(
         path,
         current["content_hash"],
         current["model"],
         current["synopsis"],
-        locked=current.get("locked") is True,
+        prompt_version=current.get("prompt_version"),
     )
 
 
 def plan_work(
-    repo_root: Path, features: list[ManifestFeature], existing: SynopsisDocument, force: bool
+    repo_root: Path,
+    features: list[ManifestFeature],
+    existing: SynopsisDocument,
+    changed_features: set[str],
+    edited_synopses: dict[tuple[str, str], str | None] | None = None,
+    published_overrides: dict[tuple[str, str], dict[str, Any] | None] | None = None,
+    newer_published: set[tuple[str, str]] | None = None,
+    published_prompt_version: str | None = None,
+    pending_manual: set[tuple[str, str]] | None = None,
+    override_references: dict[tuple[str, str], tuple[str, str]] | None = None,
 ) -> Plan:
     """Decide which features need a new synopsis and which entries stay, without any AI call.
 
-    An active feature with a readable, non-empty file is a target when it has no entry, when the
-    stored prompt version differs, when its content hash changed, when its synopsis is empty, or
-    when force is set. Locked entries are never targets. Disabled features keep their entries as
-    they are; entries whose feature left the manifest are removed; a feature whose file is missing
-    or empty keeps its entry and is reported as skipped.
+    Missing synopses are generated for every suite. Existing ones are regenerated
+    only when their feature's cleaned text changed in the PR. A synopsis edited
+    in that PR always takes precedence. Missing or unreadable files keep old entries.
     """
-    manifest_keys = {(feature.suite_id, feature.feature_id) for feature in features}
-    removed = sorted(key for key in existing.entries if key not in manifest_keys)
-    prompt_changed = existing.prompt_version != PROMPT_VERSION
+    manifest_paths = {(feature.suite_id, feature.path) for feature in features}
+    existing_by_path = index_synopses_by_path(existing)
+    if edited_synopses is None:
+        edited_synopses = {}
+    if published_overrides is None:
+        published_overrides = {}
+    if newer_published is None:
+        newer_published = set()
+    if pending_manual is None:
+        pending_manual = set()
+    if override_references is None:
+        override_references = {}
+    prompt_version = existing.prompt_version if existing.prompt_version is not None else PROMPT_VERSION
+    matched: set[tuple[str, str]] = set()
     entries: dict[tuple[str, str], dict[str, Any]] = {}
     targets: list[Target] = []
     skipped: list[str] = []
-    kept = locked = disabled = 0
+    kept = edited_in_pr = newer_count = pending_count = 0
     for feature in features:
         key = (feature.suite_id, feature.feature_id)
         label = f"'{feature.suite_id}/{feature.feature_id}'"
-        current = existing.entries.get(key)
-        if not feature.active:
-            disabled += 1
+        match = existing_by_path.get((feature.suite_id, feature.path))
+        if match is None:
+            same_id = existing.entries.get(key)
+            if same_id is not None and (feature.suite_id, same_id["path"]) not in manifest_paths:
+                match = (key, same_id)
+        current = match[1] if match is not None else None
+        if match is not None:
+            matched.add(match[0])
+        if key in edited_synopses or key in newer_published or key in pending_manual:
+            edited_in_pr += int(key in edited_synopses)
+            newer_count += int(key in newer_published)
+            pending_count += int(key in pending_manual)
+            if key in published_overrides:
+                published = published_overrides[key]
+                if key in pending_manual and (
+                    (current["synopsis"] if current is not None else None)
+                    != (published["synopsis"] if published is not None else None)
+                ):
+                    raise SynopsisError(
+                        f"feature {label}: published and pending manual synopsis edits differ; resolve them first"
+                    )
+                reference = override_references.get(key)
+                feature_path = repo_root / feature.path
+                if reference is not None and current is not None and feature_path.is_file():
+                    old_text = read_revision_file(repo_root, *reference)
+                    if old_text is not None:
+                        try:
+                            latest_text = read_feature_text(feature_path)
+                        except (OSError, ValueError) as exc:
+                            raise SynopsisError(f"feature {label}: cannot verify the pending synopsis") from exc
+                        version = current.get("prompt_version", prompt_version)
+                        if (
+                            latest_text
+                            and clean_feature_text(old_text) != latest_text
+                            and current["content_hash"] == compute_content_hash(latest_text, version)
+                        ):
+                            entries[key] = _carry_over(current, feature.path)
+                            continue
+                current = published_overrides[key]
             if current is not None:
-                entries[key] = _carry_over(current, current["path"])
+                entry = _carry_over(current, feature.path)
+                if key in published_overrides:
+                    version = current.get("prompt_version", published_prompt_version)
+                    if version is not None and version != prompt_version:
+                        entry["prompt_version"] = version
+                pr_text = edited_synopses.get(key) if key not in newer_published else None
+                if pr_text is not None:
+                    entry["content_hash"] = compute_content_hash(
+                        pr_text, entry.get("prompt_version", prompt_version)
+                    )
+                entries[key] = entry
             continue
         file_path = repo_root / feature.path
         cleaned = ""
@@ -558,28 +912,23 @@ def plan_work(
             if current is not None:
                 entries[key] = _carry_over(current, current["path"])
             continue
-        if current is not None and current.get("locked") is True:
-            locked += 1
-            entries[key] = _carry_over(current, feature.path)
-            continue
         content_hash = compute_content_hash(cleaned, PROMPT_VERSION)
         if current is None:
             reason = "new"
-        elif force:
-            reason = "forced"
-        elif prompt_changed:
-            reason = "prompt version changed"
-        elif current["content_hash"] != content_hash:
-            reason = "text changed"
-        elif not current["synopsis"]:
+        elif not current["synopsis"].strip():
             reason = "empty synopsis"
+        elif (
+            feature.path in changed_features
+            and current["content_hash"]
+            != compute_content_hash(cleaned, current.get("prompt_version", prompt_version))
+        ):
+            reason = "text changed in PR"
         else:
             kept += 1
             entries[key] = _carry_over(current, feature.path)
             continue
         if current is not None:
-            # Keep the old entry until the new synopsis is stored: a failed or deferred target keeps it,
-            # and its old hash makes the next run retry the feature.
+            # A failed or deferred target keeps the old entry for a rerun of the same PR.
             entries[key] = _carry_over(current, feature.path)
         scenarios = count_scenarios(cleaned)
         targets.append(
@@ -594,13 +943,15 @@ def plan_work(
             )
         )
     return Plan(
-        active_total=sum(1 for feature in features if feature.active),
+        feature_total=len(features),
+        prompt_version=prompt_version,
         targets=targets,
         entries=entries,
-        removed=removed,
+        removed=sorted(key for key in existing.entries if key not in matched),
         kept=kept,
-        locked=locked,
-        disabled=disabled,
+        edited_in_pr=edited_in_pr,
+        newer_published=newer_count,
+        pending_manual=pending_count,
         skipped=skipped,
     )
 
@@ -738,7 +1089,7 @@ def generate_targets(
 
     Each success is stored in plan.entries and written at once, so progress survives a later failure.
     The loop stops at the --max-calls cap, and after MAX_CONSECUTIVE_FAILURES call failures in a row.
-    Targets not reached are left for the next run.
+    Targets not reached keep their old entries; rerun the same PR to retry changes.
     """
     generated = 0
     failed = 0
@@ -750,14 +1101,18 @@ def generate_targets(
             break
         if outcome.status == "ok":
             plan.entries[target.key] = make_entry(
-                target.path, target.content_hash, outcome.model, outcome.synopsis
+                target.path,
+                target.content_hash,
+                outcome.model,
+                outcome.synopsis,
+                prompt_version=PROMPT_VERSION if PROMPT_VERSION != plan.prompt_version else None,
             )
             generated += 1
             _info(
                 f"generated {label} with {outcome.model}: "
                 f"{len(outcome.synopsis.split())} words, limit {target.max_words}"
             )
-            write_if_changed(synopses_path, build_document(PROMPT_VERSION, plan.entries))
+            write_if_changed(synopses_path, build_document(plan.prompt_version, plan.entries))
             continue
         failed += 1
         _warn(f"feature {label} not generated ({outcome.status}): {outcome.detail}")
@@ -768,14 +1123,15 @@ def generate_targets(
 
 
 def report_plan(plan: Plan) -> None:
-    """Print the decisions of the plan: targets with their reasons, kept, locked, disabled and removed entries, and skipped files."""
+    """Print targets, retained and removed entries, and skipped files."""
     per_suite = Counter(target.key[0] for target in plan.targets)
     by_suite = ", ".join(f"{suite} {count}" for suite, count in sorted(per_suite.items()))
     suffix = f" ({by_suite})" if by_suite else ""
-    _info(f"active features: {plan.active_total}; to generate: {len(plan.targets)}{suffix}")
+    _info(f"features: {plan.feature_total}; to generate: {len(plan.targets)}{suffix}")
     _info(
-        f"kept: {plan.kept}; locked: {plan.locked}; disabled: {plan.disabled}; "
-        f"to remove: {len(plan.removed)}"
+        f"kept: {plan.kept}; edited in PR: {plan.edited_in_pr}; "
+        f"newer published edits: {plan.newer_published}; "
+        f"pending review edits: {plan.pending_manual}; to remove: {len(plan.removed)}"
     )
     for target in plan.targets:
         _info(
@@ -807,6 +1163,26 @@ def validate_options(options: RunOptions) -> None:
         raise SynopsisError("--pause-seconds must be 0 or more")
     if options.max_output_tokens < 1:
         raise SynopsisError("--max-output-tokens must be at least 1")
+    if (options.pr_files_file is None) != (options.pr_files_count is None):
+        raise SynopsisError("--pr-files-file and --pr-files-count must be supplied together")
+    if options.pr_files_count is not None and options.pr_files_count < 0:
+        raise SynopsisError("--pr-files-count must be 0 or more")
+    if any(value is not None for value in (options.pr_base, options.pr_head, options.pr_files_file)):
+        if options.pr_base is None or options.pr_head is None or options.pr_files_file is None:
+            raise SynopsisError("--pr-base, --pr-head and PR file metadata must be supplied together")
+        if any(not re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", ref) for ref in (options.pr_base, options.pr_head)):
+            raise SynopsisError("--pr-base and --pr-head must be full Git commit hashes")
+    if options.pr_merge is not None and (options.published_base is None or options.pr_base is None):
+        raise SynopsisError("--pr-merge requires --published-base and complete PR snapshot options")
+    if options.published_reviews is not None and options.pr_merge is None:
+        raise SynopsisError("--published-reviews requires --pr-merge")
+    if options.pending_head is not None and options.published_base is None:
+        raise SynopsisError("--pending-head requires --published-base")
+    if options.published_base is not None and options.pr_merge is None and options.pending_head is None:
+        raise SynopsisError("--published-base requires --pr-merge or --pending-head")
+    refs = (options.pr_merge, options.published_base, options.pending_head)
+    if any(ref is not None and not re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", ref) for ref in refs):
+        raise SynopsisError("--pr-merge, --published-base and --pending-head must be full Git commit hashes")
 
 
 def _resolve(repo_root: Path, value: Path) -> Path:
@@ -831,12 +1207,23 @@ def run(options: RunOptions, generator: Generator | None = None) -> int:
     template = load_prompt_template(_resolve(repo_root, options.prompt_template))
     features = load_manifest_features(manifest_path)
     existing = load_synopses_file(synopses_path)
-    plan = plan_work(repo_root, features, existing, options.force)
+    changed_features, edited_synopses = load_pr_changes(repo_root, options, features)
+    overrides, newer_published, published_version, override_references = load_published_overrides(
+        repo_root, options, features, edited_synopses
+    )
+    pending_manual = load_pending_manual_edits(repo_root, options, features)
+    plan = plan_work(
+        repo_root, features, existing, changed_features, edited_synopses,
+        overrides, newer_published, published_version, pending_manual, override_references,
+    )
     if options.dry_run:
         print_dry_run(plan, options.max_calls)
         return EXIT_OK
     api_key = os.environ.get("GEMINI_API_KEY", "")
     if not api_key.strip():
+        if overrides:
+            written = write_if_changed(synopses_path, build_document(plan.prompt_version, plan.entries))
+            _info(f"written {options.synopses}" if written else "synopses file unchanged")
         _info("skipped: no GEMINI_API_KEY")
         return EXIT_OK
     settings = load_generation_settings(options, api_key, engine)
@@ -844,13 +1231,15 @@ def run(options: RunOptions, generator: Generator | None = None) -> int:
     state = RunState(max_calls=options.max_calls, pause_seconds=options.pause_seconds)
     generated, failed = generate_targets(plan, template, settings, engine, state, synopses_path)
     deferred = len(plan.targets) - generated - failed
-    written = write_if_changed(synopses_path, build_document(PROMPT_VERSION, plan.entries))
+    written = write_if_changed(synopses_path, build_document(plan.prompt_version, plan.entries))
     _info(
         f"summary: generated {generated}, failed {failed}, deferred {deferred}, "
-        f"kept {plan.kept}, locked {plan.locked}, removed {len(plan.removed)}, AI calls {state.calls}"
+        f"kept {plan.kept}, edited in PR {plan.edited_in_pr}, "
+        f"newer published edits {plan.newer_published}, pending review edits {plan.pending_manual}, "
+        f"removed {len(plan.removed)}, AI calls {state.calls}"
     )
     if state.stop_reason:
-        _warn(f"stopped early: {state.stop_reason}; the remaining features are done by the next run")
+        _warn(f"stopped early: {state.stop_reason}; rerun the same PR to retry changed features")
     if state.last_usage:
         _info(f"token usage of the last call: {state.last_usage}")
     _info(f"written {options.synopses}" if written else "synopses file unchanged")
@@ -876,7 +1265,19 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--thinking-level", default=DEFAULT_THINKING_LEVEL, help="Gemini thinkingLevel; empty keeps the default"
     )
-    parser.add_argument("--force", action="store_true", help="regenerate unlocked entries even when unchanged")
+    parser.add_argument(
+        "--pr-files-file",
+        type=Path,
+        help="paginated JSON from 'gh api --paginate --slurp' for the merged PR",
+    )
+    parser.add_argument("--pr-files-count", type=int, help="expected number of files changed by the merged PR")
+    parser.add_argument("--pr-base", help="full merge-base commit hash of the PR")
+    parser.add_argument("--pr-head", help="full head commit hash of the PR")
+    parser.add_argument("--pr-merge", help="full commit hash produced by merging the PR")
+    parser.add_argument("--published-base", help="full commit hash of main used for this run")
+    parser.add_argument("--pending-head", help="full commit hash of the prepared cumulative PR branch")
+    parser.add_argument("--published-reviews", type=Path, help="verified sync-PR revisions and reviewer commits as JSON")
+    parser.add_argument("--completion-marker", type=Path, help="write the completed run's exit code to this file")
     parser.add_argument("--dry-run", action="store_true", help="print the plan; no API call, no write")
     return parser
 
@@ -897,11 +1298,21 @@ def main(argv: list[str] | None = None, generator: Generator | None = None) -> i
         pause_seconds=args.pause_seconds,
         max_output_tokens=args.max_output_tokens,
         thinking_level=args.thinking_level,
-        force=args.force,
+        pr_files_file=args.pr_files_file,
+        pr_files_count=args.pr_files_count,
+        pr_base=args.pr_base,
+        pr_head=args.pr_head,
+        pr_merge=args.pr_merge,
+        published_base=args.published_base,
+        pending_head=args.pending_head,
+        published_reviews=args.published_reviews,
         dry_run=args.dry_run,
     )
     try:
-        return run(options, generator=generator)
+        result = run(options, generator=generator)
+        if args.completion_marker is not None:
+            args.completion_marker.write_text(f"{result}\n", encoding="utf-8")
+        return result
     except (SynopsisError, OSError) as exc:
         print(f"[ERROR] {exc}", file=sys.stderr)
         return EXIT_CONFIG
