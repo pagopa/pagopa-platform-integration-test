@@ -1,6 +1,6 @@
-#3115780617
-#language:it
-@NodoInviaRPT_ExistingPaymentPosition_003
+# qa-hub: FEAT_005_Wisp
+# language: it
+@WISP_005
 Funzionalità: Utente paga un pagamento singolo da posizione debitoria esistente tramite nodoInviaRPT
   
   Contesto:
@@ -10,7 +10,7 @@ Funzionalità: Utente paga un pagamento singolo da posizione debitoria esistente
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  @NodoInviaRPT_ExistingPaymentPosition_003_01
+  @WISP_005_01
   Scenario: Utente paga un pagamento singolo con un versamento e nessuna marca da bollo gia esistente in GPD
     Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
     E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a VALID
@@ -19,7 +19,7 @@ Funzionalità: Utente paga un pagamento singolo da posizione debitoria esistente
     E la posizione debitoria è chiusa
 
   @runnable @nodo_invia_rpt @happy_path
-  @NodoInviaRPT_ExistingPaymentPosition_003_02
+  @WISP_005_02
   Scenario: Utente paga un pagamento singolo senza versamenti semplici e una marca da bollo gia esistente in GPD
     Data una singola RPT di tipo BBT con 1 versamenti di cui 1 sono marche da bollo
     E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a VALID
@@ -31,7 +31,7 @@ Funzionalità: Utente paga un pagamento singolo da posizione debitoria esistente
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @happy_path
-  @NodoInviaRPT_ExistingPaymentPosition_003_03
+  @WISP_005_03
   Scenario: Utente paga un pagamento singolo con un versamento e una marca da bollo gia esistente in GPD
     Data una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo
     E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a VALID
@@ -43,7 +43,7 @@ Funzionalità: Utente paga un pagamento singolo da posizione debitoria esistente
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @unhappy_path
-  @NodoInviaRPT_ExistingPaymentPosition_003_04
+  @WISP_005_04
   Scenario: Utente tenta di pagare un pagamento singolo con un versamento e nessuna marca da bollo gia esistente in GPD in stato non valido
     Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
     E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 48 e stato uguale a DRAFT
@@ -55,7 +55,7 @@ Funzionalità: Utente paga un pagamento singolo da posizione debitoria esistente
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @unhappy_path
-  @NodoInviaRPT_ExistingPaymentPosition_003_05
+  @WISP_005_05
   Scenario: Utente tenta di pagare un pagamento singolo inserito da ACA e in stato valido
     Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
     E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 01 e stato uguale a VALID
@@ -67,7 +67,7 @@ Funzionalità: Utente paga un pagamento singolo da posizione debitoria esistente
   # ===============================================================================================
 
   @runnable @nodo_invia_rpt @unhappy_path
-  @NodoInviaRPT_ExistingPaymentPosition_003_06
+  @WISP_005_06
   Scenario: Utente tenta di pagare un pagamento singolo inserito da ACA e in stato non valido
     Data una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
     E una posizione debitoria esistente relativa alla first RPT con segregation code uguale a 01 e stato uguale a DRAFT

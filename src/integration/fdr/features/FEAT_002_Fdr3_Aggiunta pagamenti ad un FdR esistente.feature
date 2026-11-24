@@ -1,6 +1,6 @@
-#3076030512
+# qa-hub: FEAT_002_FdR3
 # language: it
-@Fdr3_002
+@FDR3_002
 Funzionalità: Aggiunta di Pagamenti ad un Fdr esistente
 
 Contesto:
@@ -12,7 +12,7 @@ Contesto:
 
     @runnable
     @happy_path
-    @Fdr3_002_01
+  @FDR3_002_01
     Schema dello scenario: Aggiunta con successo di una lista di pagamenti a un flusso di rendicontazione
         Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
         E che esiste un flusso di rendicontazione creato dal PSP con identificativo "2025-06-30ABI50004-1178"
@@ -35,9 +35,9 @@ Contesto:
 # ===============================================================================================
 # ===============================================================================================
 
-    @runnable 
+    @runnable
     @negative_path
-    @Fdr3_002_02
+  @FDR3_002_02
     Scenario: Tentativo di aggiunta di una lista di pagamenti che supera il limite massimo consentito
         Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
         E che esiste un flusso di rendicontazione creato dal PSP con identificativo "2025-06-30ABI50004-1178"
@@ -52,9 +52,9 @@ Contesto:
 # ===============================================================================================
 # ===============================================================================================
 
-    @runnable 
+    @runnable
     @negative_path
-    @FEAT_002_03
+  @FDR3_002_03
     Scenario: Tentativo di aggiunta pagamenti con somma degli importi non corretta
         Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
         E che esiste un flusso di rendicontazione creato dal PSP con identificativo "2025-06-30ABI50004-1178"
@@ -69,9 +69,9 @@ Contesto:
 # ===============================================================================================
 # ===============================================================================================
 
-    @runnable 
+    @runnable
     @negative_path
-    @Fdr3_002_04
+  @FDR3_002_04
     Scenario: Tentativo di aggiunta pagamenti a un flusso di rendicontazione non esistente a database
         Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
         E che non esiste alcun flusso di rendicontazione creato dal PSP con identificativo "2025-06-30ABI50004-1176"
@@ -83,9 +83,9 @@ Contesto:
 # ===============================================================================================
 # ===============================================================================================
 
-  @runnable 
+  @runnable
   @negative_path
-  @Fdr3_002_05
+  @FDR3_002_05
   Scenario: Tentativo di aggiunta pagamenti a un flusso di rendicontazione già in stato PUBLISHED
      Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
     E che esiste un flusso di rendicontazione creato dal PSP con identificativo "2025-06-30ABI50004-1178"

@@ -1,5 +1,6 @@
+# qa-hub: FEAT_001_EcommerceCdc
 # language: it
-@FEAT_015_Checkout
+@ECOMMERCECDC_001
 Funzionalità: Servizio eCommerce CDC
   Valida il servizio eCommerce CDC (Change Data Capture) guidando l'intero
   flusso di pagamento Checkout
@@ -12,7 +13,7 @@ Funzionalità: Servizio eCommerce CDC
   # ---------------------------------------------------------------------------
 
   @cdc @transaction @cancel @positive
-  @FEAT_015_Checkout_SCENARIO_01
+  @ECOMMERCECDC_001_01
   Scenario: La transazione ACTIVATED viene annullata e raggiunge lo stato CANCELED
     Dato viene generato un codice avviso CDC casuale
     Quando l'utente crea una transazione CDC con un order id statico
@@ -25,7 +26,7 @@ Funzionalità: Servizio eCommerce CDC
   # ---------------------------------------------------------------------------
 
   @cdc @session @positive
-  @FEAT_015_Checkout_SCENARIO_02
+  @ECOMMERCECDC_001_02
   Scenario: La sessione carta NPG viene creata con i campi form carta attesi
     Dato l'id del metodo di pagamento carta di credito CDC e risolto
     Quando l'utente crea una sessione carta NPG CDC
@@ -39,6 +40,7 @@ Funzionalità: Servizio eCommerce CDC
   # ---------------------------------------------------------------------------
 
   @cdc @transaction @activated @positive
+  @ECOMMERCECDC_001_03
   Scenario: Una nuova transazione raggiunge lo stato ACTIVATED
     Dato l'id del metodo di pagamento carta di credito CDC e risolto
     E una sessione NPG CDC e preparata
@@ -55,6 +57,7 @@ Funzionalità: Servizio eCommerce CDC
   # ---------------------------------------------------------------------------
 
   @cdc @payment-methods @positive
+  @ECOMMERCECDC_001_04
   Scenario: I dettagli del metodo di pagamento carta di credito sono recuperati correttamente
     Dato l'id del metodo di pagamento carta di credito CDC e risolto
     Quando l'utente recupera i dettagli del metodo di pagamento CDC
@@ -67,6 +70,7 @@ Funzionalità: Servizio eCommerce CDC
   # ---------------------------------------------------------------------------
 
   @cdc @fees @positive
+  @ECOMMERCECDC_001_05
   Scenario: I bundle commissione PSP vengono recuperati per il pagamento con carta di credito
     Dato l'id del metodo di pagamento carta di credito CDC e risolto
     E una sessione NPG CDC e preparata
@@ -83,6 +87,7 @@ Funzionalità: Servizio eCommerce CDC
   # ---------------------------------------------------------------------------
 
   @cdc @payment-methods @positive
+  @ECOMMERCECDC_001_06
   Scenario: Tutti i metodi di pagamento v1 includono gli asset brand attesi
     Quando l'utente recupera tutti i metodi di pagamento CDC v1
     Allora la risposta CDC ha codice di stato 200
@@ -94,6 +99,7 @@ Funzionalità: Servizio eCommerce CDC
   # ---------------------------------------------------------------------------
 
   @cdc @authorization @positive @e2e
+  @ECOMMERCECDC_001_07
   Scenario: Il flusso CDC completo termina con transazione in stato AUTHORIZATION_REQUESTED
     Dato l'id del metodo di pagamento carta di credito CDC e risolto
     E una sessione NPG CDC e preparata

@@ -1,5 +1,6 @@
+# qa-hub: FEAT_005_CheckoutNpg
 # language: it
-@FEAT_013_Checkout
+@CHECKOUTNPG_005
 Funzionalità: Checkout eCommerce - gateway di pagamento NPG
   Valida i flussi API di checkout eCommerce per la creazione della sessione carta NPG per lingua.
 
@@ -12,7 +13,7 @@ Funzionalità: Checkout eCommerce - gateway di pagamento NPG
   # ---------------------------------------------------------------------------
 
   @checkout @npg @session @positive
-  @FEAT_013_Checkout_SCENARIO_01
+  @CHECKOUTNPG_005_01
   Schema dello scenario: La sessione carta NPG viene creata con successo per ogni lingua
     Dato l'id del metodo di pagamento carta di credito e risolto
     Quando l'utente crea una sessione carta NPG con lingua "<lang>"

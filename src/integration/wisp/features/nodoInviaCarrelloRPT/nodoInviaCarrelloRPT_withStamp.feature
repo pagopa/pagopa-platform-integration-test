@@ -1,6 +1,6 @@
-#3119448822
-#language:it
-@NodoInviaCarrelloRPT_WithStamp_005
+# qa-hub: FEAT_004_Wisp
+# language: it
+@WISP_004
 Funzionalità: L'utente paga carrelli di pagamento con marche da bollo su nodoInviaCarrelloRPT
   
   Contesto:
@@ -10,7 +10,7 @@ Funzionalità: L'utente paga carrelli di pagamento con marche da bollo su nodoIn
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  @NodoInviaCarrelloRPT_WithStamp_005_01
+  @WISP_004_01
   Scenario: L'utente paga un carrello con singola RPT senza versamento semplice e una marca da bollo
     Dato un carrello di RPT non-multi-beneficiario
     E una singola RPT di tipo BBT con 1 versamenti di cui 1 sono marche da bollo
@@ -21,7 +21,7 @@ Funzionalità: L'utente paga carrelli di pagamento con marche da bollo su nodoIn
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  @NodoInviaCarrelloRPT_WithStamp_005_02
+  @WISP_004_02
   Scenario: L'utente paga un carrello con singola RPT con un versamento semplice e una marca da bollo
     Dato un carrello di RPT non-multi-beneficiario
     E una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo
@@ -32,7 +32,7 @@ Funzionalità: L'utente paga carrelli di pagamento con marche da bollo su nodoIn
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  @NodoInviaCarrelloRPT_WithStamp_005_03
+  @WISP_004_03
   Scenario: L'utente paga un carrello con singola RPT con due versamenti semplici e una marca da bollo
     Dato un carrello di RPT non-multi-beneficiario
     E una singola RPT di tipo BBT con 3 versamenti di cui 1 sono marche da bollo
@@ -43,7 +43,7 @@ Funzionalità: L'utente paga carrelli di pagamento con marche da bollo su nodoIn
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  @NodoInviaCarrelloRPT_WithStamp_005_04
+  @WISP_004_04
   Scenario: L'utente paga un carrello con due RPT, entrambe senza versamento semplice e con una marca da bollo
     Dato un carrello di RPT non-multi-beneficiario
     E una singola RPT di tipo BBT con 1 versamenti di cui 1 sono marche da bollo
@@ -55,7 +55,7 @@ Funzionalità: L'utente paga carrelli di pagamento con marche da bollo su nodoIn
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  @NodoInviaCarrelloRPT_WithStamp_005_05
+  @WISP_004_05
   Scenario: L'utente paga un carrello con due RPT, entrambe con un versamento semplice e una marca da bollo
     Dato un carrello di RPT non-multi-beneficiario
     E una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo
@@ -67,7 +67,7 @@ Funzionalità: L'utente paga carrelli di pagamento con marche da bollo su nodoIn
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  @NodoInviaCarrelloRPT_WithStamp_005_06
+  @WISP_004_06
   Scenario: L'utente paga un carrello con due RPT, con quantita diverse di versamenti semplici e marche da bollo
     Dato un carrello di RPT non-multi-beneficiario
     E una singola RPT di tipo BBT con 3 versamenti di cui 1 sono marche da bollo
@@ -79,7 +79,7 @@ Funzionalità: L'utente paga carrelli di pagamento con marche da bollo su nodoIn
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @happy_path
-  @NodoInviaCarrelloRPT_WithStamp_005_07
+  @WISP_004_07
   Scenario: L'utente paga un carrello con tre RPT, con quantita diverse di versamenti semplici e marche da bollo
     Dato un carrello di RPT non-multi-beneficiario
     E una singola RPT di tipo BBT con 3 versamenti di cui 1 sono marche da bollo
@@ -92,7 +92,7 @@ Funzionalità: L'utente paga carrelli di pagamento con marche da bollo su nodoIn
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @unhappy_path
-  @NodoInviaCarrelloRPT_WithStamp_005_08
+  @WISP_004_08
   Scenario: L'utente tenta di pagare un carrello con una RPT che ha una quantita di versamenti e marche da bollo oltre il limite
     Dato un carrello di RPT non-multi-beneficiario
     E una singola RPT di tipo BBT con 6 versamenti di cui 3 sono marche da bollo
@@ -103,7 +103,7 @@ Funzionalità: L'utente paga carrelli di pagamento con marche da bollo su nodoIn
   # ===============================================================================================
 
   @runnable @nodo_invia_carrello_rpt @unhappy_path
-  @NodoInviaCarrelloRPT_WithStamp_005_09
+  @WISP_004_09
   Scenario: L'utente tenta di pagare un carrello con due RPT che hanno una quantita di versamenti e marche da bollo oltre il limite
     Dato un carrello di RPT non-multi-beneficiario
     E una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo

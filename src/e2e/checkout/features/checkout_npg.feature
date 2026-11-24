@@ -1,9 +1,10 @@
+# qa-hub: FEAT_001_Checkout
 # language: it
 
-@FEAT_003_Checkout
 @e2e
 @checkout
 @ui
+@CHECKOUT_001
 Funzionalità: Attivazione pagamento Checkout
   Un utente del sistema checkout
   vuole completare un pagamento con carta di credito/debito
@@ -19,7 +20,7 @@ Funzionalità: Attivazione pagamento Checkout
 
   @smoke
   @positive
-  @FEAT_003_Checkout_scenario_01
+  @CHECKOUT_001_01
   Schema dello scenario: Un pagamento con configurazione carta "<testing_psp>" viene completato con successo
     Quando L'utente inserisce i dati dell'avviso con un codice avviso con prefisso "<notice_code_prefix>"
     E L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"
@@ -48,7 +49,7 @@ Funzionalità: Attivazione pagamento Checkout
   # =============================================
 
   @negative
-  @FEAT_003_Checkout_scenario_02
+  @CHECKOUT_001_02
   Schema dello scenario: Viene mostrato l'errore <error_code> per codice avviso non valido nell'intervallo <range_start>-<range_end>
     Quando L'utente inserisce i dati dell'avviso con un codice avviso nell'intervallo "<range_start>" a "<range_end>"
     E L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"
@@ -65,7 +66,7 @@ Funzionalità: Attivazione pagamento Checkout
       | PAA_PAGAMENTO_DUPLICATO     | 302950100443009424 | 302950100443009424 | 77777777777 | 5       | Questo avviso è stato già pagato!                |                                                                                                |
 
   @negative
-  @FEAT_003_Checkout_scenario_03
+  @CHECKOUT_001_03
   Schema dello scenario: Viene mostrato il codice di errore per ente creditore non raggiungibile
     Quando L'utente inserisce i dati dell'avviso con un codice avviso nell'intervallo "<range_start>" a "<range_end>"
     E L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"

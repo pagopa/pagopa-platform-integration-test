@@ -1,9 +1,10 @@
+# qa-hub: FEAT_002_Checkout
 # language: it
 
-@FEAT_004_Checkout
 @e2e
 @checkout
 @ui
+@CHECKOUT_002
 Funzionalità: Attivazione pagamento Checkout autenticato
   Un utente del sistema checkout
   vuole completare un pagamento con carta di credito/debito
@@ -20,7 +21,7 @@ Funzionalità: Attivazione pagamento Checkout autenticato
 
   @smoke
   @positive
-  @FEAT_004_Checkout_scenario_01
+  @CHECKOUT_002_01
   Schema dello scenario: Un pagamento con configurazione carta "<testing_psp>" viene completato con successo
     Quando L'utente inserisce i dati dell'avviso con un codice avviso con prefisso "<notice_code_prefix>"
     E L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"

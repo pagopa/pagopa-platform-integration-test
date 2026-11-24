@@ -1,6 +1,6 @@
-#3212745173 
-#language:it
-@ConversioneDaXMLaJSON_008
+# qa-hub: FEAT_008_Convertitore
+# language: it
+@CONVERTITORE_008
 Funzionalità: Ccnversione da XML a JSON di un Fdr
 
   Contesto:
@@ -9,7 +9,7 @@ Funzionalità: Ccnversione da XML a JSON di un Fdr
 #======================================================
 #======================================================
 
-@ConversioneDaXMLaJSON_008_01
+  @CONVERTITORE_008_01
 Scenario: Conversione da XML a JSON
   Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" si trova all'interno di fdr1-flows

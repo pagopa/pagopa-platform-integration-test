@@ -36,7 +36,7 @@ python -m behave features
 
 ```powershell
 $env:ENV_FILE="dev.env"
-python -m behave --tags=@FEAT_002_Checkout features
+python -m behave --tags=@FEAT_007_Checkout features
 ```
 
 ## Esecuzione dalla root repository

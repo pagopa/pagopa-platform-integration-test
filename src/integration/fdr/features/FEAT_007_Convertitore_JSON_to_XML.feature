@@ -1,6 +1,6 @@
-#3203367024 
-#language:it
-@ConversioneDaJSONaXML_007
+# qa-hub: FEAT_007_Convertitore
+# language: it
+@CONVERTITORE_007
 Funzionalità: Ccnversione da JSON a XML di un Fdr
 
   Contesto:
@@ -9,7 +9,7 @@ Funzionalità: Ccnversione da JSON a XML di un Fdr
 #======================================================
 #======================================================
 
-@ConversioneDaJSONaXML_007_01
+  @CONVERTITORE_007_01
 Scenario: Conversione da Json a XML
   Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" è in stato PUBLISHED
@@ -21,7 +21,7 @@ Scenario: Conversione da Json a XML
 #======================================================
 #======================================================
 
-@ConversioneDaJSONaXML_007_02
+  @CONVERTITORE_007_02
 Scenario: Recovery manuale singolo
   Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" è in stato PUBLISHED
@@ -33,7 +33,7 @@ Scenario: Recovery manuale singolo
 #======================================================
 #======================================================
 
-@ConversioneDaJSONaXML_007_03
+  @CONVERTITORE_007_03
 Scenario: Recovery massivo
   Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
   E che X flussi di rendicontazione sono in stato PUBLISHED

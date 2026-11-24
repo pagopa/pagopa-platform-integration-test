@@ -1,5 +1,6 @@
+# qa-hub: FEAT_001_AuthService
 # language: it
-@FEAT_008_Checkout
+@AUTHSERVICE_001
 Funzionalità: Servizio auth
   Valida i flussi del servizio auth
 
@@ -8,7 +9,7 @@ Funzionalità: Servizio auth
     E le variabili d'ambiente del servizio auth configurate
 
   @auth-service @checkout @positive
-  @FEAT_008_Checkout_SCENARIO_01
+  @AUTHSERVICE_001_01
   Scenario: Il flusso di autenticazione riuscito restituisce un token di sessione e il profilo utente atteso
     Quando l'utente richiede l'URL di login auth
     Allora la risposta ha codice di stato 200
@@ -26,7 +27,7 @@ Funzionalità: Servizio auth
     Allora la risposta ha codice di stato 204
 
   @auth-service @checkout @negative
-  @FEAT_008_Checkout_SCENARIO_02
+  @AUTHSERVICE_001_02
   Scenario: Codice auth non valido e token di sessione non valido vengono rifiutati
     Quando l'utente richiede l'URL di login auth
     Allora la risposta ha codice di stato 200

@@ -1,6 +1,6 @@
-#0000000004
-#language:it
-@TAS_Fail_001
+# qa-hub: FEAT_003_TasFail
+# language: it
+@TASFAIL_003
 Funzionalità: Verifica dell'operatività dei servizi core della piattaforma pagoPA
 
   # ===============================================================================================
@@ -8,7 +8,7 @@ Funzionalità: Verifica dell'operatività dei servizi core della piattaforma pag
   # ===============================================================================================
 
   @runnable @tas_fail @smoke
-  @TAS_Fail_001_01
+  @TASFAIL_003_01
   Scenario: Il servizio di pagamento risponde correttamente alle richieste
     Dato che il servizio di pagamento è raggiungibile
     Quando viene inviata una richiesta di healthcheck
@@ -18,7 +18,7 @@ Funzionalità: Verifica dell'operatività dei servizi core della piattaforma pag
   # ===============================================================================================
 
   @runnable @tas_fail @smoke
-  @TAS_Fail_001_02
+  @TASFAIL_003_02
   Scenario: La connettività verso il nodo dei pagamenti è attiva
     Dato che il nodo dei pagamenti è configurato
     Quando viene verificata la connettività di rete verso il nodo
@@ -28,7 +28,7 @@ Funzionalità: Verifica dell'operatività dei servizi core della piattaforma pag
   # ===============================================================================================
 
   @runnable @tas_fail @smoke
-  @TAS_Fail_001_03
+  @TASFAIL_003_03
   Scenario: I parametri di configurazione dell'ambiente sono completi
     Dato che il sistema è configurato per l'ambiente di test
     Quando vengono verificati i parametri obbligatori di configurazione

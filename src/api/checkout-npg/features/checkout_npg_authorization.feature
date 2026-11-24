@@ -1,5 +1,6 @@
+# qa-hub: FEAT_001_CheckoutNpg
 # language: it
-@FEAT_009_Checkout
+@CHECKOUTNPG_001
 Funzionalità: Checkout eCommerce - gateway di pagamento NPG
   Valida i flussi API di checkout eCommerce per le richieste di autorizzazione via NPG.
 
@@ -12,7 +13,7 @@ Funzionalità: Checkout eCommerce - gateway di pagamento NPG
   # ---------------------------------------------------------------------------
 
   @checkout @npg @authorization @negative
-  @FEAT_009_Checkout_SCENARIO_01
+  @CHECKOUTNPG_001_01
   Schema dello scenario: La richiesta di autorizzazione restituisce 401 quando il token JWT e assente
     Dato l'id del metodo di pagamento carta di credito e risolto
     E viene creata una sessione NPG con lingua "<lang>"
@@ -30,7 +31,7 @@ Funzionalità: Checkout eCommerce - gateway di pagamento NPG
       | en   |
 
   @checkout @npg @authorization @positive
-  @FEAT_009_Checkout_SCENARIO_02
+  @CHECKOUTNPG_001_02
   Scenario: La richiesta di autorizzazione con token JWT restituisce URL di autorizzazione
     Dato l'id del metodo di pagamento carta di credito e risolto
     E viene creata una sessione NPG con lingua "it"

@@ -1,6 +1,6 @@
-#3223257554
-#language:it
-@FdR1CreazioneFdR_009
+# qa-hub: FEAT_009_FdR1
+# language: it
+@FDR1_009
 Funzionalità: Creazione di un flusso di rendicontazione su FdR1
 
   Contesto:
@@ -10,7 +10,7 @@ Funzionalità: Creazione di un flusso di rendicontazione su FdR1
 #======================================================
 
 
-@FdR1CreazioneFdR_009_01
+  @FDR1_009_01
 Scenario: Creazione FdR per EC non configurato come sFTP
   Dato Il PSP "PSPDEMO" con pspId "PSPDEMO" è correttamente censito a sistema
   Quando Il PSP invia l'fdr "2025-01-01PSPDEMO-0001" tramite la nodoInviaFlussoRendicontazione verso FDR1
@@ -23,4 +23,4 @@ Scenario: Creazione FdR per EC non configurato come sFTP
 #======================================================
 
 
-  
+

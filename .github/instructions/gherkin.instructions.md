@@ -19,6 +19,8 @@ In the UC workflow, do not use executable suite content as a source.
 Ask for clarification on unresolved conflicts rather than choosing silently.
 
 - One `Feature` per file, named descriptively.
+- Store feature files under `src/<api|integration|e2e>/<suite>/features/`;
+  nested folders are allowed below `features/`, not between the suite and it.
 - Steps must be atomic and reusable.
 - Use `Background` for shared preconditions.
 - Write Gherkin using the profile language and its official Gherkin keywords; do not invent keyword translations. Use correct grammar and consistent terminology; mind accent marks; do NOT translate acronyms. Technical terms may remain in English (login, token, API, etc.).
@@ -76,7 +78,7 @@ same conditions hold; otherwise retain the outline or ask for a scoped decision.
 For existing features, report old/new wording, generated-case and tag changes.
 An apparent formatting optimization is not authority to alter binding consumers.
 
-## Stable identity and tracking (ADR-46)
+## Stable identity (ADR-46)
 
 At initial creation allocate unique feature progressives within the target suite
 and scenario progressives from `01` in each file. During maintenance retain
@@ -94,23 +96,20 @@ Report exhausted numeric ranges rather than widening the profile silently.
 Renumbering, file splitting/moving or identifier changes need explicit scope
 approval, an old-to-new identity mapping and impact on selectors/reports/UC
 registries. Follow the owning workflow's reconciliation rules.
-Reuse an existing valid tracking comment; if a required value is absent/invalid,
-ask for the authoritative ten-digit value. Do not derive it from Jira, a timestamp
-or another technical ID. Tracking is distinct from dynamic feature/scenario tags.
 
 ## Profile interpretation and validation (ADR-47)
 
 The profile's regex dialect is Python `re`, including `(?P<name>...)` groups.
 Apply full-string matching and the declared case/word-limit rules together:
 matching a lexical regex alone does not establish semantic profile compliance.
-Use the canonical suite token with preserved acronym casing in filenames and
-its lowercase form in identifier tags. Slugs start uppercase and preserve
-established spelling/acronyms; underscore-separated words need not all start
-uppercase. Do not silently rename legacy files to enforce a new convention.
+Use the canonical feature code in the QA Hub header as the identity source.
+Identifier tags use its scope uppercased and the same three-digit progressive.
+Do not silently rename legacy files to enforce a filename convention.
 
-Feature progressives match across filename and identifier tags. Scenario IDs
-are unique within the file but remain stable rather than positional. Match tag
-suite tokens to the filename's suite token after lowercase conversion.
+Feature progressives match across the header and identifier tags. If a filename
+already contains a `FEAT_<NNN>` progressive, it must match the header; do not
+rename legacy files solely for an identity migration. Scenario IDs are unique
+within the file but remain stable rather than positional.
 The profile limits definitions per file; also report actual expanded rows/cases
 without claiming they ran. An outline contributes one definition and one
 execution case per Examples row.
@@ -225,8 +224,9 @@ weaken an external-domain check into a generic change of page.
 - Scenario titles and steps do not end with periods
 - Numeric values are written as digits (for example `1`, `3`, `48`).
 - No more than a single blank line between steps, scenarios, and sections.
-- Before the language declaration line, apply the profile tracking-comment policy; if it requires a value and it is missing, **ask the user to provide it**. The tracking comment and language declaration are unindented; the profile comment indentation applies to internal comments.
-- Keep data provenance, approval, fitness and availability warnings in the active workflow's reports, not in feature comments. Data-warning comments are only for unresolved placeholders: identify the affected requirements and outline rows. Remove the corresponding comment when its last placeholder is resolved, without treating remaining report uncertainties as resolved. Preserve the mandatory tracking and language declarations and any separately required traceability.
+- Every feature file begins with `# qa-hub: FEAT_<NNN>_<Ambito>` on line 1 and a Gherkin language declaration on line 2. The header code is authoritative for the manifest and identifier tags. Ten-digit tracking comments are deprecated and must be removed.
+- For an identity-only migration, preserve the existing Gherkin language; declare it explicitly (`it` or `en`) if missing. Newly authored feature content follows the profile language.
+- Keep data provenance, approval, fitness and availability warnings in the active workflow's reports, not in feature comments. Data-warning comments are only for unresolved placeholders: identify the affected requirements and outline rows. Remove the corresponding comment when its last placeholder is resolved, without treating remaining report uncertainties as resolved. Preserve the mandatory QA Hub header and language declaration, along with any separately required traceability.
 
 ## Tags
 - Feature and scenario identifier tags are mandatory; use the profile formats.

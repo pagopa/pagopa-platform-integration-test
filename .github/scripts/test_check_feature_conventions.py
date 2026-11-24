@@ -12,7 +12,7 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-from check_feature_conventions import check_file, main  # noqa: E402
+from check_feature_conventions import check_file, check_path, main  # noqa: E402
 
 VALID = """\
 # qa-hub: FEAT_001_FdR3
@@ -46,19 +46,40 @@ Funzionalità: Pagamento
 
 
 class CheckFileTest(unittest.TestCase):
-    def test_unmanaged_file_skipped(self):
+    def test_missing_qa_hub_header_fails(self):
         text = "# language: it\nFunzionalità: x\n\n  Scenario: senza tag\n    Dato a\n"
-        self.assertEqual(check_file("src/a.feature", text), [])
+        errors = check_file("src/a.feature", text)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("qa-hub", errors[0])
 
     def test_valid_file_passes(self):
         self.assertEqual(check_file("src/a.feature", VALID), [])
+
+    def test_canonical_path_and_nested_feature_directory_pass(self):
+        self.assertEqual(check_path("src/api/cart/features/refunds/refund.feature"), [])
+
+    def test_path_outside_canonical_features_directory_fails(self):
+        errors = check_path("src/api/cart/testdata/features/refund.feature")
+        self.assertEqual(len(errors), 1)
+        self.assertIn("features/**/*.feature", errors[0])
+
+    def test_invalid_source_type_or_missing_suite_fails(self):
+        for path in ("src/unit/cart/features/a.feature", "src/api/features/a.feature"):
+            with self.subTest(path=path):
+                self.assertEqual(len(check_path(path)), 1)
 
     def test_missing_language(self):
         text = VALID.replace("# language: it\n", "")
         errors = check_file("src/a.feature", text)
         self.assertEqual(len(errors), 1)
         self.assertIn("src/a.feature:2:", errors[0])
-        self.assertIn("language: it", errors[0])
+        self.assertIn("lingua Gherkin", errors[0])
+
+    def test_english_feature_passes_with_explicit_language(self):
+        text = VALID.replace("# language: it", "# language: en").replace(
+            "Funzionalità: Pagamento", "Feature: Pagamento"
+        )
+        self.assertEqual(check_file("src/a.feature", text), [])
 
     def test_missing_feature_tag(self):
         errors = check_file("src/a.feature", VALID.replace("@FDR3_001\nFunz", "Funz"))
@@ -104,23 +125,51 @@ class CheckFileTest(unittest.TestCase):
 
 class MainTest(unittest.TestCase):
     def _write(self, folder, name, text):
-        path = os.path.join(folder, name)
+        """Write a feature fixture under the canonical suite directory."""
+        path = os.path.join(folder, "src", "api", "test-suite", "features", name)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w", encoding="utf-8") as fh:
             fh.write(text)
         return path
 
     def test_main_exit_code(self):
+        """Return success for a valid path and failure for invalid feature content."""
         with tempfile.TemporaryDirectory() as tmp:
             good = self._write(tmp, "good.feature", VALID)
             bad = self._write(tmp, "bad.feature", VALID.replace("# language: it\n", ""))
             out = io.StringIO()
-            with contextlib.redirect_stdout(out):
-                self.assertEqual(main([good]), 0)
-                self.assertEqual(main([good, bad]), 1)
+            current_dir = os.getcwd()
+            os.chdir(tmp)
+            try:
+                good_relative = os.path.relpath(good)
+                bad_relative = os.path.relpath(bad)
+                with contextlib.redirect_stdout(out):
+                    self.assertEqual(main([good_relative]), 0)
+                    self.assertEqual(main([good_relative, bad_relative]), 1)
+            finally:
+                os.chdir(current_dir)
             self.assertIn("bad.feature:2:", out.getvalue())
 
     def test_main_ignores_missing_files(self):
-        self.assertEqual(main(["does/not/exist.feature"]), 0)
+        """Ignore deleted feature paths passed by a diff command."""
+        self.assertEqual(main(["src/api/test-suite/features/missing.feature"]), 0)
+
+    def test_main_rejects_feature_outside_canonical_path(self):
+        """Reject an existing feature file outside the manifest discovery location."""
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "src", "api", "test-suite", "examples", "bad.feature")
+            os.makedirs(os.path.dirname(path))
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write(VALID)
+            current_dir = os.getcwd()
+            os.chdir(tmp)
+            try:
+                output = io.StringIO()
+                with contextlib.redirect_stdout(output):
+                    self.assertEqual(main([os.path.relpath(path)]), 1)
+                self.assertIn("percorso non valido", output.getvalue())
+            finally:
+                os.chdir(current_dir)
 
 
 if __name__ == "__main__":

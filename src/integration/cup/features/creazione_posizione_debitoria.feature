@@ -1,5 +1,6 @@
+# qa-hub: FEAT_001_CUP
 # language: it
-@FEAT_001_CUP_Creazione_di_una_posizione_debitoria_per_CUP
+@CUP_001
 Funzionalità: Creazione di una posizione debitoria per CUP
 
   # ===============================================================================================
@@ -7,7 +8,7 @@ Funzionalità: Creazione di una posizione debitoria per CUP
   # ===============================================================================================
 
   @positivo
-  @FEAT_001_CUP_scenario_01
+  @CUP_001_01
   Scenario: Posizione debitoria per CUP creata correttamente
     Dato Il PSP ha ricevuto dalla Corporate un file di input valido che include i dati mandatori
     E Il file di input contiene una sola chiave di identificazione Ente
@@ -22,7 +23,7 @@ Funzionalità: Creazione di una posizione debitoria per CUP
   # ===============================================================================================
 
   @negativo
-  @FEAT_001_CUP_scenario_02
+  @CUP_001_02
   Schema dello scenario: Valorizzazione di più parametri identificativi
     Dato Il PSP ha ricevuto dalla Corporate un file di input non valido, contenente più parametri identificativi (<organizationFiscalCode>, <istatCode>, <catastalCode>)
     Quando Il PSP Invia la primitiva demandPaymentNotice valorizzando più di un parametro identificativo (<organizationFiscalCode>, <istatCode>, <catastalCode>)
@@ -37,7 +38,7 @@ Funzionalità: Creazione di una posizione debitoria per CUP
   # ===============================================================================================
 
   @negativo
-  @FEAT_001_CUP_scenario_03
+  @CUP_001_03
   Schema dello scenario: Il dato fornito (CF, ISTAT o Catastale) non rispetta il formato sintattico previsto
     Dato Il PSP ha ricevuto dalla Corporate un file di input non valido, contenente uno dei parametri identificativi (<organizationFiscalCode>, <istatCode>, <catastalCode>) che non rispetta il formato sintattico previsto
     Quando Il PSP Invia la primitiva demandPaymentNotice valorizzando uno dei parametri identificativi (<organizationFiscalCode>, <istatCode>, <catastalCode>) non rispettando il formato sintattico previsto
@@ -52,7 +53,7 @@ Funzionalità: Creazione di una posizione debitoria per CUP
   # ===============================================================================================
 
   @negativo
-  @FEAT_001_CUP_scenario_04
+  @CUP_001_04
   Schema dello scenario: Mancanza di uno o più parametri obbligatori
     Dato Il PSP ha ricevuto dalla Corporate un file di input non valido, in cui sono assenti uno o più campi mandatori (<debtorFiscalCode>, <debtorFullName>, <amount>)
     Quando Il PSP Invia la primitiva demandPaymentNotice priva di uno dei campi mandatori (<debtorFiscalCode>, <debtorFullName>, <amount>)
@@ -67,7 +68,7 @@ Funzionalità: Creazione di una posizione debitoria per CUP
   # ===============================================================================================
 
   @negativo
-  @FEAT_001_CUP_scenario_05
+  @CUP_001_05
   Schema dello scenario: Formato dei campi amount o debtorFiscalCode non valido
     Dato Il PSP ha ricevuto dalla Corporate un file di input non valido, in cui uno dei campi mandatori (<amount>, <debtorFiscalCode>) è valorizzato con un formato errato
     Quando Il PSP Invia una richiesta con il formato errato di uno dei campi (<amount>, <debtorFiscalCode>)
@@ -81,7 +82,7 @@ Funzionalità: Creazione di una posizione debitoria per CUP
   # ===============================================================================================
 
   @negativo
-  @FEAT_001_CUP_scenario_06
+  @CUP_001_06
   Schema dello scenario: La chiave di ricerca fornita (CF, ISTAT o Catastale) non è presente in cache
     Dato Il PSP ha ricevuto dalla Corporate un file di input valido, contenente uno dei parametri identificativi (<organizationFiscalCode>, <istatCode>, <catastalCode>) non presente nella cache multi-livello
     Quando Il PSP Invia la primitiva demandPaymentNotice valorizzando uno dei parametri identificativi (<organizationFiscalCode>, <istatCode>, <catastalCode>) con un valore non presente nella cache multi-livello

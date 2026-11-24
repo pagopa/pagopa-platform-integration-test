@@ -1,8 +1,9 @@
+# qa-hub: FEAT_003_Checkout
 # language: it
-@FEAT_001_Checkout
 @e2e
 @checkout
 @ui
+@CHECKOUT_003
 Funzionalità: Disponibilità opzione login in tutte le fasi del flusso di pagamento
   L'utente checkout vuole verificare che l'opzione di login sia disponibile nelle varie fasi del flusso di pagamento
 
@@ -12,7 +13,7 @@ Funzionalità: Disponibilità opzione login in tutte le fasi del flusso di pagam
 
   @smoke
   @positive
-  @FEAT_001_Checkout_scenario_01
+  @CHECKOUT_003_01
   Scenario: Opzione login disponibile durante l'inserimento dei dati avviso
     Quando L'utente inserisce i dati dell'avviso
     Allora Il pulsante di login è visibile e abilitato
@@ -20,7 +21,7 @@ Funzionalità: Disponibilità opzione login in tutte le fasi del flusso di pagam
 
   @smoke
   @positive
-  @FEAT_001_Checkout_scenario_02
+  @CHECKOUT_003_02
   Scenario: Opzione login disponibile durante l'inserimento dei dati di pagamento
     Dato L'utente inserisce i dati dell'avviso
     Quando L'utente inserisce i dati di pagamento
@@ -29,7 +30,7 @@ Funzionalità: Disponibilità opzione login in tutte le fasi del flusso di pagam
 
   @smoke
   @positive
-  @FEAT_001_Checkout_scenario_03
+  @CHECKOUT_003_03
   Scenario: Opzione login disponibile durante l'inserimento dell'email
     Dato L'utente inserisce i dati dell'avviso
     E L'utente inserisce i dati di pagamento
@@ -39,7 +40,7 @@ Funzionalità: Disponibilità opzione login in tutte le fasi del flusso di pagam
 
   @smoke
   @positive
-  @FEAT_001_Checkout_scenario_04
+  @CHECKOUT_003_04
   Scenario: Opzione login disponibile durante la selezione del metodo di pagamento
     Dato L'utente inserisce i dati dell'avviso
     E L'utente inserisce i dati di pagamento

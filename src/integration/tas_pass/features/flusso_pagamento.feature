@@ -1,6 +1,6 @@
-#0000000002
-#language:it
-@TAS_Pass_002
+# qa-hub: FEAT_001_TasPass
+# language: it
+@TASPASS_001
 Funzionalità: Validazione del flusso di pagamento tramite canale pagoPA
 
   # ===============================================================================================
@@ -8,7 +8,7 @@ Funzionalità: Validazione del flusso di pagamento tramite canale pagoPA
   # ===============================================================================================
 
   @runnable @tas_pass @smoke
-  @TAS_Pass_002_01
+  @TASPASS_001_01
   Scenario: L'utente avvia correttamente un pagamento singolo
     Dato che l'utente ha un avviso di pagamento valido
     Quando l'utente avvia il pagamento tramite il canale pagoPA
@@ -18,7 +18,7 @@ Funzionalità: Validazione del flusso di pagamento tramite canale pagoPA
   # ===============================================================================================
 
   @runnable @tas_pass @smoke
-  @TAS_Pass_002_02
+  @TASPASS_001_02
   Scenario: Il pagamento viene elaborato e la transazione aggiornata
     Dato che una richiesta di pagamento è in corso di elaborazione
     Quando il sistema elabora la transazione
@@ -28,7 +28,7 @@ Funzionalità: Validazione del flusso di pagamento tramite canale pagoPA
   # ===============================================================================================
 
   @runnable @tas_pass @smoke
-  @TAS_Pass_002_03
+  @TASPASS_001_03
   Scenario: La ricevuta telematica viene generata al completamento del pagamento
     Dato che il pagamento è stato completato con successo
     Quando il sistema genera la ricevuta telematica

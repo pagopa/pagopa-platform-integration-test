@@ -1,5 +1,6 @@
+# qa-hub: FEAT_001_Cart
 # language: it
-@FEAT_007_Checkout
+@CART_001
 Funzionalità: Creazione del carrello di pagamento
   Come Ente Creditore (EC)
   il sistema espone l'endpoint carrello di PagoPA Checkout
@@ -9,7 +10,7 @@ Funzionalità: Creazione del carrello di pagamento
     Dato l'host di checkout configurato tramite variabile d'ambiente
 
   @cart @checkout @positive
-  @FEAT_007_Checkout_SCENARIO_01
+  @CART_001_01
   Scenario: Creazione valida del carrello con un avviso di pagamento
     Dato un codice avviso casuale valido generato dal prefisso configurato in "NOTICE_CODE_PREFIX"
     E un codice fiscale PA valido configurato in "VALID_FISCAL_CODE_PA"
@@ -19,7 +20,7 @@ Funzionalità: Creazione del carrello di pagamento
     E l'id del carrello viene estratto dall'header "location"
 
   @cart @checkout @positive
-  @FEAT_007_Checkout_SCENARIO_02
+  @CART_001_02
   Scenario: Creazione del carrello con email in maiuscolo
     Dato un codice avviso casuale valido generato dal prefisso configurato in "NOTICE_CODE_PREFIX"
     E un codice fiscale PA valido configurato in "VALID_FISCAL_CODE_PA"
@@ -29,13 +30,13 @@ Funzionalità: Creazione del carrello di pagamento
     E l'id del carrello viene estratto dall'header "location"
 
   @cart @checkout @negative
-  @FEAT_007_Checkout_SCENARIO_03
+  @CART_001_03
   Scenario: La creazione del carrello fallisce con body malformato
     Quando l'utente invia un carrello con un body non valido
     Allora la risposta ha codice di stato 400
 
   @cart @checkout
-  @FEAT_007_Checkout_SCENARIO_04
+  @CART_001_04
   Schema dello scenario: Creazione del carrello con <count> avvisi di pagamento
     Quando l'utente invia un carrello con <count> avvisi di pagamento
     Allora la risposta ha codice di stato <status_code>

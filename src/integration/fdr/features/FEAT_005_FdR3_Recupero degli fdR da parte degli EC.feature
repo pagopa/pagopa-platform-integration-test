@@ -1,6 +1,7 @@
-#3087794199
-#language: it
+# qa-hub: FEAT_005_FdR3
+# language: it
 
+@FDR3_005
 Funzionalità: Recupero defli FdR da parte degli Enti Creditori
 
   Contesto:
@@ -9,9 +10,10 @@ Funzionalità: Recupero defli FdR da parte degli Enti Creditori
 #======================================================
 #======================================================
 
-@runnable 
+@runnable
 @positive
 @FdR3_005_01
+  @FDR3_005_01
 Scenario: Recupero con successo di tutti i flussi di rendicontazione in stato PUBLISHED per un Ente Creditore
     Dato l'EC "VOLTA" con organizationId "80126590159" correttamente censito a sistema 
     E che esistono flussi di rendicontazione associati all'EC in stato "PUBLISHED"
@@ -26,6 +28,7 @@ Scenario: Recupero con successo di tutti i flussi di rendicontazione in stato PU
 @runnable
 @positive
 @FdR3_005_002
+  @FDR3_005_02
 Scenario: Recupero con successo di uno specifico flusso di rendicontazione per un Ente Creditore e un PSP
     Dato l'EC "VOLTA" con organizationId "80126590159" correttamente censito a sistema
     E il PSP con pspId "99999000011" correttamente censito a sistema
@@ -37,9 +40,10 @@ Scenario: Recupero con successo di uno specifico flusso di rendicontazione per u
 # ===============================================================================================
 # ===============================================================================================
 
-@runnable 
+@runnable
 @negative
 @FdR3_005_03
+  @FDR3_005_03
 Scenario: Tentativo di recupero di uno specifico flusso non in stato PUBLISHED da parte di un EC
     Dato l'EC "VOLTA" con organizationId "80126590159" correttamente censito a sistema
     E il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
@@ -52,9 +56,10 @@ Scenario: Tentativo di recupero di uno specifico flusso non in stato PUBLISHED d
 # ===============================================================================================
 
 
-@runnable 
+@runnable
 @negative
 @FdR3_005_04
+  @FDR3_005_04
   Scenario: Tentativo di recupero di uno specifico flusso non esistente a sistema da parte di un EC
     Dato l'EC "VOLTA" con organizationId "80126590159" correttamente censito a sistema
     E il PSP "PSP DEMO" con pspId "ABI50004"  correttamente censito a sistema
@@ -69,6 +74,7 @@ Scenario: Tentativo di recupero di uno specifico flusso non in stato PUBLISHED d
 @runnable
 @positive
 @FdR3_005_05
+  @FDR3_005_05
 Scenario: Recupero con successo dei pagamenti di uno specifico flusso in stato PUBLISHED da parte di un EC
     Dato l'EC "VOLTA" con organizationId "80126590159" correttamente censito a sistema
     E il PSP "PSP DEMO" con pspId "ABI50004"  correttamente censito a sistema
@@ -80,9 +86,10 @@ Scenario: Recupero con successo dei pagamenti di uno specifico flusso in stato P
 # ===============================================================================================
 # ===============================================================================================
 
-@runnable 
+@runnable
 @negative
 @FdR3_005_06
+  @FDR3_005_06
 Scenario: Tentativo di recupero dei pagamenti di uno specifico flusso non in stato PUBLISHED da parte di un EC
     Dato l'EC "VOLTA" con organizationId "80126590159" correttamente censito a sistema
     E il PSP "PSP DEMO" con pspId "ABI50004"  correttamente censito a sistema
@@ -94,9 +101,10 @@ Scenario: Tentativo di recupero dei pagamenti di uno specifico flusso non in sta
 # ===============================================================================================
 # ===============================================================================================
 
-@runnable 
+@runnable
 @negative
 @FdR3_005_07
+  @FDR3_005_07
 Scenario: Tentativo di recupero dei pagamenti di uno specifico flusso non esistente da parte di un EC
     Dato l'EC "VOLTA" con organizationId "80126590159" correttamente censito a sistema
     E il PSP "PSP DEMO" con pspId "ABI50004"  correttamente censito a sistema

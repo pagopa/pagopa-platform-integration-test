@@ -1,5 +1,6 @@
+# qa-hub: FEAT_004_CheckoutNpg
 # language: it
-@FEAT_012_Checkout
+@CHECKOUTNPG_004
 Funzionalità: Checkout eCommerce - gateway di pagamento NPG
   Valida i flussi API di checkout eCommerce per la verifica del pagamento.
 
@@ -12,7 +13,7 @@ Funzionalità: Checkout eCommerce - gateway di pagamento NPG
   # ---------------------------------------------------------------------------
 
   @checkout @npg @payment-verify @positive
-  @FEAT_012_Checkout_SCENARIO_01
+  @CHECKOUTNPG_004_01
   Scenario: La verifica pagamento riuscita restituisce dati di pagamento
     Dato viene generato un codice avviso valido casuale
     Quando l'utente verifica il pagamento per il codice avviso valido
@@ -20,14 +21,14 @@ Funzionalità: Checkout eCommerce - gateway di pagamento NPG
     E la risposta di verifica pagamento contiene dati di pagamento validi
 
   @checkout @npg @payment-verify @negative
-  @FEAT_012_Checkout_SCENARIO_02
+  @CHECKOUTNPG_004_02
   Scenario: La verifica pagamento restituisce 404 per dominio PA sconosciuto
     Quando l'utente verifica il pagamento per il codice avviso con dominio sconosciuto
     Allora la risposta ha codice di stato 404
     E il dettaglio fault code contiene "PPT_DOMINIO_SCONOSCIUTO"
 
   @checkout @npg @payment-verify @negative
-  @FEAT_012_Checkout_SCENARIO_03
+  @CHECKOUTNPG_004_03
   Scenario: La verifica pagamento restituisce 404 per stazione sconosciuta
     Quando l'utente verifica il pagamento per il codice avviso con stazione sconosciuta
     Allora la risposta ha codice di stato 404
