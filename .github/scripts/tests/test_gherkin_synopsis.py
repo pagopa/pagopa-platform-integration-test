@@ -464,6 +464,29 @@ def test_missing_feature_file_is_skipped_and_its_entry_kept(sync, tmp_path, caps
     assert "not found" in capsys.readouterr().out
 
 
+def test_feature_flag_is_per_feature_and_missing_enabled_means_true(sync, tmp_path):
+    """A feature with enabled: false in an enabled suite gets no synopsis; missing 'enabled' counts as true."""
+    repo = tmp_path
+    write(repo / MANIFEST, yaml.safe_dump({
+        "version": 1,
+        "suites": [{
+            "id": "alpha",
+            "root": "src/e2e/alpha",
+            "features": [
+                {"id": "FEAT_A", "path": "features/a.feature"},
+                {"id": "FEAT_B", "path": "features/b.feature", "enabled": False},
+            ],
+        }],
+    }, sort_keys=False, allow_unicode=True))
+    write(repo / TEMPLATE, TEST_TEMPLATE)
+    write(repo / "src/e2e/alpha/features/a.feature", feature_text("FEAT_A", 1))
+    write(repo / "src/e2e/alpha/features/b.feature", feature_text("FEAT_B", 1))
+    gen = FakeGenerator([SHORT])
+    assert sync.main(args(repo), generator=gen) == 0
+    assert len(gen.prompts) == 1
+    assert set(read_synopses(repo)["suites"]["alpha"]) == {"FEAT_A"}
+
+
 def test_api_key_is_hidden_from_settings_repr(sync):
     """The generation settings hold the key for the call but never show it in their text form."""
     settings = sync.GenerationSettings(models=["m"], base_url="https://example.invalid", api_key="secret-key-x")

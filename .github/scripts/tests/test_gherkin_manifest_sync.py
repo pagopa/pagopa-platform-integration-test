@@ -399,7 +399,8 @@ def test_render_writes_enabled_only_when_false_and_no_test_type(sync):
     text = sync.render_manifest(suites)
     assert text.endswith("\n") and not text.endswith("\n\n")
     assert "\r" not in text
-    assert text.count("enabled: false") == 2
+    yaml_lines = [line for line in text.splitlines() if not line.lstrip().startswith("#")]
+    assert sum(1 for line in yaml_lines if line.strip() == "enabled: false") == 2
     assert "estimate_days: 1.5" in text
     assert "test_type" not in text
     assert sync.validate_manifest(yaml.safe_load(text)) == []

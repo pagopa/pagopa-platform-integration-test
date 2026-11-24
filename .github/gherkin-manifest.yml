@@ -5,6 +5,8 @@
 # .github/workflows/gherkin-manifest-sync.yml). Comments written here are lost on the next run.
 # Hand-editable fields: suites[].label, suites[].enabled, features[].estimate_days and
 # features[].enabled. Never change or reuse an id: the portal ties the data typed by hand to it.
+# 'enabled' is written only when it is false: a missing 'enabled' means true (the default),
+# for suites and for features alike. 'enabled: false' hides the suite or the single feature.
 # Field rules: docs/gherkin-feature-files/reference/manifest/gherkin-manifest.template.yml
 # in the pagopa-qa-centralhub repository.
 
