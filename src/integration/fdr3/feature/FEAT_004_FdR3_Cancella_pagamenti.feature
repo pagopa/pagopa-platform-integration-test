@@ -1,4 +1,5 @@
 #language: it
+@integration
 @fdr3_004_Rimozione_pagamenti
 Funzionalità: Rimozione di pagamenti da un flusso di rendicontazione
 
@@ -6,6 +7,7 @@ Funzionalità: Rimozione di pagamenti da un flusso di rendicontazione
     Dato che i sistemi sono operativi
 
   @fdr3_004_01
+  @positive
   Scenario: Creazione del flusso e inserimento iniziale di pagamenti
     Dato un nome di flusso di rendicontazione univoco chiamato flow_name
     E una data di flusso di rendicontazione univoco chiamato flow_date
@@ -14,6 +16,7 @@ Funzionalità: Rimozione di pagamenti da un flusso di rendicontazione
     Allora il PSP riceve il codice di stato HTTP 201
 
   @fdr3_004_02
+  @positive
   Scenario: Inserimento di 3 pagamenti
     Dato che il PSP deve inviare 3 pagamenti al flusso
     E che la somma totale dei pagamenti da inviare è 300
@@ -23,6 +26,7 @@ Funzionalità: Rimozione di pagamenti da un flusso di rendicontazione
     Allora il PSP riceve il codice di stato HTTP 200
 
   @fdr3_004_03
+  @positive
   Scenario: Verifica pagamenti creati
     Dato che lo scenario "Inserimento di 3 pagamenti" è stato eseguito con successo
     Quando il PSP invia la richiesta di "Recupero pagamenti creati" con il payload "None"
@@ -30,6 +34,7 @@ Funzionalità: Rimozione di pagamenti da un flusso di rendicontazione
     E la risposta contiene 3 pagamenti
 
   @fdr3_004_04
+  @positive
   Scenario: Rimozione di 1 pagamento
     Dato che lo scenario "Verifica pagamenti creati" è stato eseguito con successo
     Quando il PSP rimuove 1 pagamento dal flusso di rendicontazione flow_name come remove_payment_payload
@@ -37,6 +42,7 @@ Funzionalità: Rimozione di pagamenti da un flusso di rendicontazione
     Allora il PSP riceve il codice di stato HTTP 200
 
   @fdr3_004_05
+  @positive
   Scenario: Verifica pagamenti dopo cancellazione
     Dato che lo scenario "Rimozione di 1 pagamento" è stato eseguito con successo
     Quando il PSP invia la richiesta di "Recupero pagamenti creati" con il payload "None"
@@ -45,6 +51,7 @@ Funzionalità: Rimozione di pagamenti da un flusso di rendicontazione
 
   @runnable
   @fdr3_004_06
+  @negative
   Scenario: Tentativo di pubblicazione dopo cancella pagamenti
     Dato che lo scenario "Verifica pagamenti dopo cancellazione" è stato eseguito con successo
     Quando il PSP invia la richiesta di "Pubblicazione" con il payload "None"

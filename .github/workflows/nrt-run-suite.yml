@@ -109,6 +109,8 @@ jobs:
             command+=(--tags="$tag")
           done
           command+=(
+            --tags=@flaky
+            --tags=~@skip
             --format allure_behave.formatter:AllureFormatter
             -o allure-results
             --junit-directory=junit

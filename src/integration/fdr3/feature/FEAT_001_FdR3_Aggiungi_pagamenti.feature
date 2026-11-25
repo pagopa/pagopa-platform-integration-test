@@ -1,11 +1,13 @@
 #language: it
 @fdr3_001_Aggiungi_pagamenti
+@integration
 Funzionalità: Aggiunta di pagamenti a un flusso di rendicontazione
 
   Contesto:
     Dato che i sistemi sono operativi
 
   @fdr3_001_01
+  @positive
   Scenario: Creazione del flusso di rendicontazione per il test di aggiunta pagamenti
     Dato un nome di flusso di rendicontazione univoco chiamato flow_name
     E una data di flusso di rendicontazione univoco chiamato flow_date
@@ -15,6 +17,7 @@ Funzionalità: Aggiunta di pagamenti a un flusso di rendicontazione
 
   @runnable
   @fdr3_001_02
+  @positive
   Schema dello scenario: Aggiunta di pagamenti al flusso
     Dato che il PSP deve inviare <n> pagamenti al flusso
     E che la somma totale dei pagamenti da inviare è <amount>

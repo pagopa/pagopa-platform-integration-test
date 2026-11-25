@@ -1,4 +1,5 @@
 #language: it
+@integration
 @fdr3_006_Cancellazione_FdR
 Funzionalità: Cancellazione di FdR creati
   Flusso: creazione, inserimento pagamenti, cancellazione e verifiche negative
@@ -7,6 +8,7 @@ Funzionalità: Cancellazione di FdR creati
     Dato che i sistemi sono operativi
 
   @fdr3_006_1
+  @positive
   Scenario: Creazione del FdR
     Dato un nome di flusso di rendicontazione univoco chiamato flow_name
     E una data di flusso di rendicontazione univoco chiamato flow_date
@@ -15,6 +17,7 @@ Funzionalità: Cancellazione di FdR creati
     Allora il PSP riceve il codice di stato HTTP 201
 
   @fdr3_006_2
+  @positive
   Scenario: Aggiunta di pagamenti
     Dato che il PSP deve inviare 3 pagamenti al flusso
     E che la somma totale dei pagamenti da inviare è 300
@@ -23,6 +26,7 @@ Funzionalità: Cancellazione di FdR creati
     Allora il PSP riceve il codice di stato HTTP 200
 
   @fdr3_006_3
+  @negative
   Scenario: Cancellazione del FdR non trovato
     Dato che lo scenario "Aggiunta di pagamenti" è stato eseguito con successo
     E il PSP imposta un flow_name non valido
@@ -30,6 +34,7 @@ Funzionalità: Cancellazione di FdR creati
     Allora il PSP riceve il codice di stato HTTP 404
 
   @fdr3_006_4
+  @negative
   Scenario: Cancellazione del FdR bad request
     Dato che lo scenario "Aggiunta di pagamenti" è stato eseguito con successo
     E il PSP imposta un psp non valido
@@ -38,6 +43,7 @@ Funzionalità: Cancellazione di FdR creati
 
   @runnable
   @fdr3_006_5
+  @negative
   Scenario: Cancellazione del FdR con subscription_key non valida
     Dato che lo scenario "Cancellazione del FdR non trovato" è stato eseguito con successo
     Quando il PSP invia la richiesta di "Cancellazione flusso" con il payload "None" con subscription_key non valida

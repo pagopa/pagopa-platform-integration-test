@@ -1,4 +1,5 @@
 #language: it
+@integration
 @fdr3_009_Verifica_Paginazione_Organizzazione
 Funzionalità: Verifica paginazione per le API organizzazione
 
@@ -6,6 +7,7 @@ Funzionalità: Verifica paginazione per le API organizzazione
     Dato che i sistemi sono operativi
 
   @fdr3_009_01
+  @positive
   Scenario: Creazione del flusso di rendicontazione per test paginazione
     Dato un nome di flusso di rendicontazione univoco chiamato flow_name
     E una data di flusso di rendicontazione univoco chiamato flow_date
@@ -14,6 +16,7 @@ Funzionalità: Verifica paginazione per le API organizzazione
     Allora il PSP riceve il codice di stato HTTP 201
 
   @fdr3_009_02
+  @positive
   Scenario: Inserimento pagamenti per test paginazione
     Dato che il PSP deve inviare 100 pagamenti al flusso
     E che la somma totale dei pagamenti da inviare è 20
@@ -23,6 +26,7 @@ Funzionalità: Verifica paginazione per le API organizzazione
     Allora il PSP riceve il codice di stato HTTP 200
 
   @fdr3_009_03
+  @positive
   Scenario: Pubblicazione del flusso per test paginazione
     Dato che lo scenario "Inserimento pagamenti per test paginazione" è stato eseguito con successo
     Quando il PSP invia la richiesta di "Pubblicazione" con il payload "None"
@@ -30,6 +34,7 @@ Funzionalità: Verifica paginazione per le API organizzazione
 
   @runnable
   @fdr3_009_04
+  @positive
   Scenario: Verifica paginazione FdR pubblicati pagina 1
     Dato che lo scenario "Pubblicazione del flusso per test paginazione" è stato eseguito con successo
     E la configurazione psp è valorizzata come pspId nei parametri di query
@@ -42,6 +47,7 @@ Funzionalità: Verifica paginazione per le API organizzazione
 
   @runnable
   @fdr3_009_05
+  @positive
   Scenario: Verifica paginazione FdR pubblicati pagina 2
     Dato che lo scenario "Pubblicazione del flusso per test paginazione" è stato eseguito con successo
     E la configurazione psp è valorizzata come pspId nei parametri di query
@@ -54,6 +60,7 @@ Funzionalità: Verifica paginazione per le API organizzazione
 
   @runnable
   @fdr3_009_06
+  @positive
   Scenario: Verifica paginazione pagamenti pubblicati pagina 1
     Dato che lo scenario "Pubblicazione del flusso per test paginazione" è stato eseguito con successo
     E l'organizzazione aggiunge ieri come createdGt nei parametri di query
@@ -66,6 +73,7 @@ Funzionalità: Verifica paginazione per le API organizzazione
 
   @runnable
   @fdr3_009_07
+  @positive
   Scenario: Verifica paginazione pagamenti pubblicati pagina 2
     Dato che lo scenario "Pubblicazione del flusso per test paginazione" è stato eseguito con successo
     E l'organizzazione aggiunge ieri come createdGt nei parametri di query

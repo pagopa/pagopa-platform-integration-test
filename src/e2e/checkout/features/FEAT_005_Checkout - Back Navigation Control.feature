@@ -15,7 +15,7 @@ Funzionalità: Navigazione Lineare per il flusso di Pagamento
 
 @CheckoutBackNavigation_005_01
 @runnable
-@happy_path
+@positive
 Scenario: Navigazione - Selezione tasto Inserisci tu i dati
   Dato L’utente si trova sulla pagina "/"
   Quando L’utente clicca sul tasto "Inserisci tu i dati"
@@ -26,7 +26,7 @@ Scenario: Navigazione - Selezione tasto Inserisci tu i dati
 
 @CheckoutBackNavigation_005_02
 @runnable
-@happy_path
+@positive
 Scenario: Navigazione - pagina dati avviso
   Dato L’utente si trova sulla pagina "/inserisci-dati-avviso"
   E L’utente ha compilato i dati avviso inserendo il codice avviso "302042025112600001" e il CF ente "77777777777"
@@ -38,7 +38,7 @@ Scenario: Navigazione - pagina dati avviso
 
 @CheckoutBackNavigation_005_03
 @runnable
-@happy_path
+@positive
 Scenario: Navigazione - Conferma pagina di riepilogo
   Dato L’utente si trova sulla pagina "/dati-pagamento"
   Quando L’utente clicca sul tasto "Vai al pagamento"
@@ -49,7 +49,7 @@ Scenario: Navigazione - Conferma pagina di riepilogo
 
 @CheckoutBackNavigation_005_04
 @runnable
-@happy_path
+@positive
 Scenario: Navigazione - Inserimento email
   Dato L’utente si trova sulla pagina "/inserisci-email"
   E L’utente ha inserito l’indirizzo email "mail@pagopa.it" in entrambi i campi della maschera
@@ -61,7 +61,7 @@ Scenario: Navigazione - Inserimento email
 
 @CheckoutBackNavigation_005_05
 @runnable
-@happy_path
+@positive
 Scenario: Navigazione - Scelta metodo di pagamento “Carte di Credito”
   Dato L’utente si trova sulla pagina "/scegli-metodo"
   Quando L’utente clicca sul tasto "Carte di Credito"
@@ -72,7 +72,7 @@ Scenario: Navigazione - Scelta metodo di pagamento “Carte di Credito”
 
 @CheckoutBackNavigation_005_06
 @runnable
-@happy_path
+@positive
 Schema dello scenario: Click sul tasto indietro riporta alla pagina precedente del flusso
   Dato L’utente si trova sulla pagina "<pagina_corrente>"
   Quando L’utente clicca sul tasto "Indietro"
@@ -92,7 +92,7 @@ Schema dello scenario: Click sul tasto indietro riporta alla pagina precedente d
 
 @CheckoutBackNavigation_005_07
 @runnable
-@happy_path
+@positive
 Scenario: Assenza loop di navigazione per indietro successivi da pagina Modifica metodo di pagamento
   Dato L’utente si trova sulla pagina "/riepilogo-pagamento"
   E L’utente ha cliccato sul tasto "Modifica metodo di pagamento"
@@ -105,7 +105,7 @@ Scenario: Assenza loop di navigazione per indietro successivi da pagina Modifica
 
 @CheckoutBackNavigation_005_08
 @runnable
-@happy_path
+@positive
 Scenario: Indietro da inserisci dati avviso per flusso con accesso diretto (senza history)
   Dato L’utente naviga sulla pagina "/inserisci-dati-avviso" selezionata da bookmark o URL diretto
   Quando L’utente clicca sul tasto "Indietro"
@@ -116,7 +116,7 @@ Scenario: Indietro da inserisci dati avviso per flusso con accesso diretto (senz
 
 @CheckoutBackNavigation_005_09
 @runnable
-@happy_path
+@positive
 Scenario: Flusso lista PSP - indietro da /scegli-metodo (metodo APM)
   Dato L’utente ha raggiunto la pagina "/lista-psp" dall’entry point "/scegli-metodo" (metodo APM)
   Quando L’utente clicca sul tasto "Indietro"
@@ -125,8 +125,9 @@ Scenario: Flusso lista PSP - indietro da /scegli-metodo (metodo APM)
 #======================================================
 #======================================================
 
-@CheckoutBackNavigation_005_10
 @skip
+@CheckoutBackNavigation_005_10
+@positive
 Scenario: Flusso lista PSP - indietro da /inserisci-carta (flusso carta con enablePspPage=true)
   Dato L’utente ha raggiunto la pagina "/lista-psp" dall’entry point "/inserisci-carta" (flusso carta con enablePspPage=true)
   Quando L’utente clicca sul tasto "Indietro"
@@ -135,8 +136,9 @@ Scenario: Flusso lista PSP - indietro da /inserisci-carta (flusso carta con enab
 #======================================================
 #======================================================
 
-@CheckoutBackNavigation_005_11
 @skip
+@CheckoutBackNavigation_005_11
+@positive
 Scenario: Flusso lista PSP - indietro da /scegli-metodo (wallet salvato con enablePspPage=true)
   Dato L’utente ha raggiunto la pagina "/lista-psp" dall’entry point "/scegli-metodo" (wallet salvato con enablePspPage=true)
   Quando L’utente clicca sul tasto "Indietro"
