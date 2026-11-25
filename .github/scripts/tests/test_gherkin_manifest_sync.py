@@ -498,12 +498,12 @@ def test_second_consecutive_run_does_not_modify_the_file(sync, tmp_path, capsys)
 
 @pytest.mark.skipif(not (REPO_ROOT / "src").is_dir(), reason="src/ is not part of this checkout")
 def test_real_repository_produces_the_expected_manifest_in_memory(sync):
-    """On the real src/ tree all 13 suites and 57 features have valid unique ids."""
+    """On the real src/ tree all 11 suites and 44 features have valid unique ids."""
     discovered = sync.discover_suites(REPO_ROOT)
     registry = sync.load_registry(REPO_ROOT / REGISTRY)
     suites, _changes = sync.reconcile_suites([], discovered, REPO_ROOT, registry)
-    assert len(suites) == 13
-    assert sum(len(suite["features"]) for suite in suites) == 57
+    assert len(suites) == 11
+    assert sum(len(suite["features"]) for suite in suites) == 44
     assert sync.validate_manifest({"version": 1, "suites": suites}) == []
     for suite in suites:
         ids = [entry["id"].casefold() for entry in suite["features"]]

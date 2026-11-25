@@ -1180,8 +1180,8 @@ def test_real_manifest_selects_all_clean_entries(sync, tmp_path):
     """Every real feature receives a target when the synopses file is missing."""
     features = sync.load_manifest_features(REPO_ROOT / MANIFEST)
     plan = sync.plan_work(REPO_ROOT, features, sync.load_synopses_file(tmp_path / "missing.json"), set())
-    assert len(plan.targets) == 57
-    assert len({target.key[0] for target in plan.targets}) == 13
+    assert len(plan.targets) == 44
+    assert len({target.key[0] for target in plan.targets}) == 11
     for target in plan.targets:
         assert not any(line.startswith(("@", "#")) for line in target.cleaned.split("\n")), target.key
 
