@@ -1,7 +1,7 @@
 # qa-hub: FEAT_003_FdR3
 # language: it
 @FDR3_003
-Funzionalità: Pubblicazione di un FdR
+Funzionalità: Cancellazione di un flusso di rendicontazione
   Pubblicazione di un flusso di rendicontazione
 
   Contesto:
