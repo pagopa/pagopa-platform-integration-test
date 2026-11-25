@@ -1,6 +1,6 @@
-# qa-hub: FEAT_002_TasFail
-# language: it
-@TASFAIL_002
+#0000000006
+#language:it
+@TAS_Fail_003
 Funzionalità: Verifica del flusso di rendicontazione verso l'ente creditore
 
   # ===============================================================================================
@@ -8,7 +8,7 @@ Funzionalità: Verifica del flusso di rendicontazione verso l'ente creditore
   # ===============================================================================================
 
   @runnable @tas_fail @smoke
-  @TASFAIL_002_01
+  @TAS_Fail_003_01
   Scenario: Il flusso di rendicontazione viene creato correttamente
     Dato che sono presenti transazioni da rendicontare
     Quando viene avviata la creazione del flusso di rendicontazione
@@ -18,7 +18,7 @@ Funzionalità: Verifica del flusso di rendicontazione verso l'ente creditore
   # ===============================================================================================
 
   @runnable @tas_fail @smoke
-  @TASFAIL_002_02
+  @TAS_Fail_003_02
   Scenario: I dati del flusso di rendicontazione sono completi e coerenti
     Dato che il flusso di rendicontazione è stato creato
     Quando vengono verificati i dati del flusso
@@ -28,7 +28,7 @@ Funzionalità: Verifica del flusso di rendicontazione verso l'ente creditore
   # ===============================================================================================
 
   @runnable @tas_fail @smoke
-  @TASFAIL_002_03
+  @TAS_Fail_003_03
   Scenario: Il flusso di rendicontazione viene trasmesso all'ente creditore
     Dato che il flusso di rendicontazione è pronto per la trasmissione
     Quando viene avviata la trasmissione del flusso all'ente creditore

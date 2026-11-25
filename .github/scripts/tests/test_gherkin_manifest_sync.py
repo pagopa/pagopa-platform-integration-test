@@ -76,38 +76,69 @@ def suite_by_id(manifest: dict, suite_id: str) -> dict:
     return next(suite for suite in manifest["suites"] if suite["id"] == suite_id)
 
 
-# ---------------------------------------------------------------- feature id from QA Hub header
+# ---------------------------------------------------------------- feature id resolution
 
 
 def test_header_id_is_authoritative_over_feature_tags(sync, tmp_path):
     """The QA Hub header supplies the id even when the feature tag differs."""
     path = write(tmp_path / "a.feature", "# qa-hub: FEAT_001_Checkout\n@OLD_ID\nFunzionalità: x\n")
-    assert sync._feature_id_from_header(path) == "FEAT_001_Checkout"
+    assert sync._feature_id_from_file(path) == "FEAT_001_Checkout"
 
 
 @pytest.mark.parametrize("keyword", ["Feature:", "Funzionalita:", "funzionalità :"])
 def test_header_id_does_not_depend_on_the_feature_keyword(sync, tmp_path, keyword):
     """The QA Hub id is read from the header regardless of the Gherkin language."""
     path = write(tmp_path / "a.feature", f"# qa-hub: FEAT_001_Test\n{keyword} x\n")
-    assert sync._feature_id_from_header(path) == "FEAT_001_Test"
+    assert sync._feature_id_from_file(path) == "FEAT_001_Test"
 
 
 def test_header_id_reads_file_with_byte_order_mark(sync, tmp_path):
     """A UTF-8 byte order mark at the start of the file does not hide the header."""
     path = tmp_path / "a.feature"
     path.write_bytes(b"\xef\xbb\xbf# qa-hub: FEAT_001_Test\nFeature: x\n")
-    assert sync._feature_id_from_header(path) == "FEAT_001_Test"
+    assert sync._feature_id_from_file(path) == "FEAT_001_Test"
 
 
 @pytest.mark.parametrize(
     "header",
-    ["", "# qa-hub: FEAT_000_Test", "# qa-hub: FEAT_01_Test", "# qa-hub: FEAT_001_A"],
+    ["# qa-hub: FEAT_000_Test", "# qa-hub: FEAT_01_Test", "# qa-hub: FEAT_001_A"],
 )
-def test_invalid_or_missing_header_is_rejected(sync, tmp_path, header):
-    """Missing and malformed headers fail instead of falling back to tags or filenames."""
+def test_invalid_header_is_rejected_instead_of_falling_back(sync, tmp_path, header):
+    """A malformed QA Hub header is an error rather than a legacy-ID fallback."""
     path = write(tmp_path / "a.feature", f"{header}\n@VALID_TAG\nFeature: x\n")
     with pytest.raises(sync.ManifestError, match="first line must be"):
-        sync._feature_id_from_header(path)
+        sync._feature_id_from_file(path)
+
+
+def test_legacy_feature_tag_is_used_when_header_is_absent(sync, tmp_path):
+    """A headerless feature keeps its first feature-level tag as its manifest id."""
+    path = write(tmp_path / "a.feature", "@LegacyFeature_007\nFunzionalità: x\n")
+    assert sync._feature_id_from_file(path) == "LegacyFeature_007"
+
+
+def test_non_identity_feature_tags_do_not_replace_the_filename_fallback(sync, tmp_path):
+    """Descriptive labels without an identity progressive leave the filename as the id."""
+    path = write(tmp_path / "citizen_buys_ebollo.feature", "@eBollo\nFeature: purchase\n")
+    assert sync._feature_id_from_file(path) == "citizen_buys_ebollo"
+
+
+def test_scenario_tags_are_not_used_without_a_feature_keyword(sync, tmp_path):
+    """Tags on a malformed file are not mistaken for feature-level legacy identity."""
+    path = write(tmp_path / "malformed.feature", "@LegacyFeature_007\nScenario: x\n")
+    assert sync._feature_id_from_file(path) == "malformed"
+
+
+def test_legacy_filename_is_used_when_header_and_feature_tags_are_absent(sync, tmp_path):
+    """A headerless feature without tags uses a safe form of its filename as its id."""
+    path = write(tmp_path / "Feature name.feature", "# language: it\nFunzionalità: x\n")
+    assert sync._feature_id_from_file(path) == "Feature_name"
+
+
+def test_qa_hub_header_must_be_first_and_unique(sync, tmp_path):
+    """A misplaced or repeated QA Hub header is rejected rather than ignored."""
+    path = write(tmp_path / "a.feature", "# language: it\n# qa-hub: FEAT_001_Test\nFeature: x\n")
+    with pytest.raises(sync.ManifestError, match="must appear once on the first line"):
+        sync._feature_id_from_file(path)
 
 
 # ---------------------------------------------------------------- discovery
@@ -260,18 +291,24 @@ def test_header_id_change_removes_legacy_status_and_estimate(sync, tmp_path):
     }
 
 
-def test_discovered_feature_without_header_fails_without_writing(sync, tmp_path):
-    """A discovered file without a QA Hub header is an error, not a filename/tag fallback."""
+def test_discovered_headerless_features_use_legacy_ids(sync, tmp_path):
+    """Headerless features are included using their first tag or filename."""
     base_repo(tmp_path)
-    manifest_path = tmp_path / MANIFEST
-    original = manifest_path.read_bytes() if manifest_path.exists() else None
-    write(
+    tagged = write(
         tmp_path / "src/e2e/checkout/features/unmanaged.feature",
-        "@OLD_ID\nFunzionalità: feature senza header\n",
+        "@LegacyFeature_007\nFunzionalità: feature senza header\n",
+    )
+    untagged = write(
+        tmp_path / "src/e2e/checkout/features/no_tag.feature",
+        "# language: it\nFunzionalità: feature senza tag\n",
     )
 
-    assert run_sync(sync, tmp_path) == 2
-    assert not manifest_path.exists() if original is None else manifest_path.read_bytes() == original
+    assert run_sync(sync, tmp_path) == 0
+    entries = suite_by_id(read_manifest(tmp_path), "checkout")["features"]
+    assert {entry["id"] for entry in entries} >= {
+        sync._feature_id_from_file(tagged),
+        sync._feature_id_from_file(untagged),
+    }
 
 
 def test_test_type_is_dropped_and_second_run_is_stable(sync, tmp_path):

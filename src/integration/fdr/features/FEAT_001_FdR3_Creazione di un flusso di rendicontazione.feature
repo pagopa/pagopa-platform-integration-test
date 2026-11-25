@@ -1,6 +1,6 @@
-# qa-hub: FEAT_001_FdR3
+# 3066232912
 # language: it
-@FDR3_001
+@Fdr3_001
 Funzionalità: Creazione di un nuovo flusso di rendicontazione
 
   Contesto:
@@ -11,7 +11,7 @@ Funzionalità: Creazione di un nuovo flusso di rendicontazione
 
   @runnable
   @positive
-  @FDR3_001_01
+  @Fdr3_001_01
   Scenario: Creazione di un nuovo flusso di rendicontazione
     Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
     E un nuovo id flusso di rendicontazione pari a "2025-06-30ABI50004-1178"
@@ -27,9 +27,9 @@ Funzionalità: Creazione di un nuovo flusso di rendicontazione
 # ===============================================================================================
 # ===============================================================================================
 
-  @runnable
+  @runnable 
   @negative
-  @FDR3_001_02
+  @Fdr3_001_02
   Schema dello scenario: L’identificativo del flusso di rendicontazione creato dal PSP non rispetta il formato standard
     Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
     E un nuovo id flusso di rendicontazione pari a "<data_regolamento><istituto_mittente>-<flusso>"
@@ -47,9 +47,9 @@ Funzionalità: Creazione di un nuovo flusso di rendicontazione
 # ===============================================================================================
 # ===============================================================================================    
 
-  @runnable
+  @runnable 
   @negative
-  @FDR3_001_03
+  @Fdr3_001_03
   Scenario: Tentativo di creazione di un nuovo flusso da parte di un PSP non abilitato (not ENABLED)
     Dato il PSP "PSPDEMO2" con pspId "ABIDEMO2" correttamente censito a sistema
     E il PSP "PSPDEMO2" non è in stato "ENABLED"
@@ -60,9 +60,9 @@ Funzionalità: Creazione di un nuovo flusso di rendicontazione
 # ===============================================================================================
 # ===============================================================================================
 
-  @runnable
+  @runnable 
   @negative
-  @FDR3_001_04
+  @Fdr3_001_04
   Scenario: Tentativo di creazione di un nuovo flusso da parte di un PSP non censito
     Dato il PSP "PSPDEMO3" con pspId "ABIDEMO3" non è censito a sistema
     Quando il PSP invia una richiesta di creazione flusso tramite l'api "Create a new flow structure"
@@ -72,12 +72,12 @@ Funzionalità: Creazione di un nuovo flusso di rendicontazione
 # ===============================================================================================
 # ===============================================================================================
 
-  @runnable
-  @positive
+  @runnable 
+  @positive 
+  @Fdr3_001_05
   @Crea_FdR(id_fdr="2025-06-30ABI50004-1178",id_psp="PSP%20DEMO")
   @Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
   @Pubblica_FdR
-  @FDR3_001_05
   Scenario: Creazione di un flusso con ID già esistente in stato PUBLISHED 
     Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
     E che il flusso di rendicontazione "2025-06-30ABI50004-1178" esiste già in stato "PUBLISHED"
@@ -93,11 +93,11 @@ Funzionalità: Creazione di un nuovo flusso di rendicontazione
 # ===============================================================================================
 # ===============================================================================================
 
-  @runnable
+  @runnable 
   @negative
+  @Fdr3_001_06
   @Crea_FdR(id_fdr="2025-06-30ABI50004-1178",id_psp="PSP%20DEMO")
   @from_outline
-  @FDR3_001_06
   Schema dello scenario: Tentativo di creazione di un flusso con ID già esistente in uno stato non ammesso
     Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
     E che il flusso di rendicontazione "2025-06-30ABI50004-1178" esiste già in stato "<stato_esistente>"

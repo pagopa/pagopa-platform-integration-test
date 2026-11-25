@@ -46,11 +46,10 @@ Funzionalità: Pagamento
 
 
 class CheckFileTest(unittest.TestCase):
-    def test_missing_qa_hub_header_fails(self):
+    def test_unmanaged_file_is_skipped(self):
+        """Do not impose hub conventions on a feature whose scope is not migrated."""
         text = "# language: it\nFunzionalità: x\n\n  Scenario: senza tag\n    Dato a\n"
-        errors = check_file("src/a.feature", text)
-        self.assertEqual(len(errors), 1)
-        self.assertIn("qa-hub", errors[0])
+        self.assertEqual(check_file("src/a.feature", text), [])
 
     def test_valid_file_passes(self):
         self.assertEqual(check_file("src/a.feature", VALID), [])
@@ -149,6 +148,21 @@ class MainTest(unittest.TestCase):
             finally:
                 os.chdir(current_dir)
             self.assertIn("bad.feature:2:", out.getvalue())
+
+    def test_main_accepts_unmanaged_feature_in_canonical_path(self):
+        """Check the path but do not require Hub conventions before that scope migrates."""
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self._write(
+                tmp,
+                "legacy.feature",
+                "# language: it\nFunzionalità: legacy\n\n  Scenario: senza tag\n    Dato a\n",
+            )
+            current_dir = os.getcwd()
+            os.chdir(tmp)
+            try:
+                self.assertEqual(main([os.path.relpath(path)]), 0)
+            finally:
+                os.chdir(current_dir)
 
     def test_main_ignores_missing_files(self):
         """Ignore deleted feature paths passed by a diff command."""

@@ -96,20 +96,27 @@ Report exhausted numeric ranges rather than widening the profile silently.
 Renumbering, file splitting/moving or identifier changes need explicit scope
 approval, an old-to-new identity mapping and impact on selectors/reports/UC
 registries. Follow the owning workflow's reconciliation rules.
+QA Hub owns introducing `# qa-hub` headers and replacing identity tags during
+its scope-by-scope migration. Until a scope is explicitly migrated, preserve
+its existing identifiers and tracking comments; do not perform that migration
+manually. The Hub migration must retain old scenario tags as aliases before
+publishing replacement tags.
+Reuse an existing valid tracking comment; if a required value is absent or
+invalid, ask for the authoritative value. Do not derive it from Jira, a
+timestamp or another technical ID. Tracking is distinct from dynamic tags.
 
 ## Profile interpretation and validation (ADR-47)
 
 The profile's regex dialect is Python `re`, including `(?P<name>...)` groups.
 Apply full-string matching and the declared case/word-limit rules together:
 matching a lexical regex alone does not establish semantic profile compliance.
-Use the canonical feature code in the QA Hub header as the identity source.
-Identifier tags use its scope uppercased and the same three-digit progressive.
-Do not silently rename legacy files to enforce a filename convention.
-
-Feature progressives match across the header and identifier tags. If a filename
-already contains a `FEAT_<NNN>` progressive, it must match the header; do not
-rename legacy files solely for an identity migration. Scenario IDs are unique
-within the file but remain stable rather than positional.
+For scopes not yet migrated by QA Hub, use the existing profile scheme: feature
+progressives match across filename and identifier tags, and tag suite tokens
+match the filename's suite token after lowercase conversion. Preserve established
+identifiers rather than renaming files or applying the future Hub scheme early.
+For a migrated scope, follow the Hub-provided header and tag mapping; do not
+reassign codes independently. Scenario IDs are unique within the file but remain
+stable rather than positional.
 The profile limits definitions per file; also report actual expanded rows/cases
 without claiming they ran. An outline contributes one definition and one
 execution case per Examples row.
@@ -224,9 +231,9 @@ weaken an external-domain check into a generic change of page.
 - Scenario titles and steps do not end with periods
 - Numeric values are written as digits (for example `1`, `3`, `48`).
 - No more than a single blank line between steps, scenarios, and sections.
-- Every feature file begins with `# qa-hub: FEAT_<NNN>_<Ambito>` on line 1 and a Gherkin language declaration on line 2. The header code is authoritative for the manifest and identifier tags. Ten-digit tracking comments are deprecated and must be removed.
-- For an identity-only migration, preserve the existing Gherkin language; declare it explicitly (`it` or `en`) if missing. Newly authored feature content follows the profile language.
-- Keep data provenance, approval, fitness and availability warnings in the active workflow's reports, not in feature comments. Data-warning comments are only for unresolved placeholders: identify the affected requirements and outline rows. Remove the corresponding comment when its last placeholder is resolved, without treating remaining report uncertainties as resolved. Preserve the mandatory QA Hub header and language declaration, along with any separately required traceability.
+- Before the language declaration line, apply the profile tracking-comment policy; if it requires a value and it is missing, ask the user to provide it. The tracking comment and language declaration are unindented; the profile comment indentation applies to internal comments.
+- Add or change a QA Hub header and identity tags only as part of the Hub's approved migration for that scope. Until then, preserve the existing feature and scenario identifiers, including ten-digit tracking comments.
+- Keep data provenance, approval, fitness and availability warnings in the active workflow's reports, not in feature comments. Data-warning comments are only for unresolved placeholders: identify the affected requirements and outline rows. Remove the corresponding comment when its last placeholder is resolved, without treating remaining report uncertainties as resolved. Preserve mandatory tracking and language declarations and any separately required traceability.
 
 ## Tags
 - Feature and scenario identifier tags are mandatory; use the profile formats.

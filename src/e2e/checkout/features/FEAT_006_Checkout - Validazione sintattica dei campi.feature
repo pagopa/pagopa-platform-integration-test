@@ -1,9 +1,9 @@
-# qa-hub: FEAT_006_Checkout
-# language: it
+#3236593816
+#language:it
+@CheckoutValidazioneCampi_006
 @e2e
 @checkout
 @ui
-@CHECKOUT_006
 Funzionalità: Validazione sintattica dei campi nel funnel di Checkout
 
   Contesto:
@@ -14,8 +14,8 @@ Funzionalità: Validazione sintattica dei campi nel funnel di Checkout
 #======================================================
 #======================================================
 
+@CheckoutValidazioneCampi_006_01
 @runnable
-  @CHECKOUT_006_01
 Schema dello scenario: Inserimento dati - errori -  Inserimento codice avviso errato
   Dato L’utente si trova sulla pagina "/inserisci-dati-avviso"
   Quando L’utente Inserisce il codice avviso <codice_avviso> all’interno della pagina
@@ -32,8 +32,8 @@ Schema dello scenario: Inserimento dati - errori -  Inserimento codice avviso er
 #======================================================
 #======================================================
 
+@CheckoutValidazioneCampi_006_02
 @runnable
-  @CHECKOUT_006_02
 Schema dello scenario: Inserimento dati - errori -  Inserimento CF ente errato
   Dato L’utente si trova sulla pagina "/inserisci-dati-avviso"
   Quando L’utente Inserisce il CF ente <cf_ente> all’interno della pagina
@@ -50,8 +50,8 @@ Schema dello scenario: Inserimento dati - errori -  Inserimento CF ente errato
 #======================================================
 #======================================================
 
+@CheckoutValidazioneCampi_006_03
 @runnable
-  @CHECKOUT_006_03
 Schema dello scenario: Inserimento dati - errori -  Inserimento indirizzo email non valido
   Dato L’utente si trova sulla pagina "/inserisci-email"
   Quando L’utente Inserisce l’indirizzo email <indirizzo_email> in uno dei due campi email presenti nella pagina
@@ -68,8 +68,8 @@ Schema dello scenario: Inserimento dati - errori -  Inserimento indirizzo email 
 #======================================================
 #======================================================
 
+@CheckoutValidazioneCampi_006_04
 @runnable
-  @CHECKOUT_006_04
 Scenario: Inserimento dati - errori - indirizzo email diverso da ripeti
   Dato L’utente si trova sulla pagina "/inserisci-email"
   Quando L’utente inserisce un indirizzo email valido nel campo "Indirizzo Email"
@@ -81,8 +81,8 @@ Scenario: Inserimento dati - errori - indirizzo email diverso da ripeti
 #======================================================
 #======================================================
 
+@CheckoutValidazioneCampi_006_05
 @runnable
-  @CHECKOUT_006_05
 Schema dello scenario: Inserimento dati - errori -  Click sul tasto continua con campo non compilato
   Dato L’utente si trova sulla pagina "<pagina_corrente>"
   Quando L’utente lascia vuoto il solo campo "<campo>"

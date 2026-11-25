@@ -1,6 +1,7 @@
 """Controllo delle convenzioni dei feature file gestiti da QA Hub.
 
-Ogni feature file deve iniziare con `# qa-hub: FEAT_<NNN>_<Ambito>`. Regole:
+I file senza header QA Hub sono legacy e vengono ignorati fino alla migrazione
+dell'ambito. Per i file gestiti da QA Hub si applicano queste regole:
 
 - percorso `src/<tipo>/<suite>/features/**/*.feature`, dove tipo è `api`, `integration` o `e2e`;
 - seconda riga con la dichiarazione di lingua Gherkin (`it` o `en`);
@@ -58,10 +59,11 @@ def _tags(line: str) -> list[str]:
 
 
 def check_file(path: str, text: str) -> list[str]:
+    """Validate managed feature conventions and skip files not yet migrated by QA Hub."""
     lines = _normalize(text)
     header = HEADER_RE.match(lines[0]) if lines else None
     if header is None:
-        return [f"{path}:1: la prima riga deve essere '# qa-hub: FEAT_<NNN>_<Ambito>'"]
+        return []  # file non ancora migrato da QA Hub
 
     def err(lineno: int, message: str) -> str:
         return f"{path}:{lineno}: {message}"

@@ -1,6 +1,5 @@
-# qa-hub: FEAT_002_CheckoutNpg
 # language: it
-@CHECKOUTNPG_002
+@FEAT_010_Checkout
 Funzionalità: Checkout eCommerce - gateway di pagamento NPG
   Valida i flussi API di checkout eCommerce per il recupero e la validazione dei dati carta NPG.
 
@@ -13,7 +12,7 @@ Funzionalità: Checkout eCommerce - gateway di pagamento NPG
   # ---------------------------------------------------------------------------
 
   @checkout @npg @card @positive
-  @CHECKOUTNPG_002_01
+  @FEAT_010_Checkout_SCENARIO_01
   Scenario: I dati carta vengono recuperati con successo dopo la compilazione dei campi NPG
     Dato l'id del metodo di pagamento carta di credito e risolto
     E viene creata una sessione NPG
@@ -25,7 +24,7 @@ Funzionalità: Checkout eCommerce - gateway di pagamento NPG
     E i dati carta corrispondono ai valori della carta di test
 
   @checkout @npg @card @negative
-  @CHECKOUTNPG_002_02
+  @FEAT_010_Checkout_SCENARIO_02
   Scenario: I dati carta non sono disponibili con order id errato
     Dato l'id del metodo di pagamento carta di credito e risolto
     E viene creata una sessione NPG
@@ -35,7 +34,7 @@ Funzionalità: Checkout eCommerce - gateway di pagamento NPG
     Allora la risposta ha codice di stato 401
 
   @checkout @npg @card @negative
-  @CHECKOUTNPG_002_03
+  @FEAT_010_Checkout_SCENARIO_03
   Scenario: I dati carta non sono disponibili con transaction id errato
     Dato l'id del metodo di pagamento carta di credito e risolto
     E viene creata una sessione NPG
@@ -45,7 +44,7 @@ Funzionalità: Checkout eCommerce - gateway di pagamento NPG
     Allora la risposta ha codice di stato 401
 
   @checkout @npg @card @negative
-  @CHECKOUTNPG_002_04
+  @FEAT_010_Checkout_SCENARIO_04
   Scenario: I dati carta non sono disponibili quando manca l'auth token
     Dato l'id del metodo di pagamento carta di credito e risolto
     E viene creata una sessione NPG

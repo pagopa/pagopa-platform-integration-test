@@ -1,6 +1,6 @@
-# qa-hub: FEAT_003_FdR3
-# language: it
-@FDR3_003
+# 3078848524
+# language:it
+@PubblicazioneFdR_003
 Funzionalità: Pubblicazione di un FdR
 
   Contesto:
@@ -9,9 +9,9 @@ Funzionalità: Pubblicazione di un FdR
 #======================================================
 #======================================================
 
+@PubblicazioneFdR_003_01
 @Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSP%20DEMO")
 @Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
-  @FDR3_003_01
 Scenario: Pubblicazione di un Fdr
   Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "INSERTED"
@@ -26,7 +26,7 @@ Scenario: Pubblicazione di un Fdr
 #======================================================
 #======================================================
 
-  @FDR3_003_02
+@PubblicazioneFdR_003_02
 Schema dello scenario: Pubblicazione FdR KO
   Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
   E il PSP vuole recuperare un FdR con identificativo diverso da "<data_regolamento><istituto_mittente>-<flusso>"
@@ -42,8 +42,8 @@ Schema dello scenario: Pubblicazione FdR KO
 #======================================================
 #======================================================
 
+@PubblicazioneFdR_003_03
 @Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSP%20DEMO")
-  @FDR3_003_03
 Scenario:  Pubblicazione di un FdR in stato  CREATED
   Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "CREATED"
@@ -53,10 +53,10 @@ Scenario:  Pubblicazione di un FdR in stato  CREATED
 #======================================================
 #======================================================
 
+@PubblicazioneFdR_003_04
 @Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSP%20DEMO")
 @Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
 @Pubblica_FdR
-  @FDR3_003_04
 Scenario: Pubblicazione di un FdR in stato PUBLISHED
   Dato il PSP "PSP DEMO" con pspId "ABI50004" correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "PUBLISHED"

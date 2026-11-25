@@ -4,8 +4,9 @@
 The manifest describes suites and feature files for QA Central Hub. This
 script regenerates it from the repository tree: it discovers the .feature files
 under src/<type>/<suite>/features/, keeps
-suite labels, derives feature ids from their headers, drops dead entries, and
-validates the result before writing it only when its content changed.
+suite labels, derives feature ids from QA Hub headers when present and otherwise
+from legacy feature tags or filenames, drops dead entries, and validates the
+result before writing it only when its content changed.
 
 Exit codes: 0 success or nothing to change; 1 with --check when the manifest is
 out of date; 2 on error (invalid existing manifest, invalid result, I/O failure).
@@ -36,6 +37,10 @@ SUITE_ID_PATTERN = re.compile(r"[a-z0-9_-]{1,64}")
 FEATURE_ID_PATTERN = re.compile(r"[A-Za-z0-9_-]{1,80}")
 FEATURE_CODE_PATTERN = re.compile(r"FEAT_(?!000)[0-9]{3}_[A-Za-z][A-Za-z0-9]{1,19}")
 FEATURE_CODE_HEADER_PATTERN = re.compile(r"#\s*qa-hub:\s*(\S+)\s*")
+QA_HUB_HEADER_MARKER_PATTERN = re.compile(r"^#\s*qa-hub\b", re.IGNORECASE)
+FEATURE_KEYWORD_PATTERN = re.compile(r"^\s*(?:Feature|Funzionalità|Funzionalita)\s*:", re.IGNORECASE)
+FEATURE_TAG_PATTERN = re.compile(r"@([A-Za-z0-9_-]+)")
+LEGACY_FEATURE_ID_TAG_PATTERN = re.compile(r"_[0-9]{3}(?:_|$)")
 
 ALLOWED_ROOT_KEYS = {"version", "suites"}
 ALLOWED_SUITE_KEYS = {"id", "label", "root", "features"}
@@ -47,8 +52,9 @@ HEADER_LINES = [
     "#",
     "# GENERATED FILE: .github/scripts/gherkin_manifest_sync.py rewrites it (workflow",
     "# .github/workflows/gherkin-manifest-sync.yml). Comments written here are lost on the next run.",
-    "# The only hand-editable field is suites[].label. Feature ids come from the QA Hub",
-    "# header of each file. QA Central Hub owns feature status and estimates.",
+    "# The only hand-editable field is suites[].label. Feature ids come from a QA Hub",
+    "# header when present; otherwise the legacy feature tag or filename is used.",
+    "# QA Central Hub owns feature status and estimates.",
     "# See the README section 'Manifest Gherkin e sinossi AI' for field ownership.",
     "",
 ]
@@ -173,21 +179,54 @@ def discover_suites(repo_root: Path) -> list[DiscoveredSuite]:
     return suites
 
 
-def _feature_id_from_header(feature_file: Path) -> str:
-    """Read the canonical feature id from the required first-line QA Hub header."""
+def _feature_id_from_file(feature_file: Path) -> str:
+    """Resolve a feature id from its QA Hub header or legacy tag/filename."""
     try:
         text = feature_file.read_text(encoding="utf-8-sig")
     except UnicodeDecodeError as exc:
         raise ManifestError(f"{feature_file}: not valid UTF-8 ({exc.reason})") from exc
     lines = text.splitlines()
     first_line = lines[0].strip() if lines else ""
-    match = FEATURE_CODE_HEADER_PATTERN.fullmatch(first_line)
-    if match is None or not FEATURE_CODE_PATTERN.fullmatch(match.group(1)):
-        raise ManifestError(
-            f"{feature_file}: first line must be '# qa-hub: FEAT_<NNN>_<Scope>' "
-            "with a non-zero three-digit number and a 2-20 character scope"
-        )
-    return match.group(1)
+    header_lines = [
+        (position, line.strip())
+        for position, line in enumerate(lines, start=1)
+        if QA_HUB_HEADER_MARKER_PATTERN.match(line.strip())
+    ]
+    if header_lines:
+        if len(header_lines) != 1 or header_lines[0][0] != 1:
+            raise ManifestError(f"{feature_file}: the QA Hub header must appear once on the first line")
+        match = FEATURE_CODE_HEADER_PATTERN.fullmatch(first_line)
+        if match is None or not FEATURE_CODE_PATTERN.fullmatch(match.group(1)):
+            raise ManifestError(
+                f"{feature_file}: first line must be '# qa-hub: FEAT_<NNN>_<Scope>' "
+                "with a non-zero three-digit number and a 2-20 character scope"
+            )
+        return match.group(1)
+
+    feature_tags: list[str] = []
+    feature_keyword_found = False
+    for line in lines:
+        if FEATURE_KEYWORD_PATTERN.match(line):
+            feature_keyword_found = True
+            break
+        stripped = line.strip()
+        if stripped.startswith("#") or not stripped.startswith("@"):
+            continue
+        feature_tags.extend(token for token in stripped.split() if token.startswith("@"))
+
+    if feature_keyword_found:
+        for feature_tag in feature_tags:
+            if not LEGACY_FEATURE_ID_TAG_PATTERN.search(feature_tag):
+                continue
+            tag = FEATURE_TAG_PATTERN.fullmatch(feature_tag)
+            if tag is None:
+                raise ManifestError(f"{feature_file}: invalid legacy feature tag '{feature_tag}'")
+            return tag.group(1)
+
+    filename_id = re.sub(r"[^A-Za-z0-9_-]+", "_", feature_file.stem).strip("_-")[:80].rstrip("_-")
+    if not FEATURE_ID_PATTERN.fullmatch(filename_id):
+        raise ManifestError(f"{feature_file}: filename cannot be converted to a valid feature id")
+    return filename_id
 
 
 def load_registry(registry_path: Path) -> dict[str, dict[str, Any]]:
@@ -410,8 +449,8 @@ def reconcile_features(
 ) -> tuple[list[dict[str, Any]], list[str]]:
     """Reconcile the feature entries of one suite with the files on disk.
 
-    Live entries follow the file header. Dead entries are removed, except when a
-    new file has the same header id, in which case the entry moves to the new
+    Live entries follow the id resolved from each file. Dead entries are removed,
+    except when a new file has the same id, in which case the entry moves to the new
     path. Manual suites only lose dead entries.
     Returns the sorted entries and the change messages.
     """
@@ -419,7 +458,7 @@ def reconcile_features(
     dead: list[dict[str, Any]] = []
     feature_ids = (
         {
-            path: _feature_id_from_header(discovered_suite.directory / path)
+            path: _feature_id_from_file(discovered_suite.directory / path)
             for path in discovered_suite.feature_paths
         }
         if discovered_suite is not None
@@ -436,7 +475,7 @@ def reconcile_features(
         if new_id is not None and live_entry["id"] != new_id:
             changes.append(
                 f"feature '{suite_id}/{live_entry['id']}' id updated to '{new_id}' "
-                f"from header at '{entry['path']}'"
+                f"from feature file at '{entry['path']}'"
             )
             live_entry["id"] = new_id
         live.append(live_entry)

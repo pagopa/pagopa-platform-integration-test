@@ -1,13 +1,12 @@
-# qa-hub: FEAT_008_FdR3
-# language: it
-@FDR3_008
+#language: it
+@fdr3_008_Pubblicazione_KO
 Funzionalità: Verifica KO della pubblicazione FdR
   Flusso: creazione, inserimento pagamenti, pubblicazione negativa e verifiche sugli endpoint protetti
 
   Contesto:
     Dato che i sistemi sono operativi
 
-  @FDR3_008_01
+  @fdr3_008_1
   Scenario: Creazione del FdR
     Dato un nome di flusso di rendicontazione univoco chiamato flow_name
     E una data di flusso di rendicontazione univoco chiamato flow_date
@@ -15,7 +14,7 @@ Funzionalità: Verifica KO della pubblicazione FdR
     Quando il PSP invia la richiesta di "Creazione di una nuova struttura di flusso" con il payload "create_payload"
     Allora il PSP riceve il codice di stato HTTP 201
 
-  @FDR3_008_02
+  @fdr3_008_2
   Scenario: Aggiunta di pagamenti
     Dato che il PSP deve inviare 3 pagamenti al flusso
     E che la somma totale dei pagamenti da inviare è 300
@@ -24,14 +23,14 @@ Funzionalità: Verifica KO della pubblicazione FdR
     E il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "payments_payload"
     Allora il PSP riceve il codice di stato HTTP 200
 
-  @FDR3_008_03
+  @fdr3_008_3
   Scenario: Pubblicazione FdR con bad request
     Dato che lo scenario "Aggiunta di pagamenti" è stato eseguito con successo
     Quando il PSP invia la richiesta di "Pubblicazione" con il payload "None"
     Allora il PSP riceve il codice di stato HTTP 400
 
   @runnable
-  @FDR3_008_04
+  @fdr3_008_4
   Scenario: Pubblicazione FdR non autorizzata
     Dato che lo scenario "Pubblicazione FdR con bad request" è stato eseguito con successo
     Quando il PSP invia la richiesta di "Pubblicazione" con il payload "None" con subscription_key non valida

@@ -1,6 +1,6 @@
-# qa-hub: FEAT_006_FdR3
-# language: it
-@FDR3_006
+#3087794384
+#language:it
+@CancellazioneDiUnFdR_006
 Funzionalità: Cancellazione del flusso completo
 
   Contesto:
@@ -9,9 +9,9 @@ Funzionalità: Cancellazione del flusso completo
 #======================================================
 #======================================================
 
+@CancellazioneDiUnFdR_006_01
 @Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSP%20DEMO")
 @Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
-  @FDR3_006_01
 Scenario: Cancellazione di un flusso completo FdR 
   Dato Il PSP "PSP DEMO" con pspId "PSP DEMO" è correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "INSERTED" 
@@ -22,7 +22,7 @@ Scenario: Cancellazione di un flusso completo FdR
 #======================================================
 #======================================================
 
-  @FDR3_006_02
+@CancellazioneDiUnFdR_006_02
 Scenario: Cancellazione di un FdR inesistente
   Dato Il PSP "PSP DEMO" con pspId "PSP DEMO" è correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-9999" non esiste a sistema
@@ -33,8 +33,8 @@ Scenario: Cancellazione di un FdR inesistente
 #======================================================
 #======================================================
 
+@CancellazioneDiUnFdR_006_03
 @Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSP%20DEMO")
-  @FDR3_006_03
 Scenario:  Cancellazione di un FdR in stato  CREATED
   Dato Il PSP "PSP DEMO" con pspId "PSP DEMO" è correttamente censito a sistema
   E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "CREATED"
@@ -44,10 +44,10 @@ Scenario:  Cancellazione di un FdR in stato  CREATED
 #======================================================
 #======================================================
 
+@CancellazioneDiUnFdR_006_04
 @Crea_FdR(id_fdr="2025-01-01PSPDEMO-0001",id_psp="PSP%20DEMO")
 @Inserisci_Pagamenti(totPayments=3,sumPayments=3000)
 @Pubblica_FdR
-  @FDR3_006_04
 Scenario: Cancellazione di un FdR in stato PUBLISHED
  Dato Il PSP "PSP DEMO" con pspId "PSP DEMO" è correttamente censito a sistema
  E che il flusso di rendicontazione "2025-01-01PSPDEMO-0001" esiste in stato "PUBLISHED"
