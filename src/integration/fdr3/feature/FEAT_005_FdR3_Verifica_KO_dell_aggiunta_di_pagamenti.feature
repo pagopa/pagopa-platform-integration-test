@@ -1,7 +1,7 @@
 # qa-hub: FEAT_005_FdR3
 # language: it
 @FDR3_005
-Funzionalità: Recupero degli fdr da parte dell'EC
+Funzionalità: Verifica KO dell'aggiunta di pagamenti
   Recupero degli fdr da parte dell'EC
 
   Contesto:
