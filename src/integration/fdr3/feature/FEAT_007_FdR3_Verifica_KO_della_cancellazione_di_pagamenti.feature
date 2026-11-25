@@ -1,7 +1,7 @@
 # qa-hub: FEAT_007_FdR3
 # language: it
 @FDR3_007
-Funzionalità: FdR-JSON_to_XML
+Funzionalità: Verifica KO della cancellazione di pagamenti
   Conversione da JSON (FdR3) a XML (FdR1) di un flusso di rendicontazione
 
   Contesto:
