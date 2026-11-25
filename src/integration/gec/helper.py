@@ -266,7 +266,7 @@ def _send_request(context, operation: str, payload_name: str):
     _ensure_vars_container(context)
     operation_lower = operation.lower()
     if "recupero commissioni v2" in operation_lower:
-        endpoint = "/fees/multi"
+        endpoint = "/fees"
         client = _get_client(context, "v2")
         api_version = "v2"
     elif "recupero commissioni" in operation_lower:
@@ -294,7 +294,7 @@ def _send_request(context, operation: str, payload_name: str):
         params["allCcp"] = "true" if bool(context.vars["allCcp"]) else "false"
 
     psp_id = context.vars.get("psp_id")
-    if api_version == "v1" and endpoint == "/fees" and psp_id:
+    if endpoint == "/fees" and psp_id:
         endpoint = f"/psps/{psp_id}/fees"
 
     context.response = client.post(endpoint, json_body=payload_data, params=params)

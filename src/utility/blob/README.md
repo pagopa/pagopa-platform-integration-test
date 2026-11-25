@@ -21,7 +21,8 @@ service.close()
 Client per Azure Table Storage con focus su issuer/BIN range management.
 
 **Caratteristiche**:
-- Connessione via connection string
+- Connessione via connection string **oppure** endpoint URL (`https://<account>.table.core.windows.net`)
+- Endpoint URL autenticato con `DefaultAzureCredential` (es. `az login`, Managed Identity)
 - Creazione/aggiornamento/cancellazione entità
 - Query con filtri opzionali
 - Setup idempotente (delete-then-create)
@@ -31,7 +32,7 @@ Client per Azure Table Storage con focus su issuer/BIN range management.
 ```python
 from src.utility.blob import IssuerTableClient, build_issuer_table_client
 
-# Factory con error handling
+# Factory con error handling (connection string o endpoint URL)
 client = build_issuer_table_client(connection_string)
 if client:
     # Setup issuer entities
@@ -54,9 +55,13 @@ Factory function con error handling per IssuerTableClient.
 **Ritorna**: IssuerTableClient o None se fails
 
 **Gestisce**:
-- Missing connection string
+- Missing connection string/endpoint URL
 - Missing azure-data-tables package
 - Connection errors
+
+**Input supportati**:
+- Connection string classica (invariata): `DefaultEndpointsProtocol=...;AccountKey=...`
+- Endpoint URL senza key/SAS: `https://<storage-account>.table.core.windows.net`
 
 ## Architettura
 
@@ -101,6 +106,9 @@ Per usare IssuerTableClient:
 ```bash
 pip install azure-data-tables
 ```
+
+Con un endpoint URL l'identità di `DefaultAzureCredential` deve avere almeno il ruolo
+**Storage Table Data Contributor** sullo Storage Account.
 
 ## Coerenza Architetturale
 

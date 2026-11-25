@@ -8,6 +8,8 @@ Follows the utility/blob pattern established by azure_blob.py.
 import logging
 from typing import List, Dict, Optional
 
+from azure.identity import DefaultAzureCredential
+
 try:
     from azure.data.tables import TableClient, TableEntity
     AZURE_TABLES_AVAILABLE = True
@@ -18,11 +20,21 @@ except ImportError:
 LOGGER = logging.getLogger("gec.azure_table")
 
 
+def _is_table_endpoint(value: str) -> bool:
+    """Return True when the value is a plain table endpoint URL without embedded key or SAS."""
+    normalized_value = value.strip().lower()
+    if not normalized_value.startswith(("http://", "https://")):
+        return False
+    forbidden_markers = ("accountkey=", "sharedaccesssignature=", "sig=")
+    return not any(marker in normalized_value for marker in forbidden_markers)
+
+
 class IssuerTableClient:
     """
     Azure Table Storage client for managing issuer entities (card BIN ranges).
     
-    Uses DefaultAzureCredential for authentication (from connection string).
+    Accepts either a connection string or a table endpoint URL.
+    An endpoint URL is authenticated through DefaultAzureCredential.
     Provides idempotent setup (delete-then-create) for test data consistency.
     """
     
@@ -31,7 +43,7 @@ class IssuerTableClient:
         Initialize Azure Table Storage client.
         
         Args:
-            connection_string: Azure Storage connection string
+            connection_string: Azure Storage connection string or table endpoint URL
             table_name: Name of the table (default: issuerrangetable)
             
         Raises:
@@ -42,9 +54,17 @@ class IssuerTableClient:
                 "azure-data-tables package required. Install with: pip install azure-data-tables"
             )
         
-        self.connection_string = connection_string
+        connection_value = connection_string.strip()
+        self.connection_string = connection_value
         self.table_name = table_name
-        self._client = TableClient.from_connection_string(connection_string, table_name)
+        if _is_table_endpoint(connection_value):
+            self._client = TableClient(
+                endpoint=connection_value,
+                table_name=table_name,
+                credential=DefaultAzureCredential(),
+            )
+        else:
+            self._client = TableClient.from_connection_string(connection_value, table_name)
         LOGGER.debug(f"IssuerTableClient initialized for table: {table_name}")
     
     def close(self):
@@ -165,7 +185,7 @@ def build_issuer_table_client(connection_string: str, table_name: str = "issuerr
     Factory function to build IssuerTableClient with error handling.
     
     Args:
-        connection_string: Azure Storage connection string
+        connection_string: Azure Storage connection string or table endpoint URL
         table_name: Table name (default: issuerrangetable)
         
     Returns:
@@ -183,5 +203,5 @@ def build_issuer_table_client(connection_string: str, table_name: str = "issuerr
         LOGGER.warning(f"Azure Tables not installed: {e}")
         return None
     except Exception as e:
-        LOGGER.warning(f"Failed to create IssuerTableClient: {e}")
+        LOGGER.warning("Failed to create IssuerTableClient: %s", e.__class__.__name__)
         return None

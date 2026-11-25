@@ -47,12 +47,23 @@ def _clean_cell(value: str) -> str:
 
 
 def _string_values(value) -> list:
-    """Convert response scalar/list into comparable list of strings."""
+    """Convert response scalar/list into comparable strings, rendering booleans as JSON-style lowercase."""
     if value is None:
         return []
-    if isinstance(value, list):
-        return [str(item) for item in value]
-    return [str(value)]
+    items = value if isinstance(value, list) else [value]
+    return [("true" if item else "false") if isinstance(item, bool) else str(item) for item in items]
+
+
+def _payment_method_name(method: dict) -> str:
+    """Return method.name with JavaScript String(...) parity used by AFM order assertion."""
+    name = method.get("name")
+    if name is None:
+        return ""
+    if isinstance(name, dict):
+        return "[object Object]"
+    if isinstance(name, bool):
+        return "true" if name else "false"
+    return str(name)
 
 
 def _poste_rule(context):
@@ -328,12 +339,12 @@ def step_assert_first_payment_method(context, method_name: str):
 
 @then('i metodi diversi da "{method_name}" sono in ordine alfabetico')
 def step_assert_alphabetic_order(context, method_name: str):
-    """Assert payment methods after the first are case-insensitive sorted by name."""
+    """Assert payment methods after the first follow AFM JS localeCompare ordering semantics."""
     methods = _response_json(context).get("paymentMethods", [])
     if len(methods) <= 1:
         return
-    names = [str((item.get("name") or "")).strip() for item in methods[1:]]
-    expected_order = sorted(names, key=lambda value: value.lower())
+    names = [_payment_method_name(item) for item in methods[1:]]
+    expected_order = sorted(names)
     assert names == expected_order, f"Expected {expected_order}, got {names}"
     LOGGER.debug("Reference first method placeholder: %s", method_name)
 

@@ -1,5 +1,6 @@
 """Behave hooks for GEC integration suite."""
 
+import json
 import logging
 import os
 from types import SimpleNamespace
@@ -156,12 +157,13 @@ def after_scenario(context, scenario):
 
 
 def _delete_uploaded_bundles(context):
-    """Delete tracked bundles from configuration service."""
+    """Delete tracked bundles from configuration service, sending each bundle once."""
     uploaded = getattr(context.gec, "uploaded_bundles", []) or []
-    if not uploaded:
+    unique_bundles = list({json.dumps(bundle, sort_keys=True): bundle for bundle in uploaded}.values())
+    if not unique_bundles:
         return
     client = context.gec.rest.client_v1
-    response = client.post("/configuration/bundles/delete", json_body=uploaded)
+    response = client.post("/configuration/bundles/delete", json_body=unique_bundles)
     if response.status_code != 200:
         LOGGER.warning(
             "Bundle teardown returned status %s (expected 200): %s",

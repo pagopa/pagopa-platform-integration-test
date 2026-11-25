@@ -16,17 +16,17 @@ gec:
   auth:
     type: api-key
     key_name: Ocp-Apim-Subscription-Key
-    key_value: $afm-subscription-key
+    key_value: $tas-gec-calculator-subscription-key
     location: header
   
   # Marketplace API for payment methods upload
   marketplace_host: https://api.dev.platform.pagopa.it/afm/marketplace-service/v1
-  marketplace_key: $marketplace-subscription-key
+  marketplace_key: $tas-gec-marketplace-subscription-key
 
   # Azure Table Storage connection string (for issuer range management)
   # Optional: if not provided, issuer range tests will be skipped
   # Format: DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net
-  azure_connection_string: $azure-storage-connection-string
+  azure_connection_string: https://pagopadweufdrsa.table.core.windows.net/ #$azure-storage-connection-string
 
   # Configuration API endpoints
   configuration_host: https://api.dev.platform.pagopa.it/afm/configuration

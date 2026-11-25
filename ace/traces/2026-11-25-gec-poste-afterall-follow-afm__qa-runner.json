@@ -1,0 +1,41 @@
+{
+  "task_id": "2026-11-25-gec-poste-afterall-follow-afm",
+  "agent": "qa-runner",
+  "started_at": "2026-11-25T15:59:11+01:00",
+  "ended_at": "2026-11-25T16:02:58+01:00",
+  "request_summary": "Execute the single user-authorized full GEC DEV rerun after aligning Poste setup and teardown with AFM.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Ran the unfiltered 52-scenario GEC DEV suite in a fresh PowerShell process with the requested environment selectors and isolated fix-01 output directories.",
+      "tool": "QA-runner delegation",
+      "timestamp": "2026-11-25T15:59:11+01:00"
+    },
+    {
+      "description": "JUnit verification confirmed 52 testcases with one failure; the Poste Background Given ran in all 11 FEAT_002 scenarios, and the allCcp-off assertion remained the sole failure.",
+      "tool": "JUnit XML"
+    },
+    {
+      "description": "FEAT_006 and FEAT_007 completed without the former ordering failures; no retry or remote inspection was performed.",
+      "tool": "Behave summary"
+    }
+  ],
+  "outcome": {
+    "status": "failure",
+    "evaluated_by": "verified",
+    "detail": "The requested rerun completed, but FEAT_002 gec_002_09 still failed; the result does not establish after_all deletion success."
+  },
+  "friction": [
+    {
+      "description": "A ContextMaskWarning was presented by PowerShell as NativeCommandError; the actual Behave exit code was captured as 1 and the scenario failure was verified from JUnit.",
+      "recovered": true
+    },
+    {
+      "description": "The run artifacts do not expose whether after_all successfully deleted the tracked bundles; remote inspection was not authorized.",
+      "recovered": false
+    }
+  ],
+  "playbook_bullets_selected": [],
+  "counted_for_playbook_at": "2026-11-25T15:07:35.028Z"
+}
