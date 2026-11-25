@@ -1,7 +1,7 @@
 # qa-hub: FEAT_006_FdR3
 # language: it
 @FDR3_006
-Funzionalità: Cancellazione del flusso completo
+Funzionalità: Verifica KO della cancellazione di un FdR
   Cancellazione del flusso completo
 
   Contesto:
