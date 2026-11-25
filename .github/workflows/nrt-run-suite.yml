@@ -106,8 +106,9 @@ jobs:
           mapfile -t tags < <(jq -r '.[]' <<< "$TAGS_JSON")
           command=(behave "$BEHAVE_PATH")
           command+=(
-            --tags="@runnable,@flaky"
-            --tags=~@skip
+            --tags="@runnable"
+            --tags="~@skip"
+            --tags="~@broken"
             --format allure_behave.formatter:AllureFormatter
             -o allure-results
             --junit-directory=junit

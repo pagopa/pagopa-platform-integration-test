@@ -1,6 +1,6 @@
 #language: it
-@fdr3_001_Aggiungi_pagamenti
 @integration
+@fdr3_001_Aggiungi_pagamenti
 Funzionalità: Aggiunta di pagamenti a un flusso di rendicontazione
 
   Contesto:
