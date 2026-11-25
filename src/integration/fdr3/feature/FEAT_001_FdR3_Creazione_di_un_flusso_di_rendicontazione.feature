@@ -1,11 +1,14 @@
-#language: it
-@fdr3_001_Aggiungi_pagamenti
-Funzionalità: Aggiunta di pagamenti a un flusso di rendicontazione
+# qa-hub: FEAT_001_FdR3
+# language: it
+@FDR3_001
+Funzionalità: Creazione di un flusso di rendicontazione
+  Creazione di un flusso di rendicontazione
 
   Contesto:
     Dato che i sistemi sono operativi
 
-  @fdr3_001_01
+  @positivo
+  @FDR3_001_01
   Scenario: Creazione del flusso di rendicontazione per il test di aggiunta pagamenti
     Dato un nome di flusso di rendicontazione univoco chiamato flow_name
     E una data di flusso di rendicontazione univoco chiamato flow_date
@@ -13,8 +16,8 @@ Funzionalità: Aggiunta di pagamenti a un flusso di rendicontazione
     Quando il PSP invia la richiesta di "Creazione di una nuova struttura di flusso" con il payload "create_payload"
     Allora il PSP riceve il codice di stato HTTP 201
 
-  @runnable
-  @fdr3_001_02
+  @runnable @positivo
+  @FDR3_001_02
   Schema dello scenario: Aggiunta di pagamenti al flusso
     Dato che il PSP deve inviare <n> pagamenti al flusso
     E che la somma totale dei pagamenti da inviare è <amount>
@@ -28,4 +31,3 @@ Funzionalità: Aggiunta di pagamenti a un flusso di rendicontazione
       | 1    | 3      | 200  |
       | 1000 | 29999  | 200  |
       | 1001 | 30000  | 400  |
-
