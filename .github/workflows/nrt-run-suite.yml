@@ -105,11 +105,8 @@ jobs:
         run: |
           mapfile -t tags < <(jq -r '.[]' <<< "$TAGS_JSON")
           command=(behave "$BEHAVE_PATH")
-          for tag in "${tags[@]}"; do
-            command+=(--tags="$tag")
-          done
           command+=(
-            --tags=@flaky
+            --tags="@runnable,@flaky"
             --tags=~@skip
             --format allure_behave.formatter:AllureFormatter
             -o allure-results
