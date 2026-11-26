@@ -1207,11 +1207,7 @@ registrate nel [catalogo NRT](.github/nrt-suites.json). Il loro aggiornamento e 
   Gli errori sono riportati nel check, senza aggiungere commenti ripetuti alla PR.
 
 Entrambi i workflow leggono le label correnti tramite API, non una copia potenzialmente
-obsoleta nell'evento. Quando la PR viene mergiata, solo una combinazione valida di incremento
-e suite avvia lo script di aggiornamento; il workflow apre quindi una PR verso `main` con
-titolo `Auto bump {suite} version`, contenente solo l'aggiornamento del catalogo. Il branch
-`auto-bump-suite-version/{numero-PR-sorgente}` permette di aggiornare la stessa PR in caso di riesecuzione prima del merge. La PR automatica usa il template del repository e la label
-`skip`, cosi il suo merge non genera un altro bump. Con `skip` o una PR dei due bot non viene modificata alcuna versione di suite. Gli altri check e il versionamento della release del repository non sono esentati: quest'ultimo dipende dai messaggi di commit, non dalle label.
+obsoleta nell'evento. Quando la PR viene mergiata, solo una combinazione valida di incremento e suite avvia lo script di aggiornamento; il workflow apre quindi una PR verso `main` con titolo `Auto bump {suite} version`, contenente solo l'aggiornamento del catalogo. Il branch `auto-bump-suite-version/{numero-PR-sorgente}` permette di aggiornare la stessa PR in caso di riesecuzione prima del merge. La PR automatica usa il template del repository e la label `skip`, cosi il suo merge non genera un altro bump. Con `skip` o una PR dei due bot non viene modificata alcuna versione di suite. Gli altri check e il versionamento della release del repository non sono esentati: quest'ultimo dipende dai messaggi di commit, non dalle label.
 
 
 La policy e implementata in [suite-version-labels.js](.github/scripts/suite-version-labels.js).
