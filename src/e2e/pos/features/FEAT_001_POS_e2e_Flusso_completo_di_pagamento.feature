@@ -1,5 +1,6 @@
 #9999999999
 #language: it
+@e2e
 @pos_001_e2e_Flusso_di_pagamento
 Funzionalità: Esecuzione del flusso di pagamento
 
@@ -8,7 +9,7 @@ Funzionalità: Esecuzione del flusso di pagamento
 
   @runnable
   @pos_001_01
-  @e2e
+  @positive
   Scenario: Esecuzione completa del flusso di pagamento con type TO_CREATE e init completo
     Quando il Gestionale EC invia la chiamata di init con includeTerminals "true" e acquisisce il sessionId
     E il Gestionale EC invia la richiesta di avvio del flusso di pagamento con type "TO_CREATE"
@@ -22,7 +23,7 @@ Funzionalità: Esecuzione del flusso di pagamento
 
   @runnable
   @pos_001_02
-  @e2e
+  @positive
   Scenario: Esecuzione completa del flusso di pagamento con type TO_CREATE_PROVIDED_IUV e con uno IUV e init completo
     Quando il Gestionale EC invia la chiamata di init con includeTerminals "true" e acquisisce il sessionId
     E il Gestionale EC invia la richiesta di avvio del flusso di pagamento con type "TO_CREATE_PROVIDED_IUV" e con uno IUV
@@ -36,7 +37,7 @@ Funzionalità: Esecuzione del flusso di pagamento
 
   @runnable
   @pos_001_03
-  @e2e
+  @positive
   Scenario: Esecuzione completa del flusso di pagamento con type CI_PROVIDED e fornisce un notice_number e init completo
     Quando il Gestionale EC invia la chiamata di init con includeTerminals "true" e acquisisce il sessionId
     E il Gestionale EC invia la richiesta di avvio del flusso di pagamento con type "CI_PROVIDED" e fornisce un notice_number
@@ -50,7 +51,7 @@ Funzionalità: Esecuzione del flusso di pagamento
 
   @runnable
   @pos_001_04
-  @e2e
+  @positive
   Scenario: Esecuzione completa del flusso di pagamento con type TO_CREATE e init parziale
     Quando il Gestionale EC invia la chiamata di init con includeTerminals "true" e acquisisce il sessionId
     E il Gestionale EC invia la richiesta di lista POS
@@ -66,7 +67,7 @@ Funzionalità: Esecuzione del flusso di pagamento
 
   @runnable
   @pos_001_05
-  @e2e
+  @positive
   Scenario: Esecuzione completa del flusso di pagamento con type TO_CREATE_PROVIDED_IUV e con uno IUV e init parziale
     Quando il Gestionale EC invia la chiamata di init con includeTerminals "true" e acquisisce il sessionId
     E il Gestionale EC invia la richiesta di lista POS
@@ -82,7 +83,7 @@ Funzionalità: Esecuzione del flusso di pagamento
 
   @runnable
   @pos_001_06
-  @e2e
+  @positive
   Scenario: Esecuzione completa del flusso di pagamento con type CI_PROVIDED e fornisce un notice_number e init parziale
     Quando il Gestionale EC invia la chiamata di init con includeTerminals "true" e acquisisce il sessionId
     E il Gestionale EC invia la richiesta di lista POS
