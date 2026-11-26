@@ -1,10 +1,7 @@
+# qa-hub: FEAT_004_Checkout
 # language: it
-
-@FEAT_004_Checkout
-@e2e
-@checkout
-@ui
-Funzionalità: Attivazione pagamento Checkout autenticato
+@CHECKOUT_004
+Funzionalità: Attivazione pagamento Autenticato
   Un utente del sistema checkout
   vuole completare un pagamento con carta di credito/debito
   così da poter pagare un avviso tramite la piattaforma pagoPA
@@ -14,13 +11,8 @@ Funzionalità: Attivazione pagamento Checkout autenticato
     E La lingua è impostata su "it"
     E L'utente è autenticato
 
-  # =============================================
-  # Happy path: flusso di pagamento completo
-  # =============================================
-
-  @smoke
-  @positive
-  @FEAT_004_Checkout_scenario_01
+  @checkout @e2e @positive @smoke @ui @positivo
+  @CHECKOUT_004_01
   Schema dello scenario: Un pagamento con configurazione carta "<testing_psp>" viene completato con successo
     Quando L'utente inserisce i dati dell'avviso con un codice avviso con prefisso "<notice_code_prefix>"
     E L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"
