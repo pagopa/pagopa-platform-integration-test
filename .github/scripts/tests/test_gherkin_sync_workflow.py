@@ -1,7 +1,9 @@
 """Local checks for the Gherkin sync workflow; no GitHub or Gemini calls."""
 from __future__ import annotations
 
+import json
 import os
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -77,3 +79,28 @@ def test_sync_pr_merge_does_not_trigger_a_loop(
         text=True, encoding="utf-8", capture_output=True, check=True,
     )
     assert f"run={expected}" in output.read_text(encoding="utf-8").splitlines()
+
+
+@pytest.mark.parametrize(
+    "filename,expected",
+    [
+        ("src/integration/fdr3/features/example.feature", True),
+        (".github/gherkin-manifest.yml", True),
+        (".github/unrelated.json", False),
+        ("src/integration/fdr3/README.md", False),
+    ],
+)
+def test_gate_selects_only_features_and_manifest(
+    workflow: dict, filename: str, expected: bool,
+) -> None:
+    """The PR file filter includes feature and manifest changes only."""
+    gate = next(step for step in workflow["jobs"]["evaluate_trigger"]["steps"] if step.get("id") == "gate")
+    match = re.search(r'test\("([^"]+)"\)', gate["run"])
+    assert match is not None
+    pattern = json.loads(f'"{match.group(1)}"')
+    assert bool(re.search(pattern, filename)) is expected
+
+
+def test_manifest_sync_has_no_ai_credentials(workflow: dict) -> None:
+    """The manifest workflow does not depend on AI credentials."""
+    assert "GEMINI_API_KEY" not in str(workflow)

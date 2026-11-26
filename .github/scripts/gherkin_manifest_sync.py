@@ -55,7 +55,7 @@ HEADER_LINES = [
     "# The only hand-editable field is suites[].label. Feature ids come from a QA Hub",
     "# header when present; otherwise the legacy feature tag or filename is used.",
     "# QA Central Hub owns feature status and estimates.",
-    "# See the README section 'Manifest Gherkin e sinossi AI' for field ownership.",
+    "# See the README section 'Manifest Gherkin' for field ownership.",
     "",
 ]
 

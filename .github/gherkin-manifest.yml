@@ -6,7 +6,7 @@
 # The only hand-editable field is suites[].label. Feature ids come from a QA Hub
 # header when present; otherwise the legacy feature tag or filename is used.
 # QA Central Hub owns feature status and estimates.
-# See the README section 'Manifest Gherkin e sinossi AI' for field ownership.
+# See the README section 'Manifest Gherkin' for field ownership.
 
 version: 1
 
@@ -49,20 +49,20 @@ suites:
     label: "Checkout E2E"
     root: "src/e2e/checkout"
     features:
-      - id: "FEAT_003_Checkout"
-        path: "features/checkout_npg.feature"
-      - id: "FEAT_004_Checkout"
-        path: "features/checkout_npg_auth.feature"
-      - id: "CheckoutBackNavigation_005"
-        path: "features/FEAT_005_Checkout - Back Navigation Control.feature"
-      - id: "CheckoutValidazioneCampi_006"
-        path: "features/FEAT_006_Checkout - Validazione sintattica dei campi.feature"
       - id: "FEAT_001_Checkout"
-        path: "features/login_availability.feature"
-      - id: "FEAT_005_Checkout"
-        path: "features/psp_sorting_npg.feature"
+        path: "features/FEAT_001_Checkout - Verifica disponibilita login.feature"
       - id: "FEAT_002_Checkout"
-        path: "features/spid_auth.feature"
+        path: "features/FEAT_002_Checkout - Autenticazione con SPID.feature"
+      - id: "FEAT_003_Checkout"
+        path: "features/FEAT_003_Checkout - Attivazione pagamento.feature"
+      - id: "FEAT_004_Checkout"
+        path: "features/FEAT_004_Checkout - Attivazione pagamento Autenticato.feature"
+      - id: "FEAT_005_Checkout"
+        path: "features/FEAT_005_Checkout - Ordinamento della lista di PSP.feature"
+      - id: "FEAT_006_Checkout"
+        path: "features/FEAT_006_Checkout - Validazione sintattica dei campi.feature"
+      - id: "CheckoutBackNavigation_007"
+        path: "features/FEAT_007_Checkout - Controlli Back Navigation.feature"
 
   - id: "cup"
     root: "src/integration/cup"
@@ -76,18 +76,18 @@ suites:
     features:
       - id: "FEAT_001_FdR3"
         path: "features/FEAT_001_FdR3_Creazione_di_un_flusso_di_rendicontazione.feature"
-      - id: "fdr3_002_Crea_revisione"
-        path: "features/FEAT_002_FdR3_Pubblicazione.feature"
-      - id: "fdr3_003_Cancellazione_flusso"
-        path: "features/FEAT_003_FdR3_Cancella_flusso.feature"
-      - id: "fdr3_004_Rimozione_pagamenti"
-        path: "features/FEAT_004_FdR3_Cancella_pagamenti.feature"
-      - id: "fdr3_005_Verifica_KO_pagamenti"
-        path: "features/FEAT_005_FdR3_Aggiungi_pagamenti_KO.feature"
-      - id: "fdr3_006_Cancellazione_FdR"
-        path: "features/FEAT_006_FdR3_Cancella_FdR_KO.feature"
-      - id: "fdr3_007_Cancellazione_pagamenti"
-        path: "features/FEAT_007_FdR3_Cancella_pagamenti_KO.feature"
+      - id: "FEAT_002_FdR3"
+        path: "features/FEAT_002_FdR3_Revisione_flusso_di_rendicontazione.feature"
+      - id: "FEAT_003_FdR3"
+        path: "features/FEAT_003_FdR3_Cancellazione_di_un_flusso_di_rendicontazione.feature"
+      - id: "FEAT_004_FdR3"
+        path: "features/FEAT_004_FdR3_Cancellazione_di_uno_o_piu_pagamenti.feature"
+      - id: "FEAT_005_FdR3"
+        path: "features/FEAT_005_FdR3_Verifica_KO_dell_aggiunta_di_pagamenti.feature"
+      - id: "FEAT_006_FdR3"
+        path: "features/FEAT_006_FdR3_Verifica_KO_della_cancellazione_di_un_FdR.feature"
+      - id: "FEAT_007_FdR3"
+        path: "features/FEAT_007_FdR3_Verifica_KO_della_cancellazione_di_pagamenti.feature"
       - id: "FEAT_008_FdR3"
         path: "features/FEAT_008_FdR3_Pubblicazione_KO.feature"
       - id: "FEAT_009_FdR3"

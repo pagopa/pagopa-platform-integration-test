@@ -1,6 +1,5 @@
-# Keeps .github/gherkin-manifest.yml and .github/gherkin-synopses.json aligned with src/ (PQ-845).
+# Keeps .github/gherkin-manifest.yml aligned with src/ (PQ-845).
 # The first job decides whether sync is needed; the second proposes generated changes through a PR.
-# Scripts: .github/scripts/gherkin_manifest_sync.py and .github/scripts/gherkin_synopsis.py.
 name: Sync Gherkin manifest
 
 on:
@@ -73,12 +72,10 @@ jobs:
             exit 0
           fi
 
-          for file in .github/gherkin-manifest.yml .github/gherkin-synopses.json; do
-            if [ ! -f "$file" ]; then
-              decide true "missing $file"
-              exit 0
-            fi
-          done
+          if [ ! -f .github/gherkin-manifest.yml ]; then
+            decide true "missing .github/gherkin-manifest.yml"
+            exit 0
+          fi
 
           if ! [[ "$PR_CHANGED_FILES" =~ ^[0-9]+$ ]]; then
             if ! PR_CHANGED_FILES="$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '.changed_files')"; then
@@ -106,9 +103,9 @@ jobs:
           fi
           if jq -e '
             [.[][] | .filename, (.previous_filename // empty)]
-            | any(.[]; test("^(src/.+\\.feature|\\.github/gherkin-manifest\\.yml|\\.github/gherkin-synopses\\.json)$"))
+            | any(.[]; test("^(src/.+\\.feature|\\.github/gherkin-manifest\\.yml)$"))
           ' "$PR_FILES" > /dev/null; then
-            decide true "the PR changes feature, manifest or synopsis files"
+            decide true "the PR changes feature or manifest files"
             exit 0
           else
             result=$?
@@ -121,7 +118,7 @@ jobs:
           decide false "no criterion met"
 
   sync_gherkin_manifest:
-    name: Regenerate manifest and synopses
+    name: Regenerate manifest
     needs: evaluate_trigger
     if: needs.evaluate_trigger.outputs.run == 'true'
     runs-on: ubuntu-latest
@@ -161,145 +158,14 @@ jobs:
           set -euo pipefail
           python .github/scripts/gherkin_manifest_sync.py | tee -a "$GITHUB_STEP_SUMMARY"
 
-      # Copy of the model discovery in .github/workflows/ai-report-analysis.yml (D22).
-      # If the fallback list changes there, change it here too.
-      - name: Check fallback model availability
-        id: catalog
-        continue-on-error: true
-        shell: bash
-        env:
-          GEMINI_API_KEY: ${{ secrets.REPORT_ANALYSIS_GEMINI_API_KEY }}
-          BASE_URL: "https://generativelanguage.googleapis.com/v1beta"
-        run: |
-          echo "Calling GET $BASE_URL/models ..."
-          RESPONSE=$(curl --silent --show-error --fail-with-body \
-            -H "x-goog-api-key: $GEMINI_API_KEY" \
-            "$BASE_URL/models?pageSize=1000")
-
-          CANDIDATE_MODELS='[
-            "gemini-3.6-flash",
-            "gemini-3.5-flash-lite",
-            "gemini-3.1-pro-preview",
-            "gemini-2.5-pro"
-          ]'
-          AVAILABLE_MODELS=$(echo "$RESPONSE" | jq -c --argjson candidates "$CANDIDATE_MODELS" '
-            [.models[]
-              | select(.supportedGenerationMethods | index("generateContent"))
-              | .name
-              | sub("^models/"; "")
-            ] as $catalog
-            | [$candidates[] | select(. as $candidate | $catalog | index($candidate))]
-          ')
-
-          {
-            echo "## Gemini fallback chain (synopses)"
-            echo
-            echo "$CANDIDATE_MODELS" | jq -r --argjson available "$AVAILABLE_MODELS" '
-              .[] as $model
-              | "- `\($model)`: \(if $available | index($model) then "available" else "unavailable" end)"
-            '
-          } >> "$GITHUB_STEP_SUMMARY"
-
-          if [ "$(echo "$AVAILABLE_MODELS" | jq 'length')" -eq 0 ]; then
-            echo "None of the fallback models is available for generateContent" >&2
-            exit 1
-          fi
-
-          MODEL_LIMITS=$(echo "$RESPONSE" | jq -c '
-            [.models[]
-              | {key: (.name | sub("^models/"; "")),
-                 value: {input: (.inputTokenLimit // 0), output: (.outputTokenLimit // 0)}}
-            ] | from_entries
-          ')
-
-          echo "Available fallback models: $AVAILABLE_MODELS"
-          echo "available_models=$AVAILABLE_MODELS" >> "$GITHUB_OUTPUT"
-          echo "model_limits=$MODEL_LIMITS" >> "$GITHUB_OUTPUT"
-
-      - name: Regenerate synopses
-        id: synopses
-        continue-on-error: true
-        shell: bash
-        env:
-          GEMINI_API_KEY: ${{ secrets.REPORT_ANALYSIS_GEMINI_API_KEY }}
-          AVAILABLE_MODELS: ${{ steps.catalog.outputs.available_models }}
-          MODEL_LIMITS: ${{ steps.catalog.outputs.model_limits }}
-          EVENT_NAME: ${{ github.event_name }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          PR_CHANGED_FILES: ${{ github.event.pull_request.changed_files }}
-          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          PR_MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
-          PUBLISHED_BASE: ${{ steps.prepare.outputs.base_sha }}
-          PENDING_HEAD: ${{ steps.prepare.outputs.branch_head }}
-          PUBLISHED_REVIEWS: ${{ steps.prepare.outputs.published_reviews }}
-          REPO: ${{ github.repository }}
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          args=()
-          completion="$RUNNER_TEMP/gherkin-synopsis-complete-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
-          if [ -e "$completion" ]; then
-            echo "Synopsis completion marker already exists: $completion" >&2
-            exit 1
-          fi
-          args+=(--completion-marker "$completion" --published-base "$PUBLISHED_BASE" --pending-head "$PENDING_HEAD")
-          if [ "$EVENT_NAME" = "pull_request" ]; then
-            if ! [[ "$PR_CHANGED_FILES" =~ ^[0-9]+$ ]]; then
-              PR_CHANGED_FILES="$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '.changed_files')"
-            fi
-            if ! [[ "$PR_CHANGED_FILES" =~ ^[0-9]+$ ]]; then
-              echo "PR changed-file count is unavailable" >&2
-              exit 1
-            fi
-            PR_FILES="$RUNNER_TEMP/pr-files.json"
-            gh api "repos/$REPO/pulls/$PR_NUMBER/files" --paginate --slurp > "$PR_FILES"
-            args+=(--pr-files-file "$PR_FILES" --pr-files-count "$PR_CHANGED_FILES")
-            reviews="$RUNNER_TEMP/gherkin-published-reviews-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT.json"
-            if [ -e "$reviews" ]; then
-              echo "Published review metadata already exists: $reviews" >&2
-              exit 1
-            fi
-            printf '%s\n' "$PUBLISHED_REVIEWS" > "$reviews"
-            args+=(--published-reviews "$reviews")
-            git fetch --no-tags origin "$PR_BASE_SHA" "$PR_HEAD_SHA" "$PR_MERGE_SHA"
-            PR_BASE="$(git merge-base "$PR_BASE_SHA" "$PR_HEAD_SHA")"
-            args+=(--pr-base "$PR_BASE" --pr-head "$PR_HEAD_SHA" \
-              --pr-merge "$PR_MERGE_SHA")
-          fi
-          set +e
-          python3 .github/scripts/gherkin_synopsis.py "${args[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
-          statuses=("${PIPESTATUS[@]}")
-          set -e
-          python_status="${statuses[0]}"
-          if [ "${statuses[1]}" -ne 0 ]; then
-            echo "Could not capture synopsis output in the job summary" >&2
-            exit 1
-          fi
-          if [ ! -f "$completion" ] || [ "$(<"$completion")" != "$python_status" ]; then
-            echo "Synopsis preparation did not complete safely; changes will not be published" >&2
-            exit 1
-          fi
-          echo "safe_to_publish=true" >> "$GITHUB_OUTPUT"
-          exit "$python_status"
-
-      - name: Stop if synopsis preparation was unsafe
-        if: steps.synopses.outputs.safe_to_publish != 'true'
-        shell: bash
-        run: |
-          echo "Synopsis preparation was unsafe; no PR update was published" >&2
-          exit 1
-
       - name: Create or update sync PR
         id: publish
-        if: steps.synopses.outputs.safe_to_publish == 'true'
         uses: actions/github-script@d556feaca394842dc55e4734bf3bb9f685482fa0 # v6.3.3
         env:
           SYNC_BRANCH: ${{ steps.prepare.outputs.branch }}
           SYNC_PR_NUMBER: ${{ steps.prepare.outputs.pr_number }}
           SYNC_BASE_SHA: ${{ steps.prepare.outputs.base_sha }}
           MANIFEST_OUTCOME: ${{ steps.manifest.outcome }}
-          SYNOPSIS_OUTCOME: ${{ steps.synopses.outcome }}
         with:
           script: |
             const { publishSyncPullRequest } = require('./.github/scripts/gherkin-sync-pr.js');

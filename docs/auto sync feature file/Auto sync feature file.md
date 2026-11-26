@@ -1,6 +1,6 @@
 # Auto Sync Feature File Documentation
 
-> **Rimosso.** Il workflow `syncFeatureFile.yaml`, che aggiornava automaticamente le pagine Confluence dai feature file, è stato rimosso. Il manifest `.github/gherkin-manifest.yml` e le sinossi `.github/gherkin-synopses.json` sono mantenuti da `.github/workflows/gherkin-manifest-sync.yml` (vedi la sezione del README). Il resto del documento resta come riferimento storico.
+> **Rimosso.** Il workflow `syncFeatureFile.yaml`, che aggiornava automaticamente le pagine Confluence dai feature file, è stato rimosso. Il manifest `.github/gherkin-manifest.yml` è mantenuto da `.github/workflows/gherkin-manifest-sync.yml` (vedi la sezione del README). Il resto del documento resta come riferimento storico.
 
 ## Introduzione e Finalità
 

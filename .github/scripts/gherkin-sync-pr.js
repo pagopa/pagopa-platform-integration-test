@@ -6,10 +6,8 @@ const path = require('node:path');
 
 const BASE = 'main';
 const BRANCH_PATTERN = /^automation\/gherkin-sync\/run-[0-9]+-[0-9]+$/;
-const OBJECT_ID = /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/;
 const GENERATED_FILES = new Set([
   '.github/gherkin-manifest.yml',
-  '.github/gherkin-synopses.json',
 ]);
 
 function git(cwd, ...args) {
@@ -53,78 +51,6 @@ function isSyncPullRequest(pr, repository) {
     && pr.base?.ref === BASE;
 }
 
-async function publishedSyncReviews({ github, context, cwd, baseSha }) {
-  if (context.eventName !== 'pull_request') return {};
-  const sourceMerge = context.payload.pull_request?.merge_commit_sha;
-  if (!OBJECT_ID.test(sourceMerge || '')) {
-    throw new Error('The merged source PR has no valid merge commit.');
-  }
-  try {
-    git(cwd, 'merge-base', '--is-ancestor', sourceMerge, baseSha);
-  } catch (error) {
-    throw new Error(`Cannot verify that the source PR merge is in main: ${error.message}`);
-  }
-  const revisions = git(
-    cwd, 'rev-list', '--first-parent', '--reverse', '--ancestry-path',
-    `${sourceMerge}..${baseSha}`, '--', '.github/gherkin-synopses.json',
-  ).split('\n').filter(Boolean);
-  const repository = `${context.repo.owner}/${context.repo.repo}`;
-  const reviewedCommits = new Map();
-  const result = {};
-  for (const revision of revisions) {
-    const associated = await github.paginate(github.rest.repos.listPullRequestsAssociatedWithCommit, {
-      ...context.repo, commit_sha: revision, per_page: 100,
-    });
-    if (!associated.length) {
-      throw new Error(`Cannot identify the PR that published synopsis commit ${revision}.`);
-    }
-    for (const pr of associated) {
-      if (!Number.isInteger(pr.number) || !pr.user?.login || !pr.head?.ref || !pr.base?.ref) {
-        throw new Error(`Incomplete PR metadata for synopsis commit ${revision}.`);
-      }
-      if (pr.user.login === 'github-actions[bot]' && BRANCH_PATTERN.test(pr.head.ref) && !pr.head.repo?.full_name) {
-        throw new Error(`Cannot verify the source repository of sync PR #${pr.number}.`);
-      }
-    }
-    const candidates = associated.filter(pr => isSyncPullRequest(pr, repository));
-    if (candidates.length && associated.some(pr => !isSyncPullRequest(pr, repository))) {
-      throw new Error(`Synopsis commit ${revision} is associated with both sync and other PRs.`);
-    }
-    const merged = [];
-    for (const candidate of candidates) {
-      const { data: pr } = await github.rest.pulls.get({ ...context.repo, pull_number: candidate.number });
-      if (typeof pr.merged !== 'boolean') {
-        throw new Error(`Cannot verify whether sync PR #${candidate.number} was merged.`);
-      }
-      if (pr.merged === true && isSyncPullRequest(pr, repository)) merged.push(pr);
-    }
-    if (merged.length > 1) {
-      throw new Error(`Commit ${revision} belongs to more than one merged sync PR.`);
-    }
-    if (!merged.length) continue;
-    const pr = merged[0];
-    if (!reviewedCommits.has(pr.number)) {
-      if (!Number.isInteger(pr.commits) || pr.commits < 1 || pr.commits > 250) {
-        throw new Error(`Cannot verify all commits of sync PR #${pr.number}.`);
-      }
-      const commits = await github.paginate(github.rest.pulls.listCommits, {
-        ...context.repo, pull_number: pr.number, per_page: 100,
-      });
-      if (commits.length !== pr.commits || commits.some(commit => !OBJECT_ID.test(commit.sha || ''))) {
-        throw new Error(`The commit list for sync PR #${pr.number} is incomplete or invalid.`);
-      }
-      const manual = commits.filter(commit => (
-        commit.commit?.author?.name !== 'github-actions[bot]'
-        || commit.commit?.author?.email !== 'github-actions[bot]@users.noreply.github.com'
-      )).map(commit => commit.sha);
-      if (manual.length) git(cwd, 'fetch', '--no-tags', 'origin', ...manual);
-      reviewedCommits.set(pr.number, manual);
-    }
-    result[revision] = reviewedCommits.get(pr.number);
-  }
-  return result;
-}
-
 async function prepareSyncBranch({ github, context, core, cwd = process.cwd(), env = process.env }) {
   const repository = `${context.repo.owner}/${context.repo.repo}`;
   const pulls = await github.paginate(github.rest.pulls.list, {
@@ -144,7 +70,6 @@ async function prepareSyncBranch({ github, context, core, cwd = process.cwd(), e
   const branch = pr ? pr.head.ref : `automation/gherkin-sync/run-${runId}-${attempt}`;
   git(cwd, 'fetch', '--no-tags', 'origin', 'refs/heads/main:refs/remotes/origin/main');
   const baseSha = git(cwd, 'rev-parse', 'refs/remotes/origin/main');
-  const reviews = await publishedSyncReviews({ github, context, cwd, baseSha });
   git(cwd, 'config', 'user.name', 'github-actions[bot]');
   git(cwd, 'config', 'user.email', 'github-actions[bot]@users.noreply.github.com');
 
@@ -165,19 +90,17 @@ async function prepareSyncBranch({ github, context, core, cwd = process.cwd(), e
   core.setOutput('branch', branch);
   core.setOutput('pr_number', pr ? String(pr.number) : '');
   core.setOutput('base_sha', baseSha);
-  core.setOutput('branch_head', git(cwd, 'rev-parse', 'HEAD'));
-  core.setOutput('published_reviews', JSON.stringify(reviews));
   core.info(pr ? `Reusing sync PR #${pr.number}.` : `Preparing a new sync branch: ${branch}.`);
 }
 
-function renderPullRequestBody(template, runUrl, manifestOutcome, synopsisOutcome) {
+function renderPullRequestBody(template, runUrl, manifestOutcome) {
   const sections = {
-    '#### List of Changes': 'Update the generated Gherkin manifest and synopses.',
-    '#### Motivation and Context': 'Keep the repository data aligned with merged feature changes. Review generated synopses before merging.',
+    '#### List of Changes': 'Update the generated Gherkin manifest.',
+    '#### Motivation and Context': 'Keep the repository data aligned with merged feature changes. Review the manifest before merging.',
     '#### How Has This Been Tested?': [
       'No tests are run by the generation workflow.',
-      `Initial generation step outcomes: manifest **${manifestOutcome}**; synopses **${synopsisOutcome}**.`,
-      `A successful synopsis step can still contain deferred or skipped work. Check the [workflow run](${runUrl}), later update comments and PR checks.`,
+      `Initial generation step outcome: manifest **${manifestOutcome}**.`,
+      `Check the [workflow run](${runUrl}), later update comments and PR checks.`,
     ].join('\n\n'),
     '#### Screenshots (if appropriate):': 'Not applicable.',
   };
@@ -225,7 +148,7 @@ async function publishSyncPullRequest({ github, context, core, cwd = process.cwd
   const runUrl = `${env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
   const body = number ? null : renderPullRequestBody(
     fs.readFileSync(path.join(cwd, '.github', 'PULL_REQUEST_TEMPLATE.md'), 'utf8'),
-    runUrl, env.MANIFEST_OUTCOME, env.SYNOPSIS_OUTCOME,
+    runUrl, env.MANIFEST_OUTCOME,
   );
 
   for (const file of GENERATED_FILES) {
@@ -238,7 +161,7 @@ async function publishSyncPullRequest({ github, context, core, cwd = process.cwd
     throw new Error('Unrelated files are staged; no commit or pull request was created.');
   }
   if (staged.length) {
-    git(cwd, 'commit', '-m', 'chore: sync Gherkin manifest and synopses');
+    git(cwd, 'commit', '-m', 'chore: sync Gherkin manifest');
   }
 
   git(cwd, 'fetch', '--no-tags', 'origin', 'refs/heads/main:refs/remotes/origin/main');
@@ -264,7 +187,7 @@ async function publishSyncPullRequest({ github, context, core, cwd = process.cwd
         ...context.repo,
         base: BASE,
         head: branch,
-        title: 'chore: sync Gherkin manifest and synopses',
+        title: 'chore: sync Gherkin manifest',
         body,
       }));
     } catch (error) {
@@ -284,7 +207,7 @@ async function publishSyncPullRequest({ github, context, core, cwd = process.cwd
       await github.rest.issues.createComment({
         ...context.repo,
         issue_number: number,
-        body: `Updated by [workflow run](${runUrl}). Manifest: **${env.MANIFEST_OUTCOME}**; synopses: **${env.SYNOPSIS_OUTCOME}**. Check the run for deferred or skipped work.`,
+        body: `Updated by [workflow run](${runUrl}). Manifest: **${env.MANIFEST_OUTCOME}**. Check the run and PR checks.`,
       });
     } catch (error) {
       core.error(`Sync PR ${pr.html_url} was updated, but its run summary comment could not be posted.`);

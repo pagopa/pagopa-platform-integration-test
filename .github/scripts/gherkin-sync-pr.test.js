@@ -9,7 +9,6 @@ const test = require('node:test');
 const { prepareSyncBranch, publishSyncPullRequest } = require('./gherkin-sync-pr');
 
 const MANIFEST = '.github/gherkin-manifest.yml';
-const SYNOPSES = '.github/gherkin-synopses.json';
 const TEMPLATE = fs.readFileSync(path.join(__dirname, '..', 'PULL_REQUEST_TEMPLATE.md'), 'utf8');
 
 function git(cwd, ...args) {
@@ -63,7 +62,6 @@ function fixture(t) {
   git(root, 'clone', remote, author);
   configure(author, root);
   write(author, MANIFEST, 'manifest: initial\n');
-  write(author, SYNOPSES, '{"synopsis":"initial"}\n');
   write(author, '.github/PULL_REQUEST_TEMPLATE.md', TEMPLATE);
   commit(author, 'Fixture base');
   git(author, 'push', 'origin', 'main');
@@ -129,7 +127,6 @@ function runtime(cwd, runId = 100, pulls = []) {
     GITHUB_RUN_ATTEMPT: '1',
     GITHUB_SERVER_URL: 'https://github.invalid',
     MANIFEST_OUTCOME: 'success',
-    SYNOPSIS_OUTCOME: 'success',
   };
   return { github, context, core, cwd, env, outputs, errors, calls, pulls };
 }
@@ -144,7 +141,6 @@ async function prepare(run) {
 async function createPendingPr(fix, run) {
   await prepare(run);
   write(fix.bot, MANIFEST, 'manifest: generated\n');
-  write(fix.bot, SYNOPSES, '{"synopsis":"generated"}\n');
   await publishSyncPullRequest(run);
   return run.pulls[0];
 }
@@ -156,7 +152,7 @@ function clone(fix, name) {
   return destination;
 }
 
-test('creates a review PR with both generated files, the repository template and skip label', async t => {
+test('creates a manifest review PR with the repository template and skip label', async t => {
   const fix = fixture(t);
   const run = runtime(fix.bot);
   const base = git(fix.author, 'rev-parse', 'main');
@@ -168,7 +164,7 @@ test('creates a review PR with both generated files, the repository template and
   assert.equal(git(fix.author, 'ls-remote', fix.remote, 'refs/heads/main').split('\t')[0], base);
   assert.deepEqual(
     git(fix.bot, 'diff', '--name-only', 'origin/main...HEAD').split('\n').sort(),
-    [MANIFEST, SYNOPSES].sort(),
+    [MANIFEST],
   );
   for (const comment of TEMPLATE.match(/<!---[\s\S]*?-->/g)) {
     assert.ok(pr.body.includes(comment));
@@ -178,6 +174,7 @@ test('creates a review PR with both generated files, the repository template and
   }
   assert.ok(pr.body.includes('No tests are run by the generation workflow.'));
   assert.ok(pr.body.includes('workflow run'));
+  assert.ok(pr.body.includes('Update the generated Gherkin manifest.'));
 });
 
 test('reuses the open PR and merges a newer main without overwriting its history', async t => {
@@ -213,66 +210,6 @@ test('does not open a PR when there are no generated changes', async t => {
   assert.equal(git(fix.bot, 'ls-remote', '--heads', 'origin', run.env.SYNC_BRANCH), '');
 });
 
-for (const scenario of ['complete', 'incomplete', 'unassociated']) {
-  test(`inspects reviewer commits of a squashed sync PR; ${scenario}`, async t => {
-    const fix = fixture(t);
-    const sourceMerge = git(fix.author, 'rev-parse', 'HEAD');
-    const oldBranch = 'automation/gherkin-sync/run-99-1';
-    git(fix.author, 'switch', '-c', oldBranch);
-    git(fix.author, 'config', 'user.name', 'github-actions[bot]');
-    git(fix.author, 'config', 'user.email', 'github-actions[bot]@users.noreply.github.com');
-    write(fix.author, SYNOPSES, '{"synopsis":"generated"}\n');
-    commit(fix.author, 'Generate synopsis');
-    const generated = git(fix.author, 'rev-parse', 'HEAD');
-    configure(fix.author, fix.root);
-    write(fix.author, SYNOPSES, '{"synopsis":"reviewed"}\n');
-    commit(fix.author, 'Review synopsis');
-    const reviewed = git(fix.author, 'rev-parse', 'HEAD');
-    git(fix.author, 'push', 'origin', oldBranch);
-    git(fix.author, 'switch', 'main');
-    git(fix.author, 'merge', '--squash', oldBranch);
-    git(fix.author, 'commit', '-m', 'Squash sync PR');
-    git(fix.author, 'push', 'origin', 'main');
-    const published = git(fix.author, 'rev-parse', 'HEAD');
-    const pr = {
-      number: 42, state: 'closed', merged: true, commits: 2,
-      user: { login: 'github-actions[bot]' },
-      head: { ref: oldBranch, repo: { full_name: 'example/integration-test' } },
-      base: { ref: 'main' }, labels: [],
-    };
-    const run = runtime(fix.bot, 100, [pr]);
-    run.context.eventName = 'pull_request';
-    run.context.payload = { pull_request: { merge_commit_sha: sourceMerge } };
-    run.github.rest.repos = { listPullRequestsAssociatedWithCommit() {} };
-    run.github.rest.pulls.listCommits = () => {};
-    const listOpen = run.github.paginate;
-    run.github.paginate = async (method, parameters) => {
-      if (method === run.github.rest.repos.listPullRequestsAssociatedWithCommit) {
-        assert.equal(parameters.commit_sha, published);
-        return scenario === 'unassociated' ? [] : [pr];
-      }
-      if (method === run.github.rest.pulls.listCommits) {
-        const commits = [
-          { sha: generated, commit: { author: {
-            name: 'github-actions[bot]', email: 'github-actions[bot]@users.noreply.github.com',
-          } } },
-          { sha: reviewed, commit: { author: { name: 'Reviewer', email: 'reviewer@example.invalid' } } },
-        ];
-        return scenario === 'incomplete' ? commits.slice(0, 1) : commits;
-      }
-      return listOpen(method, parameters);
-    };
-    if (scenario !== 'complete') {
-      const expected = scenario === 'incomplete' ? /commit list.*incomplete or invalid/ : /Cannot identify the PR/;
-      await assert.rejects(prepare(run), expected);
-      return;
-    }
-    await prepare(run);
-    assert.deepEqual(JSON.parse(run.outputs.published_reviews), { [published]: [reviewed] });
-    assert.equal(git(fix.bot, 'cat-file', '-t', reviewed), 'commit');
-  });
-}
-
 test('refuses to publish if main advances during generation', async t => {
   const fix = fixture(t);
   const run = runtime(fix.bot);
@@ -296,7 +233,7 @@ test('does not overwrite a concurrent reviewer push', async t => {
 
   const reviewer = clone(fix, 'reviewer');
   git(reviewer, 'switch', '--track', `origin/${pr.head.ref}`);
-  write(reviewer, SYNOPSES, '{"synopsis":"reviewer"}\n');
+  write(reviewer, MANIFEST, 'manifest: reviewer\n');
   commit(reviewer, 'Reviewer edit');
   git(reviewer, 'push', 'origin', pr.head.ref);
   const reviewed = git(reviewer, 'rev-parse', 'HEAD');
@@ -310,7 +247,7 @@ test('stops on a merge conflict with a human edit on main', async t => {
   const first = runtime(fix.bot);
   const pr = await createPendingPr(fix, first);
   const original = git(fix.bot, 'rev-parse', 'HEAD');
-  write(fix.author, SYNOPSES, '{"synopsis":"human correction"}\n');
+  write(fix.author, MANIFEST, 'manifest: human correction\n');
   commit(fix.author, 'Human correction');
   git(fix.author, 'push', 'origin', 'main');
   const nextBot = clone(fix, 'next-bot');
