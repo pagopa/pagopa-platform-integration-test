@@ -1,5 +1,6 @@
 #3236593816
 #language:it
+@FEAT_006_Checkout
 @CheckoutValidazioneCampi_006
 @e2e
 @checkout
@@ -14,7 +15,7 @@ Funzionalità: Validazione sintattica dei campi nel funnel di Checkout
 #======================================================
 #======================================================
 
-@CheckoutValidazioneCampi_006_01
+@FEAT_006_Checkout_scenario_01
 @runnable
 Schema dello scenario: Inserimento dati - errori -  Inserimento codice avviso errato
   Dato L’utente si trova sulla pagina "/inserisci-dati-avviso"
@@ -32,7 +33,7 @@ Schema dello scenario: Inserimento dati - errori -  Inserimento codice avviso er
 #======================================================
 #======================================================
 
-@CheckoutValidazioneCampi_006_02
+@FEAT_006_Checkout_scenario_02
 @runnable
 Schema dello scenario: Inserimento dati - errori -  Inserimento CF ente errato
   Dato L’utente si trova sulla pagina "/inserisci-dati-avviso"
@@ -50,7 +51,7 @@ Schema dello scenario: Inserimento dati - errori -  Inserimento CF ente errato
 #======================================================
 #======================================================
 
-@CheckoutValidazioneCampi_006_03
+@FEAT_006_Checkout_scenario_03
 @runnable
 Schema dello scenario: Inserimento dati - errori -  Inserimento indirizzo email non valido
   Dato L’utente si trova sulla pagina "/inserisci-email"
@@ -68,7 +69,7 @@ Schema dello scenario: Inserimento dati - errori -  Inserimento indirizzo email 
 #======================================================
 #======================================================
 
-@CheckoutValidazioneCampi_006_04
+@FEAT_006_Checkout_scenario_04
 @runnable
 Scenario: Inserimento dati - errori - indirizzo email diverso da ripeti
   Dato L’utente si trova sulla pagina "/inserisci-email"
@@ -81,7 +82,7 @@ Scenario: Inserimento dati - errori - indirizzo email diverso da ripeti
 #======================================================
 #======================================================
 
-@CheckoutValidazioneCampi_006_05
+@FEAT_006_Checkout_scenario_05
 @runnable
 Schema dello scenario: Inserimento dati - errori -  Click sul tasto continua con campo non compilato
   Dato L’utente si trova sulla pagina "<pagina_corrente>"
@@ -95,5 +96,3 @@ Schema dello scenario: Inserimento dati - errori -  Click sul tasto continua con
   | /inserisci-dati-avviso  | Codice Fiscale Ente Creditore  | 
   | /inserisci-email        | Indirizzo email                |
   | /inserisci-email        | Ripeti di nuovo                | 
-
-  
