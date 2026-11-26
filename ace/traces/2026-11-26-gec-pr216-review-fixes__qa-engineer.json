@@ -1,0 +1,35 @@
+{
+  "task_id": "2026-11-26-gec-pr216-review-fixes",
+  "agent": "qa-engineer",
+  "started_at": "2026-11-26T16:35:00+01:00",
+  "ended_at": "2026-11-26T17:20:00+01:00",
+  "request_summary": "Fix the GEC secret template, issuer fixture handling, request timeout, payment-method teardown and strict bundle-count step from the pull request review.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Round 1: aligned the secrets template and validation script, switched the timeout to seconds, tracked uploaded payment methods, and added issuer snapshot and restore following the oracle fixture procedure; the orchestrator inspected the diff.",
+      "tool": "QA-engineer delegation"
+    },
+    {
+      "description": "Round 2: made the onUs ordering step compare the full result count and added a dedicated step asserting an empty bundleOptions list; the orchestrator inspected the diff and checked step matching.",
+      "tool": "QA-engineer delegation"
+    },
+    {
+      "description": "Returned implemented-not-run; no Behave tests were executed by the engineer.",
+      "tool": "QA-engineer delegation"
+    }
+  ],
+  "outcome": {
+    "status": "partial",
+    "evaluated_by": "verified",
+    "detail": "Changes are present and compile; runtime verification is pending. The engineer left a whitespace-only change and removed spacing between step functions, corrected by the orchestrator."
+  },
+  "friction": [
+    {
+      "description": "The engineer could not run commands, so no compile or import check came from its own work.",
+      "recovered": true
+    }
+  ],
+  "counted_for_playbook_at": "2026-11-26T16:24:02.140Z"
+}

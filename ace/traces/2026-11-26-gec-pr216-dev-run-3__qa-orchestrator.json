@@ -1,0 +1,32 @@
+{
+  "task_id": "2026-11-26-gec-pr216-dev-run-3",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-11-26T18:55:05+01:00",
+  "ended_at": "2026-11-26T19:20:00+01:00",
+  "request_summary": "Rerun the GEC suite on DEV with the table dependency installed to prove issuer setup and restore, before publishing the review fixes.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Reapplied the temporary endpoint override, prepared delegation manifests and delegated the approved plan with added read-only before and after snapshots of the issuer table partitions.",
+      "tool": "edit and agent delegation"
+    },
+    {
+      "description": "After the blocked result, compared the table name and endpoint with the oracle environment files, found the endpoint likely belongs to a different storage account, and reverted the override.",
+      "tool": "gh api, edit and git diff"
+    }
+  ],
+  "outcome": {
+    "status": "partial",
+    "evaluated_by": "verified",
+    "detail": "No run took place; publication is still pending because the issuer setup and restore path remains unverified and a corrected storage endpoint needs human approval."
+  },
+  "notes": "The earlier closure attempt was blocked by the closer for the same evidence gap; the closure task continues under its own task id.",
+  "friction": [
+    {
+      "description": "The earlier hardcoded endpoint was a different storage account from the one holding the configured table, which only surfaced once the dependency was installed and the table was read.",
+      "recovered": false
+    }
+  ],
+  "counted_for_playbook_at": "2026-11-26T17:56:52.760Z"
+}

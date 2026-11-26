@@ -1,0 +1,31 @@
+{
+  "task_id": "2026-11-26-gec-pr216-dev-run-3",
+  "agent": "qa-runner",
+  "started_at": "2026-11-26T18:56:00+01:00",
+  "ended_at": "2026-11-26T19:16:00+01:00",
+  "request_summary": "Install the table dependency, take a read-only before snapshot of the shared issuer table, then rerun the GEC suite on DEV to verify issuer setup and restore.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Installed the approved package version in the run interpreter and read the configured issuer table in the three fixture partitions before launching; the read failed with table not found, so the runner stopped and reported blocked without starting behave.",
+      "tool": "QA-runner delegation"
+    },
+    {
+      "description": "The orchestrator compared the configured table name with the oracle environment files: the name matches the AFM storage account naming, while the endpoint used for the override belongs to a different storage account.",
+      "tool": "gh api and PowerShell search"
+    }
+  ],
+  "outcome": {
+    "status": "partial",
+    "evaluated_by": "verified",
+    "detail": "The runner correctly stopped at the failed read-only precondition; no test ran and no remote state was changed, and the endpoint used for the override appears to be the wrong storage account."
+  },
+  "friction": [
+    {
+      "description": "The runner changed the approved read target by using the table name from configuration instead of the default name mentioned in the plan; it was disclosed and was the correct reading of the configuration.",
+      "recovered": true
+    }
+  ],
+  "counted_for_playbook_at": "2026-11-26T17:56:52.760Z"
+}
