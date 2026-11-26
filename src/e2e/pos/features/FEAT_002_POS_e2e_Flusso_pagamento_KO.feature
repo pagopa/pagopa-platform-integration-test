@@ -1,5 +1,6 @@
 #9999999998
 #language: it
+@e2e
 @pos_002_e2e_Flusso_pagamento_KO
 Funzionalità: Fallimento del flusso di pagamento
 
@@ -8,7 +9,6 @@ Funzionalità: Fallimento del flusso di pagamento
 
   @runnable
   @pos_002_01
-  @e2e
   @negative
   Scenario: Esecuzione fallita del flusso di pagamento con type TO_CREATE_PROVIDED_IUV, iuv errato e init completo
     Quando il Gestionale EC invia la chiamata di init con includeTerminals "true" e acquisisce il sessionId
@@ -23,7 +23,6 @@ Funzionalità: Fallimento del flusso di pagamento
 
   @runnable
   @pos_002_02
-  @e2e
   @negative
   Scenario: Esecuzione fallita del flusso di pagamento con type CI_PROVIDED, notice_number errato e init completo
     Quando il Gestionale EC invia la chiamata di init con includeTerminals "true" e acquisisce il sessionId
@@ -38,7 +37,6 @@ Funzionalità: Fallimento del flusso di pagamento
 
   @runnable
   @pos_002_04
-  @e2e
   @negative
   Scenario: Esecuzione fallita del flusso di pagamento con type CI_PROVIDED, notice_number non esistente e init completo
     Quando il Gestionale EC invia la chiamata di init con includeTerminals "true" e acquisisce il sessionId
@@ -52,7 +50,6 @@ Funzionalità: Fallimento del flusso di pagamento
 
   @runnable
   @pos_002_05
-  @e2e
   @negative
   Scenario: Esecuzione fallita del flusso di pagamento con type TO_CREATE_PROVIDED_IUV, iuv errato e init parziale
     Quando il Gestionale EC invia la chiamata di init con includeTerminals "true" e acquisisce il sessionId
@@ -69,7 +66,6 @@ Funzionalità: Fallimento del flusso di pagamento
 
   @runnable
   @pos_002_06
-  @e2e
   @negative
   Scenario: Esecuzione fallita del flusso di pagamento con type CI_PROVIDED, notice_number errato e init parziale
     Quando il Gestionale EC invia la chiamata di init con includeTerminals "true" e acquisisce il sessionId
@@ -85,8 +81,7 @@ Funzionalità: Fallimento del flusso di pagamento
     E lo stato transazione è "ERROR"
 
   @runnable
-  @pos_002_08
-  @e2e
+  @pos_002_08 
   @negative
   Scenario: Esecuzione fallita del flusso di pagamento con type CI_PROVIDED, notice_number non esistente e init parziale
     Quando il Gestionale EC invia la chiamata di init con includeTerminals "true" e acquisisce il sessionId

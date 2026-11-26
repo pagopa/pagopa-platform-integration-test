@@ -1,5 +1,6 @@
 #9999999999
 #language: it
+@integration
 @pos_002_integration_Flusso_di_pagamento
 Funzionalità: Esecuzione del flusso di pagamento 
 
@@ -8,7 +9,6 @@ Funzionalità: Esecuzione del flusso di pagamento
 
     @runnable
     @pos_002_01 
-    @integration
     @positive
     Scenario: Flusso di pagamento con type "TO_CREATE"
         Quando il Gestionale EC invia la richiesta di avvio del flusso di pagamento con type "TO_CREATE" 
@@ -17,7 +17,6 @@ Funzionalità: Esecuzione del flusso di pagamento
       
     @runnable
     @pos_002_02
-    @integration
     @positive
     Scenario: Flusso di pagamento con type "TO_CREATE_PROVIDED_IUV"
         Quando il Gestionale EC invia la richiesta di avvio del flusso di pagamento con type "TO_CREATE_PROVIDED_IUV" e con uno IUV 
@@ -27,7 +26,6 @@ Funzionalità: Esecuzione del flusso di pagamento
 
     @runnable
     @pos_002_03 
-    @integration
     @positive
     Scenario: Flusso di pagamento con type "CI_PROVIDED"
         Quando il Gestionale EC invia la richiesta di avvio del flusso di pagamento con type "CI_PROVIDED" e fornisce un notice_number 
@@ -37,7 +35,6 @@ Funzionalità: Esecuzione del flusso di pagamento
     
     @runnable
     @pos_002_04 
-    @integration
     @negative
     Scenario: Creazione della posizione debitoria fallita per IUV non valido
         Quando il Gestionale EC invia la richiesta di avvio del flusso di pagamento con type "TO_CREATE_PROVIDED_IUV" e con uno IUV errato "111111"
@@ -47,7 +44,6 @@ Funzionalità: Esecuzione del flusso di pagamento
     
     @runnable
     @pos_002_05 
-    @integration
     @negative
     Scenario: Attivazione del pagamento fallita per notice_number non valido
         Quando il Gestionale EC invia la richiesta di avvio del flusso di pagamento con type "CI_PROVIDED" e notice_number errato 
