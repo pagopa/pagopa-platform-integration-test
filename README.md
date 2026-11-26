@@ -1068,10 +1068,13 @@ Affinchè la suite possa essere eseguita e tracciata correttamente all'interno d
 
 I singoli scenari necessitano di tag appositi, di seguito:
   - Uno tra `@runnable`, `@skip` e `@broken`, con il primo utilizzato per indicare gli scenari da eseguire, e gli ultimi due per indicare quelli da non eseguire;
-  - (Opzionale) Il tag `@regression` per indicare un test di non regressione (non influisce sulla sua esecuzione, affinchè non venga eseguito utilizzare `@skip` o `@broken`);
   - (Opzionale) Il tag `@flaky` per indicare uno scenario flaky (non influisce sulla sua esecuzione, affinchè non venga eseguito utilizzare `@skip` o `@broken`);
   - Il tag di scenario, ad esempio `@fdr3_001_01`, contenente il nome della suite, il progressivo del feature file e l'indice dello scenario all'interno del feature file;
-  - Uno tra `@positive` e `@negative` per indicare se lo scenario riporta un flusso con esito positivo o negativo.
+  - Uno tra `@positive` e `@negative` per indicare se il flusso testato nello scenario sia positivo o negativo.
+
+Inoltre, è possibile aggiungere tag opzionali, come:
+- `@regression`: utilizzato per indicare un test di non regressione (non influisce sulla sua esecuzione, affinchè non venga eseguito utilizzare `@skip` o `@broken`);
+- `@smoke`: utilizzato per indicare uno smoke test
 
 
 ### Non è strettamente necessario che i tag siano in quest'ordine, ma per coerenza e leggibilità, è consigliato che lo siano. ###
