@@ -198,12 +198,85 @@ def test_registry_supplies_label_without_controlling_activation(sync, tmp_path):
     assert "enabled" not in checkout and "enabled" not in cart
 
 
-def test_missing_or_broken_registry_is_tolerated_with_warning(sync, tmp_path, capsys):
-    """A missing or non-JSON registry is read as empty and reported as a warning, not an error."""
-    assert sync.load_registry(tmp_path / "missing.json") == {}
+def test_missing_or_broken_registry_stops_generation(sync, tmp_path):
+    """Unavailable membership is an error, never an empty NRT registry."""
+    with pytest.raises(sync.ManifestError, match="not found"):
+        sync.load_registry(tmp_path / "missing.json")
     write(tmp_path / "broken.json", "{not json")
-    assert sync.load_registry(tmp_path / "broken.json") == {}
-    assert "[WARN]" in capsys.readouterr().out
+    with pytest.raises(sync.ManifestError, match="unreadable"):
+        sync.load_registry(tmp_path / "broken.json")
+
+
+@pytest.mark.parametrize("data", [
+    {},
+    {"suites": [None]},
+    {"suites": [{"id": "invalid", "behave_path": None}]},
+    {"suites": [{"id": "INVALID", "behave_path": "src/api/cart"}]},
+    {"suites": [
+        {"id": "one", "behave_path": "src/api/cart"},
+        {"id": "two", "behave_path": "src/api/cart/"},
+    ]},
+])
+def test_invalid_registry_does_not_overwrite_manifest(sync, tmp_path, data):
+    """Malformed or ambiguous membership leaves the previous manifest untouched."""
+    base_repo(tmp_path)
+    assert run_sync(sync, tmp_path) == 0
+    before = (tmp_path / MANIFEST).read_bytes()
+    write(tmp_path / REGISTRY, json.dumps(data))
+    assert run_sync(sync, tmp_path) == 2
+    assert (tmp_path / MANIFEST).read_bytes() == before
+
+
+@pytest.mark.parametrize("source_type,name,expected", [
+    ("api", "cart", "api"),
+    ("integration", "wisp", "integration"),
+    ("e2e", "checkout", "e2e"),
+    ("integration", "tas_pass", "tas"),
+    ("integration", "tas_mixed", "tas"),
+    ("integration", "tas_fail", "tas"),
+    ("integration", "tasmania", "integration"),
+])
+def test_suite_metadata_is_derived_from_paths(sync, tmp_path, source_type, name, expected):
+    """Type comes from the source path; registration, not suite id, determines NRT."""
+    root = f"src/{source_type}/{name}"
+    write(tmp_path / root / "features/a.feature", feature())
+    write_registry(tmp_path, [{"id": "custom-id", "behave_path": root + "/"}])
+    assert run_sync(sync, tmp_path) == 0
+    suite = suite_by_id(read_manifest(tmp_path), "custom-id")
+    assert suite["test_type"] == expected
+    assert suite["nrt"] is True
+
+
+def test_sync_migrates_and_recomputes_metadata_on_registry_changes(sync, tmp_path):
+    """Legacy manifests migrate; manual metadata and stale registration are corrected."""
+    base_repo(tmp_path)
+    assert run_sync(sync, tmp_path) == 0
+
+    def remove_metadata(data):
+        """Simulate a manifest written before suite metadata was introduced."""
+        suite = suite_by_id(data, "checkout")
+        del suite["test_type"]
+        del suite["nrt"]
+
+    edit_manifest(tmp_path, remove_metadata)
+    before = (tmp_path / MANIFEST).read_bytes()
+    assert run_sync(sync, tmp_path, "--check") == 1
+    assert (tmp_path / MANIFEST).read_bytes() == before
+    assert run_sync(sync, tmp_path) == 0
+    suite = suite_by_id(read_manifest(tmp_path), "checkout")
+    assert (suite["test_type"], suite["nrt"]) == ("e2e", True)
+    edit_manifest(tmp_path, lambda data: suite_by_id(data, "checkout").update(test_type="tas", nrt=False))
+    assert run_sync(sync, tmp_path) == 0
+    suite = suite_by_id(read_manifest(tmp_path), "checkout")
+    assert (suite["test_type"], suite["nrt"]) == ("e2e", True)
+    write_registry(tmp_path, [])
+    assert run_sync(sync, tmp_path, "--check") == 1
+    assert run_sync(sync, tmp_path) == 0
+    assert suite_by_id(read_manifest(tmp_path), "checkout")["nrt"] is False
+    write_registry(tmp_path, [{"id": "different-id", "behave_path": "src/e2e/checkout"}])
+    assert run_sync(sync, tmp_path) == 0
+    assert suite_by_id(read_manifest(tmp_path), "checkout")["nrt"] is True
+    assert run_sync(sync, tmp_path, "--check") == 0
 
 
 # ---------------------------------------------------------------- reconciliation
@@ -311,13 +384,15 @@ def test_discovered_headerless_features_use_legacy_ids(sync, tmp_path):
     }
 
 
-def test_test_type_is_dropped_and_second_run_is_stable(sync, tmp_path):
-    """A test_type key added by hand disappears on the next run, and a further run changes nothing."""
+def test_feature_test_type_is_dropped_and_second_run_is_stable(sync, tmp_path):
+    """Retired feature-level test_type is dropped without affecting suite metadata."""
     base_repo(tmp_path)
     run_sync(sync, tmp_path)
     edit_manifest(tmp_path, lambda data: suite_by_id(data, "checkout")["features"][0].update(test_type="AUTOMATICO"))
     assert run_sync(sync, tmp_path) == 0
-    assert "test_type" not in (tmp_path / MANIFEST).read_text(encoding="utf-8")
+    suite = suite_by_id(read_manifest(tmp_path), "checkout")
+    assert "test_type" not in suite["features"][0]
+    assert suite["test_type"] == "e2e"
     before = (tmp_path / MANIFEST).read_bytes()
     assert run_sync(sync, tmp_path) == 0
     assert (tmp_path / MANIFEST).read_bytes() == before
@@ -359,6 +434,8 @@ def test_manual_suite_is_only_pruned_and_does_not_claim_files(sync, tmp_path):
     assert run_sync(sync, tmp_path) == 0
     manifest = read_manifest(tmp_path)
     assert [entry["id"] for entry in suite_by_id(manifest, "manual")["features"]] == ["NESTED_1"]
+    assert suite_by_id(manifest, "manual")["test_type"] == "e2e"
+    assert suite_by_id(manifest, "manual")["nrt"] is True
     checkout_paths = [entry["path"] for entry in suite_by_id(manifest, "checkout")["features"]]
     assert "features/nested.feature" not in checkout_paths
 
@@ -420,7 +497,8 @@ def valid_manifest() -> dict:
     return {
         "version": 1,
         "suites": [
-            {"id": "wisp", "root": "src/integration/wisp", "features": [{"id": "F_1", "path": "features/a.feature"}]}
+            {"id": "wisp", "root": "src/integration/wisp", "test_type": "integration",
+             "nrt": True, "features": [{"id": "F_1", "path": "features/a.feature"}]}
         ],
     }
 
@@ -445,6 +523,13 @@ VALIDATION_CASES = [
     ("path without .feature", lambda d: d["suites"][0]["features"][0].update(path="features/a.txt")),
     ("path with a leading slash", lambda d: d["suites"][0]["features"][0].update(path="/features/a.feature")),
     ("test_type present", lambda d: d["suites"][0]["features"][0].update(test_type="AUTOMATICO")),
+    ("missing suite test_type", lambda d: d["suites"][0].pop("test_type")),
+    ("invalid suite test_type", lambda d: d["suites"][0].update(test_type="automatic")),
+    ("non-text suite test_type", lambda d: d["suites"][0].update(test_type=[])),
+    ("missing nrt", lambda d: d["suites"][0].pop("nrt")),
+    ("text nrt", lambda d: d["suites"][0].update(nrt="false")),
+    ("integer nrt", lambda d: d["suites"][0].update(nrt=1)),
+    ("null nrt", lambda d: d["suites"][0].update(nrt=None)),
     ("retired estimate", lambda d: d["suites"][0]["features"][0].update(estimate_days=1)),
     ("retired suite status", lambda d: d["suites"][0].update(enabled=False)),
     ("retired feature status", lambda d: d["suites"][0]["features"][0].update(enabled=False)),
@@ -505,6 +590,10 @@ def test_real_repository_produces_the_expected_manifest_in_memory(sync):
     assert len(suites) == 11
     assert sum(len(suite["features"]) for suite in suites) == 44
     assert sync.validate_manifest({"version": 1, "suites": suites}) == []
+    assert {suite["id"] for suite in suites if suite["nrt"]} == {"checkout", "fdr3", "wisp"}
+    assert {suite["id"] for suite in suites if suite["test_type"] == "tas"} == {
+        "tas_pass", "tas_mixed", "tas_fail",
+    }
     for suite in suites:
         ids = [entry["id"].casefold() for entry in suite["features"]]
         assert len(ids) == len(set(ids))

@@ -5,6 +5,8 @@
 # .github/workflows/gherkin-manifest-sync.yml). Comments written here are lost on the next run.
 # The only hand-editable field is suites[].label. Feature ids come from a QA Hub
 # header when present; otherwise the legacy feature tag or filename is used.
+# Suite test_type comes from its source folder (tas_* suites are TAS);
+# nrt comes from membership in .github/nrt-suites.json by behave_path.
 # QA Central Hub owns feature status and estimates.
 # See the README section 'Manifest Gherkin' for field ownership.
 
@@ -13,18 +15,24 @@ version: 1
 suites:
   - id: "auth-service"
     root: "src/api/auth-service"
+    test_type: "api"
+    nrt: false
     features:
       - id: "FEAT_008_Checkout"
         path: "features/auth_service.feature"
 
   - id: "cart"
     root: "src/api/cart"
+    test_type: "api"
+    nrt: false
     features:
       - id: "FEAT_007_Checkout"
         path: "features/cart.feature"
 
   - id: "checkout-npg"
     root: "src/api/checkout-npg"
+    test_type: "api"
+    nrt: false
     features:
       - id: "FEAT_009_Checkout"
         path: "features/checkout_npg_authorization.feature"
@@ -41,6 +49,8 @@ suites:
 
   - id: "ecommerce-cdc"
     root: "src/api/ecommerce-cdc"
+    test_type: "api"
+    nrt: false
     features:
       - id: "FEAT_015_Checkout"
         path: "features/ecommerce_cdc.feature"
@@ -48,6 +58,8 @@ suites:
   - id: "checkout"
     label: "Checkout E2E"
     root: "src/e2e/checkout"
+    test_type: "e2e"
+    nrt: true
     features:
       - id: "FEAT_001_Checkout"
         path: "features/FEAT_001_Checkout - Verifica disponibilita login.feature"
@@ -66,6 +78,8 @@ suites:
 
   - id: "cup"
     root: "src/integration/cup"
+    test_type: "integration"
+    nrt: false
     features:
       - id: "FEAT_001_CUP_Creazione_di_una_posizione_debitoria_per_CUP"
         path: "features/creazione_posizione_debitoria.feature"
@@ -73,6 +87,8 @@ suites:
   - id: "fdr3"
     label: "FDR-3"
     root: "src/integration/fdr3"
+    test_type: "integration"
+    nrt: true
     features:
       - id: "FEAT_001_FdR3"
         path: "features/FEAT_001_FdR3_Creazione_di_un_flusso_di_rendicontazione.feature"
@@ -99,6 +115,8 @@ suites:
 
   - id: "tas_fail"
     root: "src/integration/tas_fail"
+    test_type: "tas"
+    nrt: false
     features:
       - id: "TAS_Fail_002"
         path: "features/flusso_pagamento.feature"
@@ -109,6 +127,8 @@ suites:
 
   - id: "tas_mixed"
     root: "src/integration/tas_mixed"
+    test_type: "tas"
+    nrt: false
     features:
       - id: "TAS_Mixed_002"
         path: "features/flusso_pagamento.feature"
@@ -119,6 +139,8 @@ suites:
 
   - id: "tas_pass"
     root: "src/integration/tas_pass"
+    test_type: "tas"
+    nrt: false
     features:
       - id: "TAS_Pass_002"
         path: "features/flusso_pagamento.feature"
@@ -130,6 +152,8 @@ suites:
   - id: "wisp"
     label: "WISP"
     root: "src/integration/wisp"
+    test_type: "integration"
+    nrt: true
     features:
       - id: "NodoInviaCarrelloRPT_ExistingPaymentPosition_006"
         path: "features/nodoInviaCarrelloRPT/nodoInviaCarrelloRPT_existingPaymentPosition.feature"

@@ -43,7 +43,7 @@ FEATURE_TAG_PATTERN = re.compile(r"@([A-Za-z0-9_-]+)")
 LEGACY_FEATURE_ID_TAG_PATTERN = re.compile(r"_[0-9]{3}(?:_|$)")
 
 ALLOWED_ROOT_KEYS = {"version", "suites"}
-ALLOWED_SUITE_KEYS = {"id", "label", "root", "features"}
+ALLOWED_SUITE_KEYS = {"id", "label", "root", "test_type", "nrt", "features"}
 ALLOWED_FEATURE_KEYS = {"id", "path"}
 
 HEADER_LINES = [
@@ -54,6 +54,8 @@ HEADER_LINES = [
     "# .github/workflows/gherkin-manifest-sync.yml). Comments written here are lost on the next run.",
     "# The only hand-editable field is suites[].label. Feature ids come from a QA Hub",
     "# header when present; otherwise the legacy feature tag or filename is used.",
+    "# Suite test_type comes from its source folder (tas_* suites are TAS);",
+    "# nrt comes from membership in .github/nrt-suites.json by behave_path.",
     "# QA Central Hub owns feature status and estimates.",
     "# See the README section 'Manifest Gherkin' for field ownership.",
     "",
@@ -100,11 +102,6 @@ class _StrictLoader(yaml.SafeLoader):
 def _info(message: str) -> None:
     """Print an informational line in the format used by the job summary."""
     print(f"[INFO] {message}")
-
-
-def _warn(message: str) -> None:
-    """Print a warning that does not stop the run."""
-    print(f"[WARN] {message}")
 
 
 def _is_ignored_name(name: str) -> bool:
@@ -232,33 +229,33 @@ def _feature_id_from_file(feature_file: Path) -> str:
 def load_registry(registry_path: Path) -> dict[str, dict[str, Any]]:
     """Read the NRT suite registry keyed by normalized behave_path.
 
-    A missing or unreadable registry is treated as empty and reported as a warning,
-    because it supplies the ids and labels of registered suites.
+    Missing, unreadable or invalid membership data stops generation to avoid
+    reporting registered suites as non-NRT.
     """
     if not registry_path.is_file():
-        _warn(f"registry {registry_path} not found: registry ids and labels are unavailable")
-        return {}
+        raise ManifestError(f"registry {registry_path} not found: NRT membership is unavailable")
     try:
         data = json.loads(registry_path.read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:
-        _warn(f"registry {registry_path} unreadable ({exc}): registry ids and labels are unavailable")
-        return {}
+        raise ManifestError(f"registry {registry_path} unreadable: {exc}") from exc
     suites = data.get("suites") if isinstance(data, dict) else None
     if not isinstance(suites, list):
-        _warn(f"registry {registry_path} has no 'suites' list: registry ids and labels are unavailable")
-        return {}
+        raise ManifestError(f"registry {registry_path} has no 'suites' list")
     registry: dict[str, dict[str, Any]] = {}
     for item in suites:
         if not isinstance(item, dict):
-            continue
+            raise ManifestError(f"registry {registry_path}: suite must be a mapping")
         suite_id = item.get("id")
         behave_path = item.get("behave_path")
         label = item.get("label")
         if not isinstance(suite_id, str) or not SUITE_ID_PATTERN.fullmatch(suite_id):
-            continue
-        if not isinstance(behave_path, str):
-            continue
-        registry[_normalize_root(behave_path)] = {
+            raise ManifestError(f"registry {registry_path}: invalid suite id")
+        if _relative_path_problem(behave_path):
+            raise ManifestError(f"registry {registry_path}: invalid behave_path for '{suite_id}'")
+        root = _normalize_root(behave_path)
+        if root in registry:
+            raise ManifestError(f"registry {registry_path}: repeated behave_path '{root}'")
+        registry[root] = {
             "id": suite_id,
             "label": label if isinstance(label, str) and 1 <= len(label) <= 100 else None,
         }
@@ -307,7 +304,7 @@ def read_manifest(manifest_path: Path) -> dict[str, Any] | None:
     except ManifestError as exc:
         raise ManifestError(f"{manifest_path}: {exc}") from exc
     _drop_retired_keys(data)
-    errors = validate_manifest(data)
+    errors = validate_manifest(data, allow_legacy=True)
     if errors:
         raise ManifestError(f"{manifest_path}: {'; '.join(errors[:3])}")
     return data
@@ -351,11 +348,12 @@ def _describe_suite(suite: dict[str, Any], position: int) -> str:
     return f"suite '{suite_id}'" if isinstance(suite_id, str) else f"suite #{position}"
 
 
-def validate_manifest(data: Any) -> list[str]:
+def validate_manifest(data: Any, *, allow_legacy: bool = False) -> list[str]:
     """Return the rule violations of a manifest structure; an empty list means it is valid.
 
     The rules check strict keys, id patterns, safe relative paths, and unique ids
-    and paths. Status and estimates are not part of this manifest.
+    and paths, suite test types and boolean NRT membership. Legacy input may
+    omit the new suite fields; generated output must include them.
     """
     if not isinstance(data, dict):
         return ["the manifest must be a mapping"]
@@ -392,6 +390,14 @@ def validate_manifest(data: Any) -> list[str]:
             isinstance(suite["label"], str) and 1 <= len(suite["label"]) <= 100
         ):
             errors.append(f"{where}: label must be a text of 1 to 100 characters")
+
+        if "test_type" in suite or not allow_legacy:
+            test_type = suite.get("test_type")
+            if not isinstance(test_type, str) or test_type not in (*SOURCE_TYPES, "tas"):
+                errors.append(f"{where}: test_type must be e2e, integration, api or tas")
+        if "nrt" in suite or not allow_legacy:
+            if not isinstance(suite.get("nrt"), bool):
+                errors.append(f"{where}: nrt must be a boolean")
 
         root = ""
         if "root" in suite:
@@ -437,6 +443,24 @@ def validate_manifest(data: Any) -> list[str]:
                 full_paths.add(full_path)
 
     return errors
+
+
+def _suite_metadata(
+    root: str, features: list[dict[str, Any]], registry: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    """Derive suite type and NRT membership from canonical source paths, not ids."""
+    source_roots: set[str] = set()
+    for feature in features:
+        parts = _join_root(root, feature["path"]).split("/")
+        if len(parts) < 4 or parts[0] != "src" or parts[1] not in SOURCE_TYPES:
+            raise ManifestError(f"cannot determine test_type for suite root '{root}'")
+        source_roots.add("/".join(parts[:3]))
+    if len(source_roots) != 1:
+        raise ManifestError(f"suite root '{root}' spans multiple source suites")
+    source_root = source_roots.pop()
+    _, suite_type, name = source_root.split("/")
+    test_type = "tas" if name == "tas" or name.startswith("tas_") else suite_type
+    return {"test_type": test_type, "nrt": source_root in registry}
 
 
 def reconcile_features(
@@ -526,7 +550,8 @@ def reconcile_suites(
 
     Existing suites keep their ids and labels. Suites whose folder is gone, or that
     end up with no feature, are removed. Discovered suites that are not in the
-    manifest are appended in root order. The registry supplies known ids and labels.
+    manifest are appended in root order. Source paths and registry membership
+    recompute test_type and nrt; the registry also supplies known ids and labels.
     Raises ManifestError when two suites cannot get distinct ids.
     """
     discovered_by_root = {suite.root: suite for suite in discovered}
@@ -561,6 +586,11 @@ def reconcile_suites(
         else:
             kept_suite.pop("root", None)
         kept_suite["features"] = features
+        metadata = _suite_metadata(root, features, registry)
+        for key, value in metadata.items():
+            if key not in suite or suite[key] != value:
+                changes.append(f"suite '{suite_id}' {key} updated to {value}")
+        kept_suite.update(metadata)
         kept.append(kept_suite)
 
     taken = {suite["id"].casefold(): _normalize_root(suite.get("root")) for suite in kept}
@@ -591,6 +621,7 @@ def reconcile_suites(
             continue
         taken[suite_id.casefold()] = suite.root
         new_suite: dict[str, Any] = {"id": suite_id, "root": suite.root, "features": features}
+        new_suite.update(_suite_metadata(suite.root, features, registry))
         if registry_entry is not None and registry_entry["label"]:
             new_suite["label"] = registry_entry["label"]
         created.append(new_suite)
@@ -618,6 +649,8 @@ def render_manifest(suites: list[dict[str, Any]]) -> str:
             lines.append(f"    label: {_quote(suite['label'])}")
         if suite.get("root"):
             lines.append(f"    root: {_quote(suite['root'])}")
+        lines.append(f"    test_type: {_quote(suite['test_type'])}")
+        lines.append(f"    nrt: {'true' if suite['nrt'] else 'false'}")
         features = suite["features"]
         if not features:
             lines.append("    features: []")

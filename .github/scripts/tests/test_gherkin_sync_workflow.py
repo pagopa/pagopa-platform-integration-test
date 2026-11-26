@@ -86,14 +86,17 @@ def test_sync_pr_merge_does_not_trigger_a_loop(
     [
         ("src/integration/fdr3/features/example.feature", True),
         (".github/gherkin-manifest.yml", True),
+        (".github/nrt-suites.json", True),
+        (".github/scripts/gherkin_manifest_sync.py", True),
+        (".github/workflows/gherkin-manifest-sync.yml", True),
         (".github/unrelated.json", False),
         ("src/integration/fdr3/README.md", False),
     ],
 )
-def test_gate_selects_only_features_and_manifest(
+def test_gate_selects_features_manifest_and_generation_inputs(
     workflow: dict, filename: str, expected: bool,
 ) -> None:
-    """The PR file filter includes feature and manifest changes only."""
+    """The PR filter includes every input that can change generated suite metadata."""
     gate = next(step for step in workflow["jobs"]["evaluate_trigger"]["steps"] if step.get("id") == "gate")
     match = re.search(r'test\("([^"]+)"\)', gate["run"])
     assert match is not None

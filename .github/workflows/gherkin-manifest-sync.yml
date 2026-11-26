@@ -103,9 +103,9 @@ jobs:
           fi
           if jq -e '
             [.[][] | .filename, (.previous_filename // empty)]
-            | any(.[]; test("^(src/.+\\.feature|\\.github/gherkin-manifest\\.yml)$"))
+            | any(.[]; test("^(src/.+\\.feature|\\.github/(gherkin-manifest\\.yml|nrt-suites\\.json|scripts/gherkin_manifest_sync\\.py|workflows/gherkin-manifest-sync\\.yml))$"))
           ' "$PR_FILES" > /dev/null; then
-            decide true "the PR changes feature or manifest files"
+            decide true "the PR changes features, manifest or generation inputs"
             exit 0
           else
             result=$?

@@ -821,7 +821,8 @@ destinato a QA Central Hub (Knowledge Base > Gherkin Feature Files).
 
 - Trigger: una PR chiusa e unita su `main`, oppure l'avvio manuale
   (`workflow_dispatch`). La sincronizzazione parte se il manifest manca o se
-  la PR modifica un `.feature` sotto `src/` o il manifest. Il merge della PR
+  la PR modifica un `.feature` sotto `src/`, il manifest, il catalogo
+  `.github/nrt-suites.json`, lo script di generazione o il workflow stesso. Il merge della PR
   generata dalla sincronizzazione non avvia un nuovo ciclo. Le esecuzioni sono
   serializzate: GitHub ne accoda fino a 100; quelle annullate per coda piena
   vanno rieseguite.
@@ -842,13 +843,25 @@ destinato a QA Central Hub (Knowledge Base > Gherkin Feature Files).
   cambia. Il controllo delle convenzioni rifiuta i `.feature` modificati
   fuori dal percorso canonico. Stato e stime appartengono a QA Central Hub e
   non sono campi del manifest.
+- Metadati delle suite: `test_type` e `nrt` sono sempre presenti e ricalcolati
+  a ogni rigenerazione. `test_type` deriva dal percorso `src/<tipo>/<suite>`:
+  `api`, `integration` o `e2e`; le suite chiamate `tas` o con prefisso `tas_`
+  hanno invece valore `tas`. `nrt` è un booleano YAML: `true` se il percorso
+  della suite è censito come `behave_path` nel catalogo NRT, `false` altrimenti,
+  indipendentemente dall'ID o dall'eseguibilità nel singolo ambiente.
+  Per le voci manuali si usa la suite canonica che contiene i file; se non è
+  identificabile o i file appartengono a suite diverse, la generazione si ferma.
+  Anche un catalogo mancante, illeggibile o con dati di appartenenza invalidi
+  ferma la generazione senza sovrascrivere il manifest. I manifest precedenti
+  senza questi campi vengono aggiornati automaticamente.
 - Correzioni: nel manifest si può cambiare `label` di una suite. L'ID non va
   modificato direttamente nel manifest: deriva dall'header QA Hub quando
   presente, altrimenti dal tag identificativo legacy o dal nome del file.
   Header e tag identificativi si aggiornano solo con la migrazione approvata
   per l'ambito, preservando i vecchi tag degli scenari come alias. Una
   modifica manuale al manifest sul branch cumulativo richiede revisione e
-  merge della PR prima di rigenerare.
+  merge della PR prima di rigenerare. Non modificare manualmente `test_type`
+  o `nrt`: la sincronizzazione ripristina i valori derivati dalle fonti.
 - Protezioni: se `main` avanza durante la generazione, se il branch riceve un
   push concorrente o se ci sono conflitti, il workflow si ferma senza
   sovrascrivere il branch remoto. Una PR cumulativa che contiene modifiche a
@@ -862,7 +875,8 @@ feature file, è stato rimosso; la relativa documentazione resta come riferiment
 storico.
 
 Riferimenti: `.github/workflows/gherkin-manifest-sync.yml`,
-`.github/scripts/gherkin_manifest_sync.py`, `.github/scripts/gherkin-sync-pr.js`.
+`.github/scripts/gherkin_manifest_sync.py`, `.github/scripts/gherkin-sync-pr.js`,
+`.github/nrt-suites.json`.
 
 ### Documentazione GitHub Pages
 
