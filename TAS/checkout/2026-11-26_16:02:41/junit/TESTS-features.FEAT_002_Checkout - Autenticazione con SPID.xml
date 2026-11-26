@@ -1,0 +1,32 @@
+<testsuite name="features.FEAT_002_Checkout - Autenticazione con SPID.Autenticazione con SPID" tests="2" errors="0" failures="0" skipped="0" time="18.103923" timestamp="2026-11-26T16:03:08.944209" hostname="runnervm0hi8g"><testcase classname="features.FEAT_002_Checkout - Autenticazione con SPID.Autenticazione con SPID" name="Accesso SPID completato con successo" status="passed" time="9.769433"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @checkout @e2e @positive @smoke @ui @positivo @CHECKOUT_002_01
+  Scenario: Accesso SPID completato con successo
+    Dato La pagina di checkout è aperta ... passed in 0.220s
+    E La lingua è impostata su "it" ... passed in 0.834s
+    Quando L'utente clicca sul pulsante di login ... passed in 6.561s
+    Allora L'utente ha effettuato l'accesso ... passed in 2.155s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="features.FEAT_002_Checkout - Autenticazione con SPID.Autenticazione con SPID" name="Logout SPID completato con successo" status="passed" time="8.334489"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @checkout @e2e @positive @smoke @ui @positivo @CHECKOUT_002_02
+  Scenario: Logout SPID completato con successo
+    Dato La pagina di checkout è aperta ... passed in 0.215s
+    E La lingua è impostata su "it" ... passed in 0.830s
+    Dato L'utente ha effettuato l'accesso con SPID ... passed in 7.210s
+    Quando L'utente clicca sul pulsante utente ... passed in 0.016s
+    E L'utente clicca sul sottomenu esci ... passed in 0.014s
+    E L'utente conferma l'azione di logout ... passed in 0.042s
+    Allora L'utente ha effettuato correttamente il logout ... passed in 0.007s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

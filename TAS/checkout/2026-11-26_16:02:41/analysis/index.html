@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>🤖 AI Analysis · TAS - CHECKOUT E2E · 2026-11-26_16:02:41</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body { background-color: #f5f8fa; padding: 2rem; }
+    .hero {
+      background-color: #6f42c1;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      border-radius: 0.5rem;
+    }
+    .content-card {
+      background: white;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    }
+    .content-card h2 { margin-top: 1.5rem; color: #6f42c1; }
+    .content-card h3 { color: #495057; }
+    .content-card pre {
+      background: #f1f3f5;
+      padding: 0.75rem;
+      border-radius: 0.35rem;
+      overflow-x: auto;
+      font-size: 0.9rem;
+    }
+    .hero code {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      padding: 0.15rem 0.4rem;
+      border-radius: 0.35rem;
+    }
+    .content-card code {
+      color: #ff61b0;
+      background: #fff0f7;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    footer code {
+      color: #6f42c1;
+      background: #f3ebff;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    .btn-secondary { background-color: #6c757d; border: none; }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <h1 class="display-6">🤖 AI Analysis · TAS - CHECKOUT E2E</h1>
+  <p class="lead mb-1">Run: <code>2026-11-26_16:02:41</code></p>
+  
+</header>
+
+<div class="container">
+  <div class="content-card">
+    <div id="analysis-content">
+      <div class="text-center text-muted">Rendering in corso...</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Powered by GitHub Models · Model: <code>gemini-3.5-flash-lite</code></p>
+</footer>
+
+<script>
+  const markdown = "# 1. Un pagamento con configurazione carta \"Postepay\" viene completato con successo -- @1.1\n- **status**: broken\n- **fullName**: `Attivazione pagamento Autenticato: Un pagamento con configurazione carta \"Postepay\" viene completato con successo`\n- **message**: RuntimeError: Timeout on locator \u0027#psp-radio-PPAYITR1XXX\u0027 after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)\n- **trace**:\n```\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py\", line 188, in step_select_psp\n    locate_and_click(page, f\"#psp-radio-{psp_id}\")\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py\", line 129, in locate_and_click\n    raise RuntimeError(\n```\n### Root cause\nThe PSP radio button for Postepay failed to load or render within the 5-second timeout on the UAT environment.\n\n### Category\nenvironment\n\n### Recommended action\nCheck if the PSP configuration or downstream service is responding slowly, and consider increasing the locator timeout or investigating environment stability.\n\n---\n\n# 2. Inserimento dati - errori -  Inserimento codice avviso errato -- @1.2\n- **status**: broken\n- **fullName**: `Validazione sintattica dei campi: Inserimento dati - errori -  Inserimento codice avviso errato`\n- **message**: playwright._impl._errors.TimeoutError: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \u0027load\u0027\n============================================================\n- **trace**:\n```\n  File \"src/e2e/checkout/steps/back_navigation.py\", line 87, in step_click_button\n    with page.expect_navigation(timeout=15000):\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py\", line 59, in value\n    raise exception\n```\n### Root cause\nNavigation did not complete within 15 seconds after clicking the button, leading to a Playwright timeout error.\n\n### Category\nenvironment\n\n### Recommended action\nVerify if the target page or backend service is experiencing latency or if the expected navigation event was triggered correctly.\n\n---\n\n# 3. Flusso lista PSP - indietro da /scegli-metodo (wallet salvato con enablePspPage=true)\n- **status**: broken\n- **fullName**: `Navigazione Lineare per il flusso di Pagamento: Flusso lista PSP - indietro da /scegli-metodo (wallet salvato con enablePspPage=true)`\n- **message**: RuntimeError: Timeout on locator \u0027button:has-text(\u0027Indietro\u0027)\u0027 after 5000 ms (url: https://uat.checkout.pagopa.it/)\n- **trace**:\n```\n  File \"src/e2e/checkout/steps/back_navigation.py\", line 88, in step_click_button\n    locate_and_click(page, BUTTON_SELECTORS[button_text])\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py\", line 129, in locate_and_click\n    raise RuntimeError(\n```\n### Root cause\nThe \u0027Indietro\u0027 button could not be found on the page within the 5-second timeout during the navigation flow.\n\n### Category\napplication bug\n\n### Recommended action\nEnsure the UI renders the back button correctly on the `/scegli-metodo` page or update the selector if the UI text/structure changed.\n\n---\n\n# 4. Un pagamento con configurazione carta \"Postepay\" viene completato con successo -- @1.1\n- **status**: broken\n- **fullName**: `Attivazione pagamento: Un pagamento con configurazione carta \"Postepay\" viene completato con successo`\n- **message**: RuntimeError: Timeout on locator \u0027#psp-radio-PPAYITR1XXX\u0027 after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)\n- **trace**:\n```\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py\", line 188, in step_select_psp\n    locate_and_click(page, f\"#psp-radio-{psp_id}\")\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py\", line 129, in locate_and_click\n    raise RuntimeError(\n```\n### Root cause\nThe PSP radio button for Postepay failed to load or render within the 5-second timeout on the UAT environment.\n\n### Category\nenvironment\n\n### Recommended action\nCheck environment stability and PSP service availability, or adjust the locator timeout.\n\n---\n\n# 5. Inserimento dati - errori -  Click sul tasto continua con campo non compilato -- @1.4\n- **status**: broken\n- **fullName**: `Validazione sintattica dei campi: Inserimento dati - errori -  Click sul tasto continua con campo non compilato`\n- **message**: playwright._impl._errors.TimeoutError: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \u0027load\u0027\n============================================================\n- **trace**:\n```\n  File \"src/e2e/checkout/steps/back_navigation.py\", line 87, in step_click_button\n    with page.expect_navigation(timeout=15000):\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py\", line 59, in value\n    raise exception\n```\n### Root cause\nNavigation timed out while waiting for the page load event after interacting with the form validation.\n\n### Category\nenvironment\n\n### Recommended action\nInvestigate potential performance bottlenecks or slow responses during form validation steps in the UAT environment.\n\n---\n\n# 6. Inserimento dati - errori -  Inserimento CF ente errato -- @1.2\n- **status**: broken\n- **fullName**: `Validazione sintattica dei campi: Inserimento dati - errori -  Inserimento CF ente errato`\n- **message**: playwright._impl._errors.TimeoutError: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \u0027load\u0027\n============================================================\n- **trace**:\n```\n  File \"src/e2e/checkout/steps/back_navigation.py\", line 87, in step_click_button\n    with page.expect_navigation(timeout=15000):\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py\", line 59, in value\n    raise exception\n```\n### Root cause\nThe page failed to complete navigation within the 15-second threshold after submitting an invalid creditor tax code (CF ente).\n\n### Category\nenvironment\n\n### Recommended action\nCheck environment performance and ensure network conditions or service mocks are responding in a timely manner.\n\n---\n\n# 7. Inserimento dati - errori -  Inserimento indirizzo email non valido -- @1.3\n- **status**: broken\n- **fullName**: `Validazione sintattica dei campi: Inserimento dati - errori -  Inserimento indirizzo email non valido`\n- **message**: playwright._impl._errors.TimeoutError: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \u0027load\u0027\n============================================================\n- **trace**:\n```\n  File \"src/e2e/checkout/steps/back_navigation.py\", line 87, in step_click_button\n    with page.expect_navigation(timeout=15000):\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py\", line 59, in value\n    raise exception\n```\n### Root cause\nTimeout reached while waiting for page navigation to complete following the input of an invalid email address.\n\n### Category\nenvironment\n\n### Recommended action\nRe-run the test or check UAT environment responsiveness during email validation execution.\n\n---\n\n# 8. Flusso lista PSP - indietro da /inserisci-carta (flusso carta con enablePspPage=true)\n- **status**: broken\n- **fullName**: `Navigazione Lineare per il flusso di Pagamento: Flusso lista PSP - indietro da /inserisci-carta (flusso carta con enablePspPage=true)`\n- **message**: RuntimeError: Timeout on locator \u0027button:has-text(\u0027Indietro\u0027)\u0027 after 5000 ms (url: https://uat.checkout.pagopa.it/)\n- **trace**:\n```\n  File \"src/e2e/checkout/steps/back_navigation.py\", line 88, in step_click_button\n    locate_and_click(page, BUTTON_SELECTORS[button_text])\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py\", line 129, in locate_and_click\n    raise RuntimeError(\n```\n### Root cause\nThe back button was not rendered or interactive within the 5-second timeout on the card insertion page.\n\n### Category\napplication bug\n\n### Recommended action\nVerify frontend rendering conditions for the \u0027Indietro\u0027 button when `enablePspPage=true` is set.\n\n---\n\n# 9. Inserimento dati - errori - indirizzo email diverso da ripeti\n- **status**: broken\n- **fullName**: `Validazione sintattica dei campi: Inserimento dati - errori - indirizzo email diverso da ripeti`\n- **message**: playwright._impl._errors.TimeoutError: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \u0027load\u0027\n============================================================\n- **trace**:\n```\n  File \"src/e2e/checkout/steps/back_navigation.py\", line 87, in step_click_button\n    with page.expect_navigation(timeout=15000):\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py\", line 59, in value\n    raise exception\n```\n### Root cause\nNavigation event timed out after submitting mismatched email fields.\n\n### Category\nenvironment\n\n### Recommended action\nInvestigate UAT environment load times and network latency during error validation tests.\n\n---\n\n# 10. Viene mostrato l\u0027errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell\u0027intervallo 302400000000000000-302409999999999999 -- @1.1\n- **status**: failed\n- **fullName**: `Attivazione pagamento: Viene mostrato l\u0027errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell\u0027intervallo 302400000000000000-302409999999999999`\n- **message**: AssertionError: Expected modal header to contain \u0027Non riusciamo a trovare l\u2019avviso\u0027, but got: \u0027L\u2019Ente Creditore sta avendo problemi nella risposta\u0027\n- **trace**:\n```\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py\", line 245, in step_error_modal_header\n    assert expected_header in header_text, (\n```\n### Root cause\nThe system returned a generic creditor error (\"L\u2019Ente Creditore sta avendo problemi nella risposta\") instead of the specific unknown payment error message.\n\n### Category\napplication bug\n\n### Recommended action\nCheck backend error mapping for the specified notice code range to ensure the correct error message is displayed to the user.\n\n---\n\n## Common patterns\n- **Environment Timeouts**: A significant portion of failures are `broken` tests caused by Playwright navigation timeouts (`Timeout 15000ms exceeded`) or element location timeouts (`Timeout on locator ... after 5000 ms`), indicating potential instability or performance issues in the UAT environment.\n- **UI Navigation/Locators**: Multiple failures relate to missing or slow-to-load buttons (such as the \u0027Indietro\u0027 button and Postepay PSP radio buttons), pointing to either frontend rendering regressions or flaky element detection.";
+  const target = document.getElementById('analysis-content');
+  if (markdown && markdown.trim().length > 0) {
+    target.innerHTML = marked.parse(markdown);
+  } else {
+    target.innerHTML = '<div class="alert alert-warning">Nessuna analisi disponibile per questa run.</div>';
+  }
+</script>
+
+</body>
+</html>
