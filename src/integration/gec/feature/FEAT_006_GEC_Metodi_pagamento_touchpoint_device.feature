@@ -8,7 +8,8 @@ Funzionalità: Ricerca dei metodi di pagamento per touchpoint e dispositivo uten
     Dato che i sistemi sono operativi
     E la configurazione dei dati di test è caricata
 
-  @positive
+  @runnable
+  @happy_path
   @gec_006_01
   Scenario: Ricerca con touchpoint IO presente nella configurazione dei metodi di pagamento
     Dato la configurazione dei metodi di pagamento "payment-methods-user-touchpoint-ok"
@@ -19,7 +20,8 @@ Funzionalità: Ricerca dei metodi di pagamento per touchpoint e dispositivo uten
     E il metodo "cart" è il primo della risposta
     E i metodi diversi da "cart" sono in ordine alfabetico
 
-  @positive
+  @runnable
+  @happy_path
   @gec_006_02
   Scenario: Ricerca con touchpoint IO non presente nella configurazione dei metodi di pagamento
     Dato la configurazione dei metodi di pagamento "payment-methods-user-touchpoint-ko"
@@ -28,7 +30,8 @@ Funzionalità: Ricerca dei metodi di pagamento per touchpoint e dispositivo uten
     Allora il sistema risponde con codice di stato 200
     E la risposta non contiene i metodi di pagamento di test configurati
 
-  @positive
+  @runnable
+  @happy_path
   @gec_006_03
   Scenario: Ricerca con dispositivo utente WEB presente nella configurazione dei metodi di pagamento
     Dato la configurazione dei metodi di pagamento "payment-methods-user-device-ok"
@@ -39,7 +42,8 @@ Funzionalità: Ricerca dei metodi di pagamento per touchpoint e dispositivo uten
     E il metodo "cart" è il primo della risposta
     E i metodi diversi da "cart" sono in ordine alfabetico
 
-  @positive
+  @runnable
+  @happy_path
   @gec_006_04
   Scenario: Ricerca senza indicare il dispositivo utente
     Dato la configurazione dei metodi di pagamento "payment-methods-user-device-ok"
@@ -50,7 +54,8 @@ Funzionalità: Ricerca dei metodi di pagamento per touchpoint e dispositivo uten
     E il metodo "cart" è il primo della risposta
     E i metodi diversi da "cart" sono in ordine alfabetico
 
-  @positive
+  @runnable
+  @happy_path
   @gec_006_05
   Scenario: Ricerca con dispositivo utente WEB non presente nella configurazione dei metodi di pagamento
     Dato la configurazione dei metodi di pagamento "payment-methods-user-device-ko"
@@ -59,6 +64,7 @@ Funzionalità: Ricerca dei metodi di pagamento per touchpoint e dispositivo uten
     Allora il sistema risponde con codice di stato 200
     E la risposta non contiene i metodi di pagamento di test configurati
 
+  @runnable
   @negative
   @gec_006_06
   Schema dello scenario: Ricerca rifiutata per touchpoint o dispositivo utente con valore non valido

@@ -8,7 +8,8 @@ Funzionalità: Recupero delle commissioni per più avvisi di pagamento
     Dato che i sistemi sono operativi
     E la configurazione dei dati di test è caricata
 
-  @positive
+  @runnable
+  @happy_path
   @gec_004_01
   Scenario: Commissione superiore alla somma delle commissioni
     Dato una richiesta di recupero commissioni "commissioni_v2_superiore"
@@ -29,7 +30,8 @@ Funzionalità: Recupero delle commissioni per più avvisi di pagamento
       | 77777777777 |
       | 77777777777 |
 
-  @positive
+  @runnable
+  @happy_path
   @gec_004_02
   Scenario: Commissione superiore alla somma delle commissioni con un solo PSP richiesto
     Dato una richiesta di recupero commissioni "commissioni_v2_superiore_un_psp"
@@ -47,7 +49,8 @@ Funzionalità: Recupero delle commissioni per più avvisi di pagamento
       | codice_ec   |
       | 77777777777 |
 
-  @positive
+  @runnable
+  @happy_path
   @gec_004_03
   Scenario: Commissione inferiore alla somma delle commissioni
     Dato una richiesta di recupero commissioni "commissioni_v2_inferiore"
@@ -68,7 +71,8 @@ Funzionalità: Recupero delle commissioni per più avvisi di pagamento
       | 77777777777 |
       | 77777777777 |
 
-  @positive
+  @runnable
+  @happy_path
   @gec_004_04
   Scenario: Nessun bundle del creditore presente
     Dato una richiesta di recupero commissioni "commissioni_v2_senza_ci_bundle"
@@ -82,7 +86,8 @@ Funzionalità: Recupero delle commissioni per più avvisi di pagamento
     E le opzioni bundle non riportano valori per il campo "idsCiBundle"
     E le commissioni delle opzioni bundle non riportano codici EC
 
-  @positive
+  @runnable
+  @happy_path
   @gec_004_05
   Scenario: Bundle del creditore multipli con codice EC di un avviso non corrispondente
     Dato una richiesta di recupero commissioni "commissioni_v2_ec_non_corrispondente"
@@ -96,7 +101,8 @@ Funzionalità: Recupero delle commissioni per più avvisi di pagamento
     E le opzioni bundle non riportano valori per il campo "idsCiBundle"
     E le commissioni delle opzioni bundle non riportano codici EC
 
-  @positive
+  @runnable
+  @happy_path
   @gec_004_06
   Scenario: Bundle del creditore multipli con un solo avviso di pagamento
     Dato una richiesta di recupero commissioni "commissioni_v2_un_avviso"
@@ -115,7 +121,8 @@ Funzionalità: Recupero delle commissioni per più avvisi di pagamento
       | codice_ec   |
       | 88888888888 |
 
-  @positive
+  @runnable
+  @happy_path
   @gec_004_07
   Scenario: Bundle del creditore e avvisi di pagamento multipli
     Dato una richiesta di recupero commissioni "commissioni_v2_piu_avvisi"
@@ -134,7 +141,8 @@ Funzionalità: Recupero delle commissioni per più avvisi di pagamento
       | codice_ec_1 | codice_ec_2 |
       | 77777777777 | 88888888888 |
 
-  @positive
+  @runnable
+  @happy_path
   @gec_004_08
   Scenario: Bundle del creditore con più attributi e prodotto cartesiano restituito
     Dato una richiesta di recupero commissioni "commissioni_v2_prodotto_cartesiano"
@@ -153,7 +161,8 @@ Funzionalità: Recupero delle commissioni per più avvisi di pagamento
       | codice_ec_1 | codice_ec_2 |
       | 77777777777 | 88888888888 |
 
-  @positive
+  @runnable
+  @happy_path
   @gec_004_09
   Scenario: Più bundle disponibili ma ne viene restituito uno solo per PSP
     Dato una richiesta di recupero commissioni "commissioni_v2_un_bundle_per_psp"

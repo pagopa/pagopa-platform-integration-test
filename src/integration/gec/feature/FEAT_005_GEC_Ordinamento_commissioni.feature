@@ -8,7 +8,8 @@ Funzionalità: Ordinamento delle opzioni bundle nel recupero delle commissioni
     Dato che i sistemi sono operativi
     E la configurazione dei dati di test è caricata
 
-  @positive
+  @runnable
+  @happy_path
   @gec_005_01
   Schema dello scenario: Ordinamento delle opzioni bundle per criterio e priorità onUsFirst
     Dato una richiesta di recupero commissioni "commissioni_v2_ordinamento"

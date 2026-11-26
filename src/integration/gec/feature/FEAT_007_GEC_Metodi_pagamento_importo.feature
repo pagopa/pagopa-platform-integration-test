@@ -8,7 +8,8 @@ Funzionalità: Ricerca dei metodi di pagamento per importo
     Dato che i sistemi sono operativi
     E la configurazione dei dati di test è caricata
 
-  @positive
+  @runnable
+  @happy_path
   @gec_007_01
   Scenario: Ricerca con importo fuori intervallo solo per il metodo PAYPAL-test
     Dato la configurazione dei metodi di pagamento "payment-methods-range-amount"
@@ -23,7 +24,8 @@ Funzionalità: Ricerca dei metodi di pagamento per importo
     E il metodo "cart" è il primo della risposta
     E i metodi diversi da "cart" sono in ordine alfabetico
 
-  @positive
+  @runnable
+  @happy_path
   @gec_007_02
   Scenario: Ricerca con importo fuori intervallo per entrambi i metodi di pagamento di test
     Dato la configurazione dei metodi di pagamento "payment-methods-total-amount"
@@ -36,7 +38,8 @@ Funzionalità: Ricerca dei metodi di pagamento per importo
       | PAYPAL-test | DISABLED | AMOUNT_OUT_OF_BOUND |
       | CARDS-test  | DISABLED | AMOUNT_OUT_OF_BOUND |
 
-  @positive
+  @runnable
+  @happy_path
   @gec_007_03
   Scenario: Ricerca con importo negativo per entrambi i metodi di pagamento di test
     Dato la configurazione dei metodi di pagamento "payment-methods-total-amount"
@@ -51,7 +54,8 @@ Funzionalità: Ricerca dei metodi di pagamento per importo
     E il metodo "cart" è il primo della risposta
     E i metodi diversi da "cart" sono in ordine alfabetico
 
-  @positive
+  @runnable
+  @happy_path
   @gec_007_04
   Scenario: Ricerca con importo in intervallo per entrambi i metodi di pagamento di test
     Dato la configurazione dei metodi di pagamento "payment-methods-total-amount"
