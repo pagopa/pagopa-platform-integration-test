@@ -1,10 +1,7 @@
+# qa-hub: FEAT_003_Checkout
 # language: it
-
-@FEAT_003_Checkout
-@e2e
-@checkout
-@ui
-Funzionalità: Attivazione pagamento Checkout
+@CHECKOUT_003
+Funzionalità: Attivazione pagamento
   Un utente del sistema checkout
   vuole completare un pagamento con carta di credito/debito
   così da poter pagare un avviso tramite la piattaforma pagoPA
@@ -13,13 +10,8 @@ Funzionalità: Attivazione pagamento Checkout
     Dato La pagina di checkout è aperta
     E La lingua è impostata su "it"
 
-  # =============================================
-  # Happy path: flusso di pagamento completo
-  # =============================================
-
-  @smoke
-  @positive
-  @FEAT_003_Checkout_scenario_01
+  @checkout @e2e @positive @smoke @ui @positivo
+  @CHECKOUT_003_01
   Schema dello scenario: Un pagamento con configurazione carta "<testing_psp>" viene completato con successo
     Quando L'utente inserisce i dati dell'avviso con un codice avviso con prefisso "<notice_code_prefix>"
     E L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"
@@ -43,12 +35,8 @@ Funzionalità: Attivazione pagamento Checkout
       | Wordline    | 30201              | 77777777777 | ecommerce-test-mailgroup@pagopa.it | 5255000260000014 | 12/30           | 123 | BNLIITRR    |
       | Worldpay    | 30201              | 77777777777 | ecommerce-test-mailgroup@pagopa.it | 4242424242424242 | 12/30           | 123 | WOLLNLB1    |
 
-  # =============================================
-  # Casi di errore: errori di verifica/attivazione pagamento
-  # =============================================
-
-  @negative
-  @FEAT_003_Checkout_scenario_02
+  @checkout @e2e @negative @ui @positivo
+  @CHECKOUT_003_02
   Schema dello scenario: Viene mostrato l'errore <error_code> per codice avviso non valido nell'intervallo <range_start>-<range_end>
     Quando L'utente inserisce i dati dell'avviso con un codice avviso nell'intervallo "<range_start>" a "<range_end>"
     E L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"
@@ -64,8 +52,8 @@ Funzionalità: Attivazione pagamento Checkout
       | PPT_STAZIONE_INT_PA_TIMEOUT | 302980000000000000 | 302989999999999999 | 77777777777 | 60      | Si è verificato un errore imprevisto             | Riprova, oppure contatta l’assistenza                                                          |
       | PAA_PAGAMENTO_DUPLICATO     | 302950100443009424 | 302950100443009424 | 77777777777 | 5       | Questo avviso è stato già pagato!                |                                                                                                |
 
-  @negative
-  @FEAT_003_Checkout_scenario_03
+  @checkout @e2e @negative @ui @positivo
+  @CHECKOUT_003_03
   Schema dello scenario: Viene mostrato il codice di errore per ente creditore non raggiungibile
     Quando L'utente inserisce i dati dell'avviso con un codice avviso nell'intervallo "<range_start>" a "<range_end>"
     E L'utente inserisce il codice fiscale del pagatore "<fiscal_code>"
