@@ -74,7 +74,11 @@ Limiti:
 - GitHub documenta gli hook a livello di agente solo per Copilot CLI, quindi
   l'applicazione nel runtime Copilot di VS Code va verificata in una sessione reale.
 - Un timeout dell'hook lascia proseguire la chiamata (fail-open); un errore la nega.
-- Serve `node` nel `PATH`.
+- Serve Node.js 18+ nel `PATH`. L'hook passa da un lanciatore,
+  [`delegation-allowlist.ps1`](../hooks/scripts/delegation-allowlist.ps1) su Windows e
+  [`delegation-allowlist.sh`](../hooks/scripts/delegation-allowlist.sh) altrove, che
+  verifica Node prima di avviare lo script. Senza Node nega solo le deleghe, con un
+  motivo esplicito, e lascia utilizzabili gli altri tool.
 - I wrapper ACE (reflector → curator → warden) non hanno l'hook: il generatore
   kit-owned non emette `hooks`, e in Copilot la loro catena resta affidata alle istruzioni.
 

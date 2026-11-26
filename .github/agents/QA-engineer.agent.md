@@ -6,7 +6,8 @@ agents: [Python-utility-engineer]
 hooks:
   preToolUse:
     - type: command
-      command: node .github/hooks/scripts/delegation-allowlist.js Python-utility-engineer
+      command: sh .github/hooks/scripts/delegation-allowlist.sh Python-utility-engineer
+      windows: powershell -NoProfile -ExecutionPolicy Bypass -File .github/hooks/scripts/delegation-allowlist.ps1 Python-utility-engineer
       timeoutSec: 10
 user-invocable: true
 

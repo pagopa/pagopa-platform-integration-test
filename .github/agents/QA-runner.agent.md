@@ -6,7 +6,8 @@ agents: [QA-engineer]
 hooks:
   preToolUse:
     - type: command
-      command: node .github/hooks/scripts/delegation-allowlist.js QA-engineer
+      command: sh .github/hooks/scripts/delegation-allowlist.sh QA-engineer
+      windows: powershell -NoProfile -ExecutionPolicy Bypass -File .github/hooks/scripts/delegation-allowlist.ps1 QA-engineer
       timeoutSec: 10
 user-invocable: false
 

@@ -7,7 +7,8 @@ agents: [QA-analyst, QA-engineer, QA-runner, QA-closer, gh/ace/reflector]
 hooks:
   preToolUse:
     - type: command
-      command: node .github/hooks/scripts/delegation-allowlist.js QA-analyst QA-engineer QA-runner QA-closer gh/ace/reflector
+      command: sh .github/hooks/scripts/delegation-allowlist.sh QA-analyst QA-engineer QA-runner QA-closer gh/ace/reflector
+      windows: powershell -NoProfile -ExecutionPolicy Bypass -File .github/hooks/scripts/delegation-allowlist.ps1 QA-analyst QA-engineer QA-runner QA-closer gh/ace/reflector
       timeoutSec: 10
 argument-hint: Choose new work, resume the current Jira branch, or explore QA questions; provide a PQ issue key when starting new work
 user-invocable: true
