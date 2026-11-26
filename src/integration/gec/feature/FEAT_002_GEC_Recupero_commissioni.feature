@@ -119,8 +119,7 @@ Funzionalità: Recupero delle commissioni
     E il parametro di richiesta "maxOccurrences" è "10"
     Quando il client invia la richiesta di "Recupero commissioni" con il payload "commissioni_bin_non_esistente_2"
     Allora il sistema risponde con codice di stato 200
-    E i valori del campo `onUs` delle opzioni bundle, dopo l'ordinamento previsto per l'API "V1", corrispondono ai seguenti:
-      | onUs  |
+    E la risposta non contiene opzioni bundle
 
   @runnable
   @happy_path

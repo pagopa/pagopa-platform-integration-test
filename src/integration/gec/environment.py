@@ -76,7 +76,7 @@ def _build_clients(context):
 
 
 def _setup_azure_storage(context):
-    """Setup issuer table data when Azure connection string is configured."""
+    """Snapshot and set up issuer data when Azure storage is configured."""
     gec_config = _config_value(context.config, "gec")
     global_conf = _config_value(context.config, "global_configuration")
     connection_string = _config_value(gec_config, "azure_connection_string")
@@ -91,12 +91,43 @@ def _setup_azure_storage(context):
         table_name = _config_value(global_conf, "issuer_range_table") or "issuerrangetable"
         table_client = build_issuer_table_client(connection_string, table_name=table_name)
         if table_client:
+            fixture_partitions = sorted({str(entity["partition_key"]) for entity in ISSUER_ENTITIES})
+            issuer_snapshot = _snapshot_issuer_entities(table_client, fixture_partitions)
             _delete_issuer_entities_by_partition(table_client, ISSUER_ENTITIES)
             table_client.setup_issuer_ranges(ISSUER_ENTITIES)
             context.gec.azure_table_client = table_client
+            context.gec.azure_issuer_snapshot = issuer_snapshot
+            context.gec.azure_setup_succeeded = True
             LOGGER.info("Azure issuer setup completed on table '%s'", table_name)
     except Exception as error:
         LOGGER.warning("Azure issuer setup failed (continuing): %s", error)
+
+
+def _snapshot_issuer_entities(table_client, partition_keys) -> list:
+    """Capture existing issuer rows in the selected partitions."""
+    snapshot = []
+    for partition_key in partition_keys:
+        for entity in table_client.list_entities(partition_key=partition_key):
+            entity_partition_key = entity.get("PartitionKey")
+            entity_row_key = entity.get("RowKey")
+            if entity_partition_key is None or entity_row_key is None:
+                continue
+            original = table_client.get_entity(str(entity_partition_key), str(entity_row_key))
+            if original is None:
+                continue
+            entity_data = {
+                key: value
+                for key, value in dict(original).items()
+                if key not in ("PartitionKey", "RowKey", "Timestamp", "etag", "odata.etag")
+            }
+            snapshot.append(
+                {
+                    "partition_key": str(entity_partition_key),
+                    "row_key": str(entity_row_key),
+                    "entity_data": entity_data,
+                }
+            )
+    return snapshot
 
 
 def _delete_issuer_entities_by_partition(table_client, issuer_entities):
@@ -131,6 +162,8 @@ def before_all(context):
     _ensure_actor(context, "gec")
     _build_clients(context)
     context.gec.uploaded_bundles = []
+    context.gec.uploaded_payment_methods = []
+    context.gec.azure_setup_succeeded = False
     _setup_azure_storage(context)
     _populate_placeholder_vars(context)
 
@@ -173,14 +206,13 @@ def _delete_uploaded_bundles(context):
 
 
 def _delete_payment_methods(context):
-    """Delete marketplace payment methods created by tests."""
-    global_conf = _config_value(context.config, "global_configuration")
-    payment_methods = [
-        _config_value(global_conf, "payment_method_cards") or "CARDS-test",
-        _config_value(global_conf, "payment_method_paypal") or "PAYPAL-test",
-    ]
+    """Delete tracked marketplace payment methods once for this run."""
+    payment_methods = getattr(context.gec, "uploaded_payment_methods", []) or []
+    unique_payment_methods = list({payment_method: payment_method for payment_method in payment_methods}.values())
+    if not unique_payment_methods:
+        return
     client = context.gec.rest.client_marketplace
-    for payment_method in payment_methods:
+    for payment_method in unique_payment_methods:
         response = client.delete(f"/payment-methods/{payment_method}")
         if response.status_code != 200:
             LOGGER.warning(
@@ -191,8 +223,43 @@ def _delete_payment_methods(context):
             )
 
 
+def _restore_issuer_snapshot(context):
+    """Remove run fixtures and best-effort restore the issuer rows captured at setup."""
+    try:
+        table_client = getattr(context.gec, "azure_table_client", None)
+        if table_client is None:
+            LOGGER.warning("Issuer teardown skipped: no Azure table client")
+            return
+        from src.integration.gec.azure_table_client import ISSUER_ENTITIES
+
+        for fixture in ISSUER_ENTITIES:
+            partition_key = fixture.get("partition_key")
+            row_key = fixture.get("row_key")
+            if partition_key is None or row_key is None:
+                continue
+            try:
+                table_client.delete_entity(str(partition_key), str(row_key))
+            except Exception as error:
+                LOGGER.warning("Issuer fixture deletion failed for %s/%s: %s", partition_key, row_key, error)
+
+        for entity in getattr(context.gec, "azure_issuer_snapshot", []) or []:
+            try:
+                table_client.create_entity(
+                    entity["partition_key"], entity["row_key"], entity["entity_data"]
+                )
+            except Exception as error:
+                LOGGER.warning(
+                    "Issuer snapshot restore failed for %s/%s: %s",
+                    entity.get("partition_key"),
+                    entity.get("row_key"),
+                    error,
+                )
+    except Exception as error:
+        LOGGER.warning("Issuer teardown failed: %s", error)
+
+
 def after_all(context):
-    """Cleanup configured bundles and payment methods without masking test outcomes."""
+    """Clean up run-owned bundles, payment methods, and issuer fixtures safely."""
     if not hasattr(context, "gec") or not getattr(context.gec, "rest", None):
         LOGGER.warning("Skipping after_all teardown: no GEC client context")
         return
@@ -204,3 +271,5 @@ def after_all(context):
         _delete_payment_methods(context)
     except Exception as error:
         LOGGER.warning("Payment method teardown failed: %s", error)
+    if getattr(context.gec, "azure_setup_succeeded", False):
+        _restore_issuer_snapshot(context)

@@ -5,6 +5,9 @@ Provides IssuerTableClient for managing issuer entities (BIN ranges) in Azure Ta
 Follows the utility/blob pattern established by azure_blob.py.
 """
 
+# Lazy annotations: TableEntity may be unavailable when azure-data-tables is not installed.
+from __future__ import annotations
+
 import logging
 from typing import List, Dict, Optional
 

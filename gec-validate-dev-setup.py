@@ -35,23 +35,52 @@ def check_dev_yaml():
     return True
 
 def check_secrets_yaml():
-    """Verify .secrets.yaml exists and dev section is present."""
+    """Verify DEV GEC keys are present and contain real values."""
     secrets_path = "config/.secrets.yaml"
-    
+    required_keys = (
+        "tas-gec-calculator-subscription-key",
+        "tas-gec-marketplace-subscription-key",
+        "azure-storage-connection-string",
+    )
+
     if not os.path.exists(secrets_path):
-        LOGGER.warning(f"⚠️  {secrets_path} not found - create from template")
+        LOGGER.warning(f"\u26a0\ufe0f  {secrets_path} not found - create from template")
         return False
-    
+
     with open(secrets_path, 'r') as f:
         content = f.read()
-        if 'dev:' not in content:
-            LOGGER.warning(f"⚠️  {secrets_path} exists but no 'dev:' section")
-            return False
-        if '<SUBKEY_FROM_ENV>' in content:
-            LOGGER.warning(f"⚠️  {secrets_path} has placeholder values - populate with real secret")
-            return False
-    
-    LOGGER.info(f"✅ {secrets_path} has dev section with key")
+
+    dev_values = {}
+    in_dev_section = False
+    for line in content.splitlines():
+        if not in_dev_section:
+            if line.strip() == 'dev:' and not line[:1].isspace():
+                in_dev_section = True
+            continue
+        if line and not line[0].isspace():
+            break
+        key, separator, value = line.strip().partition(':')
+        if separator:
+            dev_values[key.strip()] = value.strip().strip("\"'")
+
+    if not in_dev_section:
+        LOGGER.warning(f"\u26a0\ufe0f  {secrets_path} exists but no 'dev:' section")
+        return False
+
+    missing_keys = [key for key in required_keys if not dev_values.get(key)]
+    placeholder_keys = [
+        key for key in required_keys if dev_values.get(key) == f"<{key}>"
+    ]
+    if missing_keys or placeholder_keys:
+        LOGGER.warning(
+            "\u26a0\ufe0f  %s has missing DEV keys %s or placeholder values %s",
+            secrets_path,
+            missing_keys,
+            placeholder_keys,
+        )
+        return False
+
+    LOGGER.info(f"\u2705 {secrets_path} has all required DEV GEC keys")
     return True
 
 def check_load_configurations():

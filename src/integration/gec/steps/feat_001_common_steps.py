@@ -213,16 +213,15 @@ def step_assert_ordered_bundle_field_backtick(context, field_name: str, api_vers
         raise AssertionError("Expected values table is required")
     bundles = _bundle_rows(context)
     expected_rows = context.table.rows
-    if not bundles:
-        if len(expected_rows) == 0:
-            return
-        raise AssertionError("No bundle options found in response")
     ordered_bundles = bundles
     if api_version.upper() == "V1" and field_name.lower() == "onus":
         ordered_bundles = _sort_bundles_v1_onUs_first(bundles)
+    assert len(ordered_bundles) == len(expected_rows), (
+        f"Expected {len(expected_rows)} bundle options, got {len(ordered_bundles)}"
+    )
 
     actual_values = []
-    for bundle in ordered_bundles[: len(expected_rows)]:
+    for bundle in ordered_bundles:
         value = bundle.get(field_name)
         if isinstance(value, bool):
             actual_values.append(_normalize_boolean_cell(str(value)))
@@ -296,6 +295,18 @@ def step_assert_no_ec_codes(context):
         fees = bundle.get("fees", [])
         if fees not in (None, []):
             raise AssertionError(f"Expected empty fees, got {fees}")
+
+
+@then("la risposta non contiene opzioni bundle")
+def step_assert_no_bundle_options(context):
+    """Assert response contains an empty bundleOptions list."""
+    response = _response_json(context)
+    assert "bundleOptions" in response, "Missing 'bundleOptions' key in response"
+    bundle_options = response["bundleOptions"]
+    assert isinstance(bundle_options, list), (
+        f"Expected 'bundleOptions' to be a list, got {type(bundle_options).__name__}"
+    )
+    assert len(bundle_options) == 0, f"Expected empty bundleOptions, got {len(bundle_options)} items"
 
 
 @then("la risposta contiene i metodi di pagamento di test configurati")

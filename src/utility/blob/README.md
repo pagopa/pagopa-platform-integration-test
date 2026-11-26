@@ -102,10 +102,11 @@ def _setup_azure_storage(context):
 
 ## Requisiti
 
-Per usare IssuerTableClient:
-```bash
-pip install azure-data-tables
-```
+`azure-data-tables` è dichiarato in `requirements.txt` (`pip install -r requirements.txt`).
+
+Il supporto Table è opzionale a import time: `src.utility.blob` e `AzureBlobService` restano
+importabili anche senza `azure-data-tables`. Senza il pacchetto, `IssuerTableClient(...)` solleva
+`ImportError` e `build_issuer_table_client()` restituisce `None`.
 
 Con un endpoint URL l'identità di `DefaultAzureCredential` deve avere almeno il ruolo
 **Storage Table Data Contributor** sullo Storage Account.

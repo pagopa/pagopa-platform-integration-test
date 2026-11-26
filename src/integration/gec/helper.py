@@ -166,6 +166,25 @@ def _track_uploaded_bundles(context, bundles: list):
     context.gec.uploaded_bundles.extend(deepcopy(bundles))
 
 
+def _extract_payment_method_id(payment_method: dict):
+    """Extract the payment method identifier from its uploaded payload."""
+    for key in ("payment_method_id", "paymentMethodId", "id"):
+        payment_method_id = payment_method.get(key)
+        if payment_method_id is not None and payment_method_id != "":
+            return payment_method_id
+    return None
+
+
+def _track_uploaded_payment_method(context, payment_method: dict):
+    """Track a successfully uploaded payment method for teardown."""
+    payment_method_id = _extract_payment_method_id(payment_method)
+    if payment_method_id is None:
+        return
+    if not hasattr(context.gec, "uploaded_payment_methods") or context.gec.uploaded_payment_methods is None:
+        context.gec.uploaded_payment_methods = []
+    context.gec.uploaded_payment_methods.append(payment_method_id)
+
+
 def _upload_test_data_configuration(context, config_data: dict):
     """Upload data.json sections following AFM sequence and endpoints."""
     client = _get_client(context, "v1")
@@ -240,7 +259,7 @@ def _setup_poste_bundles(context):
 
 
 def _upload_payment_methods(context, config_data: dict):
-    """Upload test payment methods to marketplace endpoint."""
+    """Upload test payment methods and track successful IDs for teardown."""
     payment_methods = config_data.get("paymentmethods", [])
     if len(payment_methods) < 2:
         raise AssertionError("Expected at least two payment methods in configuration")
@@ -251,6 +270,7 @@ def _upload_payment_methods(context, config_data: dict):
             raise AssertionError(
                 f"Payment method upload failed: expected 201, got {response.status_code}: {response.text}"
             )
+        _track_uploaded_payment_method(context, payment_method)
 
 
 def _extract_extension_params(extension: str) -> dict:
