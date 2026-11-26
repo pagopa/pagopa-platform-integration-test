@@ -61,7 +61,8 @@ che una capacità sia utilizzabile.
 
 ### Allowlist delle deleghe in Copilot
 
-Copilot non legge `agents`. Per questo QA-orchestrator, QA-engineer e QA-runner
+Copilot non legge `agents`. Per questo tutti gli agenti che delegano
+(QA-orchestrator, QA-engineer, QA-runner, gh/ace/reflector e gh/ace/curator)
 dichiarano anche un hook `preToolUse` a livello di agente che esegue
 [`delegation-allowlist.js`](../hooks/scripts/delegation-allowlist.js) con gli
 stessi nomi dell'allowlist Local. Lo script nega le chiamate a `task` (o `Agent`)
@@ -79,8 +80,12 @@ Limiti:
   [`delegation-allowlist.sh`](../hooks/scripts/delegation-allowlist.sh) altrove, che
   verifica Node prima di avviare lo script. Senza Node nega solo le deleghe, con un
   motivo esplicito, e lascia utilizzabili gli altri tool.
-- I wrapper ACE (reflector → curator → warden) non hanno l'hook: il generatore
-  kit-owned non emette `hooks`, e in Copilot la loro catena resta affidata alle istruzioni.
+- Nei wrapper ACE l'hook è scritto da
+  [`generate_ace_agents.js`](../../ace/scripts/generate_ace_agents.js) per la piattaforma
+  Copilot, a partire dalle deleghe dei ruoli: non va modificato a mano. Il generatore
+  è kit-owned; questa modifica locale ha aggiornato il suo hash in
+  [`runtime-version.json`](../../ace/runtime-version.json) e va riapplicata se il kit
+  ACE viene aggiornato.
 
 Riferimento: [hook a livello di agente](https://docs.github.com/en/copilot/reference/hooks-reference#agent-scoped-hooks).
 

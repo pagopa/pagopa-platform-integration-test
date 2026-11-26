@@ -3,6 +3,12 @@ name: "gh/ace/curator"
 description: "Use when: turn reflector proposals into typed playbook decisions without applying them."
 tools: ["read", "edit", "search", "execute", "agent"]
 agents: ["gh/ace/warden"]
+hooks:
+  preToolUse:
+    - type: command
+      command: sh .github/hooks/scripts/delegation-allowlist.sh gh/ace/warden
+      windows: powershell -NoProfile -ExecutionPolicy Bypass -File .github/hooks/scripts/delegation-allowlist.ps1 gh/ace/warden
+      timeoutSec: 10
 user-invocable: true
 ---
 
