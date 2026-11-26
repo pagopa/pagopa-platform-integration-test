@@ -1193,7 +1193,7 @@ registrate nel [catalogo NRT](.github/nrt-suites.json). Il loro aggiornamento e 
 `Bump test suite version`:
 
 - Per versionare una suite, assegnare una label di incremento (`major`, `minor` o `patch`) e
-  una sola label corrispondente a un ID del catalogo: attualmente `wisp`, `checkout` o `fdr3`.
+  una sola label corrispondente a un ID del catalogo: attualmente `wisp`, `checkout`, `fdr3` o `gec`.
   Il confronto non distingue maiuscole e minuscole.
 - Usare `skip` per documentazione, configurazioni, tooling/AI o altre modifiche che non devono
   incrementare una versione di suite. **`skip` ha precedenza su tutte le altre label**:
