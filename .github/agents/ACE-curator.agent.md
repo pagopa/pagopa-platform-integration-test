@@ -1,7 +1,7 @@
 ---
 name: "gh/ace/curator"
 description: "Use when: turn reflector proposals into typed playbook decisions without applying them."
-tools: ["read/readFile", "edit/createFile", "edit/editFiles", "search/fileSearch", "execute", "execute/runInTerminal", "agent"]
+tools: ["read", "edit", "search", "execute", "agent"]
 agents: ["gh/ace/warden"]
 user-invocable: true
 ---

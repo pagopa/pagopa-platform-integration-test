@@ -20,6 +20,66 @@ dall'orchestratore.
 | [gh/ace/curator](ACE-curator.agent.md) | Diretto / ciclo ACE | Converte proposte in decisioni tipizzate per il warden; non le applica. | «Valuta le proposte allegate con le relative evidenze; prepara le decisioni, senza applicarle.» |
 | [gh/ace/warden](ACE-warden.agent.md) | Diretto / ciclo ACE | Esegue il gate e applica decisioni solo con le conferme umane richieste. Unico writer dei playbook. | «Esegui il gate sulle decisioni indicate; presenta l'esito e chiedi conferma prima di ogni applicazione.» |
 
+## Tool nei due harness
+
+I frontmatter usano gli alias condivisi da Local (chat classica di VS Code)
+e Copilot (harness agentico), selezionati secondo le responsabilità del ruolo:
+
+| Alias nel frontmatter | Local | Copilot |
+| --- | --- | --- |
+| `read` | Lettura, ad esempio `read/readFile` | Lettura con i tool del runtime, ad esempio `view` |
+| `edit` | Creazione e modifica tramite i tool di editing | Editing del runtime, ad esempio `apply_patch` |
+| `search` | Ricerca di file e testo | Ricerca del runtime, ad esempio `glob` e `rg` |
+| `execute` | Comandi nel terminale integrato | Shell del runtime, ad esempio `powershell` su Windows |
+| `agent` | Delega tramite `agent/runSubagent` | Delega tramite `task` |
+| `web` | Tool web, ad esempio `web/fetch` | Ricerca e lettura web del runtime |
+
+Per le domande, dichiarare `vscode/askQuestions` e `ask_user`: il primo è il
+riferimento del client VS Code; il secondo è il tool nativo esposto dal runtime
+Copilot in questa sessione. Non sono alias condivisi: la disponibilità dipende
+dall'inventario della sessione. I nomi non riconosciuti vengono ignorati;
+la dichiarazione non installa né abilita un tool assente. Il warden deve fermarsi
+se manca un tool domande, come previsto dal suo contratto.
+
+Gli alias selezionano gruppi di capacità, non impongono limiti su file o comandi.
+Restano quindi validi i vincoli dei ruoli, inclusi il divieto di esecuzione per
+gli implementatori e il solo comando linguistico consentito all'analista.
+I modelli e gli altri campi del frontmatter non vengono uniformati da questi alias;
+in particolare `agents` configura le deleghe in Local, non nel runtime Copilot.
+
+Per cambiare i tool dei wrapper ACE, aggiornare
+[`ace/config/project.json`](../../ace/config/project.json), poi rigenerare dalla
+root con `node ace\scripts\generate_ace_agents.js`. Verificare con
+`node ace\scripts\generate_ace_agents.js --check`.
+
+Riferimenti: [frontmatter e compatibilità VS Code](https://code.visualstudio.com/docs/agents/reference/custom-agent-file-reference#_tools),
+[alias e nomi non riconosciuti](https://docs.github.com/en/copilot/reference/custom-agents-configuration#tools)
+e [migrazione dei tool](https://code.visualstudio.com/docs/agent-customization/migrate-customizations#_why-does-an-agent-fail-with-a-tool-discovery-capability-error).
+Per la verifica operativa, aprire una nuova sessione in ciascun harness e
+controllare i tool effettivamente disponibili; il solo frontmatter non dimostra
+che una capacità sia utilizzabile.
+
+### Allowlist delle deleghe in Copilot
+
+Copilot non legge `agents`. Per questo QA-orchestrator, QA-engineer e QA-runner
+dichiarano anche un hook `preToolUse` a livello di agente che esegue
+[`delegation-allowlist.js`](../hooks/scripts/delegation-allowlist.js) con gli
+stessi nomi dell'allowlist Local. Lo script nega le chiamate a `task` (o `Agent`)
+verso agenti non elencati, inclusi gli agenti built-in e gli id generati
+`vscode-agent-*`. Il confronto dei nomi non distingue maiuscole e minuscole.
+Se si cambia una delega, aggiornare insieme `agents` e gli argomenti dell'hook.
+
+Limiti:
+
+- GitHub documenta gli hook a livello di agente solo per Copilot CLI, quindi
+  l'applicazione nel runtime Copilot di VS Code va verificata in una sessione reale.
+- Un timeout dell'hook lascia proseguire la chiamata (fail-open); un errore la nega.
+- Serve `node` nel `PATH`.
+- I wrapper ACE (reflector → curator → warden) non hanno l'hook: il generatore
+  kit-owned non emette `hooks`, e in Copilot la loro catena resta affidata alle istruzioni.
+
+Riferimento: [hook a livello di agente](https://docs.github.com/en/copilot/reference/hooks-reference#agent-scoped-hooks).
+
 ## Regole comuni
 
 - Review non significa autorizzazione a modificare; implementazione non significa

@@ -2,8 +2,13 @@
 name: QA-orchestrator
 description: 'Use when: creating, running, or maintaining QA test suites with Gherkin feature files and Python step implementations'
 model: Claude Sonnet 5.5
-tools: [execute, vscode/askQuestions, read/readFile, edit/createFile, edit/editFiles, agent, execute/runInTerminal, execute/getTerminalOutput, read/terminalLastCommand, execute/sendToTerminal]
+tools: [read, edit, execute, vscode/askQuestions, ask_user, agent]
 agents: [QA-analyst, QA-engineer, QA-runner, QA-closer, gh/ace/reflector]
+hooks:
+  preToolUse:
+    - type: command
+      command: node .github/hooks/scripts/delegation-allowlist.js QA-analyst QA-engineer QA-runner QA-closer gh/ace/reflector
+      timeoutSec: 10
 argument-hint: Choose new work, resume the current Jira branch, or explore QA questions; provide a PQ issue key when starting new work
 user-invocable: true
 

@@ -1,8 +1,13 @@
 ---
 description: 'Use when: Python BDD steps need review, implementation, extension, fixes or refactoring'
 model: GPT-5.3-Codex
-tools: [read/readFile, edit/createFile, edit/createDirectory, edit/editFiles, edit/rename, search/fileSearch, vscode/askQuestions, agent]
+tools: [read, edit, search, vscode/askQuestions, ask_user, agent]
 agents: [Python-utility-engineer]
+hooks:
+  preToolUse:
+    - type: command
+      command: node .github/hooks/scripts/delegation-allowlist.js Python-utility-engineer
+      timeoutSec: 10
 user-invocable: true
 
 ---

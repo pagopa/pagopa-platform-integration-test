@@ -1,8 +1,13 @@
 ---
 description: 'Use when: QA tests need to be executed, validated, failures diagnosed, and fixes delegated to the QA Engineer'
 model: Claude Sonnet 5.5
-tools: [execute, execute/runInTerminal, read/terminalLastCommand, read/readFile, search/fileSearch, edit/createFile, edit/editFiles, vscode/askQuestions, execute/getTerminalOutput, agent]
+tools: [read, edit, search, execute, vscode/askQuestions, ask_user, agent]
 agents: [QA-engineer]
+hooks:
+  preToolUse:
+    - type: command
+      command: node .github/hooks/scripts/delegation-allowlist.js QA-engineer
+      timeoutSec: 10
 user-invocable: false
 
 ---
