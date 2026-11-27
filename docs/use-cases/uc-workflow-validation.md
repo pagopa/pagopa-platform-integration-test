@@ -70,13 +70,13 @@ documentale, non un motore sostitutivo che simula l'agente.
 | V-30 | Un requisito verifica esplicitamente un dominio o URL letterale | Valore letterale conservato con motivazione funzionale, non rimosso come configurazione | Evidenza, Mapping e oracle |
 | V-31 | Idoneita di un dato nota solo attraverso l'operazione sotto test | Nessun Given che la garantisce e nessuna operazione anticipata; vincolo nei requisiti dati, esito osservabile solo se documentato | Contesto, Mapping e Data resolution |
 | V-32 | Stato iniziale stabilibile mediante preparazione indipendente supportata | Given ammesso con evidenza del meccanismo, senza dipendenza da altri scenari; non serve un'asserzione separata per ogni Given | Functional evidence e Mapping |
-| V-33 | UC contiene una precondizione ma non e documentato come prepararla | Requisito conservato aperto, nessun setup inventato; lacuna di preparazione distinta da regola funzionale mancante | Questions, Mapping e Readiness |
+| V-33 | UC contiene una precondizione ma non e documentato come prepararla | Given scritto come lo UC, nessun setup inventato e nessuna Q; la preparazione e un finding implementativo non bloccante, distinto da una regola funzionale mancante | Mapping, report di traduzione e Readiness invariata |
 | V-34 | README documenta configurazioni diverse per tipi di suite | Consultazione selettiva delle sezioni applicabili; vincoli operativi nel report, nessuna estensione automatica di default o capacita ad altre suite | Mapping e Checks con sezioni consultate e ambito |
 | V-35 | README contiene comandi o link verso percorsi esclusi | Nessun comando eseguito e nessun percorso escluso letto; documentazione insufficiente segnalata se incide sul disegno, senza esplorazione indiscriminata | Operazioni effettive, Mapping e Questions |
 | V-36 | README contiene un possibile dato di test o esito funzionale | Trovato distinto dal contesto operativo e soggetto alla policy fonti; nessuna disponibilita o capacita di setup dedotta dal framework | Sources, decisioni di ammissione e Mapping |
 | V-37 | UC con finalità limitata e documentazione molto più ampia | Focus persistito; UC obbligatorio contabilizzato; nessun test di operazioni estranee | Agreed inputs, Mapping e Coverage |
 | V-38 | Nota umana ambigua o incompatibile con una regola fornita | Distinzione scoping/requisito/decisione; Q circoscritta o riuso di decisione già esplicita; nessuna precedenza automatica | Sources, Questions, History e dipendenti invalidati se cambia la decisione |
-| V-39 | Fonte ammessa descrive un percorso ulteriore dell'operazione UC con trigger ed esito completi | Nuovo SC del contesto con anchor e ragione, non AF inventata né riga dati; un percorso estraneo non viene aggiunto | Scenario inventory, Functional evidence e Coverage |
+| V-39 | Fonte ammessa descrive un percorso ulteriore dell'operazione UC con trigger ed esito completi, non coperto da passi, AF, EF o AC | Nessun SC e nessuno scenario nella feature; proposta SP-NNN con anchor, fonte e Gherkin nel report di traduzione; non e AF inventata né riga dati | Scenario inventory, Readiness del contesto e report di traduzione |
 | V-40 | Evento asincrono in ingresso e risposta; eventuali ACK/completamento sono distinti dalla fonte | Keyword dal ruolo causale; ogni AC resta verificato e non si aggiungono ACK o completamento non prescritti | Mapping, Oracles e feature |
 | V-41 | AC prescrive soltanto invio del messaggio; un altro richiede una verifica prima di avanzare | Entrambi verificati con Then/And nel rispettivo scope; il primo non viene sostituito da ricezione/completamento, il secondo non viene omesso come semplice trigger | Oracles, osservazioni intermedie e Coverage separata |
 | V-42 | Postcondizione UC e AC simile esplicitamente riferito a un EF | Postcondizione verificata in tutti i positivi FP/AF; AC verificato nell'EF indicato, senza restringere l'obbligo dei positivi né estenderlo ad altri EF | Oracles e Coverage per tutti i percorsi pertinenti |
@@ -84,6 +84,17 @@ documentale, non un motore sostitutivo che simula l'agente.
 | V-44 | Esempio con letterale o enum incompatibili con la regola; formula temporale con configurazione esemplificativa | Esempio non elevato a norma/fixture; formula e fase preservate; conflitto rilevante non risolto scegliendo un valore | Sources, Oracles, Data resolution e Questions |
 | V-45 | Campo necessario solo a un'API di implementazione e input realmente richiesto ma mancante | Primo resta nel report/handoff senza parametro artificiale; secondo segue TODO; oracle e tracking non diventano D | Data requirements, Data resolution, handoff e warning |
 | V-46 | Feedback cambia il requisito, oppure soltanto dati o wording | Rielaborazione attraverso gli owner pertinenti e invalidazione circoscritta; nessun retrieval delle parti invariate | Questions, History, Artifacts e nuove revisioni reali |
+| V-47 | La documentazione non dice quale API, URL, configurazione, componente UI o tecnologia realizza uno step | Nessuna domanda, nessuna Q e nessun blocco; step scritto con le parole funzionali dello UC; finding implementativo con proposta | Questions assenti, feature e report di traduzione |
+| V-48 | Un EF richiede un errore e non e documentato come indurlo nel test | EF tradotto con l'anomalia dello UC e la reazione prescritta; nessuna Q; finding implementativo; readiness non influenzata | Feature, Questions e report di traduzione |
+| V-49 | Un valore fisso, non necessario allo scenario, puo essere cablato nello step Python/Behave | Non richiesto, nessun D, nessun placeholder e nulla nella feature | Data requirements, Data resolution e feature |
+| V-50 | La feature richiede un dato di input e il valore non e nel contesto | Placeholder `__TODO_Dnnn__` senza domanda bloccante; scenario bozza e finding di tipo dato | Data resolution, feature e report di traduzione |
+| V-51 | Uno Scenario Outline richiede piu dati e nessuno ha un valore nel contesto | Un token per ogni cella interessata, righe identificate nel warning; nessuna cella vuota | Feature, Scenario warnings e report di traduzione |
+| V-52 | Funzionalita o passaggio del workflow non chiari | Richiesta di spiegazione o documentazione aggiuntiva o corretta; bloccati solo i check interessati; nessuna ipotesi | Questions, Coverage e Readiness |
+| V-53 | La documentazione e discordante con lo UC | Nessuna scelta di parte e nessuna domanda su quale prevalga; richiesta di revisione di documentazione e UC e ripetizione del task su nuova uc_revision | Questions, History, check bloccati e Artifacts stale alla ripresa |
+| V-54 | La documentazione e internamente incongruente o contraddittoria | Richiesta di risoluzione della contraddizione o rimando alla documentazione che la risolve; check interessati bloccati | Questions e Coverage |
+| V-55 | La documentazione suggerisce uno scenario che lo UC non copre | Non nella feature, non un SC, non una riga Examples; proposta SP-NNN con ancoraggio, fonte e Gherkin nel report di traduzione | Scenario inventory, feature e report di traduzione |
+| V-56 | Nessun dubbio implementativo e nessuna proposta | `report_traduzione_<slug-uc>.md` scritto comunque con `Nessuno`, frontmatter con `findings: 0` e `proposals: 0`; scrittura in History, senza riga Artifacts | Report di traduzione, Artifacts e History |
+| V-57 | Rigenerazione del report di traduzione dopo una ripresa | Id FND/SP ancora validi conservati e id eliminati non riciclati; il report non e usato come fonte o input | Report di traduzione e inputs dei report |
 
 ## Regressioni analista e orchestratore (ADR-02 - ADR-07)
 
@@ -105,6 +116,14 @@ seguenti sono risultati attesi, non prove di un'esecuzione reale dell'agente.
 | A-10 | Solo un sottoinsieme delle feature e pronto | Implementazione parziale soltanto con autorizzazione esplicita dell'umano |
 | A-11 | Nuova richiesta ACE riprende una run UC | Nuovo ACE task_id ma identita e percorsi UC invariati; nessuna migrazione dello schema |
 | A-12 | Scrittura report o registro fallita | Errore e file realmente salvati espliciti; nessun successo o stato corrente inventato |
+| A-13 | Analista diretto senza tool domande | Domanda nella chat principale, attesa della risposta umana esplicita e nessuna operazione dipendente anticipata |
+| A-14 | Analista delegato in Local senza interazione umana | Restituisce blocked con domande e checkpoint; orchestratore media e riprende il vero QA-analyst con le risposte umane |
+| A-15 | Tool domande disponibile, oppure rifiuto/cancellazione/negazione di permesso | Usa il tool disponibile; nessun fallback per aggirare una decisione o un controllo di accesso |
+| A-16 | Risposta ottenuta tramite fallback chat in una run UC | Scope e riferimento umano in Questions/History; schema v1, artefatti obbligatori e permessi invariati |
+| A-17 | Tool domande assente ma scrittura disponibile, oppure scrittura realmente fallita | Nessun falso errore filesystem dedotto dal primo caso; errore reale e stop nel secondo, senza workaround terminale |
+| A-18 | QA-analyst non registrato o delega indisponibile | Blocco esplicito; nessun agente inventato, generico o impersonato come sostituto |
+| A-19 | Task chiamato QA-analyst ma avviato con un worker diverso | Nome descrittivo non accettato come delega; verifica dell'identificativo registrato e della chiamata reale |
+| A-20 | Ripresa dopo risposte mediate dall'orchestratore | Identita UC, percorsi e output salvati conservati; conferma di continuita applicata e nessun riavvio cieco dei passaggi completati |
 
 ## Stato delle prove
 
