@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
@@ -9,8 +10,17 @@ const { SAFE_TASK_ID_RE, runtimeStateDir, validateTraceDocument } = require('../
 
 const DIRECTORY = __dirname;
 const ENV_DIR = path.join(DIRECTORY, '.venv');
-const PYTHON = path.join(ENV_DIR, process.platform === 'win32' ? 'Scripts' : 'bin',
-  process.platform === 'win32' ? 'python.exe' : 'python');
+const REQUIREMENTS = path.join(DIRECTORY, 'requirements.txt');
+const STAMP_NAME = '.ace-privacy-ready';
+const VERIFY_ENVIRONMENT = 'import presidio_analyzer, spacy; '
+  + "[spacy.load(model) for model in ('en_core_web_sm', 'it_core_news_sm')]";
+
+function pythonOf(envDir) {
+  return path.join(envDir, process.platform === 'win32' ? 'Scripts' : 'bin',
+    process.platform === 'win32' ? 'python.exe' : 'python');
+}
+
+const PYTHON = pythonOf(ENV_DIR);
 
 function execute(command, args, input) {
   const result = spawnSync(command, args, {
@@ -36,15 +46,49 @@ function readRegularJson(file, label) {
   }
 }
 
-function setup() {
-  const systemPython = process.env.PYTHON || (process.platform === 'win32' ? 'py' : 'python3');
-  execute(systemPython, process.platform === 'win32' && !process.env.PYTHON
-    ? ['-3', '-m', 'venv', ENV_DIR] : ['-m', 'venv', ENV_DIR]);
-  execute(PYTHON, ['-m', 'pip', 'install', '-r', path.join(DIRECTORY, 'requirements.txt')]);
-  for (const model of ['en_core_web_sm', 'it_core_news_sm']) {
-    execute(PYTHON, ['-m', 'spacy', 'download', model]);
+/** Hash of the requirements file: any change invalidates a previously installed environment. */
+function requirementsFingerprint(file = REQUIREMENTS) {
+  return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+}
+
+/** Install Presidio, spaCy and both language models into the addon-local virtualenv. */
+function setup({ envDir = ENV_DIR, requirements = REQUIREMENTS, run: exec = execute,
+  log = (message) => console.error(message) } = {}) {
+  const python = pythonOf(envDir);
+  const launcher = process.env.PYTHON ? [process.env.PYTHON]
+    : (process.platform === 'win32' ? ['py', '-3'] : ['python3']);
+  log('ACE privacy: preparing the Presidio environment (first use or requirements changed; '
+    + 'it downloads packages and may take a few minutes)...');
+  try {
+    exec(launcher[0], [...launcher.slice(1), '-c',
+      'import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)']);
+  } catch (error) {
+    throw new Error(`Python 3.10+ is required (tried "${launcher.join(' ')}"); install it or set `
+      + `the PYTHON environment variable. ${error.message}`);
   }
-  console.log('ACE privacy dependencies installed.');
+  exec(launcher[0], [...launcher.slice(1), '-m', 'venv', envDir]);
+  exec(python, ['-m', 'pip', 'install', '-r', requirements]);
+  exec(python, ['-c', VERIFY_ENVIRONMENT]);
+  fs.writeFileSync(path.join(envDir, STAMP_NAME), requirementsFingerprint(requirements));
+  log('ACE privacy: environment ready.');
+}
+
+/**
+ * Make sure the addon environment matches the requirements, installing it on first use.
+ * Set ACE_PRIVACY_NO_AUTOSETUP=1 to fail with instructions instead of installing.
+ */
+function ensureEnvironment({ envDir = ENV_DIR, requirements = REQUIREMENTS, env = process.env,
+  ...options } = {}) {
+  const stamp = path.join(envDir, STAMP_NAME);
+  const ready = fs.existsSync(pythonOf(envDir)) && fs.existsSync(stamp)
+    && fs.readFileSync(stamp, 'utf8').trim() === requirementsFingerprint(requirements);
+  if (ready) return false;
+  if (env.ACE_PRIVACY_NO_AUTOSETUP === '1') {
+    throw new Error('ACE privacy environment is missing or outdated and automatic setup is disabled; '
+      + 'run: node scripts/ace-addons/privacy/finalize-task.js --setup');
+  }
+  setup({ envDir, requirements, ...options });
+  return true;
 }
 
 function taskTraces(taskId) {
@@ -65,6 +109,8 @@ function taskTraces(taskId) {
 
 function run(taskId) {
   const traces = taskTraces(taskId);
+  // Before touching any trace: a failed bootstrap leaves the raw traces untouched.
+  ensureEnvironment();
   const prepared = traces.map(({ agent, file }) => {
     const original = readRegularJson(file, 'trace file');
     validateTraceDocument(original);
@@ -116,6 +162,7 @@ function run(taskId) {
 if (require.main === module) {
   try {
     if (process.argv[2] === '--setup') setup();
+    else if (process.argv[2] === '--ensure') ensureEnvironment();
     else run(process.argv[2]);
   } catch (error) {
     console.error(`ACE privacy addon failed: ${error.message}`);
@@ -123,4 +170,6 @@ if (require.main === module) {
   }
 }
 
-module.exports = { run, taskTraces };
+module.exports = {
+  run, taskTraces, setup, ensureEnvironment, requirementsFingerprint, STAMP_NAME,
+};
