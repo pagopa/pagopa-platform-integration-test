@@ -1,13 +1,14 @@
-#language: it
-@integration
+# qa-hub: FEAT_001_FdR3
+# language: it
 @FDR3_001
+@integration
 Funzionalità: Aggiunta di pagamenti a un flusso di rendicontazione
 
   Contesto:
     Dato che i sistemi sono operativi
 
-  @FDR3_001_01
   @positive
+  @FDR3_001_01
   Scenario: Creazione del flusso di rendicontazione per il test di aggiunta pagamenti
     Dato un nome di flusso di rendicontazione univoco chiamato flow_name
     E una data di flusso di rendicontazione univoco chiamato flow_date
@@ -16,8 +17,8 @@ Funzionalità: Aggiunta di pagamenti a un flusso di rendicontazione
     Allora il PSP riceve il codice di stato HTTP 201
 
   @runnable
-  @FDR3_001_02
   @positive
+  @FDR3_001_02
   Schema dello scenario: Aggiunta di pagamenti al flusso
     Dato che il PSP deve inviare <n> pagamenti al flusso
     E che la somma totale dei pagamenti da inviare è <amount>
@@ -32,8 +33,8 @@ Funzionalità: Aggiunta di pagamenti a un flusso di rendicontazione
       | 1000 | 29999  | 200  |
 
   @runnable
-  @FDR3_001_03
   @negative
+  @FDR3_001_03
   Schema dello scenario: Rifiuto di aggiunta pagamenti per numero eccessivo
     Dato che il PSP deve inviare <n> pagamenti al flusso
     E che la somma totale dei pagamenti da inviare è <amount>

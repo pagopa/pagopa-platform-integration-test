@@ -1,14 +1,15 @@
-#language: it
-@integration
+# qa-hub: FEAT_005_FdR3
+# language: it
 @FDR3_005
+@integration
 Funzionalità: Verifica KO dei pagamenti
   Verifiche negative sui flussi: creazione, aggiunta pagamenti in eccesso e richiesta con subscription key non valida
 
   Contesto:
     Dato che i sistemi sono operativi
 
-  @FDR3_005_01
   @positive
+  @FDR3_005_01
   Scenario: Creazione del FdR
     Dato un nome di flusso di rendicontazione univoco chiamato flow_name
     E una data di flusso di rendicontazione univoco chiamato flow_date
@@ -16,8 +17,8 @@ Funzionalità: Verifica KO dei pagamenti
     Quando il PSP invia la richiesta di "Creazione di una nuova struttura di flusso" con il payload "create_payload"
     Allora il PSP riceve il codice di stato HTTP 201
 
-  @FDR3_005_02
   @negative
+  @FDR3_005_02
   Scenario: Aggiunta di pagamenti in eccesso
     Dato che il PSP deve inviare 1001 pagamenti al flusso
     E che la somma totale dei pagamenti da inviare è 9999
@@ -26,8 +27,8 @@ Funzionalità: Verifica KO dei pagamenti
     Allora il PSP riceve il codice di stato HTTP 400
 
   @runnable
-  @FDR3_005_03
   @negative
+  @FDR3_005_03
   Scenario: Aggiunta pagamenti con subscription_key non valida
     Dato che il PSP deve inviare 3 pagamenti al flusso
     E che la somma totale dei pagamenti da inviare è 10
