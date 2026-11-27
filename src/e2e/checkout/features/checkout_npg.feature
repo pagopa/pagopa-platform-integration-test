@@ -17,6 +17,7 @@ Funzionalità: Attivazione pagamento Checkout
   # Happy path: flusso di pagamento completo
   # =============================================
 
+  @smoke
   @runnable
   @positive
   @FEAT_003_Checkout_scenario_01
@@ -48,6 +49,7 @@ Funzionalità: Attivazione pagamento Checkout
   # =============================================
 
   @negative
+  @runnable
   @FEAT_003_Checkout_scenario_02
   Schema dello scenario: Viene mostrato l'errore <error_code> per codice avviso non valido nell'intervallo <range_start>-<range_end>
     Quando L'utente inserisce i dati dell'avviso con un codice avviso nell'intervallo "<range_start>" a "<range_end>"
@@ -65,6 +67,7 @@ Funzionalità: Attivazione pagamento Checkout
       | PAA_PAGAMENTO_DUPLICATO     | 302950100443009424 | 302950100443009424 | 77777777777 | 5       | Questo avviso è stato già pagato!                |                                                                                                |
 
   @negative
+  @runnable
   @FEAT_003_Checkout_scenario_03
   Schema dello scenario: Viene mostrato il codice di errore per ente creditore non raggiungibile
     Quando L'utente inserisce i dati dell'avviso con un codice avviso nell'intervallo "<range_start>" a "<range_end>"

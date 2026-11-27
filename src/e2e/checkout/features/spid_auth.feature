@@ -12,6 +12,7 @@ Funzionalità: Flusso di accesso con SPID
     Dato La pagina di checkout è aperta
     E La lingua è impostata su "it"
 
+  @smoke
   @runnable
   @positive
   @FEAT_002_Checkout_scenario_01
@@ -19,6 +20,7 @@ Funzionalità: Flusso di accesso con SPID
     Quando L'utente clicca sul pulsante di login
     Allora L'utente ha effettuato l'accesso
 
+  @smoke
   @runnable
   @positive
   @FEAT_002_Checkout_scenario_02

@@ -18,6 +18,7 @@ Funzionalità: Attivazione pagamento Checkout autenticato
   # Happy path: flusso di pagamento completo
   # =============================================
 
+  @smoke
   @runnable
   @positive
   @FEAT_004_Checkout_scenario_01

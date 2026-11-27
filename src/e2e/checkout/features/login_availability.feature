@@ -10,6 +10,7 @@ Funzionalità: Disponibilità opzione login in tutte le fasi del flusso di pagam
     Dato La pagina di checkout è aperta
     E La lingua è impostata su "it"
 
+  @smoke
   @runnable
   @positive
   @FEAT_001_Checkout_scenario_01
@@ -18,6 +19,7 @@ Funzionalità: Disponibilità opzione login in tutte le fasi del flusso di pagam
     Allora Il pulsante di login è visibile e abilitato
     E Il titolo del pulsante di login è "Accedi"
 
+  @smoke
   @runnable
   @positive
   @FEAT_001_Checkout_scenario_02
@@ -27,6 +29,7 @@ Funzionalità: Disponibilità opzione login in tutte le fasi del flusso di pagam
     Allora Il pulsante di login è visibile e abilitato
     E Il titolo del pulsante di login è "Accedi"
 
+  @smoke
   @runnable
   @positive
   @FEAT_001_Checkout_scenario_03
@@ -37,6 +40,7 @@ Funzionalità: Disponibilità opzione login in tutte le fasi del flusso di pagam
     Allora Il pulsante di login è visibile e abilitato
     E Il titolo del pulsante di login è "Accedi"
 
+  @smoke
   @runnable
   @positive
   @FEAT_001_Checkout_scenario_04

@@ -109,6 +109,14 @@ jobs:
             --tags="@runnable"
             --tags="~@skip"
             --tags="~@broken"
+          )
+          # Add additional suite-specific tags if configured
+          for tag in "${tags[@]}"; do
+            if [[ -n "$tag" ]]; then
+              command+=(--tags="$tag")
+            fi
+          done
+          command+=(
             --format allure_behave.formatter:AllureFormatter
             -o allure-results
             --junit-directory=junit
