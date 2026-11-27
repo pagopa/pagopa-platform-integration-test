@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>🤖 AI Analysis · CHECKOUT E2E - NRT ANALYSIS · 2026-11-27_06:33:52</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body { background-color: #f5f8fa; padding: 2rem; }
+    .hero {
+      background-color: #6f42c1;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      border-radius: 0.5rem;
+    }
+    .content-card {
+      background: white;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    }
+    .content-card h2 { margin-top: 1.5rem; color: #6f42c1; }
+    .content-card h3 { color: #495057; }
+    .content-card pre {
+      background: #f1f3f5;
+      padding: 0.75rem;
+      border-radius: 0.35rem;
+      overflow-x: auto;
+      font-size: 0.9rem;
+    }
+    .hero code {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      padding: 0.15rem 0.4rem;
+      border-radius: 0.35rem;
+    }
+    .content-card code {
+      color: #ff61b0;
+      background: #fff0f7;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    footer code {
+      color: #6f42c1;
+      background: #f3ebff;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    .btn-secondary { background-color: #6c757d; border: none; }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <h1 class="display-6">🤖 AI Analysis · CHECKOUT E2E - NRT ANALYSIS</h1>
+  <p class="lead mb-1">Run: <code>2026-11-27_06:33:52</code></p>
+  
+  <p class="mb-0"><a class="link-light" href="full.html">Analisi completa di tutte le suite</a></p>
+  
+</header>
+
+<div class="container">
+  <div class="content-card">
+    <div id="analysis-content">
+      <div class="text-center text-muted">Rendering in corso...</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Powered by GitHub Models · Model: <code>gemini-3.6-flash</code></p>
+</footer>
+
+<script>
+  const markdown = "## Suite: checkout\n\n# 1. Inserimento dati - errori - indirizzo email diverso da ripeti\n- **status**: broken\n- **fullName**: `Validazione sintattica dei campi: Inserimento dati - errori - indirizzo email diverso da ripeti`\n- **message**: playwright._impl._errors.TimeoutError: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \u0027load\u0027\n============================================================\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/e2e/checkout/steps/back_navigation.py\", line 87, in step_click_button\n    with page.expect_navigation(timeout=15000):\n         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py\", line 85, in __exit__\n    self._event.value\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py\", line 59, in value\n    raise exception\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py\", line 264, in continuation\n    event = await waiter.result()\n            ^^^^^^^^^^^^^^^^^^^^^\n```\n### Root cause\nThe test expected page navigation upon clicking a button, but no navigation occurred within 15 seconds due to form validation blocking submission.\n\n### Category\nflaky\n\n### Recommended action\nUpdate test step logic to avoid expecting page navigation when submitting forms with invalid inputs.\n\n---\n\n# 2. Inserimento dati - errori -  Inserimento codice avviso errato -- @1.3\n- **status**: broken\n- **fullName**: `Validazione sintattica dei campi: Inserimento dati - errori -  Inserimento codice avviso errato`\n- **message**: playwright._impl._errors.TimeoutError: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \u0027load\u0027\n============================================================\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/e2e/checkout/steps/back_navigation.py\", line 87, in step_click_button\n    with page.expect_navigation(timeout=15000):\n         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py\", line 85, in __exit__\n    self._event.value\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py\", line 59, in value\n    raise exception\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py\", line 264, in continuation\n    event = await waiter.result()\n            ^^^^^^^^^^^^^^^^^^^^^\n```\n### Root cause\nForm validation error prevented page navigation, causing Playwright navigation waiter to hit the 15-second timeout.\n\n### Category\nflaky\n\n### Recommended action\nRefactor the step definition to expect inline validation messages rather than page navigation.\n\n---\n\n# 3. Inserimento dati - errori -  Click sul tasto continua con campo non compilato -- @1.1\n- **status**: broken\n- **fullName**: `Validazione sintattica dei campi: Inserimento dati - errori -  Click sul tasto continua con campo non compilato`\n- **message**: playwright._impl._errors.TimeoutError: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \u0027load\u0027\n============================================================\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/e2e/checkout/steps/back_navigation.py\", line 87, in step_click_button\n    with page.expect_navigation(timeout=15000):\n         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py\", line 85, in __exit__\n    self._event.value\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py\", line 59, in value\n    raise exception\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py\", line 264, in continuation\n    event = await waiter.result()\n            ^^^^^^^^^^^^^^^^^^^^^\n```\n### Root cause\nClicking continue with unfulfilled input fields prevented page navigation, leading to navigation timeout.\n\n### Category\nflaky\n\n### Recommended action\nRemove navigation wait guard for negative validation scenarios.\n\n---\n\n# 4. Inserimento dati - errori -  Inserimento indirizzo email non valido -- @1.3\n- **status**: broken\n- **fullName**: `Validazione sintattica dei campi: Inserimento dati - errori -  Inserimento indirizzo email non valido`\n- **message**: playwright._impl._errors.TimeoutError: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \u0027load\u0027\n============================================================\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/e2e/checkout/steps/back_navigation.py\", line 87, in step_click_button\n    with page.expect_navigation(timeout=15000):\n         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py\", line 85, in __exit__\n    self._event.value\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py\", line 59, in value\n    raise exception\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py\", line 264, in continuation\n    event = await waiter.result()\n            ^^^^^^^^^^^^^^^^^^^^^\n```\n### Root cause\nClient-side email validation prevented form submission, triggering a Playwright `TimeoutError` waiting for navigation.\n\n### Category\nflaky\n\n### Recommended action\nAdjust step definition to assert validation UI states instead of page navigation.\n\n---\n\n# 5. Inserimento dati - errori -  Inserimento CF ente errato -- @1.2\n- **status**: broken\n- **fullName**: `Validazione sintattica dei campi: Inserimento dati - errori -  Inserimento CF ente errato`\n- **message**: playwright._impl._errors.TimeoutError: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \u0027load\u0027\n============================================================\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/e2e/checkout/steps/back_navigation.py\", line 87, in step_click_button\n    with page.expect_navigation(timeout=15000):\n         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py\", line 85, in __exit__\n    self._event.value\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_sync_base.py\", line 59, in value\n    raise exception\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/playwright/_impl/_frame.py\", line 264, in continuation\n    event = await waiter.result()\n            ^^^^^^^^^^^^^^^^^^^^^\n```\n### Root cause\nInvalid fiscal code input triggered client validation preventing navigation, timing out the navigation expectation.\n\n### Category\nflaky\n\n### Recommended action\nFix test assertions to check error messages without waiting for page load navigation.\n\n---\n\n# 6. Un pagamento con configurazione carta \"Postepay\" viene completato con successo -- @1.1\n- **status**: broken\n- **fullName**: `Attivazione pagamento Autenticato: Un pagamento con configurazione carta \"Postepay\" viene completato con successo`\n- **message**: RuntimeError: Timeout on locator \u0027#psp-radio-PPAYITR1XXX\u0027 after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py\", line 188, in step_select_psp\n    locate_and_click(page, f\"#psp-radio-{psp_id}\")\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py\", line 129, in locate_and_click\n    raise RuntimeError(\n        f\"Timeout on locator \u0027{locator}\u0027 after {timeout} ms (url: {current_url})\"\n    ) from exc\n```\n### Root cause\nElement `#psp-radio-PPAYITR1XXX` did not appear on the PSP list page within 5000 ms, likely due to slow PSP list loading or missing data in UAT.\n\n### Category\nenvironment\n\n### Recommended action\nVerify PSP service availability and configuration for Postepay (`PPAYITR1XXX`) in UAT environment and increase locator timeout if necessary.\n\n---\n\n# 7. Un pagamento con configurazione carta \"Postepay\" viene completato con successo -- @1.1\n- **status**: broken\n- **fullName**: `Attivazione pagamento: Un pagamento con configurazione carta \"Postepay\" viene completato con successo`\n- **message**: RuntimeError: Timeout on locator \u0027#psp-radio-PPAYITR1XXX\u0027 after 5000 ms (url: https://uat.checkout.pagopa.it/lista-psp)\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py\", line 188, in step_select_psp\n    locate_and_click(page, f\"#psp-radio-{psp_id}\")\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/helper.py\", line 129, in locate_and_click\n    raise RuntimeError(\n        f\"Timeout on locator \u0027{locator}\u0027 after {timeout} ms (url: {current_url})\"\n    ) from exc\n```\n### Root cause\nElement `#psp-radio-PPAYITR1XXX` failed to render within the 5-second timeout window during PSP selection.\n\n### Category\nenvironment\n\n### Recommended action\nCheck UAT environment latency and backend availability for retrieving PSP choices.\n\n---\n\n# 8. Viene mostrato l\u0027errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell\u0027intervallo 302400000000000000-302409999999999999 -- @1.1\n- **status**: failed\n- **fullName**: `Attivazione pagamento: Viene mostrato l\u0027errore PAA_PAGAMENTO_SCONOSCIUTO per codice avviso non valido nell\u0027intervallo 302400000000000000-302409999999999999`\n- **message**: AssertionError: Expected modal header to contain \u0027Non riusciamo a trovare l\u2019avviso\u0027, but got: \u0027L\u2019Ente Creditore sta avendo problemi nella risposta\u0027\n- **trace**:\n```\nFile \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/model.py\", line 1329, in run\n    match.run(runner.context)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.15.2/x64/lib/python3.15/site-packages/behave/matchers.py\", line 98, in run\n    self.func(context, *args, **kwargs)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/pagopa-platform-integration-test/pagopa-platform-integration-test/src/e2e/checkout/steps/checkout_npg.py\", line 245, in step_error_modal_header\n    assert expected_header in header_text, (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n```\n### Root cause\nThe application returned a generic creditor entity failure modal message instead of the specific unknown payment error message (`PAA_PAGAMENTO_SCONOSCIUTO`).\n\n### Category\napplication bug\n\n### Recommended action\nInvestigate mock server or downstream creditor service responses for the `30240*` notice code range to return the expected error code.\n\n---\n\n## Common patterns\n- **Incorrect Navigation Expectation in Form Validation Tests**: Tests 1-5 fail due to `page.expect_navigation` timing out when invalid inputs prevent navigation.\n- **PSP Element Visibility Timeouts**: Tests 6-7 fail because locator `#psp-radio-PPAYITR1XXX` is not found within 5 seconds.";
+  const target = document.getElementById('analysis-content');
+  if (markdown && markdown.trim().length > 0) {
+    target.innerHTML = marked.parse(markdown);
+  } else {
+    target.innerHTML = '<div class="alert alert-warning">Nessuna analisi disponibile per questa run.</div>';
+  }
+</script>
+
+</body>
+</html>
