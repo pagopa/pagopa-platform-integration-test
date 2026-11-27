@@ -125,7 +125,7 @@ pip install -r requirements.txt
 
 ### Privacy delle trace ACE con Presidio
 
-Il progetto include un addon project-owned per anonimizzare le trace ACE prima che vengano usate da contatori, threshold e reflector. La policy e il workflow sono documentati qui:
+Il progetto include un addon project-owned per anonimizzare le trace ACE prima che vengano usate da contatori, threshold e reflector. Non serve installare nulla a mano: al primo `node scripts\ace-addons\privacy\finalize-task.js <task-id>` l'addon crea da solo il proprio ambiente Python locale (richiede Node.js 18+, Python 3.10+ e accesso a Internet; pochi minuti la prima volta). La policy, le opzioni (`--ensure`, `--setup`, `ACE_PRIVACY_NO_AUTOSETUP`) e il workflow sono documentati qui:
 
 - [scripts/ace-addons/privacy/README.md](./scripts/ace-addons/privacy/README.md)
 
@@ -1042,8 +1042,11 @@ e [profili](.github/profiles/README.md), con scope, modalita d'uso ed esempi.
 
 Per tradurre uno Use Case (UC) in feature, seguire il
 [workflow UC](docs/use-cases/uc-workflow.md): esplicitare il focus funzionale,
-riconciliare i percorsi documentati pertinenti e coprire flussi e criteri con
-evidenze ammesse.
+coprire flussi e criteri dello UC con evidenze ammesse. I dubbi di
+implementazione (API, URL, configurazione, componenti UI, come indurre un errore)
+non si chiedono e non bloccano la feature: finiscono, insieme alle proposte di
+scenari non coperti dallo UC, in `report_traduzione_<slug-uc>.md` nella
+directory della run.
 
 ### Convenzioni Gherkin
 
@@ -1082,6 +1085,14 @@ l'ultima autorizzazione esplicita applicabile, incluse revoche. Cambiamenti
 rilevanti invalidano le evidenze dipendenti e le esecuzioni parallele richiedono
 anche isolamento dei dati/risorse esterne. Esito QA e completamento ACE sono
 distinti: un blocco del bookkeeping non autorizza a ripetere test o azioni Git.
+
+Per le skill UC, la delega usa il `QA-analyst` realmente registrato nell'harness,
+non un worker generico rinominato. Orchestratore e analista usano il tool domande
+quando disponibile; in VS Code classico o altri contesti senza quel tool passano
+a scambi di chat, mediati dall'orchestratore per l'analista delegato. Il
+[protocollo di interazione](docs/workflows/qa-orchestrator/operations.md#human-interaction-and-harness-compatibility)
+mantiene approvazioni, ownership e output persistenti: il fallback non consente
+di presumere risposte umane, sostituire l'analista o dichiarare file non salvati.
 
 Le [istruzioni Gherkin](.github/instructions/gherkin.instructions.md) e il
 [profilo associato](.github/profiles/gherkin.profile.yaml) mantengono stabili gli
