@@ -1,5 +1,6 @@
 # qa-hub: FEAT_004_Checkout
 # language: it
+@e2e
 @CHECKOUT_004
 Funzionalità: Attivazione pagamento Autenticato
   Un utente del sistema checkout
@@ -11,7 +12,13 @@ Funzionalità: Attivazione pagamento Autenticato
     E La lingua è impostata su "it"
     E L'utente è autenticato
 
-  @checkout @e2e @positive @smoke @ui @positivo
+  # =============================================
+  # Happy path: flusso di pagamento completo
+  # =============================================
+
+  @smoke
+  @runnable
+  @positive
   @CHECKOUT_004_01
   Schema dello scenario: Un pagamento con configurazione carta "<testing_psp>" viene completato con successo
     Quando L'utente inserisce i dati dell'avviso con un codice avviso con prefisso "<notice_code_prefix>"

@@ -1,13 +1,13 @@
-# qa-hub: FEAT_010_FdR3
-# language: it
+#language: it
+@integration
 @FDR3_010
 Funzionalità: Verifica paginazione per le API PSP
 
   Contesto:
     Dato che i sistemi sono operativi
 
-  @positivo
   @FDR3_010_01
+  @positive
   Scenario: Creazione del flusso di rendicontazione per test paginazione PSP
     Dato un nome di flusso di rendicontazione univoco chiamato flow_name
     E una data di flusso di rendicontazione univoco chiamato flow_date
@@ -15,8 +15,8 @@ Funzionalità: Verifica paginazione per le API PSP
     Quando il PSP invia la richiesta di "Creazione di una nuova struttura di flusso" con il payload "create_payload"
     Allora il PSP riceve il codice di stato HTTP 201
 
-  @positivo
   @FDR3_010_02
+  @positive
   Scenario: Inserimento pagamenti per test paginazione PSP
     Dato che il PSP deve inviare 100 pagamenti al flusso
     E che la somma totale dei pagamenti da inviare è 20
@@ -25,15 +25,16 @@ Funzionalità: Verifica paginazione per le API PSP
     E il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "payments_payload"
     Allora il PSP riceve il codice di stato HTTP 200
 
-  @positivo
   @FDR3_010_03
+  @positive
   Scenario: Pubblicazione del flusso per test paginazione PSP
     Dato che lo scenario "Inserimento pagamenti per test paginazione PSP" è stato eseguito con successo
     Quando il PSP invia la richiesta di "Pubblicazione" con il payload "None"
     Allora il PSP riceve il codice di stato HTTP 200
 
-  @runnable @positivo
+  @runnable
   @FDR3_010_04
+  @positive
   Scenario: Verifica paginazione pagamenti creati pagina 1
     Dato che lo scenario "Inserimento pagamenti per test paginazione PSP" è stato eseguito con successo
     E il PSP aggiunge $flow_date$ come createdGt nei parametri di query
@@ -43,8 +44,9 @@ Funzionalità: Verifica paginazione per le API PSP
     Allora il PSP riceve il codice di stato HTTP 200
     E il PSP riceve pagina 1 con 99 elementi come risposta
 
-  @runnable @positivo
+  @runnable
   @FDR3_010_05
+  @positive
   Scenario: Verifica paginazione pagamenti creati pagina 2
     Dato che lo scenario "Inserimento pagamenti per test paginazione PSP" è stato eseguito con successo
     E il PSP aggiunge $flow_date$ come createdGt nei parametri di query
@@ -54,8 +56,9 @@ Funzionalità: Verifica paginazione per le API PSP
     Allora il PSP riceve il codice di stato HTTP 200
     E il PSP riceve pagina 2 con 1 elemento come risposta
 
-  @runnable @positivo
+  @runnable
   @FDR3_010_06
+  @positive
   Scenario: Verifica paginazione FdR creati pagina 1
     Dato che lo scenario "Inserimento pagamenti per test paginazione PSP" è stato eseguito con successo
     E il PSP aggiunge ieri come createdGt nei parametri di query
@@ -65,8 +68,9 @@ Funzionalità: Verifica paginazione per le API PSP
     Allora il PSP riceve il codice di stato HTTP 200
     E il PSP riceve pagina 1 con 1 elemento come risposta
 
-  @runnable @positivo
+  @runnable
   @FDR3_010_07
+  @positive
   Scenario: Verifica paginazione FdR creati pagina 2
     Dato che lo scenario "Inserimento pagamenti per test paginazione PSP" è stato eseguito con successo
     E il PSP aggiunge ieri come createdGt nei parametri di query
@@ -76,8 +80,9 @@ Funzionalità: Verifica paginazione per le API PSP
     Allora il PSP riceve il codice di stato HTTP 200
     E il PSP riceve pagina 2 con 1 elemento come risposta
 
-  @runnable @positivo
+  @runnable
   @FDR3_010_08
+  @positive
   Schema dello scenario: Verifica paginazione pagamenti pubblicati dal PSP
     Dato che lo scenario "Pubblicazione del flusso per test paginazione PSP" è stato eseguito con successo
     E la revisione del FdR è 1
@@ -93,8 +98,9 @@ Funzionalità: Verifica paginazione per le API PSP
       | 1           | 1         |
       | 2           | 50        |
 
-  @runnable @positivo
+  @runnable
   @FDR3_010_09
+  @positive
   Schema dello scenario: Verifica paginazione FdR pubblicati dal PSP
     Dato che lo scenario "Pubblicazione del flusso per test paginazione PSP" è stato eseguito con successo
     E la revisione del FdR è 1

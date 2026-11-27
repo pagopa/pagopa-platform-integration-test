@@ -1055,12 +1055,51 @@ directory della run.
 - Mantenere gli step atomici e riusabili.
 - Usare `Background` per precondizioni comuni.
 - Conservare i tag esistenti.
-- Aggiungere tag significativi, ad esempio `@smoke`, `@regression`, `@<suite>`.
+- Aggiungere tag significativi, ad esempio `@runnable`, `@flaky`, `@<suite>`.
 - Scrivere nella lingua gia usata dalla suite.
 - Tenere al massimo 12 scenari per feature file; se serve, dividere per area semantica.
 - Usare la terza persona presente negli step.
 
 Riferimenti: regole operative di progetto, feature file esistenti.
+
+### Linee guida per i tag
+
+Affinchè la suite possa essere eseguita e tracciata correttamente all'interno del framework QA, è necessario che l'intestazione del feature file contenga:
+
+- All'inizio del file, sotto le due righe dedicate alla lingua e all'id della pagina Confluence, un tag riportante il tipo di suite, ad esempio `@integration`;
+- Al di sotto del tag del tipo di suite, un tag identificativo per il feature file, ad esempio `@fdr3_001_Aggiungi_pagamenti`.
+
+I singoli scenari necessitano di tag appositi, di seguito:
+  - Uno tra `@runnable`, `@skip` e `@broken`, con il primo utilizzato per indicare gli scenari da eseguire, e gli ultimi due per indicare quelli da non eseguire;
+  - (Opzionale) Il tag `@flaky` per indicare uno scenario flaky (non influisce sulla sua esecuzione, affinchè non venga eseguito utilizzare `@skip` o `@broken`);
+  - Il tag di scenario, ad esempio `@fdr3_001_01`, contenente il nome della suite, il progressivo del feature file e l'indice dello scenario all'interno del feature file;
+  - Uno tra `@positive` e `@negative` per indicare se il flusso testato nello scenario sia positivo o negativo.
+
+Inoltre, è possibile aggiungere tag opzionali, come:
+- `@regression`: utilizzato per indicare un test di non regressione (non influisce sulla sua esecuzione, affinchè non venga eseguito utilizzare `@skip` o `@broken`);
+- `@smoke`: utilizzato per indicare uno smoke test
+
+
+### Non è strettamente necessario che i tag siano in quest'ordine, ma per coerenza e leggibilità, è consigliato che lo siano. ###
+
+
+Esempio:
+```
+#language: it
+@integration
+@fdr3_001_Aggiungi_pagamenti
+Funzionalità: Aggiunta di pagamenti a un flusso di rendicontazione
+
+  Contesto:
+    Dato che i sistemi sono operativi
+
+  @runnable
+  @regression
+  @flaky
+  @fdr3_001_01
+  @positive
+  Scenario: Creazione del flusso di rendicontazione per il test di aggiunta pagamenti
+```
 
 ### Processo consigliato
 

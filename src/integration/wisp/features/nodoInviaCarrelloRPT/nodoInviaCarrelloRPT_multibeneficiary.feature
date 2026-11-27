@@ -1,14 +1,17 @@
-# qa-hub: FEAT_007_WISP
-# language: it
-@WISP_007 @integration
-Funzionalità: MultiBeneficiario_L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT
-  L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT
-
+#3115780709
+#language:it
+@integration
+@WISP_007
+Funzionalità: L'utente paga carrelli di pagamento multi-beneficiari su nodoInviaCarrelloRPT
+  
   Contesto:
     Dati i sistemi sono operativi
 
-  @NodoInviaCarrelloRPT_MultiBeneficiario_007 @happy_path @nodo_invia_carrello_rpt @runnable @positive
+  
+  @runnable
   @WISP_007_01
+  @nodo_invia_carrello_rpt
+  @positive
   Scenario: L'utente paga un carrello multibeneficiario con due RPT con un totale di due versamenti
     Dato un carrello di RPT multi-beneficiario
     E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
@@ -16,8 +19,11 @@ Funzionalità: MultiBeneficiario_L'utente paga carrelli di pagamento multi-benef
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario
 
-  @NodoInviaCarrelloRPT_MultiBeneficiario_007 @happy_path @nodo_invia_carrello_rpt @runnable @positive
+  
+  @runnable
   @WISP_007_02
+  @nodo_invia_carrello_rpt
+  @positive
   Scenario: L'utente paga un carrello multibeneficiario con due RPT con un totale di tre versamenti
     Dato un carrello di RPT multi-beneficiario
     E una singola RPT di tipo BBT con 2 versamenti di cui none sono marche da bollo
@@ -25,8 +31,11 @@ Funzionalità: MultiBeneficiario_L'utente paga carrelli di pagamento multi-benef
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario
 
-  @NodoInviaCarrelloRPT_MultiBeneficiario_007 @happy_path @nodo_invia_carrello_rpt @runnable @positive
+  
+  @runnable
   @WISP_007_03
+  @nodo_invia_carrello_rpt
+  @positive
   Scenario: L'utente paga un carrello multibeneficiario con due RPT con un totale di quattro versamenti
     Dato un carrello di RPT multi-beneficiario
     E una singola RPT di tipo BBT con 3 versamenti di cui none sono marche da bollo
@@ -34,8 +43,11 @@ Funzionalità: MultiBeneficiario_L'utente paga carrelli di pagamento multi-benef
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario
 
-  @NodoInviaCarrelloRPT_MultiBeneficiario_007 @happy_path @nodo_invia_carrello_rpt @runnable @positive
+  
+  @runnable
   @WISP_007_04
+  @nodo_invia_carrello_rpt
+  @positive
   Scenario: L'utente paga un carrello multibeneficiario con due RPT con un totale di cinque versamenti
     Dato un carrello di RPT multi-beneficiario
     E una singola RPT di tipo BBT con 4 versamenti di cui none sono marche da bollo
@@ -43,8 +55,11 @@ Funzionalità: MultiBeneficiario_L'utente paga carrelli di pagamento multi-benef
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario
 
-  @NodoInviaCarrelloRPT_MultiBeneficiario_007 @nodo_invia_carrello_rpt @runnable @unhappy_path @positive
+
+  @runnable
   @WISP_007_05
+  @nodo_invia_carrello_rpt
+  @negative
   Scenario: L'utente tenta di pagare un carrello multibeneficiario con due RPT con un totale di sei versamenti, ma il carrello ha piu di 5 versamenti
     Dato un carrello di RPT multi-beneficiario
     E una singola RPT di tipo BBT con 5 versamenti di cui none sono marche da bollo
@@ -53,8 +68,11 @@ Funzionalità: MultiBeneficiario_L'utente paga carrelli di pagamento multi-benef
     E il tentativo di pagamento fallisce
     Allora la risposta contiene il campo description con valore 'Il carrello deve avere massimo 5 versamenti totali'
 
-  @NodoInviaCarrelloRPT_MultiBeneficiario_007 @nodo_invia_carrello_rpt @runnable @unhappy_path @positive
+  
+  @runnable
   @WISP_007_06
+  @nodo_invia_carrello_rpt
+  @negative
   Scenario: L'utente tenta di pagare un carrello multibeneficiario con tre RPT con un versamento ciascuna, ma il carrello ha piu di 2 RPT
     Dato un carrello di RPT multi-beneficiario
     E una singola RPT di tipo BBT con 1 versamenti di cui none sono marche da bollo
@@ -64,8 +82,11 @@ Funzionalità: MultiBeneficiario_L'utente paga carrelli di pagamento multi-benef
     E il tentativo di pagamento fallisce
     Allora la risposta contiene il campo description con valore 'Il carrello non contiene solo 2 RPT'
 
-  @NodoInviaCarrelloRPT_MultiBeneficiario_007 @nodo_invia_carrello_rpt @runnable @unhappy_path @positive
+  
+  @runnable
   @WISP_007_07
+  @nodo_invia_carrello_rpt
+  @negative
   Scenario: L'utente tenta di pagare un carrello multibeneficiario con due RPT, in cui la seconda ha due versamenti, ma la seconda RPT contiene piu di un versamento
     Dato un carrello di RPT multi-beneficiario
     E una singola RPT di tipo BBT con 3 versamenti di cui none sono marche da bollo
@@ -74,8 +95,11 @@ Funzionalità: MultiBeneficiario_L'utente paga carrelli di pagamento multi-benef
     E il tentativo di pagamento fallisce
     Allora la risposta contiene il campo description con valore 'La seconda RPT non contiene solo 1 versamento'
 
-  @NodoInviaCarrelloRPT_MultiBeneficiario_007 @nodo_invia_carrello_rpt @runnable @unhappy_path @positive
+  
+  @runnable
   @WISP_007_08
+  @nodo_invia_carrello_rpt
+  @negative
   Scenario: L'utente tenta di pagare un carrello multibeneficiario con due RPT con una marca da bollo, ma fallisce perche una RPT ha la marca da bollo
     Dato un carrello di RPT multi-beneficiario
     E una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo

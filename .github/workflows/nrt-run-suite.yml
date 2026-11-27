@@ -105,8 +105,16 @@ jobs:
         run: |
           mapfile -t tags < <(jq -r '.[]' <<< "$TAGS_JSON")
           command=(behave "$BEHAVE_PATH")
+          command+=(
+            --tags="@runnable"
+            --tags="~@skip"
+            --tags="~@broken"
+          )
+          # Add additional suite-specific tags if configured
           for tag in "${tags[@]}"; do
-            command+=(--tags="$tag")
+            if [[ -n "$tag" ]]; then
+              command+=(--tags="$tag")
+            fi
           done
           command+=(
             --format allure_behave.formatter:AllureFormatter
