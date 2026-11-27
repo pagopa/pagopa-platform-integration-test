@@ -1,13 +1,13 @@
 # qa-hub: FEAT_001_FdR3
 # language: it
-@FDR3_001
+@FDR3_001 @integration
 Funzionalità: Creazione di un flusso di rendicontazione
   Creazione di un flusso di rendicontazione
 
   Contesto:
     Dato che i sistemi sono operativi
 
-  @positivo
+  @runnable @positive
   @FDR3_001_01
   Scenario: Creazione del flusso di rendicontazione per il test di aggiunta pagamenti
     Dato un nome di flusso di rendicontazione univoco chiamato flow_name
@@ -16,7 +16,7 @@ Funzionalità: Creazione di un flusso di rendicontazione
     Quando il PSP invia la richiesta di "Creazione di una nuova struttura di flusso" con il payload "create_payload"
     Allora il PSP riceve il codice di stato HTTP 201
 
-  @runnable @positivo
+  @runnable @positive
   @FDR3_001_02
   Schema dello scenario: Aggiunta di pagamenti al flusso
     Dato che il PSP deve inviare <n> pagamenti al flusso
