@@ -1,8 +1,14 @@
 ---
 name: "gh/ace/reflector"
 description: "Use when: process accumulated ACE traces in batch and produce evidence-backed proposals without editing playbooks."
-tools: ["read/readFile", "edit/createFile", "edit/editFiles", "search/fileSearch", "execute", "execute/runInTerminal", "agent"]
+tools: ["read", "edit", "search", "execute", "agent"]
 agents: ["gh/ace/curator"]
+hooks:
+  preToolUse:
+    - type: command
+      command: sh .github/hooks/scripts/delegation-allowlist.sh gh/ace/curator
+      windows: powershell -NoProfile -ExecutionPolicy Bypass -File .github/hooks/scripts/delegation-allowlist.ps1 gh/ace/curator
+      timeoutSec: 10
 user-invocable: true
 ---
 

@@ -298,7 +298,7 @@ def test_acceptance_matrix_covers_all_contract_cases_without_claiming_runs() -> 
         '| Caso | Preparazione astratta | Risultato atteso '
         '| Evidenza da controllare nella prova agente |',
     )
-    assert [row[0] for row in rows] == [f"V-{number:02d}" for number in range(1, 47)]
+    assert [row[0] for row in rows] == [f"V-{number:02d}" for number in range(1, 58)]
     assert all(all(cell for cell in row) for row in rows)
     assert "non un motore sostitutivo che simula l'agente" in text
     assert 'non risultati osservati' in text
@@ -323,18 +323,23 @@ def test_interpretation_focus_and_scoped_decisions() -> None:
 
 
 def test_interpretation_documented_paths_preserve_inventory_ownership() -> None:
-    """Keep additional paths evidenced and registered by the context owner."""
+    """Keep paths the UC does not cover out of the inventory and the feature."""
     translation = ' '.join(_read(SKILLS / 'uc-to-feature' / 'SKILL.md').split())
     workflow = ' '.join(_read(DOCS / 'uc-workflow.md').split())
     for clause in (
         'distinct documented path',
-        'anchored to a UC operation or step',
+        'anchor to a UC operation or step',
         'trigger, required sequence and outcome',
         'Do not invent UC flow or AC identifiers',
         'Different paths are not data variants',
+        'is not added to the inventory or to the feature',
+        'The UC is the main guide',
     ):
         assert clause in translation
+    context = ' '.join(_read(SKILLS / 'uc-scenario-context' / 'SKILL.md').split())
+    assert 'Never register a path the UC does not cover' in context
     assert "regola d'inventario di uc-to-feature" in workflow
+    assert 'ma non li registra come SC' in workflow
     assert 'uc-to-feature (iniziale); uc-scenario-context' in workflow
     assert 'i dati mantengono l\'ownership delle sole C' in workflow
 
@@ -451,7 +456,7 @@ def test_readme_consultation_is_scoped_operational_context() -> None:
     assert 'not the whole document by default' in translation
     assert 'report Mapping/Checks sections, separately from functional evidence' in translation
     assert "do not generalize another suite's defaults" in translation
-    assert 'record an open\noperational question' in translation
+    assert 'record it as an\nimplementation finding' in translation
     assert 'test values from the README still require admission' in translation
 
 
@@ -466,8 +471,9 @@ def test_given_requires_supported_state_not_assumed_data_fitness() -> None:
     assert 'invent a preliminary business operation' in instructions
     assert 'Missing preparation evidence is not automatically' in instructions
     assert 'Distinguish a missing setup/observation capability' in context
-    assert 'Preserve an explicit UC precondition as an unresolved' in context
-    assert 'A data-fitness constraint alone does not supply that' in translation
+    assert 'Preserve an explicit UC\n   precondition in Mapping even when its preparation is unknown' in context
+    assert 'A\n   data-fitness constraint is not a guaranteed initial state' in translation
+    assert 'never invent a\n   preliminary operation' in translation
     assert 'Keep data-fitness requirements distinct from guaranteed initial states' in data
     assert 'a preliminary payment' in data
 
@@ -560,6 +566,123 @@ def test_implementation_delegation_requires_orchestrator_readiness_gate() -> Non
     assert 'the final report says `pronta per lo sviluppo`' in orchestrator
     assert 'requested boundary' in orchestrator
     assert 'diagnostic\n  permission for existing tests' in orchestrator
+
+
+@pytest.mark.parametrize('name', ('QA-orchestrator', 'QA-analyst'))
+def test_agent_identity_and_interaction_protocol_are_explicit(name: str) -> None:
+    """Keep canonical roles discoverable without removing their existing tools."""
+    wrapper = _read(ROOT / '.github' / 'agents' / f"{name}.agent.md")
+    metadata = YAML(typ='safe').load(wrapper.split('---', 2)[1])
+    assert metadata['name'] == name
+    assert 'vscode/askQuestions' in metadata['tools']
+    assert 'human-interaction-and-harness-compatibility' in wrapper
+    if name == 'QA-orchestrator':
+        assert 'agent' in metadata['tools']
+        assert 'QA-analyst' in metadata['agents']
+    else:
+        assert 'edit' in metadata['tools']
+        assert 'Never delegate to yourself or start implementation agents' in wrapper
+
+
+def test_uc_delegation_requires_the_actual_registered_analyst() -> None:
+    """Reject invented identities and generic workers masquerading as the analyst."""
+    operations = ' '.join(_read(
+        ROOT / 'docs' / 'workflows' / 'qa-orchestrator' / 'operations.md'
+    ).split())
+    for clause in (
+        "current harness's registered custom-agent inventory",
+        'Use its exact registered identifier',
+        'the same configured agent',
+        'Never invent a specialist or use a generic/Plan/explore worker',
+        'does not establish delegation',
+        'Verify and retain the actual invoked agent identity and tool outcome',
+    ):
+        assert clause in operations
+    skill = ' '.join(_read(SKILLS / 'uc-to-feature' / 'SKILL.md').split())
+    for clause in (
+        'Invoke the actual registered custom agent',
+        'Never invent an agent, relabel a generic worker',
+        'report a blocker instead of substituting another agent',
+        'does not bypass delegation',
+    ):
+        assert clause in skill
+
+
+@pytest.mark.parametrize('role', ('qa-orchestrator', 'qa-analyst'))
+def test_chat_fallback_preserves_available_tools_and_human_decisions(role: str) -> None:
+    """Allow capability-based chat without converting denials or silence to consent."""
+    filename = 'operations.md' if role == 'qa-orchestrator' else 'activity-routing.md'
+    text = ' '.join(_read(
+        ROOT / 'docs' / 'workflows' / role / filename
+    ).split())
+    for clause in (
+        '## Human interaction and harness compatibility',
+        'dedicated question tool when available',
+        'unavailable or unsupported',
+        'main chat' if role == 'qa-orchestrator' else 'main-chat exchanges',
+        'wait for an explicit human answer before dependent actions',
+        'Do not use chat fallback to bypass a refusal, cancellation or permission denial',
+        'Silence, timeout and missing tools',
+        'Chat fallback changes only the communication channel',
+        'report actual write failures separately' if role == 'qa-analyst'
+        else 'Report actual read/write failures separately',
+    ):
+        assert clause in text
+
+
+def test_delegated_questions_return_to_orchestrator_without_impersonation() -> None:
+    """Preserve paused work and relay real human answers across stateless delegation."""
+    analyst = ' '.join(_read(
+        ROOT / 'docs' / 'workflows' / 'qa-analyst' / 'activity-routing.md'
+    ).split())
+    for clause in (
+        'return `blocked` to the orchestrator with pending questions',
+        'messages in a non-interactive worker transcript',
+        'returns actual human answers with their references',
+        'Use existing `Questions`/`History` and `open`/`pending-approval` values',
+        'missing tools are not `declined`/`rejected`',
+        'An unconfirmed output directory is not permission to create a registry',
+    ):
+        assert clause in analyst
+    orchestrator = ' '.join(_read(
+        ROOT / 'docs' / 'workflows' / 'qa-orchestrator' / 'operations.md'
+    ).split())
+    for clause in (
+        'resume the actual registered `QA-analyst` with the exact answers',
+        'their message references, current approvals, checkpoint and stable UC identity/paths',
+        'a new self-contained invocation',
+        'do not assume Local subagents retain conversation state',
+        'without restarting completed work or creating another writer',
+    ):
+        assert clause in orchestrator
+
+
+def test_uc_fallback_keeps_persistence_source_approval_and_continuity() -> None:
+    """Keep chat as a channel rather than a read-only mode or an approval shortcut."""
+    workflow = ' '.join(_read(DOCS / 'uc-workflow.md').split())
+    for clause in (
+        'Il fallback alla chat non equivale a una richiesta chat-only o read-only',
+        'Registrare le risposte reali e i riferimenti umani in Questions e History',
+        'tramite il [protocollo di interazione]',
+    ):
+        assert clause in workflow
+    policy = _read(SKILLS / 'uc-scenario-context' / 'source-policy.md')
+    assert 'human-interaction-and-harness-compatibility' in policy
+    assert 'with the dedicated question tool' not in policy
+    skill = _read(SKILLS / 'uc-to-feature' / 'SKILL.md')
+    assert 'When questions cannot be asked' not in skill
+    assert 'including its chat fallback' in skill
+    data = _read(SKILLS / 'uc-test-data' / 'SKILL.md')
+    assert 'including chat fallback or orchestrator mediation' in data
+
+
+def test_interaction_acceptance_cases_remain_expected_not_observed() -> None:
+    """Retain the classic-harness acceptance matrix without claiming agent runs."""
+    text = _read(DOCS / 'uc-workflow-validation.md')
+    rows = _table_rows(text, '| Caso | Richiesta o stato | Risultato atteso |')
+    assert [row[0] for row in rows] == [f"A-{number:02d}" for number in range(1, 21)]
+    assert all(all(cell for cell in row) for row in rows)
+    assert 'non risultati osservati' in text
 
 
 def test_uc_identity_survives_new_ace_requests_without_schema_migration() -> None:
@@ -776,7 +899,10 @@ def test_runner_launch_examples_bind_interpreter_and_propagate_status() -> None:
                 r'exit \$testExit\n',
                 block,
             )
-    bash_blocks = re.findall(r'```bash\n(.*?)```', local, re.DOTALL)
+    bash_blocks = [
+        block for block in re.findall(r'```bash\n(.*?)```', local, re.DOTALL)
+        if '"$python" -m behave' in block
+    ]
     assert len(bash_blocks) == 4
     for block in bash_blocks:
         assert 'command -v "$python"' in block
@@ -885,7 +1011,7 @@ def test_runner_error_reports_do_not_require_fixes_or_expand_write_scope() -> No
     assert 'edit/createFile' in metadata
     assert 'edit/editFiles' in metadata
     assert 'agents: [QA-engineer]' in metadata
-    assert 'model: Claude Sonnet 5\n' in metadata
+    assert 'model: Claude Sonnet 5.5\n' in metadata
     assert 'handoffs:' not in metadata
     assert 'first failure is attempt 0' in wrapper
 
@@ -1541,8 +1667,11 @@ def test_pr_labels_use_catalog_ids_accepted_by_ci_not_display_names() -> None:
     assert 'Do not hardcode a duplicate suite list' in text
     assert 'no new script' in text
     ci = _read(ROOT / '.github' / 'workflows' / 'check_pr.yml')
-    assert '[.suites[].id]' in ci
-    assert "const suites = JSON.parse(process.env.SUITE_IDS)" in ci
+    assert "require('./.github/scripts/suite-version-labels.js')" in ci
+    assert 'verifyPullRequestLabels({ github, context, core })' in ci
+    script = _read(ROOT / '.github' / 'scripts' / 'suite-version-labels.js')
+    assert "require('../nrt-suites.json')" in script
+    assert 'suites.map(suite => suite.id.toLowerCase())' in script
     catalog = json.loads(_read(ROOT / '.github' / 'nrt-suites.json'))
     suites = catalog['suites']
     assert suites
@@ -1799,3 +1928,95 @@ def test_background_todo_has_warning_before_each_scenario_tags() -> None:
     assert '__TODO_D001__' in feature.background.steps[0].name
     assert fragment.count('# Dati irrisolti: D-001') == len(feature.scenarios)
     assert re.search(r'# Dati irrisolti:.*\n  @positive', fragment)
+
+
+def test_triage_separates_implementation_doubts_from_functional_ones() -> None:
+    """Keep implementation doubts non-blocking and recorded, never asked."""
+    workflow = ' '.join(_read(DOCS / 'uc-workflow.md').split())
+    rows = _table_rows(
+        _read(DOCS / 'uc-workflow.md'),
+        '| Situazione | Azione | Blocca la feature? | Dove si registra |',
+    )
+    assert len(rows) == 9
+    by_situation = {row[0].split(' (')[0]: row for row in rows}
+    implementation = by_situation['Dubbio implementativo']
+    assert implementation[2] == 'No'
+    assert 'Non chiedere, non cercare' in implementation[1]
+    assert 'come indurre un errore nei test negativi' in rows[0][0]
+    assert by_situation['Dato fisso, non necessario nello scenario'][2] == 'No'
+    for blocking in (
+        'Funzionalita non chiara', 'Passaggio del workflow non chiaro',
+        'Documentazione discordante con lo UC',
+        'Incongruenze o contraddizioni nella documentazione',
+    ):
+        assert by_situation[blocking][2].startswith('Si')
+    assert 'ripetere il task' in by_situation['Documentazione discordante con lo UC'][1]
+    assert 'Placeholder `__TODO_Dnnn__`' in rows[2][1]
+    assert 'Placeholder' in rows[3][0] or 'un placeholder' in rows[3][1].lower()
+    assert 'non cambiano la readiness' in workflow
+    for name in SKILL_NAMES:
+        text = ' '.join(_read(SKILLS / name / 'SKILL.md').split())
+        assert 'triage-dei-dubbi-e-report-di-traduzione' in text
+    policy = ' '.join(_read(SKILLS / 'uc-scenario-context' / 'source-policy.md').split())
+    assert 'do not choose a side or ask which governs' in policy
+    assert 'Request a revision of both the documentation and the UC' in policy
+    assert 'resolved, or a pointer to the documentation that resolves it' in policy
+
+
+def test_translation_report_is_a_companion_outside_the_v1_schema() -> None:
+    """Keep report_traduzione written by the translation, without v1 artifacts."""
+    template = _read(DOCS / 'workflow-templates' / 'report-traduzione.template.md')
+    assert re.findall(r'^#{1,3} (.+)$', template, re.MULTILINE)[:5] == [
+        'REPORT {slug-uc}', 'README', '{slug-uc}', 'FND-001', 'FND-002',
+    ]
+    assert '\n---\n\n## PROPOSTE DI SCENARI NON COPERTI DALLO UC\n' in template
+    assert '### SP-001' in template and '### SP-002' in template
+    assert '```gherkin' in template
+    metadata = YAML(typ='safe').load(template.split('---', 2)[1])
+    assert list(metadata) == [
+        'schema', 'artifact', 'producer_skill', 'task_id', 'uc_id', 'uc_slug',
+        'run_id', 'uc_input', 'uc_revision', 'environment', 'revision',
+        'updated_at', 'derived_from', 'findings', 'proposals',
+    ]
+    assert metadata['schema'] == 'uc-translation-report/v1'
+    assert metadata['schema'] != 'uc-workflow/v1'
+    assert metadata['artifact'] == 'translation-report'
+    assert metadata['producer_skill'] == 'uc-to-feature'
+    assert [item['path'].rsplit('/', 1)[1] for item in metadata['derived_from']] == [
+        '01-context.md', '02-test-data.md', '03-feature-report.md',
+    ]
+    assert 'inputs' not in metadata
+    for tag in ('implementativo', 'dato', 'funzionale-aperto', 'friction'):
+        assert tag in template
+    workflow = ' '.join(_read(DOCS / 'uc-workflow.md').split())
+    for clause in (
+        '`report_traduzione_<slug-uc>.md`',
+        'fuori dallo schema `uc-workflow/v1`',
+        'nessuna riga in Artifacts',
+        'Non e mai input di un report',
+        'Le skill di supporto non lo scrivono',
+        '`Rilievo implementativo:`',
+        '`Proposta di scenario:`',
+    ):
+        assert clause in workflow
+    skill = ' '.join(_read(SKILLS / 'uc-to-feature' / 'SKILL.md').split())
+    assert 'write `report_traduzione_<slug-uc>.md` in the run directory' in skill
+    assert 'not a registry artifact (no row, no invalidation)' in skill
+    assert 'Never omit the file, even with no finding or proposal' in skill
+    assert (
+        'docs/use-cases/workflow-runs/checkout-traduzione/UC-CHECKOUT-001/'
+        '20261020-01/report_traduzione_uc-checkout-001.md'
+    ) in _read(DOCS / 'uc-workflow.md')
+    assert 'Va scritto **sempre**' in _read(DOCS / 'uc-workflow.md')
+    for support in ('uc-scenario-context', 'uc-test-data'):
+        text = _read(SKILLS / support / 'SKILL.md')
+        assert '`Rilievo implementativo:`' in text
+        assert '`Proposta di scenario:`' in text
+    assert 'report_traduzione_<slug-uc>.md' in _read(
+        ROOT / '.github' / 'agents' / 'QA-analyst.agent.md'
+    )
+    assert 'report_traduzione_<slug-uc>.md' in _read(
+        ROOT / 'docs' / 'agent-personas' / 'qa-analyst.md'
+    )
+    for heading in HEADINGS['03-feature-report']:
+        assert heading != 'Report di traduzione'

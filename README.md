@@ -86,7 +86,7 @@ Riferimenti: struttura workspace, `.gitignore`, `.github/workflows/*`, `.github/
 | pip | installazione dipendenze Python | versione recente |
 | Java | Allure CLI e workflow report | 17 consigliata |
 | Allure CLI | generazione e apertura report | 2.x compatibile |
-| Node.js + npm | Playwright JS | 18+ consigliata |
+| Node.js + npm | Playwright JS, hook di delega degli agenti custom | 18+ consigliata |
 | jq | parsing JSON nei workflow Linux | richiesto in CI FdR e AI report analysis |
 
 Dipendenze Python principali presenti nel progetto:
@@ -125,7 +125,7 @@ pip install -r requirements.txt
 
 ### Privacy delle trace ACE con Presidio
 
-Il progetto include un addon project-owned per anonimizzare le trace ACE prima che vengano usate da contatori, threshold e reflector. La policy e il workflow sono documentati qui:
+Il progetto include un addon project-owned per anonimizzare le trace ACE prima che vengano usate da contatori, threshold e reflector. Non serve installare nulla a mano: al primo `node scripts\ace-addons\privacy\finalize-task.js <task-id>` l'addon crea da solo il proprio ambiente Python locale (richiede Node.js 18+, Python 3.10+ e accesso a Internet; pochi minuti la prima volta). La policy, le opzioni (`--ensure`, `--setup`, `ACE_PRIVACY_NO_AUTOSETUP`) e il workflow sono documentati qui:
 
 - [scripts/ace-addons/privacy/README.md](./scripts/ace-addons/privacy/README.md)
 
@@ -996,6 +996,7 @@ Il flusso di *test data ingestion* raccoglie i risultati delle esecuzioni dei te
 - Il workflow riusabile `test-automation-service.yml` pubblica, al termine di una run, l'artefatto `test-results` contenente i risultati dei test quando presenti.
 - Entrambi i flussi richiamano il workflow `test-data-ingestion.yml`. Il workflow accetta un input `artifact_name` che di default vale `tmp_processed_reports` ma può essere sovrascritto (ad es. a `test-results`) dal caller.
 - Lo step di ingestion estrae JSON/JUnit/Allure dall'artefatto scaricato e popola le tabelle tramite lo script `.github/scripts/populate_tables.py`.
+- La versione del test object associata alla suite non viene letta dal servizio live: `populate_tables.py` la richiede al QA Hub (`GET /api/v1/releases/versions`), che la mantiene aggiornata nella tabella `sp_version_state` della status page. La chiave di ricerca e la coppia ambiente + `product_key`, dove `product_key` e il campo omonimo della suite in [`.github/nrt-suites.json`](.github/nrt-suites.json) (es. `fdrfase3` per `fdr3`) e deve corrispondere alla chiave dell'applicazione censita nella status page. Se la versione non e disponibile (suite senza `product_key`, applicazione non censita, QA Hub non raggiungibile) lo script non usa piu una versione di default: riusa l'ultima suite salvata per quel test object, oppure crea una suite con versione `unknown` se non ne esiste nessuna, e segnala un warning nel log. La suite viene cercata per versione esatta, quindi anche un rollback dell'applicazione genera la propria suite.
 
 ### File di configurazione ambiente per le suite
 
@@ -1041,8 +1042,11 @@ e [profili](.github/profiles/README.md), con scope, modalita d'uso ed esempi.
 
 Per tradurre uno Use Case (UC) in feature, seguire il
 [workflow UC](docs/use-cases/uc-workflow.md): esplicitare il focus funzionale,
-riconciliare i percorsi documentati pertinenti e coprire flussi e criteri con
-evidenze ammesse.
+coprire flussi e criteri dello UC con evidenze ammesse. I dubbi di
+implementazione (API, URL, configurazione, componenti UI, come indurre un errore)
+non si chiedono e non bloccano la feature: finiscono, insieme alle proposte di
+scenari non coperti dallo UC, in `report_traduzione_<slug-uc>.md` nella
+directory della run.
 
 ### Convenzioni Gherkin
 
@@ -1081,6 +1085,14 @@ l'ultima autorizzazione esplicita applicabile, incluse revoche. Cambiamenti
 rilevanti invalidano le evidenze dipendenti e le esecuzioni parallele richiedono
 anche isolamento dei dati/risorse esterne. Esito QA e completamento ACE sono
 distinti: un blocco del bookkeeping non autorizza a ripetere test o azioni Git.
+
+Per le skill UC, la delega usa il `QA-analyst` realmente registrato nell'harness,
+non un worker generico rinominato. Orchestratore e analista usano il tool domande
+quando disponibile; in VS Code classico o altri contesti senza quel tool passano
+a scambi di chat, mediati dall'orchestratore per l'analista delegato. Il
+[protocollo di interazione](docs/workflows/qa-orchestrator/operations.md#human-interaction-and-harness-compatibility)
+mantiene approvazioni, ownership e output persistenti: il fallback non consente
+di presumere risposte umane, sostituire l'analista o dichiarare file non salvati.
 
 Le [istruzioni Gherkin](.github/instructions/gherkin.instructions.md) e il
 [profilo associato](.github/profiles/gherkin.profile.yaml) mantengono stabili gli
