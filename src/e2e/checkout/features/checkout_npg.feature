@@ -17,7 +17,7 @@ Funzionalità: Attivazione pagamento Checkout
   # Happy path: flusso di pagamento completo
   # =============================================
 
-  @smoke
+  @runnable
   @positive
   @FEAT_003_Checkout_scenario_01
   Schema dello scenario: Un pagamento con configurazione carta "<testing_psp>" viene completato con successo

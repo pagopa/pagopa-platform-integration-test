@@ -4,6 +4,7 @@
 @e2e
 @checkout
 @ui
+@no_navigation
 Funzionalità: Validazione sintattica dei campi nel funnel di Checkout
 
   Contesto:

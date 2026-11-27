@@ -50,8 +50,9 @@ def after_scenario(context, scenario):
 
 def before_feature(context, feature):
     # Log the feature name
-    fname = os.path.basename(getattr(feature, "filename", "") or "")
-    if fname == "FEAT_006_Checkout - Validazione sintattica dei campi.feature":
+    tags = feature.tags
+    print(tags)
+    if "no_navigation" in tags:
         context.expect_navigation = False
     else:
         context.expect_navigation = True

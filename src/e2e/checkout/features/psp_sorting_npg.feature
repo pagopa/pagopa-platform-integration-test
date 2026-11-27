@@ -18,7 +18,7 @@ Funzionalità: Ordinamento lista PSP in Checkout
   # Ordinamento pagina di riepilogo
   # =============================================
 
-  @smoke
+  @runnable
   @positive
   @FEAT_005_Checkout_scenario_01
   Scenario: La lista PSP è ordinata per commissione in ordine crescente nella pagina di riepilogo
@@ -35,7 +35,7 @@ Funzionalità: Ordinamento lista PSP in Checkout
     Allora La lista delle commissioni PSP è ordinata in ordine crescente
     E L'utente annulla il pagamento
 
-  @smoke
+  @runnable
   @positive
   @FEAT_005_Checkout_scenario_02
   Scenario: La lista PSP è ordinata per commissione in ordine decrescente nella pagina di riepilogo
@@ -51,7 +51,7 @@ Funzionalità: Ordinamento lista PSP in Checkout
     Allora La lista delle commissioni PSP è ordinata in ordine decrescente
     E L'utente annulla il pagamento
 
-  @smoke
+  @runnable
   @positive
   @FEAT_005_Checkout_scenario_03
   Scenario: La lista PSP è ordinata per nome in ordine decrescente nella pagina di riepilogo
@@ -67,7 +67,7 @@ Funzionalità: Ordinamento lista PSP in Checkout
     Allora La lista dei nomi PSP è ordinata in ordine alfabetico decrescente
     E L'utente annulla il pagamento
 
-  @smoke
+  @runnable
   @positive
   @FEAT_005_Checkout_scenario_04
   Scenario: La lista PSP è ordinata per nome in ordine crescente nella pagina di riepilogo
@@ -88,7 +88,7 @@ Funzionalità: Ordinamento lista PSP in Checkout
   # Ordinamento pagina di selezione PSP
   # =============================================
 
-  @smoke
+  @runnable
   @positive
   @FEAT_005_Checkout_scenario_05
   Scenario: La lista PSP è ordinata per nome nella pagina di selezione PSP
@@ -103,7 +103,7 @@ Funzionalità: Ordinamento lista PSP in Checkout
     E L'utente clicca il pulsante mostra risultati
     Allora La lista dei nomi PSP è ordinata in ordine alfabetico crescente
 
-  @smoke
+  @runnable
   @positive
   @FEAT_005_Checkout_scenario_06
   Scenario: La lista PSP è ordinata per commissione nella pagina di selezione PSP
