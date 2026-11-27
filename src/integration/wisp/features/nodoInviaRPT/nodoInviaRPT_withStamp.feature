@@ -1,79 +1,67 @@
-#3119448801
-#language:it
+# qa-hub: FEAT_002_WISP
+# language: it
+@WISP_002
 @integration
-@NodoInviaRPT_WithStamp_002
 Funzionalità: Utente paga un pagamento singolo con marca da bollo tramite nodoInviaRPT
-  
+
   Contesto:
     Dati i sistemi sono operativi
 
-  # ===============================================================================================
-  # ===============================================================================================
-
-  @runnable
-  @NodoInviaRPT_WithStamp_002_01
+  @NodoInviaRPT_WithStamp_002
   @nodo_invia_rpt
+  @runnable
   @positive
+  @WISP_002_01
   Scenario: Utente paga un pagamento singolo con nessun versamento semplice e una marca da bollo
     Data una singola RPT di tipo BBT con 1 versamenti di cui 1 sono marche da bollo
     Quando l'utente tenta di pagare la RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
 
-  # ===============================================================================================
-  # ===============================================================================================
-
-  @runnable
-  @NodoInviaRPT_WithStamp_002_02
+  @NodoInviaRPT_WithStamp_002
   @nodo_invia_rpt
+  @runnable
   @positive
+  @WISP_002_02
   Scenario: Utente paga un pagamento singolo con un versamento semplice e una marca da bollo
     Data una singola RPT di tipo BBT con 2 versamenti di cui 1 sono marche da bollo
     Quando l'utente tenta di pagare la RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
 
-  # ===============================================================================================
-  # ===============================================================================================
-
-  @runnable
-  @NodoInviaRPT_WithStamp_002_03
+  @NodoInviaRPT_WithStamp_002
   @nodo_invia_rpt
+  @runnable
   @positive
+  @WISP_002_03
   Scenario: Utente paga un pagamento singolo con due versamenti semplici e una marca da bollo
     Data una singola RPT di tipo BBT con 3 versamenti di cui 1 sono marche da bollo
     Quando l'utente tenta di pagare la RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
 
-  # ===============================================================================================
-  # ===============================================================================================
-
-  @runnable
-  @NodoInviaRPT_WithStamp_002_04
+  @NodoInviaRPT_WithStamp_002
   @nodo_invia_rpt
+  @runnable
   @positive
+  @WISP_002_04
   Scenario: Utente paga un pagamento singolo con due versamenti semplici e due marche da bollo
     Data una singola RPT di tipo BBT con 4 versamenti di cui 2 sono marche da bollo
     Quando l'utente tenta di pagare la RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
 
-  # ===============================================================================================
-  # ===============================================================================================
-
-  @runnable
-  @NodoInviaRPT_WithStamp_002_05
+  @NodoInviaRPT_WithStamp_002
   @nodo_invia_rpt
+  @runnable
   @positive
+  @WISP_002_05
   Scenario: Utente paga un pagamento singolo di tipo PO con nessun versamento semplice e una marca da bollo
     Data una singola RPT di tipo PO con 1 versamenti di cui 1 sono marche da bollo
     Quando l'utente tenta di pagare la RPT sul sito dell'EC
     Allora la risposta contiene il vecchio URL WISP
 
-  # ===============================================================================================
-  # ===============================================================================================
-
-  @runnable
-  @NodoInviaRPT_WithStamp_002_06
+  @NodoInviaRPT_WithStamp_002
   @nodo_invia_rpt
+  @runnable
   @negative
+  @WISP_002_06
   Scenario: Utente paga un pagamento singolo di tipo PO con un versamento semplice e una marca da bollo, ma fallisce la validazione semantica
     Data una singola RPT di tipo PO con 2 versamenti di cui 1 sono marche da bollo
     Quando l'utente tenta di pagare la RPT sul sito dell'EC ma il pagamento fallisce
