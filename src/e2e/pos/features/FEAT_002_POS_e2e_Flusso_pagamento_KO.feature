@@ -52,7 +52,7 @@ Funzionalità: Fallimento del flusso di pagamento
   @pos_002_05
   @negative
   Scenario: Esecuzione fallita del flusso di pagamento con type TO_CREATE_PROVIDED_IUV, iuv errato e init parziale
-    Quando il Gestionale EC invia la chiamata di init con includeTerminals "true" e acquisisce il sessionId
+    Quando il Gestionale EC invia la chiamata di init con includeTerminals "false" e acquisisce il sessionId
     E il Gestionale EC invia la richiesta di lista POS
     E il Gestionale EC invia la richiesta di avvio del flusso di pagamento con type "TO_CREATE_PROVIDED_IUV" e con uno IUV errato "11111"
     E il Gestionale EC invia la richiesta di recupero stato transazione al Gestionale Interface
@@ -68,7 +68,7 @@ Funzionalità: Fallimento del flusso di pagamento
   @pos_002_06
   @negative
   Scenario: Esecuzione fallita del flusso di pagamento con type CI_PROVIDED, notice_number errato e init parziale
-    Quando il Gestionale EC invia la chiamata di init con includeTerminals "true" e acquisisce il sessionId
+    Quando il Gestionale EC invia la chiamata di init con includeTerminals "false" e acquisisce il sessionId
     E il Gestionale EC invia la richiesta di lista POS
     E il Gestionale EC invia la richiesta di avvio del flusso di pagamento con type "CI_PROVIDED" e notice_number errato
     E il Gestionale EC invia la richiesta di recupero stato transazione al Gestionale Interface
@@ -84,7 +84,7 @@ Funzionalità: Fallimento del flusso di pagamento
   @pos_002_08 
   @negative
   Scenario: Esecuzione fallita del flusso di pagamento con type CI_PROVIDED, notice_number non esistente e init parziale
-    Quando il Gestionale EC invia la chiamata di init con includeTerminals "true" e acquisisce il sessionId
+    Quando il Gestionale EC invia la chiamata di init con includeTerminals "false" e acquisisce il sessionId
     E il Gestionale EC invia la richiesta di lista POS
     E il Gestionale EC invia la richiesta di avvio del flusso di pagamento con type "CI_PROVIDED" e notice_number non esistente
     E il Gestionale EC invia la richiesta di recupero stato transazione al Gestionale Interface

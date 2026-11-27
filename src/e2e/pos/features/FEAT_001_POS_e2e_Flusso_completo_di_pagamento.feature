@@ -53,7 +53,7 @@ Funzionalità: Esecuzione del flusso di pagamento
   @pos_001_04
   @positive
   Scenario: Esecuzione completa del flusso di pagamento con type TO_CREATE e init parziale
-    Quando il Gestionale EC invia la chiamata di init con includeTerminals "true" e acquisisce il sessionId
+    Quando il Gestionale EC invia la chiamata di init con includeTerminals "false" e acquisisce il sessionId
     E il Gestionale EC invia la richiesta di lista POS
     E il Gestionale EC invia la richiesta di avvio del flusso di pagamento con type "TO_CREATE"
     E il Gestionale EC invia la richiesta di recupero stato transazione al Gestionale Interface
@@ -69,7 +69,7 @@ Funzionalità: Esecuzione del flusso di pagamento
   @pos_001_05
   @positive
   Scenario: Esecuzione completa del flusso di pagamento con type TO_CREATE_PROVIDED_IUV e con uno IUV e init parziale
-    Quando il Gestionale EC invia la chiamata di init con includeTerminals "true" e acquisisce il sessionId
+    Quando il Gestionale EC invia la chiamata di init con includeTerminals "false" e acquisisce il sessionId
     E il Gestionale EC invia la richiesta di lista POS
     E il Gestionale EC invia la richiesta di avvio del flusso di pagamento con type "TO_CREATE_PROVIDED_IUV" e con uno IUV
     E il Gestionale EC invia la richiesta di recupero stato transazione al Gestionale Interface
@@ -85,7 +85,7 @@ Funzionalità: Esecuzione del flusso di pagamento
   @pos_001_06
   @positive
   Scenario: Esecuzione completa del flusso di pagamento con type CI_PROVIDED e fornisce un notice_number e init parziale
-    Quando il Gestionale EC invia la chiamata di init con includeTerminals "true" e acquisisce il sessionId
+    Quando il Gestionale EC invia la chiamata di init con includeTerminals "false" e acquisisce il sessionId
     E il Gestionale EC invia la richiesta di lista POS
     E il Gestionale EC invia la richiesta di avvio del flusso di pagamento con type "CI_PROVIDED" e fornisce un notice_number
     E il Gestionale EC invia la richiesta di recupero stato transazione al Gestionale Interface
