@@ -7,7 +7,89 @@ const path = require('node:path');
 const test = require('node:test');
 const { REPO_ROOT } = require('../../../ace/scripts/lib/playbook');
 const { prepareDelegation, captureTrace, runtimeStateDir } = require('../../../ace/scripts/lib/runtime');
-const { run } = require('./finalize-task');
+const {
+  run, setup, ensureEnvironment, requirementsFingerprint, STAMP_NAME,
+} = require('./finalize-task');
+
+function fakeEnvironment() {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'ace-privacy-env-'));
+  const requirements = path.join(directory, 'requirements.txt');
+  fs.writeFileSync(requirements, 'presidio-analyzer==0\n');
+  const envDir = path.join(directory, '.venv');
+  const calls = [];
+  // Fake interpreter creation: the "venv" step materializes the python executable.
+  const exec = (command, args) => {
+    calls.push([command, ...args]);
+    if (args.includes('venv')) {
+      const python = path.join(envDir, process.platform === 'win32' ? 'Scripts' : 'bin',
+        process.platform === 'win32' ? 'python.exe' : 'python');
+      fs.mkdirSync(path.dirname(python), { recursive: true });
+      fs.writeFileSync(python, '');
+    }
+    return '';
+  };
+  return { directory, requirements, envDir, calls, exec };
+}
+
+test('first use installs the environment automatically and stamps it', () => {
+  const { directory, requirements, envDir, calls, exec } = fakeEnvironment();
+  try {
+    const installed = ensureEnvironment({ envDir, requirements, run: exec, log: () => {}, env: {} });
+    assert.equal(installed, true);
+    assert.ok(calls.some((call) => call.includes('venv')));
+    assert.ok(calls.some((call) => call.includes('pip') && call.includes(requirements)));
+    assert.equal(fs.readFileSync(path.join(envDir, STAMP_NAME), 'utf8'),
+      requirementsFingerprint(requirements));
+    calls.length = 0;
+    assert.equal(ensureEnvironment({ envDir, requirements, run: exec, log: () => {}, env: {} }), false);
+    assert.equal(calls.length, 0, 'a ready environment must not run any command');
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('changed requirements trigger a reinstall', () => {
+  const { directory, requirements, envDir, calls, exec } = fakeEnvironment();
+  try {
+    setup({ envDir, requirements, run: exec, log: () => {} });
+    fs.appendFileSync(requirements, 'spacy==0\n');
+    calls.length = 0;
+    assert.equal(ensureEnvironment({ envDir, requirements, run: exec, log: () => {}, env: {} }), true);
+    assert.ok(calls.some((call) => call.includes('pip')));
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('automatic setup can be disabled and then fails with instructions', () => {
+  const { directory, requirements, envDir, calls, exec } = fakeEnvironment();
+  try {
+    assert.throws(
+      () => ensureEnvironment({
+        envDir, requirements, run: exec, log: () => {}, env: { ACE_PRIVACY_NO_AUTOSETUP: '1' },
+      }),
+      /--setup/,
+    );
+    assert.equal(calls.length, 0);
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('a missing Python 3.10+ interpreter gives an actionable error', () => {
+  const { directory, requirements, envDir } = fakeEnvironment();
+  try {
+    assert.throws(
+      () => setup({
+        envDir, requirements, log: () => {}, run: () => { throw new Error('boom'); },
+      }),
+      /Python 3\.10\+ is required/,
+    );
+    assert.ok(!fs.existsSync(path.join(envDir, STAMP_NAME)));
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
+});
 
 test('sanitizes the canonical trace before ACE counters run', () => {
   const taskId = `ace-privacy-selftest-${process.pid}-${Date.now()}`;
