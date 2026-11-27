@@ -1,0 +1,50 @@
+#language: it
+@integration
+@FDR3_006
+Funzionalità: Cancellazione di FdR creati
+  Flusso: creazione, inserimento pagamenti, cancellazione e verifiche negative
+
+  Contesto:
+    Dato che i sistemi sono operativi
+
+  @FDR3_006_01
+  @positive
+  Scenario: Creazione del FdR
+    Dato un nome di flusso di rendicontazione univoco chiamato flow_name
+    E una data di flusso di rendicontazione univoco chiamato flow_date
+    E un payload di creazione FdR create_payload
+    Quando il PSP invia la richiesta di "Creazione di una nuova struttura di flusso" con il payload "create_payload"
+    Allora il PSP riceve il codice di stato HTTP 201
+
+  @FDR3_006_02
+  @positive
+  Scenario: Aggiunta di pagamenti
+    Dato che il PSP deve inviare 3 pagamenti al flusso
+    E che la somma totale dei pagamenti da inviare è 300
+    E che lo scenario "Creazione del FdR" è stato eseguito con successo
+    Quando il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "payments_payload"
+    Allora il PSP riceve il codice di stato HTTP 200
+
+  @FDR3_006_03
+  @negative
+  Scenario: Cancellazione del FdR non trovato
+    Dato che lo scenario "Aggiunta di pagamenti" è stato eseguito con successo
+    E il PSP imposta un flow_name non valido
+    Quando il PSP invia la richiesta di "Cancellazione flusso" con il payload "None"
+    Allora il PSP riceve il codice di stato HTTP 404
+
+  @FDR3_006_04
+  @negative
+  Scenario: Cancellazione del FdR bad request
+    Dato che lo scenario "Aggiunta di pagamenti" è stato eseguito con successo
+    E il PSP imposta un psp non valido
+    Quando il PSP invia la richiesta di "Cancellazione flusso" con il payload "None"
+    Allora il PSP riceve il codice di stato HTTP 400
+
+  @runnable
+  @FDR3_006_05
+  @negative
+  Scenario: Cancellazione del FdR con subscription_key non valida
+    Dato che lo scenario "Cancellazione del FdR non trovato" è stato eseguito con successo
+    Quando il PSP invia la richiesta di "Cancellazione flusso" con il payload "None" con subscription_key non valida
+    Allora il PSP riceve il codice di stato HTTP 401

@@ -1,17 +1,16 @@
-#3115780688
-#language:it
+# qa-hub: FEAT_004_WISP
+# language: it
 @integration
-@NodoInviaCarrelloRPT_NoStamp_004
-Funzionalità: L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT
-  
+@WISP_004 
+Funzionalità: NoStamp_L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT
+  L'utente paga carrelli di pagamento senza marche da bollo su nodoInviaCarrelloRPT
+
   Contesto:
     Dati i sistemi sono operativi
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_NoStamp_004_01
+  @WISP_004_01
   @nodo_invia_carrello_rpt
   @positive
   Scenario: L'utente paga un carrello con singola RPT con un versamento
@@ -20,11 +19,9 @@ Funzionalità: L'utente paga carrelli di pagamento senza marche da bollo su nodo
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_NoStamp_004_02
+  @WISP_004_02
   @nodo_invia_carrello_rpt
   @positive
   Scenario: L'utente paga un carrello con singola RPT con due versamenti
@@ -33,11 +30,9 @@ Funzionalità: L'utente paga carrelli di pagamento senza marche da bollo su nodo
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_NoStamp_004_03
+  @WISP_004_03
   @nodo_invia_carrello_rpt
   @positive
   Scenario: L'utente paga un carrello con singola RPT con tre versamenti
@@ -46,11 +41,9 @@ Funzionalità: L'utente paga carrelli di pagamento senza marche da bollo su nodo
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_NoStamp_004_04
+  @WISP_004_04
   @nodo_invia_carrello_rpt
   @positive
   Scenario: L'utente paga un carrello con singola RPT con quattro versamenti
@@ -59,11 +52,9 @@ Funzionalità: L'utente paga carrelli di pagamento senza marche da bollo su nodo
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_NoStamp_004_05
+  @WISP_004_05
   @nodo_invia_carrello_rpt
   @positive
   Scenario: L'utente paga un carrello con singola RPT con cinque versamenti
@@ -72,11 +63,9 @@ Funzionalità: L'utente paga carrelli di pagamento senza marche da bollo su nodo
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_NoStamp_004_06
+  @WISP_004_06
   @nodo_invia_carrello_rpt
   @positive
   Scenario: L'utente paga un carrello con tre RPT con un versamento ciascuna
@@ -87,11 +76,9 @@ Funzionalità: L'utente paga carrelli di pagamento senza marche da bollo su nodo
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_NoStamp_004_07
+  @WISP_004_07
   @nodo_invia_carrello_rpt
   @positive
   Scenario: L'utente paga un carrello con quattro RPT con un versamento ciascuna
@@ -103,11 +90,9 @@ Funzionalità: L'utente paga carrelli di pagamento senza marche da bollo su nodo
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_NoStamp_004_08
+  @WISP_004_08
   @nodo_invia_carrello_rpt
   @positive
   Scenario: L'utente paga un carrello con cinque RPT con un versamento ciascuna
@@ -120,11 +105,9 @@ Funzionalità: L'utente paga carrelli di pagamento senza marche da bollo su nodo
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_NoStamp_004_09
+  @WISP_004_09
   @nodo_invia_carrello_rpt
   @positive
   Scenario: L'utente paga un carrello con due RPT per un totale di cinque versamenti
@@ -134,11 +117,9 @@ Funzionalità: L'utente paga carrelli di pagamento senza marche da bollo su nodo
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_NoStamp_004_10
+  @WISP_004_10
   @nodo_invia_carrello_rpt
   @positive
   Scenario: L'utente paga un carrello con tre RPT per un totale di cinque versamenti
@@ -149,11 +130,9 @@ Funzionalità: L'utente paga carrelli di pagamento senza marche da bollo su nodo
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_NoStamp_004_11
+  @WISP_004_11
   @nodo_invia_carrello_rpt
   @positive
   Scenario: L'utente paga un carrello con tre RPT per un totale di dieci versamenti
@@ -164,11 +143,9 @@ Funzionalità: L'utente paga carrelli di pagamento senza marche da bollo su nodo
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_NoStamp_004_12
+  @WISP_004_12
   @nodo_invia_carrello_rpt
   @positive
   Scenario: L'utente tenta di pagare un carrello con due RPT ma la chiusura del pagamento fallisce, poi ritenta con successo
@@ -180,11 +157,9 @@ Funzionalità: L'utente paga carrelli di pagamento senza marche da bollo su nodo
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC
     Allora l'utente viene reindirizzato su Checkout completando il pagamento multibeneficiario
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_NoStamp_004_13
+  @WISP_004_13
   @nodo_invia_carrello_rpt
   @negative
   Scenario: L'utente tenta di pagare un carrello con una RPT che ha una quantita di versamenti oltre il limite
@@ -193,11 +168,9 @@ Funzionalità: L'utente paga carrelli di pagamento senza marche da bollo su nodo
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC senza verifica dell'URL di redirect
     Allora il pagamento fallisce essendo il numero di versamenti oltre il limite e viene restituito l'errore PPT_SINTASSI_XSD
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_NoStamp_004_14
+  @WISP_004_14
   @nodo_invia_carrello_rpt
   @negative
   Scenario: L'utente tenta di pagare un carrello con due RPT che hanno una quantita di versamenti oltre il limite
@@ -208,11 +181,9 @@ Funzionalità: L'utente paga carrelli di pagamento senza marche da bollo su nodo
     Quando l'utente tenta di pagare il carrello di RPT sul sito dell'EC senza verifica dell'URL di redirect
     Allora il pagamento fallisce essendo il numero di versamenti oltre il limite e viene restituito l'errore PPT_SINTASSI_XSD
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_NoStamp_004_15
+  @WISP_004_15
   @nodo_invia_carrello_rpt
   @negative
   Scenario: L'utente tenta di pagare un carrello con due RPT ma la chiusura del pagamento fallisce

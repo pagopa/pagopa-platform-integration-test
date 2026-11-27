@@ -1,17 +1,15 @@
 #3119448843
 #language:it
 @integration
-@NodoInviaCarrelloRPT_ExistingPaymentPosition_006
+@WISP_006
 Funzionalità: L'utente paga carrelli di pagamento da posizione debitoria esistente tramite nodoInviaCarrelloRPT
   
   Contesto:
     Dati i sistemi sono operativi
 
-  # ===============================================================================================
-  # ===============================================================================================
 
   @runnable
-  @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_01
+  @WISP_006_01
   @nodo_invia_carrello_rpt
   @positive
   Scenario: L'utente paga un carrello con singola RPT senza marca da bollo gia esistente in GPD
@@ -22,11 +20,9 @@ Funzionalità: L'utente paga carrelli di pagamento da posizione debitoria esiste
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
     E la posizione debitoria è chiusa
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_02
+  @WISP_006_02
   @nodo_invia_carrello_rpt
   @positive
   Scenario: L'utente paga un carrello con singola RPT con versamenti multipli gia esistente in GPD
@@ -37,11 +33,9 @@ Funzionalità: L'utente paga carrelli di pagamento da posizione debitoria esiste
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
     E la posizione debitoria è chiusa
 
-  # ===============================================================================================
-  # ===============================================================================================
 
   @runnable
-  @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_03
+  @WISP_006_03
   @nodo_invia_carrello_rpt
   @positive
   Scenario: L'utente paga un carrello con singola RPT con una marca da bollo gia esistente in GPD
@@ -52,11 +46,9 @@ Funzionalità: L'utente paga carrelli di pagamento da posizione debitoria esiste
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
     E la posizione debitoria è chiusa
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_04
+  @WISP_006_04
   @nodo_invia_carrello_rpt
   @positive
   Scenario: L'utente paga un carrello con due RPT senza marca da bollo di cui una gia esistente in GPD
@@ -68,11 +60,9 @@ Funzionalità: L'utente paga carrelli di pagamento da posizione debitoria esiste
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
     E la posizione debitoria è chiusa
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_05
+  @WISP_006_05
   @nodo_invia_carrello_rpt
   @positive
   Scenario: L'utente paga un carrello con due RPT con versamenti multipli gia esistente in GPD
@@ -84,11 +74,9 @@ Funzionalità: L'utente paga carrelli di pagamento da posizione debitoria esiste
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
     E la posizione debitoria è chiusa
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_06
+  @WISP_006_06
   @nodo_invia_carrello_rpt
   @positive
   Scenario: L'utente paga un carrello con due RPT con almeno una marca da bollo gia esistente in GPD
@@ -100,11 +88,9 @@ Funzionalità: L'utente paga carrelli di pagamento da posizione debitoria esiste
     Allora l'utente viene reindirizzato su Checkout completando il pagamento
     E la posizione debitoria è chiusa
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_07
+  @WISP_006_07
   @nodo_invia_carrello_rpt
   @negative
   Scenario: L'utente tenta di pagare un carrello con singola RPT gia esistente in GPD in stato non valido
@@ -115,11 +101,9 @@ Funzionalità: L'utente paga carrelli di pagamento da posizione debitoria esiste
     Allora la conversione al nuovo modello fallisce nel wisp-converter
     E la ricevuta KO è inviata
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_08
+  @WISP_006_08
   @nodo_invia_carrello_rpt
   @negative
   Scenario: L'utente tenta di pagare un carrello con singola RPT inserita da ACA e in stato valido
@@ -130,11 +114,9 @@ Funzionalità: L'utente paga carrelli di pagamento da posizione debitoria esiste
     Allora la conversione al nuovo modello fallisce nel wisp-converter
     E la ricevuta KO è inviata
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_09
+  @WISP_006_09
   @nodo_invia_carrello_rpt
   @negative
   Scenario: L'utente tenta di pagare un carrello con singola RPT inserita da ACA e in stato non valido
@@ -145,11 +127,9 @@ Funzionalità: L'utente paga carrelli di pagamento da posizione debitoria esiste
     Allora la conversione al nuovo modello fallisce nel wisp-converter
     E la ricevuta KO è inviata
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_10
+  @WISP_006_10
   @nodo_invia_carrello_rpt
   @negative
   Scenario: L'utente tenta di pagare un carrello con due RPT gia esistenti in GPD in stato non valido
@@ -161,11 +141,9 @@ Funzionalità: L'utente paga carrelli di pagamento da posizione debitoria esiste
     Allora la conversione al nuovo modello fallisce nel wisp-converter
     E la ricevuta KO è inviata
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_11
+  @WISP_006_11
   @nodo_invia_carrello_rpt
   @negative
   Scenario: L'utente tenta di pagare un carrello con due RPT inserite da ACA e in stato valido
@@ -177,11 +155,9 @@ Funzionalità: L'utente paga carrelli di pagamento da posizione debitoria esiste
     Allora la conversione al nuovo modello fallisce nel wisp-converter
     E la ricevuta KO è inviata
 
-  # ===============================================================================================
-  # ===============================================================================================
 
   @runnable
-  @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_12
+  @WISP_006_12
   @nodo_invia_carrello_rpt
   @negative
   Scenario: L'utente tenta di pagare un carrello con due RPT inserite da ACA e in stato non valido
@@ -193,11 +169,9 @@ Funzionalità: L'utente paga carrelli di pagamento da posizione debitoria esiste
     Allora la conversione al nuovo modello fallisce nel wisp-converter
     E la ricevuta KO è inviata
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_13
+  @WISP_006_13
   @nodo_invia_carrello_rpt
   @negative
   Scenario: L'utente tenta di pagare un carrello multibeneficiario gia esistente in GPD in stato non valido
@@ -209,11 +183,9 @@ Funzionalità: L'utente paga carrelli di pagamento da posizione debitoria esiste
     Allora la conversione al nuovo modello fallisce nel wisp-converter
     E la ricevuta KO è inviata
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_14
+  @WISP_006_14
   @nodo_invia_carrello_rpt
   @negative
   Scenario: L'utente tenta di pagare un carrello multibeneficiario inserito da ACA e in stato valido
@@ -225,11 +197,9 @@ Funzionalità: L'utente paga carrelli di pagamento da posizione debitoria esiste
     Allora la conversione al nuovo modello fallisce nel wisp-converter
     E la ricevuta KO è inviata
 
-  # ===============================================================================================
-  # ===============================================================================================
-
+  
   @runnable
-  @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_15
+  @WISP_006_15
   @nodo_invia_carrello_rpt
   @negative
   Scenario: L'utente tenta di pagare un carrello multibeneficiario inserito da ACA e in stato non valido
@@ -241,10 +211,8 @@ Funzionalità: L'utente paga carrelli di pagamento da posizione debitoria esiste
     Allora la conversione al nuovo modello fallisce nel wisp-converter
     E la ricevuta KO è inviata
 
-  # ===============================================================================================
-  # ===============================================================================================
-
-  @NodoInviaCarrelloRPT_ExistingPaymentPosition_006_16
+  
+  @WISP_006_16
   @nodo_invia_carrello_rpt
   @negative
   Scenario: L'utente paga un carrello multibeneficiario gia esistente in GPD

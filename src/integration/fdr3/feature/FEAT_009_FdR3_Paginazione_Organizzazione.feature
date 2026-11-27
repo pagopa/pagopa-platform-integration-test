@@ -1,12 +1,12 @@
 #language: it
 @integration
-@fdr3_009_Verifica_Paginazione_Organizzazione
+@FDR3_009
 Funzionalità: Verifica paginazione per le API organizzazione
 
   Contesto:
     Dato che i sistemi sono operativi
 
-  @fdr3_009_01
+  @FDR3_009_01
   @positive
   Scenario: Creazione del flusso di rendicontazione per test paginazione
     Dato un nome di flusso di rendicontazione univoco chiamato flow_name
@@ -15,7 +15,7 @@ Funzionalità: Verifica paginazione per le API organizzazione
     Quando il PSP invia la richiesta di "Creazione di una nuova struttura di flusso" con il payload "create_payload"
     Allora il PSP riceve il codice di stato HTTP 201
 
-  @fdr3_009_02
+  @FDR3_009_02
   @positive
   Scenario: Inserimento pagamenti per test paginazione
     Dato che il PSP deve inviare 100 pagamenti al flusso
@@ -25,7 +25,7 @@ Funzionalità: Verifica paginazione per le API organizzazione
     E il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "payments_payload"
     Allora il PSP riceve il codice di stato HTTP 200
 
-  @fdr3_009_03
+  @FDR3_009_03
   @positive
   Scenario: Pubblicazione del flusso per test paginazione
     Dato che lo scenario "Inserimento pagamenti per test paginazione" è stato eseguito con successo
@@ -33,7 +33,7 @@ Funzionalità: Verifica paginazione per le API organizzazione
     Allora il PSP riceve il codice di stato HTTP 200
 
   @runnable
-  @fdr3_009_04
+  @FDR3_009_04
   @positive
   Scenario: Verifica paginazione FdR pubblicati pagina 1
     Dato che lo scenario "Pubblicazione del flusso per test paginazione" è stato eseguito con successo
@@ -46,7 +46,7 @@ Funzionalità: Verifica paginazione per le API organizzazione
     E l'organizzazione riceve pagina 1 con 1 elemento come risposta
 
   @runnable
-  @fdr3_009_05
+  @FDR3_009_05
   @positive
   Scenario: Verifica paginazione FdR pubblicati pagina 2
     Dato che lo scenario "Pubblicazione del flusso per test paginazione" è stato eseguito con successo
@@ -59,7 +59,7 @@ Funzionalità: Verifica paginazione per le API organizzazione
     E l'organizzazione riceve pagina 2 con 1 elemento come risposta
 
   @runnable
-  @fdr3_009_06
+  @FDR3_009_06
   @positive
   Scenario: Verifica paginazione pagamenti pubblicati pagina 1
     Dato che lo scenario "Pubblicazione del flusso per test paginazione" è stato eseguito con successo
@@ -72,7 +72,7 @@ Funzionalità: Verifica paginazione per le API organizzazione
     E l'organizzazione riceve pagina 1 con 99 elementi come risposta
 
   @runnable
-  @fdr3_009_07
+  @FDR3_009_07
   @positive
   Scenario: Verifica paginazione pagamenti pubblicati pagina 2
     Dato che lo scenario "Pubblicazione del flusso per test paginazione" è stato eseguito con successo
@@ -83,4 +83,3 @@ Funzionalità: Verifica paginazione per le API organizzazione
     Quando l'organizzazione invia la richiesta di "recupero di tutti i pagamenti creati dall'organizzazione" con il payload "None"
     Allora l'organizzazione riceve il codice di stato HTTP 200
     E l'organizzazione riceve pagina 2 con 1 elemento come risposta
-
