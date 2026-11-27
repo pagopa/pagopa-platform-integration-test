@@ -8,7 +8,7 @@ on:
 
 permissions:
     contents: write
-    pull-requests: read
+    pull-requests: write
     
 
 jobs:
@@ -32,6 +32,36 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Check for pending version bump PRs
+        id: pending_bumps
+        if: steps.labels.outputs.should_bump == 'true'
+        uses: actions/github-script@d556feaca394842dc55e4734bf3bb9f685482fa0 # v6.3.3
+        env:
+          SUITE_LABEL: ${{ steps.labels.outputs.suite_label }}
+        with:
+          script: |
+            const suite = process.env.SUITE_LABEL.toLowerCase();
+            const { data: pullRequests } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'skip',
+              head: `auto-bump-suite-version`,
+              per_page: 100
+            });
+            const pendingBumps = pullRequests
+              .filter(pr => pr.head.ref.includes(`auto-bump-suite-version`) && 
+                           pr.body && pr.body.includes(suite))
+              .sort((a, b) => a.created_at.localeCompare(b.created_at));
+            
+            if (pendingBumps.length > 0) {
+              core.info(`Found ${pendingBumps.length} pending version bump PR(s) for suite ${suite}. Will accumulate changes.`);
+              core.setOutput('has_pending', 'true');
+              core.setOutput('pending_count', pendingBumps.length.toString());
+            } else {
+              core.setOutput('has_pending', 'false');
+            }
+
 
       - name: Set up Python
         if: steps.labels.outputs.should_bump == 'true'
@@ -50,14 +80,55 @@ jobs:
         env:
           VERSION_LABEL: ${{ steps.labels.outputs.version_label }}
           SUITE_LABEL: ${{ steps.labels.outputs.suite_label }}
+          PENDING_BUMP_COUNT: ${{ steps.pending_bumps.outputs.pending_count }}
         run: |
-            python -u .github/scripts/auto_update_test_suite_version.py -v "$VERSION_LABEL" -s "$SUITE_LABEL"
+            echo "Applying $VERSION_LABEL bump with $PENDING_BUMP_COUNT pending bump PR(s) in queue"
+            python -u .github/scripts/auto_update_test_suite_version.py -v "$VERSION_LABEL" -s "$SUITE_LABEL" --pending-count "$PENDING_BUMP_COUNT"
     
-      - name: Push new versions file
+      - name: Prepare version bump PR description
+        id: bump_pr
+        if: steps.labels.outputs.should_bump == 'true'
+        uses: actions/github-script@d556feaca394842dc55e4734bf3bb9f685482fa0 # v6.3.3
+        env:
+          SUITE_LABEL: ${{ steps.labels.outputs.suite_label }}
+          VERSION_LABEL: ${{ steps.labels.outputs.version_label }}
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('.github/PULL_REQUEST_TEMPLATE.md', 'utf8')
+              .replace('<!--- Describe your changes in detail -->',
+                `$&\n\nApply a ${process.env.VERSION_LABEL} version bump to the ${process.env.SUITE_LABEL} suite in \`.github/nrt-suites.json\`.`)
+              .replace('<!--- Why is this change required? What problem does it solve? -->',
+                `$&\n\nFollow-up to #${context.issue.number}. Submit the catalog update for review instead of pushing directly to protected main. The skip label prevents a recursive suite version bump.`)
+              .replace('<!--- your change affects other areas of the code, etc. -->',
+                '$&\n\nNo tests were run by this workflow. Only the suite version in the NRT catalog was updated automatically.')
+              .replace('- [ ] Bug fix', '- [x] Bug fix');
+            core.setOutput('body', body);
+
+      - name: Configure git
         if: steps.labels.outputs.should_bump == 'true'
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add .github/nrt-suites.json
-          git commit -m "Update test suite version"
-          git push
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create version bump pull request
+        if: steps.labels.outputs.should_bump == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SUITE_LABEL: ${{ steps.labels.outputs.suite_label }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # Create a temporary file for the PR body
+          cat > /tmp/pr_body.txt << 'EOF'
+          ${{ steps.bump_pr.outputs.body }}
+          EOF
+          
+          gh pr create \
+            --base main \
+            --head "auto-bump-suite-version/${{ env.PR_NUMBER }}" \
+            --title "Auto bump ${{ env.SUITE_LABEL }} version" \
+            --body-file /tmp/pr_body.txt \
+            --label skip
+          
+          # Clean up
+          rm /tmp/pr_body.txt

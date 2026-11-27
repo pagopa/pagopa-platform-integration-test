@@ -1,5 +1,6 @@
 # qa-hub: FEAT_005_Checkout
 # language: it
+@e2e
 @CHECKOUT_005
 Funzionalità: Ordinamento della lista di PSP
   L'utente checkout vuole poter ordinare la lista PSP (Payment Service Provider)
@@ -11,7 +12,13 @@ Funzionalità: Ordinamento della lista di PSP
     E L'utente inserisce un codice avviso valido con prefisso "30202"
     E L'utente inserisce un codice fiscale valido del pagatore
 
-  @checkout @e2e @positive @smoke @ui @positivo
+  # =============================================
+  # Ordinamento pagina di riepilogo
+  # =============================================
+
+  @smoke
+  @runnable
+  @positive
   @CHECKOUT_005_01
   Scenario: La lista PSP è ordinata per commissione in ordine crescente nella pagina di riepilogo
     Quando L'utente inserisce le informazioni dell'avviso
@@ -27,7 +34,9 @@ Funzionalità: Ordinamento della lista di PSP
     Allora La lista delle commissioni PSP è ordinata in ordine crescente
     E L'utente annulla il pagamento
 
-  @checkout @e2e @positive @smoke @ui @positivo
+  @smoke
+  @runnable
+  @positive
   @CHECKOUT_005_02
   Scenario: La lista PSP è ordinata per commissione in ordine decrescente nella pagina di riepilogo
     Quando L'utente inserisce le informazioni dell'avviso
@@ -42,7 +51,9 @@ Funzionalità: Ordinamento della lista di PSP
     Allora La lista delle commissioni PSP è ordinata in ordine decrescente
     E L'utente annulla il pagamento
 
-  @checkout @e2e @positive @smoke @ui @positivo
+  @smoke
+  @runnable
+  @positive
   @CHECKOUT_005_03
   Scenario: La lista PSP è ordinata per nome in ordine decrescente nella pagina di riepilogo
     Quando L'utente inserisce le informazioni dell'avviso
@@ -57,7 +68,9 @@ Funzionalità: Ordinamento della lista di PSP
     Allora La lista dei nomi PSP è ordinata in ordine alfabetico decrescente
     E L'utente annulla il pagamento
 
-  @checkout @e2e @positive @smoke @ui @positivo
+  @smoke
+  @runnable
+  @positive
   @CHECKOUT_005_04
   Scenario: La lista PSP è ordinata per nome in ordine crescente nella pagina di riepilogo
     Quando L'utente inserisce le informazioni dell'avviso
@@ -73,7 +86,13 @@ Funzionalità: Ordinamento della lista di PSP
     Allora La lista dei nomi PSP è ordinata in ordine alfabetico crescente
     E L'utente annulla il pagamento
 
-  @checkout @e2e @positive @smoke @ui @positivo
+  # =============================================
+  # Ordinamento pagina di selezione PSP
+  # =============================================
+
+  @smoke
+  @runnable
+  @positive
   @CHECKOUT_005_05
   Scenario: La lista PSP è ordinata per nome nella pagina di selezione PSP
     Quando L'utente inserisce le informazioni dell'avviso
@@ -87,7 +106,9 @@ Funzionalità: Ordinamento della lista di PSP
     E L'utente clicca il pulsante mostra risultati
     Allora La lista dei nomi PSP è ordinata in ordine alfabetico crescente
 
-  @checkout @e2e @positive @smoke @ui @positivo
+  @smoke
+  @runnable
+  @positive
   @CHECKOUT_005_06
   Scenario: La lista PSP è ordinata per commissione nella pagina di selezione PSP
     Quando L'utente inserisce le informazioni dell'avviso

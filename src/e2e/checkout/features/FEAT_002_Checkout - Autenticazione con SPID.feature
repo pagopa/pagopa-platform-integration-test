@@ -1,5 +1,6 @@
 # qa-hub: FEAT_002_Checkout
 # language: it
+@e2e
 @CHECKOUT_002
 Funzionalità: Autenticazione con SPID
   Un utente del sistema checkout vuole autenticarsi tramite SPID e disconnettersi al termine della sessione
@@ -9,13 +10,17 @@ Funzionalità: Autenticazione con SPID
     Dato La pagina di checkout è aperta
     E La lingua è impostata su "it"
 
-  @checkout @e2e @positive @smoke @ui @positivo
+  @smoke
+  @runnable
+  @positive
   @CHECKOUT_002_01
   Scenario: Accesso SPID completato con successo
     Quando L'utente clicca sul pulsante di login
     Allora L'utente ha effettuato l'accesso
 
-  @checkout @e2e @positive @smoke @ui @positivo
+  @smoke
+  @runnable
+  @positive
   @CHECKOUT_002_02
   Scenario: Logout SPID completato con successo
     Dato L'utente ha effettuato l'accesso con SPID
