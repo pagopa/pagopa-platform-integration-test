@@ -1,0 +1,38 @@
+{
+  "task_id": "2026-11-20-gec-sum-and-error-body",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-11-20T11:40:00Z",
+  "ended_at": "2026-11-20T12:05:00Z",
+  "request_summary": "Definire il criterio della somma commissioni dallo step originale, rimuovere le asserzioni ridondanti su titolo e stato del corpo errore e mantenere la divisione cart.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "scaricato steps.js upstream completo in cartella temporanea, individuato lo step della somma e ricavato il criterio, poi delegato a QA-analyst con scope limitato a FEAT_003-007",
+      "tool": "run_in_terminal"
+    },
+    {
+      "description": "verificato con grep le modifiche: nuovo testo presente in 8 e 9 scenari, nessuna asserzione residua su titolo o stato del corpo, conteggi scenari invariati"
+    },
+    {
+      "description": "relayate all'utente le due domande D1 e D2 con lo strumento di domande e riportate le risposte in una seconda delega all'analyst",
+      "tool": "vscode_askQuestions"
+    },
+    {
+      "description": "verificato dopo la seconda delega: step della somma 6 in FEAT_003 e 7 in FEAT_004, nessun bundleId in FEAT_005, conteggi scenari invariati",
+      "tool": "run_in_terminal"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "verified",
+    "detail": "Criterio della somma esplicitato, asserzioni ridondanti rimosse, D1 e D2 applicate. Restano da decidere eventuali ritocchi minori e l'implementazione degli step Python."
+  },
+  "friction": [
+    {
+      "description": "Il conteggio 80-120 caratteri e ambiguo sulla parola chiave: il nuovo step della somma e 115 caratteri senza E, 121 con indentazione e keyword.",
+      "recovered": false
+    }
+  ],
+  "counted_for_playbook_at": "2026-11-20T10:07:07.462Z"
+}

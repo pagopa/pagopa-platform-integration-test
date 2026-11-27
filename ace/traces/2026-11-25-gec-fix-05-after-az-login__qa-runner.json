@@ -1,0 +1,34 @@
+{
+  "task_id": "2026-11-25-gec-fix-05-after-az-login",
+  "agent": "qa-runner",
+  "started_at": "2026-11-25T15:18:26+01:00",
+  "ended_at": "2026-11-25T15:22:19+01:00",
+  "request_summary": "Run the final authorized full GEC DEV suite after Azure login and Key Vault URL setup.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Ran the full unfiltered GEC DEV suite in a fresh PowerShell process with the requested Key Vault URL and isolated fix-05 output directories.",
+      "tool": "QA-runner delegation",
+      "timestamp": "2026-11-25T15:18:26+01:00"
+    },
+    {
+      "description": "The run completed with 51 of 52 scenarios passing; JUnit identifies the remaining FEAT_002 allCcp-off assertion failure. The six prior FEAT_006/007 ordering failures did not recur.",
+      "tool": "Behave and JUnit",
+      "timestamp": "2026-11-25T15:22:19+01:00"
+    }
+  ],
+  "outcome": {
+    "status": "failure",
+    "evaluated_by": "verified",
+    "detail": "The requested suite ran, but one scenario failed; no further rerun or fix was authorized."
+  },
+  "friction": [
+    {
+      "description": "The run-local console log has mixed UTF-16/UTF-8 encoding; the failure was verified from the readable JUnit XML instead.",
+      "recovered": true
+    }
+  ],
+  "playbook_bullets_selected": [],
+  "counted_for_playbook_at": "2026-11-25T14:28:41.467Z"
+}

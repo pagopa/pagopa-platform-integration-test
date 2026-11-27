@@ -1,0 +1,37 @@
+{
+  "task_id": "2026-11-25-gec-poste-afterall-follow-afm",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-11-25T15:52:36+01:00",
+  "ended_at": "2026-11-25T16:06:50+01:00",
+  "request_summary": "Coordinate the user-authorized AFM-style Poste lifecycle implementation and one full GEC DEV rerun.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Rechecked the existing branch and dirty baseline, compared AFM and GEC setup/cleanup code, and delegated the requested lifecycle change to QA-engineer.",
+      "tool": "PowerShell, view, QA-engineer delegation"
+    },
+    {
+      "description": "Reviewed the resulting GEC feature/helper/hook state, checked for obsolete per-scenario cleanup references, and ran git diff --check; assessed README impact as no-update-needed.",
+      "tool": "view, PowerShell, ppa-readme assessment"
+    },
+    {
+      "description": "Delegated one full rerun, independently verified the JUnit total and failure, and delegated report-only update of the existing error report.",
+      "tool": "QA-runner and QA-closer delegations, JUnit XML"
+    }
+  ],
+  "outcome": {
+    "status": "failure",
+    "evaluated_by": "verified",
+    "detail": "The AFM-style lifecycle was verified and one authorized full run completed, but the allCcp-off FEAT_002 failure persists; no additional fix or rerun is authorized."
+  },
+  "notes": "The prior 5/5 bonus budget remains exhausted. This one-run verification was separately authorized by the user and did not reset or extend that budget. No remote state was inspected or manually cleaned.",
+  "friction": [
+    {
+      "description": "The suite artifacts did not make after_all cleanup success observable; no remote inspection was authorized.",
+      "recovered": false
+    }
+  ],
+  "playbook_bullets_selected": [],
+  "counted_for_playbook_at": "2026-11-25T15:07:35.028Z"
+}

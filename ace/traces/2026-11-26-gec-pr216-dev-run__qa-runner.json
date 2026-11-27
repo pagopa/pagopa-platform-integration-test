@@ -1,0 +1,31 @@
+{
+  "task_id": "2026-11-26-gec-pr216-dev-run",
+  "agent": "qa-runner",
+  "started_at": "2026-11-26T18:37:00+01:00",
+  "ended_at": "2026-11-26T18:45:00+01:00",
+  "request_summary": "Run the GEC suite on DEV under the approved plan with a direct-report failure policy.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Ran the approved behave command once (interpreter 3.14.3, TARGET_ENV=dev, suite=gec); before_all aborted on an unresolved Key Vault secret, so no scenario ran. Reported blocked with counts, exit code, artifact paths and tested working-tree state.",
+      "tool": "QA-runner delegation"
+    },
+    {
+      "description": "The orchestrator checked the runner result against the repository history: the secret reference was introduced by an earlier commit that replaced a hardcoded table endpoint.",
+      "tool": "git log and git show"
+    }
+  ],
+  "outcome": {
+    "status": "partial",
+    "evaluated_by": "verified",
+    "detail": "The runner followed the approved plan and reported the blocker accurately; no test result exists because the DEV secret is not provisioned."
+  },
+  "friction": [
+    {
+      "description": "The runner added a console log capture to the approved command; it was disclosed and had no effect on the run.",
+      "recovered": true
+    }
+  ],
+  "counted_for_playbook_at": "2026-11-26T17:38:22.981Z"
+}

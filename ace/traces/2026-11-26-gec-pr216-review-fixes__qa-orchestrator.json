@@ -1,0 +1,52 @@
+{
+  "task_id": "2026-11-26-gec-pr216-review-fixes",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-11-26T16:31:48+01:00",
+  "ended_at": "2026-11-26T17:23:12+01:00",
+  "request_summary": "Read the review comments on the GEC pull request, plan the fixes, then apply them using the AFM oracle for issuer fixtures and a 5-second timeout.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Read the six inline review comments and confirmed each against the code; produced a fix plan with owners, decisions and risks.",
+      "tool": "gh and PowerShell search"
+    },
+    {
+      "description": "Compared the issuer fixture procedure with the AFM oracle (delete by partition, then create, no restore) and routed the work: utility engineer, QA engineer and QA analyst in parallel, then a second engineer round for the strict-cardinality step.",
+      "tool": "agent delegation"
+    },
+    {
+      "description": "The utility engineer returned a plan only because its harness was read-only; under the human's authorization the orchestrator applied the utility change directly (lazy annotations, pinned azure-data-tables, blob README).",
+      "tool": "edit"
+    },
+    {
+      "description": "Verified: reproduced the TableEntity NameError on Python 3.13 with the original file and confirmed the fixed file imports; py_compile of the changed Python files; confirmed each new/changed step text matches exactly one registered step; reviewed the engineer diff, reverted a whitespace-only change and removed a duplicated partition constant.",
+      "tool": "PowerShell"
+    },
+    {
+      "description": "Assessed README impact: GEC and blob READMEs already updated by the change set; root and utility READMEs need no change.",
+      "tool": "PowerShell search"
+    }
+  ],
+  "outcome": {
+    "status": "partial",
+    "evaluated_by": "verified",
+    "detail": "All six review points are implemented and statically verified; no Behave run was performed, so runtime behavior (notably the stricter full-cardinality assertions) is unverified."
+  },
+  "notes": "Strict cardinality may expose failures in gec_002_01/02/07 (scenarios with no PSP filter). The oracle deletes whole partitions without restoring; the GEC suite keeps that procedure and adds a best-effort snapshot and restore. Python-utility-engineer is not a configured ACE participant, so no trace was written for it. Nothing was committed or pushed.",
+  "friction": [
+    {
+      "description": "The Python-utility-engineer harness was read-only and could not edit or run commands; the orchestrator applied its plan directly after explicit human authorization.",
+      "recovered": true
+    },
+    {
+      "description": "The QA-engineer could not execute commands, so its changes were verified by the orchestrator after the fact; the engineer also left a whitespace-only edit and removed blank lines between decorated functions, which were corrected.",
+      "recovered": true
+    },
+    {
+      "description": "Early gh api calls using a multi-value jq filter failed and the search tool named in the instructions was unavailable; PowerShell JSON parsing and Select-String were used instead.",
+      "recovered": true
+    }
+  ],
+  "counted_for_playbook_at": "2026-11-26T16:24:02.140Z"
+}

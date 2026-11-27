@@ -1,0 +1,31 @@
+{
+  "task_id": "2026-11-26-gec-pr216-dev-run-4",
+  "agent": "qa-runner",
+  "started_at": "2026-11-26T19:22:00+01:00",
+  "ended_at": "2026-11-26T19:40:00+01:00",
+  "request_summary": "Take a read-only before snapshot of the shared issuer table on the corrected storage account, then rerun the GEC suite on DEV.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Read the configured issuer table in the three fixture partitions before launching; the request was refused with an authorization permission mismatch, so the runner stopped without starting behave and reported blocked.",
+      "tool": "QA-runner delegation"
+    },
+    {
+      "description": "The orchestrator reverted the temporary endpoint override.",
+      "tool": "edit"
+    }
+  ],
+  "outcome": {
+    "status": "partial",
+    "evaluated_by": "verified",
+    "detail": "The runner stopped correctly at the failed read-only precondition; the table now resolves but the signed-in identity has no data-plane role on it, so no test ran and no remote state changed."
+  },
+  "friction": [
+    {
+      "description": "The signed-in identity lacks a data-plane role on the AFM storage account table, which blocks any verification of the issuer setup and restore path from this machine.",
+      "recovered": false
+    }
+  ],
+  "counted_for_playbook_at": "2026-11-26T18:22:41.370Z"
+}

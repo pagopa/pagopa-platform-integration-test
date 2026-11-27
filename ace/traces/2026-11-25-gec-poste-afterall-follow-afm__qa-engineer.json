@@ -1,0 +1,32 @@
+{
+  "task_id": "2026-11-25-gec-poste-afterall-follow-afm",
+  "agent": "qa-engineer",
+  "started_at": "2026-11-25T15:54:56+01:00",
+  "ended_at": "2026-11-25T15:58:39+01:00",
+  "request_summary": "Align GEC Poste bundle setup and cleanup timing with AFM's per-scenario Background and suite-level AfterAll pattern.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Moved Poste setup to FEAT_002 Background, routed uploaded Poste bundles through existing suite-level tracking, and removed the per-scenario cleanup path.",
+      "tool": "QA-engineer delegation"
+    },
+    {
+      "description": "The orchestrator inspected the current feature, helper, and hooks; no Behave execution was performed by the engineer.",
+      "tool": "view and git diff --check"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "verified",
+    "detail": "The requested lifecycle structure is present; suite verification was assigned separately and later reported one remaining scenario failure."
+  },
+  "friction": [
+    {
+      "description": "The task prompt referenced an incorrect ACE instruction path; the engineer located the assigned instructions under .github/instructions and continued.",
+      "recovered": true
+    }
+  ],
+  "playbook_bullets_selected": [],
+  "counted_for_playbook_at": "2026-11-25T15:07:35.028Z"
+}

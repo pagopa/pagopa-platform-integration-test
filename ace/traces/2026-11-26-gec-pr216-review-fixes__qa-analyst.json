@@ -1,0 +1,26 @@
+{
+  "task_id": "2026-11-26-gec-pr216-review-fixes",
+  "agent": "qa-analyst",
+  "started_at": "2026-11-26T16:35:00+01:00",
+  "ended_at": "2026-11-26T16:42:00+01:00",
+  "request_summary": "Decide the semantics of the full-result and prefix bundle assertions and reword the nonexistent-BIN scenario.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Compared the GEC scenarios with the oracle features and the fixture data; kept the onUs step as full-cardinality and replaced the empty table in gec_002_08 with a dedicated step wording.",
+      "tool": "QA-analyst delegation"
+    },
+    {
+      "description": "Reread the changed feature diff and confirmed the new step text matches the single step the engineer registered.",
+      "tool": "git diff and step registry check"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "verified",
+    "detail": "The Gherkin change is limited to gec_002_08 and matches the implemented step; the analyst flagged gec_002_01/02/07 as at risk of newly exposed failures, not yet verified at runtime."
+  },
+  "friction": [],
+  "counted_for_playbook_at": "2026-11-26T16:24:02.140Z"
+}

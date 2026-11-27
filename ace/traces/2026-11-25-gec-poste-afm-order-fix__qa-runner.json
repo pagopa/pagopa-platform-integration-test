@@ -1,0 +1,34 @@
+{
+  "task_id": "2026-11-25-gec-poste-afm-order-fix",
+  "agent": "qa-runner",
+  "started_at": "2026-11-25T13:03:16+01:00",
+  "ended_at": "2026-11-25T13:05:30+01:00",
+  "request_summary": "Run the approved full GEC DEV integration suite once as fix-04 after the ordering change.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Launched the unfiltered GEC DEV Behave suite with isolated fix-04 artifact directories; before_all failed while resolving the configured subscription-key secret.",
+      "tool": "QA-runner delegation",
+      "timestamp": "2026-11-25T13:05:27+01:00"
+    },
+    {
+      "description": "The orchestrator inspected the fresh console log: exit code 1, zero scenarios executed, 52 scenarios and 403 steps untested; the seven prior failures were not exercised.",
+      "tool": "view",
+      "timestamp": "2026-11-25T13:06:36+01:00"
+    }
+  ],
+  "outcome": {
+    "status": "partial",
+    "evaluated_by": "verified",
+    "detail": "The run produced verified startup-blocker evidence but did not verify the suite or the code change."
+  },
+  "friction": [
+    {
+      "description": "The configured secret was unresolved in the run environment, and the previous run's exact command/resolver setup was not available for comparison.",
+      "recovered": false
+    }
+  ],
+  "playbook_bullets_selected": [],
+  "counted_for_playbook_at": "2026-11-25T12:09:52.440Z"
+}

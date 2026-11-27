@@ -1,0 +1,30 @@
+{
+  "task_id": "2026-11-20-gec-step-merge-analysis",
+  "agent": "qa-analyst",
+  "started_at": "2026-11-20T14:02:00Z",
+  "ended_at": "2026-11-20T14:18:00Z",
+  "request_summary": "Review in sola lettura degli step dei 7 feature GEC contro le step definition upstream per proporre accorpamenti.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "letti i feature GEC, steps.js, common.js e sei feature upstream",
+      "tool": "read_file"
+    },
+    {
+      "description": "prodotto inventario di 36 step distinti, 4 gruppi accorpabili, elenco dei non accorpabili, tabella di 15 proposte e 7 decisioni"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "pagopa-platform-integration-test-auto",
+    "detail": "Report di review con fatti distinti da ipotesi; l'assenza di modifiche ai file e stata confermata dall'orchestratore."
+  },
+  "friction": [
+    {
+      "description": "La ricerca testuale non funziona fuori dal workspace: letti i file upstream con read_file.",
+      "recovered": true
+    }
+  ],
+  "counted_for_playbook_at": "2026-11-20T10:27:09.756Z"
+}

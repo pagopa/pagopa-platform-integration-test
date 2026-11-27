@@ -1,0 +1,40 @@
+{
+  "task_id": "2026-11-23-gec-afm-parity-closer",
+  "agent": "qa-closer",
+  "started_at": "2026-11-23T16:56:00Z",
+  "ended_at": "2026-11-23T17:10:00Z",
+  "request_summary": "Commit locale (senza push ne PR) dell'implementazione GEC e delle tracce ACE, escludendo i markdown creati e i file fuori scope.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "primo giro: staging esplicito dei 16 file dell'implementazione, git diff --cached --check fallito per trailing whitespace aggiunto in dev.yaml e uat.yaml; fermato senza creare il commit e segnalate anche due cancellazioni inattese di file markdown tracciati",
+      "tool": "powershell"
+    },
+    {
+      "description": "ripresa dopo la pulizia dei YAML: restaging dei due YAML, verifica dell'index sui 16 file previsti, check senza errori, controllo di superficie su segreti; creato il commit 8ad008c223 (test: align GEC integration suite with AFM tests)",
+      "tool": "powershell"
+    },
+    {
+      "description": "verificati i finalized.json dei 10 task e il marker counted_for_playbook_at nelle 19 tracce; creato il commit 09369e088b con le tracce ACE (chore: add sanitized ACE traces for GEC work); push saltato per decisione dell'utente, PR non applicabile",
+      "tool": "powershell"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "verified",
+    "detail": "Due commit locali verificati dall'orchestratore con git log, git show --stat e git status: branch PQ-835-gec-implementazione-test, nessuno staged residuo, file esclusi invariati. Push non eseguito (nessun upstream configurato)."
+  },
+  "notes": "Traccia del closer relativa alla richiesta 2026-11-23-gec-afm-parity-phase1, registrata con un task_id separato perche il finalizer non riapre un task gia finalizzato. Il blocco iniziale e stato un gate legittimo (diff --check) e non un errore del closer; il lavoro e ripreso senza ripetere azioni gia completate.",
+  "friction": [
+    {
+      "description": "git diff --cached --check ha rilevato spazi finali nei YAML scritti dall'engineer: serviva un intervento del QA-engineer fuori dal perimetro del closer, con un giro di attesa.",
+      "recovered": true
+    },
+    {
+      "description": "Due file markdown tracciati (gec-dev-setup-checklist.md, gec-dev-setup-ready.md) sono comparsi cancellati nel working tree durante la sessione, causa non nota; lasciati intatti e fuori dal commit.",
+      "recovered": true
+    }
+  ],
+  "counted_for_playbook_at": "2026-11-23T18:15:46.477Z"
+}

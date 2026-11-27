@@ -1,0 +1,46 @@
+{
+  "task_id": "2026-11-20-gec-features-translation",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-11-20T10:00:00Z",
+  "ended_at": "2026-11-20T10:25:00Z",
+  "request_summary": "Tradurre in italiano, secondo le linee guida Gherkin, i feature file upstream pagopa-afm-calculator non ancora tradotti (oltre alla baseline FEAT_001/002) nella suite GEC.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "letti persona, routing di sessione, workflow operativo e istruzioni ACE; branch PQ-834 pulito, resume confermato dall'utente",
+      "tool": "read_file"
+    },
+    {
+      "description": "elencati i sorgenti upstream (11 file, 9 da tradurre) e dimensionato il lavoro",
+      "tool": "run_in_terminal"
+    },
+    {
+      "description": "delegata la creazione dei feature a QA-analyst con scope di scrittura limitato a src/integration/gec/feature e stop alla scrittura dei file"
+    },
+    {
+      "description": "verificati in modo indipendente i conteggi degli scenari upstream (33) contro i feature prodotti (32 + 1 duplicato omesso) e confrontati i corpi dei due scenari omonimi di getFeesMulti: identici",
+      "tool": "run_in_terminal"
+    },
+    {
+      "description": "valutato impatto README: nessun riferimento alla suite GEC nel README radice, nessun aggiornamento necessario"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "verified",
+    "detail": "Cinque feature FEAT_003-007 creati in stato draft; conteggi e duplicato confermati. Non pronti per lo sviluppo: mancano tracciabilita, payload e step."
+  },
+  "friction": [
+    {
+      "description": "Il prompt di delega chiedeva curl, ma il ruolo QA-analyst non ha il terminale: l'analyst ha usato lo strumento di fetch, che tronca i file lunghi con elisioni, quindi ho dovuto ricontrollare i sorgenti io stesso.",
+      "recovered": true
+    },
+    {
+      "description": "Il prompt di delega indicava sei file getPaymentMethods* mentre sono sette; l'analyst ha segnalato l'incoerenza.",
+      "recovered": true
+    }
+  ],
+  "notes": "Per deleghe all'analyst su sorgenti remoti lunghi: non prescrivere curl, fornire il contenuto o verificarlo a posteriori.",
+  "counted_for_playbook_at": "2026-11-20T09:25:24.280Z"
+}

@@ -1,0 +1,32 @@
+{
+  "task_id": "2026-11-25-gec-poste-oracle-review",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-11-25T15:32:03+01:00",
+  "ended_at": "2026-11-25T15:43:13+01:00",
+  "request_summary": "Compare the failed GEC allCcp-off scenario implementation with the AFM oracle.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Compared the GEC scenario, request payload, Poste fixture mapping, deployment filter configuration, and absence assertion with the corresponding AFM getFees scenario and step definitions.",
+      "tool": "view and PowerShell search"
+    },
+    {
+      "description": "Confirmed static assertion and fixture parity; noted that the AFM oracle's runtime environment values were not verified and no remote state or response payload was inspected.",
+      "tool": "source comparison"
+    }
+  ],
+  "outcome": {
+    "status": "partial",
+    "evaluated_by": "verified",
+    "detail": "The static test implementation matches the oracle's legacy-filter setup and absence assertion; runtime parity depends on matching oracle environment values, and the service-side cause remains undetermined."
+  },
+  "friction": [
+    {
+      "description": "The first oracle feature path omitted its src directory; the correct path was located and the comparison completed.",
+      "recovered": true
+    }
+  ],
+  "playbook_bullets_selected": [],
+  "counted_for_playbook_at": "2026-11-25T14:43:27.203Z"
+}

@@ -1,0 +1,35 @@
+{
+  "task_id": "2026-11-26-gec-pr216-dev-run-2",
+  "agent": "qa-runner",
+  "started_at": "2026-11-26T18:41:00+01:00",
+  "ended_at": "2026-11-26T18:50:00+01:00",
+  "request_summary": "Rerun the GEC suite on DEV with a temporary table endpoint override and report directly on failure.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Ran the approved behave command once; 51 of 52 scenarios passed and gec_002_09 failed on the Poste bundle absence assertion. Reported counts, exit code, artifacts and tested state, and appended the error section to the existing Markdown report.",
+      "tool": "QA-runner delegation"
+    },
+    {
+      "description": "The orchestrator reread the console log summary lines and the dev.yaml state; the log confirms 51 passed and 1 failed scenarios.",
+      "tool": "PowerShell search"
+    }
+  ],
+  "outcome": {
+    "status": "partial",
+    "evaluated_by": "verified",
+    "detail": "The run completed and the result is consistent with the log; issuer setup and teardown outcomes could not be established from the console output."
+  },
+  "friction": [
+    {
+      "description": "A stderr warning from the suite became a terminating error under strict error handling in PowerShell 5.1, so the runner relaxed error handling just before launch; the exit code was still the real behave status.",
+      "recovered": true
+    },
+    {
+      "description": "The hook log lines for issuer setup are not visible in the console output or log file, so setup and restore status stayed unverified.",
+      "recovered": false
+    }
+  ],
+  "counted_for_playbook_at": "2026-11-26T17:45:58.445Z"
+}

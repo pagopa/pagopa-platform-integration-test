@@ -1,0 +1,37 @@
+{
+  "task_id": "2026-11-25-gec-poste-afm-order-fix",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-11-25T12:54:59+01:00",
+  "ended_at": "2026-11-25T13:06:36+01:00",
+  "request_summary": "Coordinate the approved GEC Poste/AFM ordering fix and one full DEV rerun.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Reviewed the engineer's GEC step diff and confirmed the requested Poste setup was already scoped to the declaring scenarios with cleanup in the scenario hook.",
+      "tool": "git diff"
+    },
+    {
+      "description": "Delegated one approved fix-04 run, inspected the console evidence and confirmed the before_all secret-resolution failure prevented all scenarios from running.",
+      "tool": "QA-runner delegation and view"
+    },
+    {
+      "description": "Assessed README impact for the step-only assertion change; no reader-facing update is required.",
+      "tool": "ppa-readme"
+    }
+  ],
+  "outcome": {
+    "status": "partial",
+    "evaluated_by": "verified",
+    "detail": "The code change was integrated and one run was attempted, but verification is blocked by unresolved DEV secret configuration; no further run was authorized."
+  },
+  "notes": "The fix-04 slot is reserved under the five-attempt policy; this run does not establish a test-code failure or pass.",
+  "friction": [
+    {
+      "description": "The prior run's exact command and secret-resolver setup were not available, and the current run could not resolve the required DEV secret.",
+      "recovered": false
+    }
+  ],
+  "playbook_bullets_selected": [],
+  "counted_for_playbook_at": "2026-11-25T12:09:52.440Z"
+}

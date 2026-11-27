@@ -1,0 +1,31 @@
+{
+  "task_id": "2026-11-26-gec-pr216-dev-run-5",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-11-26T19:26:33+01:00",
+  "ended_at": "2026-11-26T19:52:00+01:00",
+  "request_summary": "Rerun the GEC suite on DEV against the newly created issuer table to prove setup and restore before publishing.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Interpreted the human message as meaning the original storage endpoint, reapplied the temporary override, prepared delegation manifests and delegated the same approved plan with a new run id.",
+      "tool": "edit and agent delegation"
+    },
+    {
+      "description": "After the blocked result, reverted the override and confirmed the configuration file is back to its committed placeholder plus the timeout fix.",
+      "tool": "edit and git diff"
+    }
+  ],
+  "outcome": {
+    "status": "partial",
+    "evaluated_by": "verified",
+    "detail": "No run took place because the table read was refused; publication still waits for a human decision."
+  },
+  "friction": [
+    {
+      "description": "Third consecutive blocked attempt at the same read-only precondition; further identical retries would not add information.",
+      "recovered": false
+    }
+  ],
+  "counted_for_playbook_at": "2026-11-26T18:27:30.722Z"
+}

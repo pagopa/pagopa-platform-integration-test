@@ -1,0 +1,37 @@
+{
+  "task_id": "2026-11-23-gec-afm-parity-phase1",
+  "agent": "qa-engineer",
+  "started_at": "2026-11-20T10:00:00Z",
+  "ended_at": "2026-11-23T16:45:00Z",
+  "request_summary": "Implementare e correggere step, helper, hook, config e README della suite GEC per la parita con AFM (round 1-5) e rivedere read-only lo stato reale.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "round 1 e 2 nella sessione esterna: invio allCcp/maxOccurrences, normalizzazione booleana onUs, percorsi endpoint, upload data.json e config AFM, setup/teardown, routing host v1/v2/marketplace, Azure issuer, README"
+    },
+    {
+      "description": "review read-only dopo i round 2 e 3 con elenco difetti residui per gravita; 4 invocazioni delegate da CLI risultate blocked per mancanza di strumenti di scrittura"
+    },
+    {
+      "description": "round 3: precedenza del payload per operazione (ricerca metodi di pagamento), lettura utf-8-sig, delete-by-partition degli issuer; round 4: reset di context.vars per scenario in before_scenario; round 5: rimozione del ':' finale dai 6 decoratori step-tabella"
+    }
+  ],
+  "outcome": {
+    "status": "partial",
+    "evaluated_by": "pagopa-platform-integration-test-auto",
+    "detail": "Stato finale implemented-not-run con controlli statici del runner passati; il primo giro aveva 15 difetti trovati in review e altri 3 emersi dopo (payload ricerca metodi, stato condiviso, ':' nei decoratori). Nessuna prova a runtime."
+  },
+  "notes": "Gli step con tabella hanno richiesto un controllo specifico: il dry-run di behave 1.2.6 li riporta undefined se il decoratore termina con ':'. Gli step del round 2-5 sono stati eseguiti fuori da questa sessione e riportati dall'utente. Lavoro svolto sotto task_id 2026-11-20-gec-afm-parity-phase1, riregistrato con questo ID per la chiusura ACE.",
+  "friction": [
+    {
+      "description": "Nelle sessioni delegate da CLI riceve solo strumenti di lettura: 4 tentativi blocked, non recuperato dall'agente.",
+      "recovered": false
+    },
+    {
+      "description": "Nessun controllo statico eseguibile dal ruolo: py_compile, json.load e collisioni step sono stati rimandati al QA-runner.",
+      "recovered": true
+    }
+  ],
+  "counted_for_playbook_at": "2026-11-23T16:51:04.200Z"
+}

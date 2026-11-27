@@ -1,0 +1,31 @@
+{
+  "task_id": "2026-11-26-gec-pr216-dev-run-4",
+  "agent": "qa-orchestrator",
+  "started_at": "2026-11-26T19:21:48+01:00",
+  "ended_at": "2026-11-26T19:42:00+01:00",
+  "request_summary": "Rerun the GEC suite on DEV with the corrected storage endpoint to prove issuer setup and restore before publishing.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Applied the human-authorized endpoint override, prepared delegation manifests and delegated the same approved plan to QA-runner with a new run id.",
+      "tool": "edit and agent delegation"
+    },
+    {
+      "description": "After the blocked result, reverted the override and confirmed the configuration file is back to its committed placeholder plus the timeout fix.",
+      "tool": "edit and git diff"
+    }
+  ],
+  "outcome": {
+    "status": "partial",
+    "evaluated_by": "verified",
+    "detail": "No run took place because of an access restriction on the shared table; publication still waits for a human decision."
+  },
+  "friction": [
+    {
+      "description": "Two consecutive reruns were blocked by storage-side prerequisites (wrong account, then missing data-plane role) that could only be discovered by a read of the table.",
+      "recovered": false
+    }
+  ],
+  "counted_for_playbook_at": "2026-11-26T18:22:41.370Z"
+}

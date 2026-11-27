@@ -1,0 +1,37 @@
+{
+  "task_id": "2026-11-25-gec-integration-baseline-run",
+  "agent": "qa-runner",
+  "started_at": "2026-11-25T12:21:38+01:00",
+  "ended_at": "2026-11-25T12:32:00+01:00",
+  "request_summary": "Run the full GEC DEV integration suite against the approved existing baseline, diagnose failures, and stop without fixes or reruns.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_selected": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Rechecked the approved branch and working-tree baseline, then verified Python 3.14.3, Behave 1.2.6, and the Allure formatter."
+    },
+    {
+      "description": "Executed the full src/integration/gec suite once in DEV; Behave completed with exit code 1, 45 of 52 scenarios passed, and 7 failed."
+    },
+    {
+      "description": "Reported the seven failures and artifact paths; could not persist the required existing Markdown report because the edit tool was unavailable."
+    }
+  ],
+  "outcome": {
+    "status": "partial",
+    "evaluated_by": "verified",
+    "detail": "The run completed and its 52-case JUnit evidence was independently verified. Report persistence was incomplete in the runner task and was subsequently completed by the QA-closer."
+  },
+  "friction": [
+    {
+      "description": "The runner had no file-edit tool and could not update the existing GEC error report; the orchestrator recovered by assigning report-only closure to QA-closer.",
+      "recovered": false
+    },
+    {
+      "description": "The --no-logcapture option did not make before_all and after_scenario hook logs observable, leaving those hook outcomes unverified.",
+      "recovered": false
+    }
+  ],
+  "counted_for_playbook_at": "2026-11-25T11:41:19.992Z"
+}

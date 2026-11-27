@@ -1,0 +1,41 @@
+{
+  "task_id": "2026-11-20-gec-sum-and-error-body",
+  "agent": "qa-analyst",
+  "started_at": "2026-11-20T11:42:00Z",
+  "ended_at": "2026-11-20T12:02:00Z",
+  "request_summary": "Esplicitare il criterio della somma commissioni da steps.js, semplificare le asserzioni del corpo errore e applicare le decisioni D1 e D2.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "letto steps.js upstream e confermato il criterio della somma e l'ordinamento alfabetico dei codici EC",
+      "tool": "read_file"
+    },
+    {
+      "description": "sostituiti i testi degli step somma e codici EC in FEAT_003 e FEAT_004 e rimossi due step ridondanti in FEAT_006",
+      "tool": "multi_replace_string_in_file"
+    },
+    {
+      "description": "in una seconda chiamata rimosso lo step della somma da 4 scenari senza commissioni EC e corretto il campo idBundle in FEAT_005"
+    },
+    {
+      "description": "verificate a rilettura le occorrenze dei testi e i conteggi degli scenari"
+    }
+  ],
+  "outcome": {
+    "status": "success",
+    "evaluated_by": "pagopa-platform-integration-test-auto",
+    "detail": "Modifiche completate con divergenze da steps.js riportate; i controlli principali sono stati confermati dall'orchestratore."
+  },
+  "friction": [
+    {
+      "description": "Le sostituzioni su blocchi identici hanno richiesto ancore di contesto sui tag successivi.",
+      "recovered": true
+    },
+    {
+      "description": "Il limite di lunghezza degli step non chiarisce se includa la parola chiave.",
+      "recovered": false
+    }
+  ],
+  "counted_for_playbook_at": "2026-11-20T10:07:07.462Z"
+}

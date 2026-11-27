@@ -1,0 +1,31 @@
+{
+  "task_id": "2026-11-26-gec-pr216-dev-run-5",
+  "agent": "qa-runner",
+  "started_at": "2026-11-26T19:27:00+01:00",
+  "ended_at": "2026-11-26T19:50:00+01:00",
+  "request_summary": "Take a read-only before snapshot of the newly created issuer table, then rerun the GEC suite on DEV.",
+  "playbook_bullets_seen": [],
+  "playbook_bullets_cited": [],
+  "actions": [
+    {
+      "description": "Read the configured issuer table in the three fixture partitions before launching; the request was refused with an authorization permission mismatch, so the runner stopped without starting behave and reported blocked.",
+      "tool": "QA-runner delegation"
+    },
+    {
+      "description": "The orchestrator reverted the temporary endpoint override.",
+      "tool": "edit"
+    }
+  ],
+  "outcome": {
+    "status": "partial",
+    "evaluated_by": "verified",
+    "detail": "The runner stopped correctly at the failed read-only precondition; the data-plane permission of the signed-in identity is still missing or not yet effective, so no test ran and no remote state changed."
+  },
+  "friction": [
+    {
+      "description": "A third consecutive run attempt was blocked at the table read; the identity that DefaultAzureCredential selects may differ from the one that received the role, and this cannot be checked without probes outside the approved plan.",
+      "recovered": false
+    }
+  ],
+  "counted_for_playbook_at": "2026-11-26T18:27:30.722Z"
+}
