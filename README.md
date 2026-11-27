@@ -86,7 +86,7 @@ Riferimenti: struttura workspace, `.gitignore`, `.github/workflows/*`, `.github/
 | pip | installazione dipendenze Python | versione recente |
 | Java | Allure CLI e workflow report | 17 consigliata |
 | Allure CLI | generazione e apertura report | 2.x compatibile |
-| Node.js + npm | Playwright JS | 18+ consigliata |
+| Node.js + npm | Playwright JS, hook di delega degli agenti custom | 18+ consigliata |
 | jq | parsing JSON nei workflow Linux | richiesto in CI FdR e AI report analysis |
 
 Dipendenze Python principali presenti nel progetto:
