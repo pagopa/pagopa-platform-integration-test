@@ -1,9 +1,10 @@
 """Controllo delle convenzioni dei feature file gestiti da QA Hub.
 
-Si applica solo ai file la cui prima riga è `# qa-hub: FEAT_<NNN>_<Ambito>`; gli altri file
-sono ignorati (lo resteranno fino alla migrazione verso QA Hub). Regole:
+I file senza header QA Hub sono legacy e vengono ignorati fino alla migrazione
+dell'ambito. Per i file gestiti da QA Hub si applicano queste regole:
 
-- seconda riga `# language: it`;
+- percorso `src/<tipo>/<suite>/features/**/*.feature`, dove tipo è `api`, `integration` o `e2e`;
+- seconda riga con la dichiarazione di lingua Gherkin (`it` o `en`);
 - un tag di feature `@<AMBITO>_<NNN>` coerente con l'header;
 - ogni `Scenario:` / `Schema dello scenario:` preceduto da esattamente un tag identità
   `@<AMBITO>_<NNN>_<NN>` con ambito e numero di feature dell'header;
@@ -20,12 +21,33 @@ import re
 import sys
 
 HEADER_RE = re.compile(r"^#\s*qa-hub:\s*(\S+)\s*$")
-CODE_RE = re.compile(r"^FEAT_(\d{3})_([A-Za-z][A-Za-z0-9]{1,19})$")
-LANGUAGE_RE = re.compile(r"^#\s*language:\s*it\s*$")
+CODE_RE = re.compile(r"^FEAT_(?!000)(\d{3})_([A-Za-z][A-Za-z0-9]{1,19})$")
+LANGUAGE_RE = re.compile(r"^#\s*language:\s*(it|en)\s*$")
 SCENARIO_RE = re.compile(r"^\s*(Scenario|Schema dello scenario|Esempio)\s*:")
-FEATURE_RE = re.compile(r"^\s*Funzionalità\s*:")
+FEATURE_RE = re.compile(r"^\s*(Funzionalità|Feature)\s*:")
 IDENTITY_RE = re.compile(r"^@([A-Z0-9]+)_(\d{3})_(\d{2})$")
 FEATURE_TAG_RE = re.compile(r"^@([A-Z0-9]+)_(\d{3})$")
+SOURCE_TYPES = {"api", "integration", "e2e"}
+
+
+def check_path(path: str) -> list[str]:
+    """Require a repository-relative feature path under the canonical suite features directory."""
+    normalized = path.replace("\\", "/")
+    parts = normalized.split("/")
+    if (
+        len(parts) < 5
+        or parts[0] != "src"
+        or parts[1] not in SOURCE_TYPES
+        or not parts[2]
+        or parts[3] != "features"
+        or any(part in {"", ".", ".."} for part in parts)
+        or not parts[-1].endswith(".feature")
+    ):
+        return [
+            f"{path}: percorso non valido: atteso "
+            "src/<api|integration|e2e>/<suite>/features/**/*.feature"
+        ]
+    return []
 
 
 def _normalize(text: str) -> list[str]:
@@ -37,10 +59,11 @@ def _tags(line: str) -> list[str]:
 
 
 def check_file(path: str, text: str) -> list[str]:
+    """Validate managed feature conventions and skip files not yet migrated by QA Hub."""
     lines = _normalize(text)
     header = HEADER_RE.match(lines[0]) if lines else None
     if header is None:
-        return []  # file non gestito da QA Hub
+        return []  # file non ancora migrato da QA Hub
 
     def err(lineno: int, message: str) -> str:
         return f"{path}:{lineno}: {message}"
@@ -52,7 +75,7 @@ def check_file(path: str, text: str) -> list[str]:
     errors: list[str] = []
 
     if len(lines) < 2 or not LANGUAGE_RE.match(lines[1]):
-        errors.append(err(2, "la seconda riga deve essere '# language: it'"))
+        errors.append(err(2, "la seconda riga deve dichiarare la lingua Gherkin ('it' o 'en')"))
 
     pending: list[tuple[int, list[str]]] = []  # righe di tag accumulate prima di un elemento
     seen: dict[str, int] = {}
@@ -95,10 +118,13 @@ def check_file(path: str, text: str) -> list[str]:
 
 
 def main(argv: list[str]) -> int:
+    """Validate changed feature paths and contents, returning one when any error is found."""
     errors: list[str] = []
     for path in argv:
         if not path.endswith(".feature") or not os.path.isfile(path):
             continue  # file rimossi o non feature: niente da controllare
+        relative_path = os.path.relpath(path) if os.path.isabs(path) else path
+        errors.extend(check_path(relative_path))
         with open(path, encoding="utf-8") as fh:
             errors.extend(check_file(path, fh.read()))
     for line in errors:

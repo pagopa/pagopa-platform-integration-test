@@ -2,7 +2,7 @@
 
 Repository di test di integrazione, API ed end-to-end per componenti della piattaforma pagoPA.
 Le suite sono scritte principalmente in Python con Behave/Gherkin e producono report Allure;
-alcune suite storiche usano Cucumber.js o Playwright.
+alcune suite usano Playwright.
 
 ## Indice
 
@@ -43,8 +43,6 @@ progetto.
 pagopa-platform-integration-test/
 ├── behave.ini                       # configurazione globale Behave
 ├── requirements.txt                 # dipendenze Python
-├── config.yaml                      # servizi DEV/UAT per suite di integrazione
-├── commondata.yaml                  # dati condivisi per test di integrazione
 ├── config/
 │   └── .secrets_template.yaml       # template segreti per suite di integrazione
 ├── scripts/
@@ -59,12 +57,13 @@ pagopa-platform-integration-test/
 │   │   │   ├── .env.dev             # variabili API test DEV
 │   │   │   └── .env.uat             # variabili API test UAT
 │   │   └── utility/                 # hook comuni e helpers
-│   ├── integration/                 # suite integrazione Behave/Cucumber
+│   ├── integration/                 # suite integrazione Behave
+│   │   ├── commondata.yaml          # dati condivisi per le suite che li usano
 │   │   ├── wisp/
 │   │   │   └── utility/             # helpers SOAP, request builder, routing
-│   │   ├── fdr/
-│   │   └── ebollo/
-│   │       └── utility/             # helpers API MBD, UI Playwright, generators
+│   │   ├── fdr3/
+│   │   ├── cup/
+│   │   └── tas_{pass,mixed,fail}/   # suite dimostrative TAS
 │   └── e2e/
 │       └── checkout/                # Checkout E2E Behave/Playwright
 ├── reports/                         # output locali (allure-results/allure-html)
@@ -72,6 +71,7 @@ pagopa-platform-integration-test/
   ├── workflows/                   # workflow GitHub Actions
   ├── scripts/                     # script di pubblicazione report
   ├── templates/                   # template HTML storico report
+  ├── gherkin-manifest.yml         # manifest dei feature file per QA Central Hub
   └── html/                        # dashboard GitHub Pages
 ```
 
@@ -100,8 +100,8 @@ Dipendenze Python principali presenti nel progetto:
 - `jinja2`
 - `markdown==3.8.1`
 
-Riferimenti: `requirements.txt`, `.github/workflows/wisp-tests.yml`,
-`.github/workflows/fdr-tests.yml`, `.github/workflows/deploy-test-report.yml`.
+Riferimenti: `requirements.txt`, `.github/workflows/nrt-run-suite.yml`,
+`.github/workflows/deploy-test-report.yml`.
 
 ## Installazione
 
@@ -146,7 +146,7 @@ playwright install chromium
 ```
 
 Riferimenti: `requirements.txt`, `src/e2e/checkout/package.json`,
-`src/e2e/checkout/environment.py`, `src/integration/ebollo/environment.py`.
+`src/e2e/checkout/environment.py`.
 
 ## Configurazione
 
@@ -188,14 +188,15 @@ Riferimenti: `src/api/config/.env.dev`, `src/api/config/.env.uat`,
 
 ### Integration test
 
-Le suite sotto `src/integration/` usano `config.yaml`, `commondata.yaml` e, quando necessario,
-`config/.secrets.yaml`. Se `TARGET_ENV` non e impostata, la configurazione Python seleziona
-`uat` come default.
+WISP e FdR3 caricano `<TARGET_ENV>.yaml` dalla directory della suite. WISP usa
+anche `src/integration/commondata.yaml`; FdR3 carica `payloads.yaml` dalla
+propria directory. I segreti sono risolti secondo la configurazione locale o
+Azure. Se `TARGET_ENV` non è impostata, il loader usa `uat` come default.
 
 Preparare i segreti locali partendo dal template:
 
 ```bash
-cp config/.secrets_template.yaml -> config/.secrets.yaml
+cp config/.secrets_template.yaml config/.secrets.yaml
 ```
 
 Il file `config/.secrets.yaml` è ignorato da git e deve contenere le subscription key e le
@@ -213,8 +214,8 @@ Bash:
 export TARGET_ENV=uat
 ```
 
-Riferimenti: `config.yaml`, `config/.secrets_template.yaml`,
-`src/conf/configuration.py`, `.gitignore`.
+Riferimenti: `src/integration/wisp/environment.py`, `src/integration/fdr3/environment.py`,
+`config/.secrets_template.yaml`, `src/conf/configuration.py`, `.gitignore`.
 
 ### E2E test
 
@@ -377,10 +378,12 @@ Riferimenti: `src/api/*/features/*.feature`, `src/api/*/environment.py`.
 | Suite | Percorso | Runner | Note |
 |---|---|---|---|
 | `wisp` | `src/integration/wisp` | Behave | scenari `nodoInviaRPT` e `nodoInviaCarrelloRPT`, tag `@runnable` |
-| `fdr` | `src/integration/fdr` | Behave | smoke/example suite con tag `@runnable` |
-| `ebollo` | `src/integration/ebollo` | Behave + Playwright Python | scenari eBollo e broadcast station |
+| `fdr3` | `src/integration/fdr3` | Behave | flussi di rendicontazione, tag `@runnable` |
+| `cup` | `src/integration/cup` | Behave | scenari CUP |
+| `tas_pass`, `tas_mixed`, `tas_fail` | `src/integration/tas_<esito>` | Behave | suite dimostrative TAS |
 
 Report locali consigliati: `reports/allure-results/<suite>-<env>` per le suite Behave.
+Per le suite e gli ambienti inclusi negli NRT consultare il [catalogo](.github/nrt-suites.json).
 
 Riferimenti: `src/integration/**/features/**/*.feature`.
 
@@ -463,11 +466,11 @@ Sostituire `cart` con `auth-service`, `checkout-npg` o `ecommerce-cdc`.
 Riferimenti: regole operative di progetto, `src/api/utility/api_test_environment.py`,
 `src/api/*/features/*.feature`.
 
-### WISP e FdR
+### WISP e FdR3
 
 L'esempio seleziona WISP. Per la suite NRT FdR3 usare `suite="fdr3"` e
-confermare path/tag/ambiente nel catalogo. La suite legacy `fdr` e distinta:
-usarla solo se espressamente richiesta, senza sostituirla a `fdr3`.
+confermare percorso, tag e ambiente nel catalogo. La suite legacy `fdr`
+non è più presente nel repository.
 
 PowerShell:
 
@@ -517,56 +520,8 @@ test_exit=$?
 exit "$test_exit"
 ```
 
-I riferimenti storici seguenti descrivono WISP/FdR legacy; per NRT usare anche
-il [workflow corrente](.github/workflows/nrt-run-suite.yml) e il catalogo.
-
-Riferimenti: `.github/workflows/wisp-tests.yml`, `.github/workflows/fdr-tests.yml`,
-`.github/workflows/run_behave_tests.yml`, `src/integration/wisp/features/**`,
-`src/integration/fdr/features/**`.
-
-### eBollo
-
-PowerShell:
-
-```powershell
-$ErrorActionPreference = "Stop"
-$PSNativeCommandUseErrorActionPreference = $false
-$python = (Get-Command "<approved-python-executable>" -CommandType Application -ErrorAction Stop).Source
-$env:TARGET_ENV = "uat"
-$runId = [guid]::NewGuid().ToString("N")
-$outDir = "reports\allure-results\ebollo-uat\$runId\initial-00"
-New-Item $outDir -ItemType Directory -ErrorAction Stop | Out-Null
-
-$LASTEXITCODE = $null
-& $python -m behave "src\integration\ebollo" `
-  -f allure_behave.formatter:AllureFormatter -o $outDir `
-  -f progress --summary --show-timings
-$testExit = $LASTEXITCODE
-if ($null -eq $testExit) { throw "Test process did not return an exit code" }
-exit $testExit
-```
-
-Bash:
-
-```bash
-python="<approved-python-executable>"
-command -v "$python" >/dev/null || { printf '%s\n' "Python executable unavailable" >&2; exit 1; }
-export TARGET_ENV=uat
-run_id="$(date -u +%Y%m%dT%H%M%SZ)-${RANDOM}"
-run_dir="reports/allure-results/ebollo-uat/${run_id}"
-out_dir="${run_dir}/initial-00"
-mkdir -p "$run_dir" || exit 1
-mkdir "$out_dir" || exit 1
-
-"$python" -m behave "src/integration/ebollo" \
-  -f allure_behave.formatter:AllureFormatter -o "$out_dir" \
-  -f progress --summary --show-timings
-test_exit=$?
-exit "$test_exit"
-```
-
-Riferimenti: `src/integration/ebollo/environment.py`,
-`src/integration/ebollo/features/*.feature`.
+Riferimenti: `.github/workflows/nrt-run-suite.yml`, `.github/nrt-suites.json`,
+`src/integration/wisp/features/`, `src/integration/fdr3/features/`.
 
 ### E2E 
 
@@ -635,13 +590,13 @@ reports/allure-results/<suite>-<env>/<run-id>/<attempt-id>
 reports/junit/<suite>-<env>/<run-id>/<attempt-id>
 ```
 
-Nei workflow WISP/FdR il runner produce `allure-results` nella working directory, poi il report
+Nel workflow NRT il runner produce `allure-results` nella working directory, poi il report
 HTML viene pubblicato come artefatto e copiato su GitHub Pages.
 Le convenzioni CI restano invariate; in locale non mescolare tentativi o cancellare
 la directory condivisa per preparare una nuova esecuzione.
 
-Riferimenti: regole operative di progetto, `.github/workflows/wisp-tests.yml`,
-`.github/workflows/fdr-tests.yml`, `.github/workflows/run_behave_tests.yml`.
+Riferimenti: regole operative di progetto, `.github/workflows/nrt-run-suite.yml`,
+`.github/workflows/nrt-main-dispatch-tests.yml`.
 
 ### Aprire il report locale
 
@@ -670,7 +625,7 @@ allure open "reports/allure-html/cart-uat/<run-id>/initial-00" --port 5300
 Nota sul formatter Behave: `-o` si associa al primo formatter indicato. Mettere sempre
 `allure_behave.formatter:AllureFormatter` prima di `-f progress`.
 
-Riferimenti: regole operative di progetto, workflow WISP/FdR, cartelle `reports/`.
+Riferimenti: regole operative di progetto, workflow NRT, cartelle `reports/`.
 
 ### Dashboard pubblicata
 
@@ -678,7 +633,7 @@ La dashboard GitHub Pages espone:
 
 - una landing page da `.github/html/index.html`;
 - storico WISP sotto `wisp-tests/`;
-- storico FdR nei workflow legacy sotto `fdr-tests/`;
+- storico FdR3 sotto `fdr3-tests/`;
 - `last-history` per l'ultimo report processato dagli script di pubblicazione;
 - statistiche lette da `widgets/summary.json` e `stats.json`.
 
@@ -688,19 +643,21 @@ Riferimenti: `.github/html/index.html`, `.github/scripts/process_reports.py`,
 
 ### Pagina report su Confluence
 
-Dopo la pubblicazione dei report su `gh-pages`, lo script `.github/scripts/create_report_page.py` legge le esecuzioni processate (`tmp_processed_reports/`) e crea una pagina Confluence per ogni suite/ambiente trovata.
+Lo script `.github/scripts/create_report_page.py` legge i report disponibili
+sotto `artifacts/` e crea pagine Confluence per le suite riconosciute.
 
 La logica e orientata al reporting operativo:
 
-- legge `stats.json` per recuperare data, durata e numero di failure;
+- legge `widgets/summary.json` per recuperare data, durata e numero di failure;
 - estrae i test falliti dai file case in `data/test-cases/`;
 - compone la pagina usando template HTML sotto `.github/page_components/test_report_page/`;
-- pubblica la pagina nella cartella Confluence configurato in `dev.yaml` o `uat.yaml` .
+- pubblica la pagina nella cartella Confluence configurata in `.github/dev.yaml` o `.github/uat.yaml`.
 
 L'input `--run-type` (es. `NIGHTLY`, `NO-PROMO`) viene usato per valorizzare il contesto
 della run nella pagina.
 
-Esecuzione locale (se sono presenti report gia processati):
+Esecuzione locale (con report compatibili in `artifacts/`): il comando crea
+pagine Confluence, quindi va eseguito solo se la pubblicazione è autorizzata.
 
 ```bash
 python .github/scripts/create_report_page.py --run-type NO-PROMO
@@ -709,7 +666,7 @@ python .github/scripts/create_report_page.py --run-type NO-PROMO
 Prerequisiti minimi:
 
 - variabili d'ambiente `CONFLUENCE_KEY` e `CONFLUENCE_EMAIL` valorizzate;
-- `config.yaml` con i metadati Confluence della suite;
+- `.github/<TARGET_ENV>.yaml` con i metadati Confluence della suite.
 
 
 Riferimenti: `.github/scripts/create_report_page.py`, `.github/workflows/create_report_page.yml`,
@@ -747,15 +704,9 @@ I file vengono salvati nella cartella temporanea `tmp_fetched/`.
 
 Scopre tutti i file `.json` in `tmp_fetched/`, risolve l'API key corrispondente dai secret
 (la chiave del secret deve coincidere con lo stem del file, ad es. `fdr_organization`),
-e lancia il comando `schemathesis run` per ciascun file. Ogni esecuzione produce un report
-nella cartella:
-
-```text
-schemathesis-raw-test-result/<YYYY-MM-DD>/<nome> run <HH-MM-SS>/<env>/
-```
-
-Il report include i risultati Allure (abilitati tramite `schemathesis.toml` con `path = "schemathesis-raw-test-result"`) che vengono
-poi processati dall'Allure Action nel workflow CI.
+e lancia il comando `schemathesis run` per ciascun file. I risultati JUnit
+vengono scritti in `junit/`; i risultati Allure sono abilitati da
+`schemathesis.toml` e scritti in `allure-results/`.
 
 **`.github/scripts/openApi_test.py`**
 
@@ -767,8 +718,12 @@ rimozione della cartella temporanea `tmp_fetched/` e pulizia dei run più vecchi
 Prerequisiti:
 
 - Variabili d'ambiente `TARGET_ENV` (valori: `dev`, `uat`) e `suite` impostata a `fdr`.
-- File `config/suites/fdr_secrets_config.json` presente con i placeholder delle subscription key per l'ambiente scelto.
-- File dei secret locali `config/.secrets.yaml` compilato con i valori reali dei placeholder.
+- Configurazione `scripts/<TARGET_ENV>.yaml` con i placeholder del token GitHub e delle subscription key.
+- Resolver dei segreti configurato, ad esempio `config/.secrets.yaml` compilato per l'ambiente scelto.
+
+Il comando effettua richieste verso i servizi e rimuove `tmp_fetched/` al termine;
+inoltre elimina le run scadute sotto `schemathesis-test-reports/`. Eseguirlo solo
+con autorizzazione per l'ambiente e gli effetti previsti.
 
 PowerShell:
 
@@ -788,14 +743,14 @@ export suite=fdr
 python -u .github/scripts/openApi_test.py
 ```
 
-I report vengono scritti in `schemathesis-raw-test-result/<data>/<run>/`. Per aprire il report
-Allure generato localmente (dopo aver fatto girare `allure generate` sulla cartella Allure):
+Per aprire i risultati Allure prodotti localmente:
 
 ```bash
-allure serve schemathesis-raw-test-result/<data>/<run>/<env>/allure-<timestamp>
+allure serve allure-results
 ```
 
-Per eseguire solo uno specifico profilo OpenAPI senza l'orchestratore:
+Per eseguire solo uno specifico profilo OpenAPI senza l'orchestratore, il file
+corrispondente deve essere già presente in `tmp_fetched/`:
 
 ```bash
 export TARGET_ENV=dev
@@ -805,15 +760,8 @@ python scripts/schemathesis_runner.py fdr_organization
 
 ### Esecuzione tramite GitHub Actions
 
-Il workflow è definito in `.github/workflows/openApi_test.yml` e viene invocato come
-`workflow_call` da `main-dispatch-tests.yml`.
-
-**Trigger disponibili:**
-
-| Trigger | Quando scatta |
-|---|---|
-| Schedulato | ogni giorno alle `06:17 UTC` (insieme a WISP) |
-| Manuale (`workflow_dispatch`) | selezionando `openApi_fdr` o `all` nel campo *services* |
+Il workflow riusabile `.github/workflows/openapi-fdr-tests.yml` viene invocato da
+`.github/workflows/openapi-test-dispatch.yml`, avviabile manualmente.
 
 **Flusso del job `fetch_and_test_openapi`:**
 
@@ -822,15 +770,15 @@ per entrambi gli ambienti. Per ogni ambiente:
 
 1. Carica i secret da `FDR_INTEGRATION_TESTS_SECRETS`.
 2. Esegue `openApi_test.py` con `TARGET_ENV` e `suite=fdr` impostati.
-3. Costruisce il report Allure con `simple-elf/allure-report-action`.
+3. Costruisce il report con Allure CLI.
 4. Carica l'artefatto `allure-report-openapi-<env>` (es. `allure-report-openapi-dev`).
 
-Il job `deploy` in `main-dispatch-tests.yml` scarica successivamente gli artefatti e pubblica
+Il job `deploy` in `openapi-test-dispatch.yml` scarica successivamente gli artefatti e pubblica
 i report su GitHub Pages sotto `openapi-fdr-tests/`.
 
-Riferimenti: `.github/workflows/openApi_test.yml`, `.github/workflows/main-dispatch-tests.yml`,
+Riferimenti: `.github/workflows/openapi-fdr-tests.yml`, `.github/workflows/openapi-test-dispatch.yml`,
 `scripts/fetch_github_files.py`, `scripts/schemathesis_runner.py`,
-`.github/scripts/openApi_test.py`, `config/suites/fdr_secrets_config.json`, `schemathesis.toml`.
+`.github/scripts/openApi_test.py`, `scripts/dev.yaml`, `scripts/uat.yaml`, `schemathesis.toml`.
 
 ## Esecuzione in CI
 
@@ -846,48 +794,95 @@ Il workflow `Check PR` gira sulle pull request verso `main` e applica automazion
 
 Riferimenti: `.github/workflows/check_pr.yml`, `.github/auto_assign.yml`.
 
-### WISP e FdR
+### Suite NRT
 
-I workflow dedicati installano Python, Java 17 e dipendenze Python, poi eseguono:
+Il workflow riusabile `nrt-run-suite.yml` installa Python, Java 17 e le
+dipendenze, prepara i segreti dell'environment ed esegue Behave con percorso
+e tag ricevuti dal catalogo. Per Checkout installa anche il browser richiesto.
 
-```bash
-behave src/integration/wisp --tags=@runnable \
-  --format allure_behave.formatter:AllureFormatter -o allure-results \
-  --junit-directory=junit --junit --summary --show-timings -v
-```
-
-```bash
-behave src/integration/fdr --tags=@runnable \
-  --format allure_behave.formatter:AllureFormatter -o allure-results \
-  --junit-directory=junit --junit --summary --show-timings -v
-```
-
-WISP carica `config/.secrets.yaml` dal secret `INTEGRATION_TESTS_SECRETS`.
-
-Riferimenti: `.github/workflows/wisp-tests.yml`, `.github/workflows/fdr-tests.yml`,
-`.github/workflows/run_behave_tests.yml`.
+Riferimenti: `.github/workflows/nrt-run-suite.yml`, `.github/nrt-suites.json`.
 
 ### Dispatch e pubblicazione report
 
-- `main-dispatch-tests.yml` esegue WISP ogni giorno alle `06:17 UTC` e permette l'avvio
-  manuale per `wisp` o `all`.
-- `run_behave_tests.yml` permette l'avvio manuale di WISP e FdR e copia i report su
-  `gh-pages` con timestamp.
-- `deploy-test-report.yml` scarica gli artefatti, processa i report, aggiorna dashboard e
-  invia la notifica Slack se configurata.
-- `create_report_page.yml` legge i report processati da `gh-pages` e pubblica le pagine
-  di riepilogo su Confluence.
+- `nrt-main-dispatch-tests.yml` avvia ogni giorno alle `06:17 UTC` le suite registrate
+  per UAT; consente anche l'avvio manuale per ambiente e selezione delle suite. Pubblica
+  i report Allure e coordina ingestion, report Confluence e notifica Slack.
+- `openapi-test-dispatch.yml` avvia manualmente i test OpenAPI FdR e richiama
+  `deploy-test-report.yml` per processare e pubblicare i report.
+- `create_report_page.yml` crea le pagine di riepilogo su Confluence dai report disponibili.
 - `extract_allure_fail_rate.yml` legge `widgets/summary.json` da `gh-pages`, calcola fail
   rate e success rate, poi passa i dati al workflow di notifica.
 
 
+### Manifest Gherkin
+
+Il workflow `gherkin-manifest-sync.yml` mantiene `.github/gherkin-manifest.yml`,
+destinato a QA Central Hub (Knowledge Base > Gherkin Feature Files).
+
+- Trigger: una PR chiusa e unita su `main`, oppure l'avvio manuale
+  (`workflow_dispatch`). La sincronizzazione parte se il manifest manca o se
+  la PR modifica un `.feature` sotto `src/`, il manifest, il catalogo
+  `.github/nrt-suites.json`, lo script di generazione o il workflow stesso. Il merge della PR
+  generata dalla sincronizzazione non avvia un nuovo ciclo. Le esecuzioni sono
+  serializzate: GitHub ne accoda fino a 100; quelle annullate per coda piena
+  vanno rieseguite.
+- Pubblicazione: il workflow propone il manifest in una PR cumulativa verso
+  `main`, con etichetta `skip`; non scrive direttamente su `main`. Se esiste
+  una PR di sincronizzazione aperta, aggiorna il suo branch dopo avervi
+  integrato `main` senza force-push. Se non ci sono differenze, non apre una PR.
+  La PR va revisionata e unita normalmente. Il repository deve consentire
+  alle Actions di creare PR; il job usa i permessi `contents: write` e
+  `pull-requests: write`.
+- Manifest: `.github/scripts/gherkin_manifest_sync.py` lo rigenera dall'albero
+  `src/<tipo>/<suite>/features/`, dove `<tipo>` è `api`, `integration` o
+  `e2e`; sono ammesse sottocartelle sotto `features/`. L'ID deriva dall'header
+  `# qa-hub:` alla prima riga quando presente; per le feature non ancora
+  migrate usa il primo tag identificativo con progressivo a tre cifre oppure
+  il nome del file. Lo script conserva le etichette delle suite, rimuove le
+  voci dei file non più presenti, valida il risultato e lo scrive solo se
+  cambia. Il controllo delle convenzioni rifiuta i `.feature` modificati
+  fuori dal percorso canonico. Stato e stime appartengono a QA Central Hub e
+  non sono campi del manifest.
+- Metadati delle suite: `test_type` e `nrt` sono sempre presenti e ricalcolati
+  a ogni rigenerazione. `test_type` deriva dal percorso `src/<tipo>/<suite>`:
+  `api`, `integration` o `e2e`; le suite chiamate `tas` o con prefisso `tas_`
+  hanno invece valore `tas`. `nrt` è un booleano YAML: `true` se il percorso
+  della suite è censito come `behave_path` nel catalogo NRT, `false` altrimenti,
+  indipendentemente dall'ID o dall'eseguibilità nel singolo ambiente.
+  Per le voci manuali si usa la suite canonica che contiene i file; se non è
+  identificabile o i file appartengono a suite diverse, la generazione si ferma.
+  Anche un catalogo mancante, illeggibile o con dati di appartenenza invalidi
+  ferma la generazione senza sovrascrivere il manifest. I manifest precedenti
+  senza questi campi vengono aggiornati automaticamente.
+- Correzioni: nel manifest si può cambiare `label` di una suite. L'ID non va
+  modificato direttamente nel manifest: deriva dall'header QA Hub quando
+  presente, altrimenti dal tag identificativo legacy o dal nome del file.
+  Header e tag identificativi si aggiornano solo con la migrazione approvata
+  per l'ambito, preservando i vecchi tag degli scenari come alias. Una
+  modifica manuale al manifest sul branch cumulativo richiede revisione e
+  merge della PR prima di rigenerare. Non modificare manualmente `test_type`
+  o `nrt`: la sincronizzazione ripristina i valori derivati dalle fonti.
+- Protezioni: se `main` avanza durante la generazione, se il branch riceve un
+  push concorrente o se ci sono conflitti, il workflow si ferma senza
+  sovrascrivere il branch remoto. Una PR cumulativa che contiene modifiche a
+  file diversi dal manifest richiede revisione prima di riprendere.
+- Esecuzione locale: `python .github/scripts/gherkin_manifest_sync.py --dry-run`
+  mostra il riepilogo senza scrivere; `--check` esce con codice 1 se il
+  manifest non è allineato.
+
+Il workflow `syncFeatureFile.yaml`, che aggiornava le pagine Confluence dai
+feature file, è stato rimosso; la relativa documentazione resta come riferimento
+storico.
+
+Riferimenti: `.github/workflows/gherkin-manifest-sync.yml`,
+`.github/scripts/gherkin_manifest_sync.py`, `.github/scripts/gherkin-sync-pr.js`,
+`.github/nrt-suites.json`.
+
 ### Documentazione GitHub Pages
 
-Al push su `main`, `landing_pages.yaml` esegue `scenario_parser.py`, genera pagine MkDocs a
-partire dalle feature sotto `src/integration` e pubblica `site/` su `gh-pages` mantenendo i
-file gia presenti.
-
-Riferimenti: `.github/workflows/landing_pages.yaml`, `scenario_parser.py`.
+Il workflow che generava e pubblicava automaticamente le pagine degli scenari è stato
+rimosso. Lo script `scenario_parser.py` resta disponibile per la generazione locale:
+vedere [Documentazione scenari](#documentazione-scenari).
 
 ## Servizio di test riusabile
 
@@ -930,11 +925,7 @@ summary, in `test-summary.json` e nei metadati Allure. L'ingestion salva
 `test_origin: QG` e URL Allure sotto `QG/<suite>/` per le run Quality Gate.
 Il flag non modifica selezione dei test o criteri di successo.
 
-Nota di allineamento: il workflow riusabile storico risolve il path `src/bdd/<suite>` per
-wisp e `all`. Prima di usarlo come gate per la struttura attuale del repository, verificare
-che il path sia coerente con `src/integration/<suite>`.
-
-Riferimenti: `.github/workflows/test-automation-service.yml`, `docs/examples/*`,
+Riferimenti: `.github/workflows/test-automation-service.yml`, `docs/tas/tas-developer-guide.md`,
 `scripts/tas_orchestrator.py`.
 
 ### Bridge CLI
@@ -984,7 +975,7 @@ Exit code:
 | `1` | uno o piu scenari falliti |
 | `2` | errore di orchestrazione, configurazione, timeout o API |
 
-Riferimenti: `scripts/tas_orchestrator.py`, `docs/examples/tas-example-*.yml`.
+Riferimenti: `scripts/tas_orchestrator.py`, `docs/tas/tas-developer-guide.md`.
 
 ## Ingestione dati test
 
@@ -992,9 +983,9 @@ Il flusso di *test data ingestion* raccoglie i risultati delle esecuzioni dei te
 
 ### Logica riassunta
 
-- Il workflow `main-dispatch-tests.yml` esegue le suite programmate, processa i report e pubblica un artefatto chiamato `tmp_processed_reports`.
+- Il workflow `nrt-main-dispatch-tests.yml` esegue le suite programmate e pubblica un artefatto Allure per suite.
 - Il workflow riusabile `test-automation-service.yml` pubblica, al termine di una run, l'artefatto `test-results` contenente i risultati dei test quando presenti.
-- Entrambi i flussi richiamano il workflow `test-data-ingestion.yml`. Il workflow accetta un input `artifact_name` che di default vale `tmp_processed_reports` ma può essere sovrascritto (ad es. a `test-results`) dal caller.
+- Entrambi i flussi richiamano `test-data-ingestion.yml`: NRT usa `artifact_pattern: allure-report-*`, mentre TAS usa `artifact_name: test-results`. Il default di `artifact_name` è `tmp_processed_reports`.
 - Lo step di ingestion estrae JSON/JUnit/Allure dall'artefatto scaricato e popola le tabelle tramite lo script `.github/scripts/populate_tables.py`.
 - La versione del test object associata alla suite non viene letta dal servizio live: `populate_tables.py` la richiede al QA Hub (`GET /api/v1/releases/versions`), che la mantiene aggiornata nella tabella `sp_version_state` della status page. La chiave di ricerca e la coppia ambiente + `product_key`, dove `product_key` e il campo omonimo della suite in [`.github/nrt-suites.json`](.github/nrt-suites.json) (es. `fdrfase3` per `fdr3`) e deve corrispondere alla chiave dell'applicazione censita nella status page. Se la versione non e disponibile (suite senza `product_key`, applicazione non censita, QA Hub non raggiungibile) lo script non usa piu una versione di default: riusa l'ultima suite salvata per quel test object, oppure crea una suite con versione `unknown` se non ne esiste nessuna, e segnala un warning nel log. La suite viene cercata per versione esatta, quindi anche un rollback dell'applicazione genera la propria suite.
 
@@ -1005,11 +996,11 @@ Il flusso di *test data ingestion* raccoglie i risultati delle esecuzioni dei te
 
 ### Esempio d'uso pratico
 
-1. `main-dispatch` elabora i report nightly e carica `tmp_processed_reports`.
-2. `main-dispatch` invoca `test-data-ingestion.yml` senza impostare `artifact_name` (usa il default).
+1. `nrt-main-dispatch-tests.yml` carica i report delle suite nightly come artefatti `allure-report-*`.
+2. `nrt-main-dispatch-tests.yml` invoca `test-data-ingestion.yml` con `artifact_pattern: allure-report-*`.
 3. `test-automation-service.yml` esegue una run on-demand e, alla fine, carica `test-results` invocando `test-data-ingestion.yml` con `artifact_name: test-results`.
 
-Riferimenti: `.github/workflows/test-data-ingestion.yml`, `.github/workflows/main-dispatch-tests.yml`, `.github/workflows/test-automation-service.yml`.
+Riferimenti: `.github/workflows/test-data-ingestion.yml`, `.github/workflows/nrt-main-dispatch-tests.yml`, `.github/workflows/test-automation-service.yml`.
 
 
 ## Documentazione scenari
@@ -1023,7 +1014,7 @@ La documentazione statica delle feature viene generata da `scenario_parser.py` l
 - genera `docs/index.md`, `docs/all_scenarios.txt` e `mkdocs.yml`;
 - aggiunge link verso i report Allure del componente.
 
-Comando equivalente al workflow:
+Generazione locale:
 
 ```bash
 python3 scenario_parser.py \
@@ -1032,7 +1023,10 @@ python3 scenario_parser.py \
 mkdocs build
 ```
 
-Riferimenti: `scenario_parser.py`, `.github/workflows/landing_pages.yaml`.
+Il workflow di pubblicazione automatica delle pagine degli scenari è stato rimosso;
+questi comandi non pubblicano il risultato.
+
+Riferimenti: `scenario_parser.py`.
 
 ## Contribuire
 
@@ -1048,6 +1042,8 @@ evidenze ammesse.
 ### Convenzioni Gherkin
 
 - Usare un solo `Feature` per file.
+- Salvare i file in `src/<api|integration|e2e>/<suite>/features/`; sono ammesse sottocartelle sotto `features/`.
+- Per gli ambiti non ancora migrati da QA Central Hub, mantenere il sistema di identità e i tag già presenti; non anticipare l'aggiunta dell'header o la rinumerazione. La migrazione Hub scrive l'header `# qa-hub: FEAT_<NNN>_<Ambito>` e i nuovi tag per un ambito alla volta, preservando i vecchi tag come alias degli scenari.
 - Dare al file un nome descrittivo.
 - Mantenere gli step atomici e riusabili.
 - Usare `Background` per precondizioni comuni.
@@ -1084,8 +1080,8 @@ anche isolamento dei dati/risorse esterne. Esito QA e completamento ACE sono
 distinti: un blocco del bookkeeping non autorizza a ripetere test o azioni Git.
 
 Le [istruzioni Gherkin](.github/instructions/gherkin.instructions.md) e il
-[profilo associato](.github/profiles/gherkin.profile.yaml) mantengono stabili gli
-identificativi durante la manutenzione e contano il limite di 12 sulle definizioni,
+[profilo associato](.github/profiles/gherkin.profile.yaml) definiscono la fonte
+autorevole e la forma degli identificativi e contano il limite di 12 sulle definizioni,
 non sulle righe Examples espanse. Le celle Examples vuote significano null:
 per i binding nuovi/modificati e obbligatoria la conversione esplicita a Python
 `None`, poiche Behave fornisce testo vuoto. Non viene migrato automaticamente il
@@ -1259,13 +1255,13 @@ Riferimenti: `.github/workflows/release.yml`, `.github/release.yml`.
 | Problema | Causa probabile | Azione |
 |---|---|---|
 | `No steps directory` con `behave src/api` | Behave richiede una suite con `features/` e `steps/` | eseguire `behave src/api/<suite>` |
-| `File di configurazione non trovato` | `-D env=<env>` punta a un file assente | verificare `config/api-tests/.env.<env>` |
+| `File di configurazione non trovato` nelle suite API | file per `TARGET_ENV` assente | verificare `src/api/config/.env.<env>` |
 | Allure scrive errore su directory output | `-o` associato al formatter sbagliato | mettere AllureFormatter prima di `-f progress` |
 | Report non trovato su Windows | path relativo risolto da cwd diverso | usare path assoluto con `allure serve` |
 | Errori certificato nelle API suite | trust store locale non configurato | usare store OS o `REQUESTS_CA_BUNDLE` / `SSL_CERT_FILE` |
 | Segreti mancanti in integrazione | `config/.secrets.yaml` assente o incompleto | copiarlo dal template e compilare i valori reali |
 | Browser Playwright non trovato | browser runtime non installato | eseguire `playwright install` o `npx playwright install` |
-| Workflow riusabile non trova WISP | path storico non allineato alla struttura attuale | verificare `src/bdd` vs `src/integration` nel workflow |
+| Workflow riusabile non trova la suite | categoria o nome suite non corrispondono al percorso | verificare `src/<test_type>/<suite>` |
 
 Riferimenti: `src/api/utility/http_client.py`, `src/api/utility/api_test_environment.py`,
 `config/.secrets_template.yaml`, workflow CI, regole operative di progetto.
@@ -1275,11 +1271,12 @@ Riferimenti: `src/api/utility/http_client.py`, `src/api/utility/api_test_environ
 | Area documentata | Fonti |
 |---|---|
 | Dipendenze e setup Python | `requirements.txt`, workflow di setup Python |
-| Configurazione API | `config/api-tests/.env.dev`, `config/api-tests/.env.uat`, `src/api/utility/api_test_environment.py` |
-| Configurazione integrazione | `config.yaml`, `commondata.yaml`, `config/.secrets_template.yaml`, `src/conf/configuration.py` |
+| Configurazione API | `src/api/config/.env.dev`, `src/api/config/.env.uat`, `src/api/utility/api_test_environment.py` |
+| Configurazione integrazione | `src/integration/<suite>/<env>.yaml`, `src/integration/commondata.yaml`, `config/.secrets_template.yaml`, `src/conf/configuration.py` |
 | Comandi API Behave | suite `src/api/*`, feature file, hook `environment.py` |
-| Comandi WISP/FdR | `.github/workflows/wisp-tests.yml`, `.github/workflows/fdr-tests.yml`, `.github/workflows/run_behave_tests.yml` |
+| Comandi WISP/FdR3 | `.github/workflows/nrt-run-suite.yml`, `.github/nrt-suites.json` |
 | Report Allure e dashboard | `.github/scripts/process_reports.py`, `.github/scripts/notify_slack.py`, `.github/scripts/create_report_page.py`, `.github/html/index.html`, `.github/templates/history-index-template.html`, `.github/workflows/create_report_page.yml` |
-| CI e workflow riusabile | `.github/workflows/*.yml`, `scripts/tas_orchestrator.py`, `docs/examples/*` |
-| Documentazione scenari | `scenario_parser.py`, `.github/workflows/landing_pages.yaml` |
+| CI e workflow riusabile | `.github/workflows/*.yml`, `scripts/tas_orchestrator.py`, `docs/tas/tas-developer-guide.md` |
+| Manifest Gherkin | `.github/workflows/gherkin-manifest-sync.yml`, `.github/scripts/gherkin_manifest_sync.py`, `.github/scripts/gherkin-sync-pr.js`, `.github/nrt-suites.json` |
+| Documentazione scenari | `scenario_parser.py` |
 | Convenzioni di contributo | `.github/PULL_REQUEST_TEMPLATE.md`, `.github/workflows/check_pr.yml`, regole operative di progetto |

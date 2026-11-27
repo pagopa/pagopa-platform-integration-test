@@ -1,11 +1,11 @@
 # Test di integrazione FdR3
 
 La suite FdR3 si trova in questa directory e usa Behave per eseguire gli
-scenari definiti in `feature/`.
+scenari definiti in `features/`.
 
 ## Struttura
 
-- `feature/`: scenari Gherkin, un file per area funzionale.
+- `features/`: scenari Gherkin, un file per area funzionale.
 - `steps/feat_001_common_steps.py`: step condivisi per creazione flussi,
   payload, pagamenti e richieste parametrizzate.
 - `steps/feat_00x_steps.py`: step specifici di una singola feature.
@@ -41,7 +41,7 @@ Dal repository root:
 
 ```powershell
 behave src\integration\fdr3 --dry-run --no-capture
-behave src\integration\fdr3\feature\FEAT_001_FdR3_Aggiungi_pagamenti.feature --tags=@runnable --no-capture
+behave src\integration\fdr3\features\FEAT_001_FdR3_Creazione_di_un_flusso_di_rendicontazione.feature --tags=@runnable --no-capture
 ```
 
 Il dry-run deve terminare con `0 undefined`. Per stampare request e response:

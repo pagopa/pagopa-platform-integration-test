@@ -1,0 +1,172 @@
+# Keeps .github/gherkin-manifest.yml aligned with src/ (PQ-845).
+# The first job decides whether sync is needed; the second proposes generated changes through a PR.
+name: Sync Gherkin manifest
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+  workflow_dispatch:
+
+# No permission at workflow level: each job declares its own below.
+permissions: {}
+
+concurrency:
+  group: gherkin-manifest-sync
+  cancel-in-progress: false
+  queue: max
+
+jobs:
+  evaluate_trigger:
+    name: Decide whether the sync is needed
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      run: ${{ steps.gate.outputs.run }}
+      reason: ${{ steps.gate.outputs.reason }}
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Evaluate criteria
+        id: gate
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_CHANGED_FILES: ${{ github.event.pull_request.changed_files }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          decide() {
+            local run="$1"
+            local reason="$2"
+            echo "run=$run" >> "$GITHUB_OUTPUT"
+            echo "reason=$reason" >> "$GITHUB_OUTPUT"
+            echo "- Gherkin manifest sync: run=$run, reason: $reason" >> "$GITHUB_STEP_SUMMARY"
+          }
+
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            decide true "manual run"
+            exit 0
+          fi
+
+          if [ "$PR_AUTHOR" = "github-actions[bot]" ] \
+            && [ "$PR_HEAD_REPO" = "$REPO" ] \
+            && [[ "$PR_HEAD_REF" =~ ^automation/gherkin-sync/run-[0-9]+-[0-9]+$ ]]; then
+            decide false "generated sync PR already reviewed"
+            exit 0
+          fi
+
+          if [ ! -f .github/gherkin-manifest.yml ]; then
+            decide true "missing .github/gherkin-manifest.yml"
+            exit 0
+          fi
+
+          if ! [[ "$PR_CHANGED_FILES" =~ ^[0-9]+$ ]]; then
+            if ! PR_CHANGED_FILES="$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '.changed_files')"; then
+              decide true "PR file count not available"
+              exit 0
+            fi
+          fi
+          if ! [[ "$PR_CHANGED_FILES" =~ ^[0-9]+$ ]]; then
+            decide true "invalid PR file count"
+            exit 0
+          fi
+
+          PR_FILES="$RUNNER_TEMP/pr-files.json"
+          if ! gh api "repos/$REPO/pulls/$PR_NUMBER/files" --paginate --slurp > "$PR_FILES"; then
+            decide true "PR file list not available"
+            exit 0
+          fi
+          if ! jq -e --argjson expected "$PR_CHANGED_FILES" '
+            type == "array" and all(.[]; type == "array")
+            and ([.[][]] | length) == $expected
+            and all(.[][]; (.filename | type == "string") and (.status | type == "string"))
+          ' "$PR_FILES" > /dev/null; then
+            decide true "PR file list incomplete or invalid"
+            exit 0
+          fi
+          if jq -e '
+            [.[][] | .filename, (.previous_filename // empty)]
+            | any(.[]; test("^(src/.+\\.feature|\\.github/(gherkin-manifest\\.yml|nrt-suites\\.json|scripts/gherkin_manifest_sync\\.py|workflows/gherkin-manifest-sync\\.yml))$"))
+          ' "$PR_FILES" > /dev/null; then
+            decide true "the PR changes features, manifest or generation inputs"
+            exit 0
+          else
+            result=$?
+            if [ "$result" -ne 1 ]; then
+              decide true "PR file selection failed"
+              exit 0
+            fi
+          fi
+
+          decide false "no criterion met"
+
+  sync_gherkin_manifest:
+    name: Regenerate manifest
+    needs: evaluate_trigger
+    if: needs.evaluate_trigger.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@7f4fc3e22c37d6ff65e88745f38bd3157c663f7c # v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      - name: Prepare cumulative sync branch
+        id: prepare
+        uses: actions/github-script@d556feaca394842dc55e4734bf3bb9f685482fa0 # v6.3.3
+        with:
+          script: |
+            const { prepareSyncBranch } = require('./.github/scripts/gherkin-sync-pr.js');
+            await prepareSyncBranch({ github, context, core });
+
+      - name: Regenerate manifest
+        id: manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/gherkin_manifest_sync.py | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Create or update sync PR
+        id: publish
+        uses: actions/github-script@d556feaca394842dc55e4734bf3bb9f685482fa0 # v6.3.3
+        env:
+          SYNC_BRANCH: ${{ steps.prepare.outputs.branch }}
+          SYNC_PR_NUMBER: ${{ steps.prepare.outputs.pr_number }}
+          SYNC_BASE_SHA: ${{ steps.prepare.outputs.base_sha }}
+          MANIFEST_OUTCOME: ${{ steps.manifest.outcome }}
+        with:
+          script: |
+            const { publishSyncPullRequest } = require('./.github/scripts/gherkin-sync-pr.js');
+            await publishSyncPullRequest({ github, context, core });
