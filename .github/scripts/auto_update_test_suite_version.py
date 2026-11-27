@@ -14,17 +14,19 @@ def main():
     parser = argparse.ArgumentParser(description='Automatically update test suite version')
     parser.add_argument('--version-change', '-v', default='skip', help='Type of version change label')
     parser.add_argument('--suite', '-s', default='', help='Changed suite label')
+    parser.add_argument('--pending-count', type=int, default=0, help='Number of pending version bump PRs')
 
     args = parser.parse_args()
     version_label = str(args.version_change).lower()
     suite_label = str(args.suite).upper()
+    pending_count = args.pending_count
 
     if version_label == 'skip' or suite_label == '':
         print("Skipping test suite version update due to missing version or suite label")
         return
 
     if version_label != 'skip' and suite_label:
-        print(f"Updating test suite version for version: {version_label}, suite: {suite_label}")
+        print(f"Updating test suite version for version: {version_label}, suite: {suite_label}, pending bumps: {pending_count}")
         with open(NRT_SUITES_FILE, 'r') as f:
             suites = json.load(f)
 
@@ -35,17 +37,26 @@ def main():
         
         
         major, minor, patch = map(int, current_version.split('.'))
-        match version_label:
-            case 'major':
-                major += 1
-                minor = 0
-                patch = 0
-            case 'minor':
-                minor += 1
-                patch = 0
-            case 'patch':
-                patch += 1
+        
+        # Apply version bump once per increment type
+        # If pending bumps exist for the same suite, accumulate them by counting all pending bumps
+        # and applying the same increment type multiple times
+        total_bumps = 1 + pending_count
+        for _ in range(total_bumps):
+            match version_label:
+                case 'major':
+                    major += 1
+                    minor = 0
+                    patch = 0
+                case 'minor':
+                    minor += 1
+                    patch = 0
+                case 'patch':
+                    patch += 1
+        
         new_version = f"{major}.{minor}.{patch}"
+        print(f"New version for {suite_label}: {current_version} -> {new_version} (applied {total_bumps} increment(s))")
+        
         for suite in suites.get('suites', []):
             if suite.get('id') == suite_label.lower():
                 suite['version'] = new_version

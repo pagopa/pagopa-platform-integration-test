@@ -32,6 +32,36 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Check for pending version bump PRs
+        id: pending_bumps
+        if: steps.labels.outputs.should_bump == 'true'
+        uses: actions/github-script@d556feaca394842dc55e4734bf3bb9f685482fa0 # v6.3.3
+        env:
+          SUITE_LABEL: ${{ steps.labels.outputs.suite_label }}
+        with:
+          script: |
+            const suite = process.env.SUITE_LABEL.toLowerCase();
+            const { data: pullRequests } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'skip',
+              head: `auto-bump-suite-version`,
+              per_page: 100
+            });
+            const pendingBumps = pullRequests
+              .filter(pr => pr.head.ref.includes(`auto-bump-suite-version`) && 
+                           pr.body && pr.body.includes(suite))
+              .sort((a, b) => a.created_at.localeCompare(b.created_at));
+            
+            if (pendingBumps.length > 0) {
+              core.info(`Found ${pendingBumps.length} pending version bump PR(s) for suite ${suite}. Will accumulate changes.`);
+              core.setOutput('has_pending', 'true');
+              core.setOutput('pending_count', pendingBumps.length.toString());
+            } else {
+              core.setOutput('has_pending', 'false');
+            }
+
 
       - name: Set up Python
         if: steps.labels.outputs.should_bump == 'true'
@@ -50,8 +80,10 @@ jobs:
         env:
           VERSION_LABEL: ${{ steps.labels.outputs.version_label }}
           SUITE_LABEL: ${{ steps.labels.outputs.suite_label }}
+          PENDING_BUMP_COUNT: ${{ steps.pending_bumps.outputs.pending_count }}
         run: |
-            python -u .github/scripts/auto_update_test_suite_version.py -v "$VERSION_LABEL" -s "$SUITE_LABEL"
+            echo "Applying $VERSION_LABEL bump with $PENDING_BUMP_COUNT pending bump PR(s) in queue"
+            python -u .github/scripts/auto_update_test_suite_version.py -v "$VERSION_LABEL" -s "$SUITE_LABEL" --pending-count "$PENDING_BUMP_COUNT"
     
       - name: Prepare version bump PR description
         id: bump_pr
@@ -73,15 +105,30 @@ jobs:
               .replace('- [ ] Bug fix', '- [x] Bug fix');
             core.setOutput('body', body);
 
+      - name: Configure git
+        if: steps.labels.outputs.should_bump == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Create version bump pull request
         if: steps.labels.outputs.should_bump == 'true'
-        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          add-paths: .github/nrt-suites.json
-          base: main
-          branch: auto-bump-suite-version/${{ github.event.pull_request.number }}
-          commit-message: Auto bump ${{ steps.labels.outputs.suite_label }} version
-          title: Auto bump ${{ steps.labels.outputs.suite_label }} version
-          body: ${{ steps.bump_pr.outputs.body }}
-          labels: skip
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SUITE_LABEL: ${{ steps.labels.outputs.suite_label }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # Create a temporary file for the PR body
+          cat > /tmp/pr_body.txt << 'EOF'
+          ${{ steps.bump_pr.outputs.body }}
+          EOF
+          
+          gh pr create \
+            --base main \
+            --head "auto-bump-suite-version/${{ env.PR_NUMBER }}" \
+            --title "Auto bump ${{ env.SUITE_LABEL }} version" \
+            --body-file /tmp/pr_body.txt \
+            --label skip
+          
+          # Clean up
+          rm /tmp/pr_body.txt
