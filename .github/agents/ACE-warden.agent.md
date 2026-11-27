@@ -1,7 +1,7 @@
 ---
 name: "gh/ace/warden"
 description: "Use when: run the ACE gate and apply approved decisions one explicit human-confirmed step at a time."
-tools: ["read/readFile", "execute", "execute/runInTerminal", "vscode/askQuestions"]
+tools: ["read", "execute", "vscode/askQuestions", "ask_user"]
 user-invocable: true
 ---
 

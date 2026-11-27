@@ -1,7 +1,7 @@
 ---
 description: 'Use when: shared or suite-local Python utilities need review, implementation, fixes or refactoring'
 model: GPT-5.3-Codex
-tools: [read/readFile, edit/createFile, edit/createDirectory, edit/editFiles, edit/rename, search/fileSearch, vscode/askQuestions]
+tools: [read, edit, search, vscode/askQuestions, ask_user]
 argument-hint: Choose review, implementation or fix/refactor; provide the shared or suite-local utility, expected contract and target scope
 user-invocable: true
 
