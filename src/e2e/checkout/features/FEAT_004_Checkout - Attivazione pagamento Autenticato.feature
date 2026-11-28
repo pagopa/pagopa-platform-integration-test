@@ -39,6 +39,6 @@ Funzionalità: Attivazione pagamento Autenticato
 
     Esempi:
       | testing_psp | notice_code_prefix | fiscal_code | email                              | pan              | expiration_date | cvv | pspId       |
-      | Postepay    | 30200              | 77777777777 | ecommerce-test-mailgroup@pagopa.it | 5255000260000014 | 12/30           | 123 | PPAYITR1XXX |
+      | Poste       | 30200              | 77777777777 | ecommerce-test-mailgroup@pagopa.it | 5255000260000014 | 12/30           | 123 | BPPIITRRXXX |
       | Wordline    | 30201              | 77777777777 | ecommerce-test-mailgroup@pagopa.it | 5255000260000014 | 12/30           | 123 | BNLIITRR    |
       | Worldpay    | 30201              | 77777777777 | ecommerce-test-mailgroup@pagopa.it | 4242424242424242 | 12/30           | 123 | WOLLNLB1    |
