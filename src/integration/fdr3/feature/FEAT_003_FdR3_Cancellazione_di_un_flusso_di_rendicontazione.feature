@@ -8,6 +8,7 @@ Funzionalità: Cancellazione di un flusso di rendicontazione
   Contesto:
     Dato che i sistemi sono operativi
 
+  @runnable
   @positive
   @FDR3_003_01
   Scenario: Creazione del flusso e inserimento pagamenti preliminari
@@ -17,6 +18,7 @@ Funzionalità: Cancellazione di un flusso di rendicontazione
     Quando il PSP invia la richiesta di "Creazione di una nuova struttura di flusso" con il payload "create_payload"
     Allora il PSP riceve il codice di stato HTTP 201
 
+  @runnable
   @positive
   @FDR3_003_02
   Scenario: Inserimento di 3 pagamenti
@@ -27,6 +29,7 @@ Funzionalità: Cancellazione di un flusso di rendicontazione
     E il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "payments_payload"
     Allora il PSP riceve il codice di stato HTTP 200
 
+  @runnable
   @positive
   @FDR3_003_03
   Scenario: Cancellazione del flusso
