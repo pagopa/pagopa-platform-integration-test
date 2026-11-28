@@ -7,6 +7,7 @@ Funzionalità: Workflow di creazione e gestione delle revisioni di un flusso di 
   Contesto:
     Dato che i sistemi sono operativi
 
+  @runnable
   @positive
   @FDR3_002_01
   Scenario: Creazione del flusso iniziale utilizzato per i test di revisione
@@ -18,6 +19,7 @@ Funzionalità: Workflow di creazione e gestione delle revisioni di un flusso di 
     Quando il PSP invia la richiesta di "Creazione di una nuova struttura di flusso" con il payload "create_1_payload"
     Allora il PSP riceve il codice di stato HTTP 201
 
+  @runnable
   @positive
   @FDR3_002_02
   Scenario: Aggiunta di 3 pagamenti alla revisione iniziale
@@ -28,6 +30,7 @@ Funzionalità: Workflow di creazione e gestione delle revisioni di un flusso di 
     Quando il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "payments_payload"
     Allora il PSP riceve il codice di stato HTTP 200
 
+  @runnable
   @positive
   @FDR3_002_03
   Scenario: Pubblicazione della prima revisione
@@ -35,6 +38,7 @@ Funzionalità: Workflow di creazione e gestione delle revisioni di un flusso di 
     Quando il PSP invia la richiesta di "Pubblicazione" con il payload "None"
     Allora il PSP riceve il codice di stato HTTP 200
 
+  @runnable
   @positive
   @FDR3_002_04
   Scenario: Verifica revisione dopo prima pubblicazione
@@ -43,6 +47,7 @@ Funzionalità: Workflow di creazione e gestione delle revisioni di un flusso di 
     Allora il PSP riceve il codice di stato HTTP 200
     E la risposta contiene revision = 1
 
+  @runnable
   @positive
   @FDR3_002_05
   Scenario: Creazione di una nuova versione (revisione 2) dello stesso FdR
@@ -51,6 +56,7 @@ Funzionalità: Workflow di creazione e gestione delle revisioni di un flusso di 
     Quando il PSP invia la richiesta di "Creazione di una nuova struttura di flusso" con il payload "create_2_payload"
     Allora il PSP riceve il codice di stato HTTP 201
 
+  @runnable
   @positive
   @FDR3_002_06
   Scenario: Creazione della revisione 2 confermata
@@ -62,6 +68,7 @@ Funzionalità: Workflow di creazione e gestione delle revisioni di un flusso di 
     E la risposta contiene revision = 2
     E lo stato del flusso è "CREATED"
 
+  @runnable
   @positive
   @FDR3_002_07
   Scenario: Aggiunta di 2 pagamenti alla revisione 2
@@ -70,6 +77,7 @@ Funzionalità: Workflow di creazione e gestione delle revisioni di un flusso di 
     E il PSP invia la richiesta di "Aggiunta pagamenti" con il payload "payments_payload"
     Allora il PSP riceve il codice di stato HTTP 200
 
+  @runnable
   @positive
   @FDR3_002_08
   Scenario: Pubblicazione della revisione 2
@@ -77,6 +85,7 @@ Funzionalità: Workflow di creazione e gestione delle revisioni di un flusso di 
     Quando il PSP invia la richiesta di "Pubblicazione" con il payload "None"
     Allora il PSP riceve il codice di stato HTTP 200
 
+  @runnable
   @positive
   @FDR3_002_09
   Scenario: Verifica revisione dopo seconda pubblicazione
@@ -86,6 +95,7 @@ Funzionalità: Workflow di creazione e gestione delle revisioni di un flusso di 
     E la risposta contiene revision = 2
     E la risposta contiene totPayments = 2
 
+  @runnable
   @positive
   @FDR3_002_10
   Scenario: Creazione della revisione 3
@@ -98,6 +108,7 @@ Funzionalità: Workflow di creazione e gestione delle revisioni di un flusso di 
     E la risposta contiene revision = 3
     E lo stato del flusso è "CREATED"
 
+  @runnable
   @positive
   @FDR3_002_11
   Scenario: Aggiunta di 2 pagamenti invece di 1 nella revisione 3
