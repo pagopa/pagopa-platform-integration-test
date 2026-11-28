@@ -49,13 +49,14 @@ def after_scenario(context, scenario):
         context.browser_context.close()
 
 def before_feature(context, feature):
-    # Log the feature name
-    tags = feature.tags
-    print(tags)
-    if "no_navigation" in tags:
-        context.expect_navigation = False
-    else:
-        context.expect_navigation = True
+    """Set whether button clicks must wait for a page navigation.
+
+    Features tagged ``CHECKOUT_006`` (syntactic field validation) stay on the
+    same page after clicking "Continua", so their clicks must not wait for a
+    navigation. Every other feature expects a navigation. The decision relies on
+    the feature tag, not on the feature file name, so renames do not affect it.
+    """
+    context.expect_navigation = "CHECKOUT_006" not in feature.tags
     logging.info(f"Expect navigation: {context.expect_navigation}")
 
 def after_all(context):
