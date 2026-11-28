@@ -7,6 +7,7 @@ Funzionalità: Aggiunta di pagamenti a un flusso di rendicontazione
   Contesto:
     Dato che i sistemi sono operativi
 
+  @runnable
   @positive
   @FDR3_001_01
   Scenario: Creazione del flusso di rendicontazione per il test di aggiunta pagamenti
